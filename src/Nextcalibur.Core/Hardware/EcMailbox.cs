@@ -1,0 +1,230 @@
+using System.Management;
+using System.Runtime.InteropServices;
+
+namespace Nextcalibur.Core.Hardware;
+
+/// <summary>Command family (field <c>a0</c>).</summary>
+public enum SmiFamily : ushort
+{
+    Read = 0xFA00,
+    Write = 0xFB00,
+}
+
+/// <summary>Subsystem selector (field <c>a1</c>).</summary>
+public enum SmiSubsystem : ushort
+{
+    Led = 0x0100,
+    Thermal = 0x0200,
+}
+
+/// <summary>
+/// The 32-byte command/response block exchanged through the ACPI-WMI mailbox.
+/// Layout is fixed by firmware; see docs/PROTOCOL.md §2.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public struct SmiCommand
+{
+    public ushort A0;
+    public ushort A1;
+    public uint A2;
+    public uint A3;
+    public uint A4;
+    public uint A5;
+    public uint A6;
+    public uint Reserved0;
+    public uint Reserved1;
+
+    public const int SizeBytes = 32;
+
+    public static SmiCommand For(SmiFamily family, SmiSubsystem subsystem) =>
+        new() { A0 = (ushort)family, A1 = (ushort)subsystem };
+
+    public byte[] ToBytes()
+    {
+        var bytes = new byte[SizeBytes];
+        BitConverter.TryWriteBytes(bytes.AsSpan(0), A0);
+        BitConverter.TryWriteBytes(bytes.AsSpan(2), A1);
+        BitConverter.TryWriteBytes(bytes.AsSpan(4), A2);
+        BitConverter.TryWriteBytes(bytes.AsSpan(8), A3);
+        BitConverter.TryWriteBytes(bytes.AsSpan(12), A4);
+        BitConverter.TryWriteBytes(bytes.AsSpan(16), A5);
+        BitConverter.TryWriteBytes(bytes.AsSpan(20), A6);
+        BitConverter.TryWriteBytes(bytes.AsSpan(24), Reserved0);
+        BitConverter.TryWriteBytes(bytes.AsSpan(28), Reserved1);
+        return bytes;
+    }
+
+    public static SmiCommand FromBytes(byte[] b)
+    {
+        if (b is null || b.Length < SizeBytes)
+            throw new ArgumentException($"Expected {SizeBytes} bytes.", nameof(b));
+
+        return new SmiCommand
+        {
+            A0 = BitConverter.ToUInt16(b, 0),
+            A1 = BitConverter.ToUInt16(b, 2),
+            A2 = BitConverter.ToUInt32(b, 4),
+            A3 = BitConverter.ToUInt32(b, 8),
+            A4 = BitConverter.ToUInt32(b, 12),
+            A5 = BitConverter.ToUInt32(b, 16),
+            A6 = BitConverter.ToUInt32(b, 20),
+            Reserved0 = BitConverter.ToUInt32(b, 24),
+            Reserved1 = BitConverter.ToUInt32(b, 28),
+        };
+    }
+
+    public override string ToString() =>
+        $"a0=0x{A0:X4} a1=0x{A1:X4} a2={A2} a3={A3} a4={A4} a5={A5} a6={A6}";
+}
+
+/// <summary>Thrown when the mailbox is missing or unusable.</summary>
+public sealed class EcMailboxUnavailableException(string message, Exception? inner = null)
+    : Exception(message, inner);
+
+/// <summary>
+/// Access to the firmware mailbox exposed as <c>root\wmi:RW_GMWMI</c>.
+///
+/// The mailbox is shared, mutable, machine-wide state. Anything else talking to
+/// it — notably the vendor's own software — writes to the same buffer, so reads
+/// can catch a partially written response. Every read here is validated and
+/// retried; see docs/PROTOCOL.md §6.
+/// </summary>
+public sealed class EcMailbox : IDisposable
+{
+    private const string Scope = @"root\wmi";
+    private const string ClassName = "RW_GMWMI";
+    private const string BufferProperty = "BufferBytes";
+
+    private readonly ManagementScope _scope;
+    private bool _disposed;
+
+    public EcMailbox()
+    {
+        _scope = new ManagementScope(Scope);
+        try
+        {
+            _scope.Connect();
+        }
+        catch (Exception ex)
+        {
+            throw new EcMailboxUnavailableException(
+                $@"Could not connect to {Scope}. This machine may not expose the interface.", ex);
+        }
+    }
+
+    /// <summary>True when the interface is present and reports itself active.</summary>
+    public static bool IsSupported()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                new ManagementScope(Scope), new ObjectQuery($"SELECT * FROM {ClassName}"));
+            using var results = searcher.Get();
+            foreach (ManagementObject mo in results)
+            {
+                using (mo)
+                {
+                    return mo[BufferProperty] is byte[];
+                }
+            }
+        }
+        catch
+        {
+            // Absent interface is a normal answer, not an error.
+        }
+        return false;
+    }
+
+    private ManagementObject GetInstance()
+    {
+        using var searcher = new ManagementObjectSearcher(
+            _scope, new ObjectQuery($"SELECT * FROM {ClassName}"));
+        using var results = searcher.Get();
+        foreach (ManagementObject mo in results)
+            return mo;
+
+        throw new EcMailboxUnavailableException($"No {ClassName} instance found.");
+    }
+
+    /// <summary>Reads the raw mailbox contents without interpreting them.</summary>
+    public byte[] ReadRaw()
+    {
+        using var mo = GetInstance();
+        if (mo[BufferProperty] is not byte[] buffer || buffer.Length < SmiCommand.SizeBytes)
+            throw new EcMailboxUnavailableException($"{BufferProperty} was not a {SmiCommand.SizeBytes}-byte array.");
+        return buffer;
+    }
+
+    /// <summary>Writes a command into the mailbox.</summary>
+    public void Write(SmiCommand command)
+    {
+        using var mo = GetInstance();
+        mo[BufferProperty] = command.ToBytes();
+        mo.Put();
+    }
+
+    /// <summary>
+    /// Sends a command and returns the response, retrying while the response
+    /// looks torn or stale.
+    /// </summary>
+    /// <param name="command">The command to send.</param>
+    /// <param name="isValid">
+    /// Decides whether a response is complete. Firmware fills the payload fields
+    /// after echoing the header, so a caller that knows which fields it needs is
+    /// the only thing that can tell a finished response from a half-written one.
+    /// </param>
+    /// <param name="attempts">How many times to send before giving up.</param>
+    /// <param name="delayMs">Pause between attempts, in milliseconds.</param>
+    public SmiCommand Execute(
+        SmiCommand command,
+        Func<SmiCommand, bool> isValid,
+        int attempts = 8,
+        int delayMs = 40)
+    {
+        ArgumentNullException.ThrowIfNull(isValid);
+
+        Exception? last = null;
+        for (var attempt = 0; attempt < attempts; attempt++)
+        {
+            try
+            {
+                Write(command);
+                var response = SmiCommand.FromBytes(ReadRaw());
+
+                // The header must come back as sent; otherwise another writer
+                // raced us for the mailbox and this response belongs to them.
+                if (response.A0 == command.A0 && response.A1 == command.A1 && isValid(response))
+                    return response;
+            }
+            catch (ManagementException ex)
+            {
+                last = ex;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new EcMailboxUnavailableException(
+                    "Access denied writing to the mailbox. Try running elevated.", ex);
+            }
+
+            Thread.Sleep(delayMs);
+        }
+
+        throw new EcMailboxUnavailableException(
+            $"No valid response after {attempts} attempts. " +
+            "Another application may be using the mailbox — close the vendor Control Center and retry.",
+            last);
+    }
+
+    /// <summary>
+    /// Reads the mailbox without writing to it, returning the last response left
+    /// there by whoever wrote last. Useful for passive observation only: the
+    /// contents may be arbitrarily old.
+    /// </summary>
+    public SmiCommand PeekLastResponse() => SmiCommand.FromBytes(ReadRaw());
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+    }
+}
