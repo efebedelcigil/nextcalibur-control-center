@@ -23,6 +23,13 @@ dotnet publish src\Nextcalibur.App\Nextcalibur.App.csproj `
 Remove-Item publish\*.pdb, publish\*.xml -ErrorAction SilentlyContinue
 
 Write-Host "==> Packaging Setup.exe" -ForegroundColor Cyan
+
+# Velopack refuses to pack a version that already exists in the releases folder,
+# which means a second run of this script for the same version fails rather than
+# rebuilding it. Building the same version twice is the normal case while
+# working on it, so the previous attempt is cleared first. Earlier versions stay,
+# because the delta is built against them.
+Remove-Item "releases\Nextcalibur-$Version-*.nupkg" -ErrorAction SilentlyContinue
 vpk pack `
     --packId Nextcalibur `
     --packVersion $Version `

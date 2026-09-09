@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nextcalibur.Cli", "src\Next
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nextcalibur.App", "src\Nextcalibur.App\Nextcalibur.App.csproj", "{E671C261-EB53-44A3-8E7E-2F9EFC1D15B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{10D685EE-A962-4955-B53C-D146633B5361}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nextcalibur.Core.Tests", "tests\Nextcalibur.Core.Tests\Nextcalibur.Core.Tests.csproj", "{8141B20C-C197-4628-B038-FB077935BCDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +36,15 @@ Global
 		{E671C261-EB53-44A3-8E7E-2F9EFC1D15B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E671C261-EB53-44A3-8E7E-2F9EFC1D15B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E671C261-EB53-44A3-8E7E-2F9EFC1D15B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8141B20C-C197-4628-B038-FB077935BCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8141B20C-C197-4628-B038-FB077935BCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8141B20C-C197-4628-B038-FB077935BCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8141B20C-C197-4628-B038-FB077935BCDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{85358EAE-A7EA-4497-A0F1-1DDE70F6E9EF} = {8311A395-F67C-487E-97AF-51A52B72648E}
 		{71B7EDB7-67F3-4A5C-BB5B-66CA761AC1BB} = {8311A395-F67C-487E-97AF-51A52B72648E}
 		{E671C261-EB53-44A3-8E7E-2F9EFC1D15B8} = {8311A395-F67C-487E-97AF-51A52B72648E}
+		{8141B20C-C197-4628-B038-FB077935BCDC} = {10D685EE-A962-4955-B53C-D146633B5361}
 	EndGlobalSection
 EndGlobal

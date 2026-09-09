@@ -15,10 +15,10 @@ public readonly record struct StorageUse(ulong UsedBytes, ulong TotalBytes)
     /// the user's locale, so the machine's own formatting is used rather than a
     /// hardcoded comma.
     /// </summary>
-    public string Describe(string unit = "GB")
+    public string Describe()
     {
         const double gb = 1024d * 1024 * 1024;
-        return $"{UsedBytes / gb:N1}/{TotalBytes / gb:N1}{unit}";
+        return $"{UsedBytes / gb:N1}/{TotalBytes / gb:N1}GB";
     }
 }
 
@@ -153,8 +153,13 @@ public static class SystemInfo
     /// <summary>
     /// Trims the noise vendors put in these strings — trademark symbols, "CPU",
     /// the clock speed — leaving the part a person would recognise.
+    ///
+    /// Internal rather than private so it can be tested. It is string handling
+    /// against strings this project cannot choose, and when it goes wrong it
+    /// goes wrong quietly: a name that is merely a bit uglier, or suddenly
+    /// empty.
     /// </summary>
-    private static string Tidy(string name)
+    internal static string Tidy(string name)
     {
         var cleaned = name
             .Replace("(R)", string.Empty, StringComparison.OrdinalIgnoreCase)

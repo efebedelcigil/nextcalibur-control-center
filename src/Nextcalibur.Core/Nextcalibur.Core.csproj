@@ -14,4 +14,11 @@
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- So the tests can reach the few helpers that are internal rather than
+         public: string tidying and the like, which are worth pinning and are
+         not part of what this library offers anyone else. -->
+    <InternalsVisibleTo Include="Nextcalibur.Core.Tests" />
+  </ItemGroup>
+
 </Project>
