@@ -37,18 +37,28 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Installer (Velopack, ~6 MB) | done |
 | RAM and disk gauges | done, fed from the system |
 | Device names and clock speeds | done, read at runtime |
+| Keyboard illustration | rebuilt from a clean vector; 0.135% CPU |
+| Backing off while in the tray | written, **not yet verified** |
+| Handle leak | **open, blocks release** — see below |
 | Graphics mode switching | **detection only** — see below |
-| Keyboard illustration cost | **open** — twenty times the baseline, see below |
 | Fan control | **deliberately out of scope** — see below |
 
 ## Next
 
-1. **Bring the keyboard illustration's cost down.** It is the current work order
-   in [BRIEF.md](BRIEF.md), with the measurements.
-2. **Graphics mode** — determine what the vendor software actually does when each
+1. **The handle leak.** Nothing ships until this is understood. It is the only
+   thing standing between the application and a release, and it is the sort of
+   fault that makes an application that runs unattended untrustworthy — which is
+   the whole point of one that lives in the notification area.
+2. **Verify the tray backoff.** The code is written: hidden, the slow timer moves
+   to thirty seconds and skips everything that only exists to keep the window
+   truthful. It has not been measured, because minimising the window
+   programmatically does not work on a frameless window and the earlier attempt
+   silently measured a window that was never minimised.
+3. A small interface correction is pending with the design agent.
+4. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-3. Release 0.4.0.
+5. Release 0.4.0.
 
 ## What things cost
 
@@ -88,9 +98,27 @@ What is known:
 - It continues at the same rate whether or not the window is on screen.
 
 At this rate a machine left running for a day would reach a few hundred thousand
-handles, so it does need fixing before anyone relies on the application running
-unattended. Finding it properly needs a handle profiler, or bisecting the work
-the timers do until the growth stops.
+handles. This blocks the release: an application that sits in the notification
+area is one nobody looks at for days, and that is exactly the case it would
+fail.
+
+Ruled out so far, and worth not re-testing:
+
+| Suspect | Result |
+|---|---|
+| Firmware mailbox reads | CLI doing only those holds at 232 handles |
+| Clock readers (PDH, NVML) | CLI doing only those holds at 264 handles |
+| Repeated `EcMailbox.IsSupported()` | cached; rate fell, growth continued |
+| Repeated process enumeration | cached; rate fell, growth continued |
+| Rendering or brushes | GDI 41 and USER 35, both flat throughout |
+| Window being on screen | same rate hidden as visible |
+
+What is left is the work the timers do inside the window: storage readings, the
+theme registry poll, the tray tooltip update, and the WMI round trips the
+mailbox makes through `System.Management`. The next step is to switch those off
+one at a time and watch the rate, rather than reason about which of them looks
+suspicious — two rounds of reasoning have now each removed real waste and left
+the growth untouched.
 
 For comparison, the fault this application exists to fix pinned the processor at
 4.1 GHz while idle.
