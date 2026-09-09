@@ -830,12 +830,13 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" /> <!-- Master switches -->
+                                    <RowDefinition Height="Auto" /> <!-- Divider -->
                                     <RowDefinition Height="Auto" /> <!-- Effects Panel -->
                                     <RowDefinition Height="*" />    <!-- Color Wheel & Brightness Slider -->
                                 </Grid.RowDefinitions>
 
                                 <!-- 1. Master Switches (LED on/off, Select all, Reload) -->
-                                <Grid Grid.Row="0" Margin="0,0,0,6">
+                                <Grid Grid.Row="0" Margin="0,0,0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -868,10 +869,10 @@
                                 </Grid>
 
                                 <!-- Divider -->
-                                <Border Height="1" Background="{DynamicResource Line}" Margin="0,6" />
+                                <Border Grid.Row="1" Height="1" Background="{DynamicResource Line}" Margin="0,6,0,10" />
 
                                 <!-- 2. Lighting Effect Selection (Static, Breathing, Blink, Heartbeat, Cycle, Wave) -->
-                                <UniformGrid x:Name="EffectPanel" Grid.Row="1" Columns="3" Margin="0,0,0,6">
+                                <UniformGrid x:Name="EffectPanel" Grid.Row="2" Columns="3" Margin="0,0,0,6">
                                     <RadioButton x:Name="FxStatic" Style="{DynamicResource EffectButton}" Content="Static"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxStatic}" />
@@ -893,7 +894,7 @@
                                 </UniformGrid>
 
                                 <!-- 3. Polar Color Wheel & Brightness Slider -->
-                                <Grid Grid.Row="2">
+                                <Grid Grid.Row="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />

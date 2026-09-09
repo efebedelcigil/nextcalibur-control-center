@@ -28,6 +28,8 @@ change in the code-behind, stop and report which change and why.
 | `Banner` | `Border` | starts `Collapsed` |
 | `BannerTitle`, `BannerBody` | `TextBlock` | inside `Banner` |
 | `CpuTemp`, `GpuTemp`, `CpuFan`, `GpuFan` | `TextBlock` | code sets `.Text` and `.Foreground` |
+| `CpuClock`, `GpuClock` | `TextBlock` | live clock speed, e.g. `2.14 GHz`; empty when unreadable |
+| `CpuName`, `GpuName` | `TextBlock` | model read from the system at startup |
 
 ### Power page
 
@@ -116,10 +118,6 @@ field at construction will not follow a theme change.
 | `RamDetail`, `SsdDetail` | `TextBlock` | the capacity line |
 
 ### Device names
-
-| `x:Name` | Type | Notes |
-|---|---|---|
-| `CpuName`, `GpuName` | `TextBlock` | code writes the model read from the system |
 
 No hardware model may appear in the markup. The repository is public: a
 hardcoded name would be wrong on every other machine and would publish a detail
