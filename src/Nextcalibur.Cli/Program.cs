@@ -19,7 +19,7 @@ internal static class Program
                 "watch" => Watch(args),
                 "overlay" => Overlay(args),
                 "info" => Info(),
-                "led" => Led(),
+                "led" => Led(args),
                 _ => Help(),
             };
         }
@@ -43,7 +43,12 @@ internal static class Program
               nextcalibur info              Show hardware support and environment
               nextcalibur sensors           Read temperatures and fan speeds once
               nextcalibur watch [seconds]   Stream sensor readings (default 30)
-              nextcalibur led               Read the current LED state
+              nextcalibur led                    Show the stored lighting state
+              nextcalibur led off                Turn the lighting off
+              nextcalibur led colour <zone> <hex>  e.g. led colour left FF0000
+              nextcalibur led effect <name>      static blink breathing heartbeat
+                                                 cycle wave off
+              nextcalibur led brightness <0|1|2> off, half, full
               nextcalibur overlay           Diagnose the Windows power-mode overlay
               nextcalibur overlay --fix     Repair the stuck-overlay fault
 
@@ -118,24 +123,96 @@ internal static class Program
         return 0;
     }
 
-    private static int Led()
+    private static int Led(string[] args)
     {
         using var mailbox = new EcMailbox();
-        var state = new LedController(mailbox).TryReadState();
+        var led = new LedController(mailbox);
+        var action = args.Length > 1 ? args[1].ToLowerInvariant() : "show";
 
-        if (state is null)
+        switch (action)
         {
-            Warn("The LED subsystem did not answer.");
-            return 5;
-        }
+            case "show":
+                Console.WriteLine($"Effect     : {led.State.Effect}");
+                Console.WriteLine($"Brightness : {led.State.Brightness}");
+                foreach (var zone in new[] { LedZone.Left, LedZone.Middle, LedZone.Right })
+                {
+                    var (r, g, b) = led.State.GetColour(zone);
+                    Console.WriteLine($"{zone,-11}: #{r:X2}{g:X2}{b:X2}");
+                }
+                Console.WriteLine();
+                Console.WriteLine("Firmware cannot report its own lighting, so this is what");
+                Console.WriteLine("Nextcalibur last wrote - not a reading from the hardware.");
+                return 0;
 
-        Console.WriteLine($"LED value : {state}");
-        if (state.Value.Raw == 0)
-        {
-            Warn("Firmware reported an all-zero LED state.");
-            Warn("On this model that usually means addressable lighting is not exposed.");
+            case "off":
+                led.TurnOff();
+                Console.WriteLine("Lighting off.");
+                return 0;
+
+            case "colour" or "color":
+                if (args.Length < 4 ||
+                    !Enum.TryParse<LedZone>(args[2], ignoreCase: true, out var target) ||
+                    !TryParseRgb(args[3], out var rgb))
+                {
+                    Error("usage: nextcalibur led colour <left|middle|right|allkeyboard> <RRGGBB>");
+                    return 1;
+                }
+                led.SetColour(target, rgb.R, rgb.G, rgb.B);
+                Console.WriteLine($"{target} set to #{rgb.R:X2}{rgb.G:X2}{rgb.B:X2}.");
+                return 0;
+
+            case "effect":
+                if (args.Length < 3 || !TryParseEffect(args[2], out var effect))
+                {
+                    Error("usage: nextcalibur led effect <static|blink|breathing|heartbeat|cycle|wave|off>");
+                    return 1;
+                }
+                led.SetEffect(effect);
+                Console.WriteLine($"Effect set to {effect}. This applies to the whole keyboard.");
+                return 0;
+
+            case "brightness":
+                if (args.Length < 3 || !int.TryParse(args[2], out var level) || level is < 0 or > 2)
+                {
+                    Error("usage: nextcalibur led brightness <0|1|2>");
+                    return 1;
+                }
+                led.SetBrightness((LedBrightness)level);
+                Console.WriteLine($"Brightness set to {(LedBrightness)level}.");
+                return 0;
+
+            default:
+                Error($"unknown led action '{action}'");
+                return 1;
         }
-        return 0;
+    }
+
+    private static bool TryParseEffect(string text, out LedEffect effect)
+    {
+        effect = text.ToLowerInvariant() switch
+        {
+            "static" => LedEffect.Static,
+            "blink" => LedEffect.Blink,
+            "breathing" => LedEffect.Breathing,
+            "heartbeat" => LedEffect.Heartbeat,
+            "cycle" => LedEffect.ColourCycle,
+            "wave" => LedEffect.Wave,
+            "off" => LedEffect.Off,
+            _ => (LedEffect)255,
+        };
+        return effect != (LedEffect)255;
+    }
+
+    private static bool TryParseRgb(string text, out (byte R, byte G, byte B) rgb)
+    {
+        rgb = default;
+        var hex = text.TrimStart('#');
+        if (hex.Length != 6 ||
+            !uint.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var packed))
+            return false;
+
+        rgb = ((byte)((packed >> 16) & 0xFF), (byte)((packed >> 8) & 0xFF), (byte)(packed & 0xFF));
+        return true;
     }
 
     private static int Overlay(string[] args)
