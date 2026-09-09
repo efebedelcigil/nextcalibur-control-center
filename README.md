@@ -50,8 +50,9 @@ tells you what it changed.
 
 ## Status
 
-Early development. See [docs/PROTOCOL.md](docs/PROTOCOL.md) for the hardware
-interface documentation this project is built on.
+Early development. [docs/ROADMAP.md](docs/ROADMAP.md) has the current state, what
+is next, and the decisions behind it. [docs/PROTOCOL.md](docs/PROTOCOL.md)
+documents the hardware interface this is built on.
 
 | Component | Status |
 |---|---|
