@@ -107,7 +107,12 @@ application knows what the machine is set to.
 
 **Controls must not cache brushes.** Drawing controls that read a colour in C#
 need a dependency property bound with `DynamicResource`. A `Brush` stored in a
-field at construction will not follow a theme change.
+field at construction will not follow a theme change — the fan gauge hub was
+exactly this bug.
+
+The same trap exists in code: assigning a `Brush` to `Foreground` sets a local
+value that outranks the style and survives a palette swap. Use
+`SetResourceReference` instead. This one caught the code-behind too.
 
 ### Memory and disk
 
@@ -117,8 +122,7 @@ field at construction will not follow a theme change.
 | `RamPercent`, `SsdPercent` | `TextBlock` | the large reading |
 | `RamDetail`, `SsdDetail` | `TextBlock` | the capacity line |
 
-### Device names
-
-No hardware model may appear in the markup. The repository is public: a
-hardcoded name would be wrong on every other machine and would publish a detail
-of the author's own. Leave these empty; the code fills them at startup.
+No hardware model may appear in the markup, and no placeholder number. The
+repository is public: a hardcoded name would be wrong on every other machine and
+would publish a detail of the author's own. Leave every reading empty; the code
+fills them.

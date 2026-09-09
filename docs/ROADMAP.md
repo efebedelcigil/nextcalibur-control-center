@@ -35,27 +35,36 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Tray, autostart, overheat warning | done |
 | Coexistence with the vendor software | done |
 | Installer (Velopack, ~6 MB) | done |
+| RAM and disk gauges | done, fed from the system |
+| Device names and clock speeds | done, read at runtime |
 | Graphics mode switching | **detection only** — see below |
-| RAM and disk gauges | markup ready and named; **still showing placeholders** |
-| Device names shown in the interface | not yet read from the system |
+| Keyboard illustration cost | **open** — twenty times the baseline, see below |
 | Fan control | **deliberately out of scope** — see below |
 
 ## Next
 
-1. **Feed the RAM and disk gauges** real values. The markup now has
-   `RamGauge` / `RamPercent` / `RamDetail` and the SSD equivalents, so this is
-   unblocked. Until it is done those four numbers are invented, which is the one
-   thing this project otherwise refuses to do.
-2. **Read device names from the system.** The processor and graphics card should
-   name themselves via WMI at runtime. No model string may ever be committed —
-   the repository is public and a hardcoded name would be both wrong for other
-   people's machines and a small privacy leak from the author's.
-3. **Plain language sweep** through the strings set from code. Several still name
-   mechanisms rather than what the user sees.
-4. **Graphics mode** — determine what the vendor software actually does when each
+1. **Bring the keyboard illustration's cost down.** It is the current work order
+   in [BRIEF.md](BRIEF.md), with the measurements.
+2. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-5. Release 0.4.0.
+3. Release 0.4.0.
+
+## What things cost
+
+Measured on the development machine, idle, window open. Kept because this
+project's whole argument is that it is cheap to run, and that claim needs
+evidence rather than confidence.
+
+| Build | CPU | Working set |
+|---|---|---|
+| no keyboard illustration | 0.010% | 145 MB |
+| first SVG trace | 0.319% | 157 MB |
+| after "simplification", with a costly clock reader | 0.449% | 177 MB |
+| current: PDH clock reader, same illustration | **0.211%** | 165 MB |
+
+For comparison, the fault this application exists to fix pinned the processor at
+4.1 GHz while idle.
 
 ## Decisions worth keeping
 
@@ -83,8 +92,9 @@ detail of the author's own.
 
 ### Nothing on screen is invented
 
-If a number cannot be read, the interface does not show one. Placeholder values
-are tracked as defects, not as decoration — see the RAM and disk gauges above.
+If a number cannot be read, the interface does not show one — the clock readings
+go blank rather than showing a stale or invented figure. Placeholder values are
+tracked as defects, not as decoration.
 
 ### Brightness is applied by scaling colour, not by the hardware field
 
@@ -130,11 +140,22 @@ The registry keys the overlay repair writes are writable by standard users, and
 the firmware interface needs no driver. The vendor software installs a kernel
 driver and so requires elevation; this does not, and should not start.
 
-### Measured, not asserted
+### Measure, don't assert
 
-Claims about the machine belong in [PROTOCOL.md](PROTOCOL.md) with the
-observation that produced them. Where something is inferred rather than observed,
-it says so. A confident guess in this domain costs more than an admitted gap.
+A round reported that a change had "reduced CPU load to zero". Measurement
+showed it had risen. Claims about cost must come with the number that produced
+them — in either direction. A change that turns out not to help is a useful
+finding; a claim that it helped when it did not costs the next round.
+
+The obvious way to read the processor's clock is a WMI class. That query was
+measured at **275 ms**, which on a two-second timer is a seventh of a core held
+permanently for one number. The same counter through PDH answers in well under a
+millisecond. Neither cost was visible without measuring.
+
+The same applies to claims about the hardware. Those belong in
+[PROTOCOL.md](PROTOCOL.md) with the observation that produced them, and where
+something is inferred rather than observed it says so. A confident guess in this
+domain costs more than an admitted gap.
 
 ## Boundaries between the two agents
 
@@ -147,6 +168,12 @@ layout markup, drawing controls, brand assets. It does not touch
 When markup needs a handler that does not exist yet, the correct move is to wire
 it, let the build fail, and report — not to edit the code-behind. That has
 happened three times and worked every time.
+
+**Report and stop; do not revert either.** A protected file was once edited to
+fix a real bug, then reverted when that was pointed out. The revert also
+discarded an encoding repair made to the same file by the other agent, and the
+broken version was committed before anyone noticed. Leave protected files
+exactly as found.
 
 **Build in Release before reporting.** `dotnet build Nextcalibur.sln -c Release`.
 Debug can succeed where Release does not, and the shipped configuration is the
