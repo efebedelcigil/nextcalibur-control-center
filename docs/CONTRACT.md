@@ -52,7 +52,7 @@ change in the code-behind, stop and report which change and why.
 | `x:Name` | Type | Notes |
 |---|---|---|
 | `TabZoneA`, `TabZoneB`, `TabZoneC` | `RadioButton` | `GroupName="Zone"`, `Tag` = `Left` / `Middle` / `Right` |
-| `PreviewA`, `PreviewB`, `PreviewC` | `Border` | zone regions of the keyboard illustration; the code sets `.Background` and `.BorderBrush` |
+| `PreviewA`, `PreviewB`, `PreviewC` | `Border` | zone regions of the keyboard illustration; the code sets `.Background` to that zone's **live colour** on every lighting change, and `.BorderBrush` to the accent when selected. Paint each zone from its own `Background` — an unselected zone is that colour dimmed, never grey. |
 | `ProfileRow` | `Panel` | dimmed as a unit |
 | `ProfOffice`, `ProfGaming`, `ProfPerformance`, `ProfUser` | `RadioButton` | `GroupName="Profile"`, `Tag` = `Office` / `Gaming` / `Performance` / `UserDefine` |
 | `LedPower`, `SelectAll` | `ToggleButton` | pill switches |

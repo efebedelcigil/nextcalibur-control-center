@@ -437,6 +437,14 @@ public partial class MainWindow : Window
 
             merged[i] = new ResourceDictionary { Source = new Uri(wanted, UriKind.Relative) };
             _theme.MarkApplied();
+
+            // The zone previews carry brushes assigned in code rather than
+            // resource references — the selection ring is one colour or
+            // transparent, which a DynamicResource cannot express. Local values
+            // do not follow a palette swap, so they are re-applied here. Without
+            // this the selected zone keeps the previous theme's accent until the
+            // next time the user touches the lighting controls.
+            RefreshPreview();
             return;
         }
     }
@@ -779,7 +787,13 @@ public partial class MainWindow : Window
                  })
         {
             var (r, g, b) = _led.State.GetColour(zone);
-            border.Background = new SolidColorBrush(Color.FromRgb(r, g, b));
+
+            // Frozen: this runs on every lighting interaction, and an unfrozen
+            // brush keeps a change handler alive on the visual it is attached to.
+            var colour = new SolidColorBrush(Color.FromRgb(r, g, b));
+            colour.Freeze();
+
+            border.Background = colour;
             border.BorderBrush = all || zone == selected ? accent : Brushes.Transparent;
         }
 

@@ -3,8 +3,73 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-**There is no structural interface work outstanding.** The keyboard illustration
-is finished and the logo is in place. The next instruction comes from the user.
+Three faults, found by looking at the running application. All three are in
+`MainWindow.xaml`. Ordered by how wrong they look.
+
+---
+
+## 1. Unselected zones must show their own colour, dimmed — not go dark
+
+Right now the two zones you are not editing render as flat grey, which reads as
+"those zones are off". They are not off. The page should show the keyboard as it
+actually is: **every zone painted its own current colour**, with the unselected
+ones simply muted.
+
+The colour is already there and you do not have to ask for it. The code-behind
+sets `PreviewA`, `PreviewB` and `PreviewC` — one `Border` per zone — and puts
+each zone's live colour in `.Background` on every lighting change. Drive each
+zone path's fill from its own `PreviewX.Background`.
+
+Selection is then carried by **emphasis, not by colour**: the selected zone at
+full strength, the others at perhaps 35–45% opacity. Judge it by eye — an
+unselected red zone must still read as red, not as grey and not as pink.
+
+Keep the existing lift. Selection was always meant to be "those keys come
+forward", never "those keys light up and the rest switch off".
+
+## 2. The selected zone is a grey slab, not lifted keys
+
+The selection currently paints a filled rectangle behind the zone. It covers the
+gaps between keys and a band of empty deck below the bottom row, so it reads as
+a highlighter stroke across a photograph.
+
+This is the thing the user rejected two rounds ago, in their words: not selecting
+with a frame, but bringing that section's keys forward with a slight zoom.
+Whatever backing rectangle produces that slab has to go; the emphasis belongs on
+the key shapes themselves.
+
+## 3. Keys are cut in half at the zone boundaries
+
+The boundary between the left and middle zones runs straight down through the
+middle of key rows, slicing keycaps. A previous round reported this as fixed and
+described the boundaries as following the natural spacing between keys; on
+screen they do not. Every key belongs to exactly one zone, whole.
+
+While you are in there: the light bar above the keyboard has a stray notch or
+arrowhead in the middle of it, and the bottom-left of the selected block runs
+past the last row into empty deck.
+
+---
+
+## Also: the title-bar logo looks poor, and it is not the icon file's fault
+
+`Assets/app.ico` is well-formed — eight frames, PNG-encoded, 32bpp, at 16, 20,
+24, 32, 48, 64, 128 and 256 px. Nothing is missing.
+
+Two things are going wrong instead:
+
+- The title bar draws it at **30×30**, which is not one of those sizes, so WPF
+  resamples a frame to a fractional size. Ask for **32** and it maps one frame to
+  one pixel grid with no resampling. That alone will sharpen it.
+- Even at 32 the mark is a reduction of a 512 px original: a thin sword over a
+  bevelled shield outline with a metallic gradient. That detail cannot survive at
+  32 px whatever the resampler does. A mark that has to work small needs a
+  simplified form — heavier strokes, no gradient, less inside the shield.
+
+The most durable fix is to draw the title-bar mark as vector geometry rather than
+an image: crisp at any size, no resampling, and no bitmap at all. The `.ico` stays
+as it is for the taskbar, Alt-Tab and the installer, where Windows picks a real
+frame and it looks correct.
 
 ---
 
