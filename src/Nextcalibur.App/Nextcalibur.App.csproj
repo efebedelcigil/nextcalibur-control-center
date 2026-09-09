@@ -49,6 +49,15 @@
     <Using Include="System.Windows.MessageBoxButton" Alias="MessageBoxButton" />
     <Using Include="System.Windows.MessageBoxImage" Alias="MessageBoxImage" />
     <Using Include="System.Windows.Media.Color" Alias="Color" />
+    <Using Include="System.Windows.Controls.Control" Alias="Control" />
+    <Using Include="System.Windows.Controls.Image" Alias="Image" />
+    <Using Include="System.Windows.Size" Alias="Size" />
+    <Using Include="System.Windows.Point" Alias="Point" />
+    <Using Include="System.Windows.Input.MouseEventArgs" Alias="MouseEventArgs" />
+    <Using Include="System.Windows.Input.MouseButtonEventArgs" Alias="MouseButtonEventArgs" />
+    <Using Include="System.Windows.Controls.RadioButton" Alias="RadioButton" />
+    <Using Include="System.Windows.Media.Brushes" Alias="Brushes" />
+    <Using Include="System.Windows.Shapes" />
   </ItemGroup>
 
   <ItemGroup>

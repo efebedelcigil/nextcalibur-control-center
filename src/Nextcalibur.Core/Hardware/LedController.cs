@@ -112,11 +112,37 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     /// <summary>Turns the lighting off without forgetting the colours.</summary>
     public void TurnOff() => Send(LedZone.AllKeyboard, 0, 0, 0, LedEffect.Off);
 
+    /// <summary>Switches the lighting on or off, remembering the choice.</summary>
+    public void SetEnabled(bool enabled)
+    {
+        State.Enabled = enabled;
+        if (enabled) ReapplyAllZones(); else TurnOff();
+        State.Save();
+    }
+
+    /// <summary>
+    /// Switches to a saved profile and applies it. Unknown names create an empty
+    /// profile rather than failing, so a hand-edited settings file cannot brick
+    /// the lighting page.
+    /// </summary>
+    public void SetProfile(string name)
+    {
+        State.ActiveProfile = name;
+        ReapplyAllZones();
+        State.Save();
+    }
+
     /// <summary>Re-sends the stored state, for example after resume.</summary>
     public void Apply() => ReapplyAllZones();
 
     private void ReapplyAllZones()
     {
+        if (!State.Enabled)
+        {
+            TurnOff();
+            return;
+        }
+
         if (State.BrightnessPercent == 0)
         {
             // Scaling to zero would send black, which on some effects still
