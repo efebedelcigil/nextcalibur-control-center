@@ -388,18 +388,24 @@ public partial class MainWindow : Window
 
         MessageBox.Show(this,
             """
-            Nextcalibur will not change this one.
+            Before you change this anywhere: if BitLocker is switched on, find your
+            recovery key first.
 
-            It can be changed — Casper's Control Center does it, and your BIOS setup
-            may offer it too. But it is done through the kernel driver that software
-            installs, and it needs administrator rights. Nextcalibur installs no
-            driver and never asks for administrator, so this is one thing it reports
-            rather than touches.
+            Changing which graphics chip drives your screen changes what the TPM
+            measures when the machine starts, and BitLocker is bound to that
+            measurement. The next boot can ask for the 48-digit recovery key, and
+            without it the drive does not open. Your key is in your Microsoft
+            account at aka.ms/myrecoverykey, or wherever you saved it. Nextcalibur
+            cannot check whether BitLocker is on for you — that needs administrator,
+            which it never asks for.
 
-            If you do change it, two things to expect. It takes a restart. And it
-            will probably make you set up your Windows PIN again: moving the display
-            path changes what the TPM measures at startup, which can also ask for a
-            BitLocker recovery key. Have that key to hand before you start.
+            Expect the same change to reset your Windows PIN, for the same reason.
+            That one is only an inconvenience.
+
+            Nextcalibur will not make this change. Casper's Control Center does it,
+            through the kernel driver it installs, and your BIOS setup may offer it
+            too. Nextcalibur installs no driver and never asks for administrator, so
+            this is one thing it reports rather than touches.
 
             MS Hybrid lets the card idle when nothing needs it. Discrete keeps it
             driving the screen, and drawing power, at all times.
