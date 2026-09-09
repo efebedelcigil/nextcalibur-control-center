@@ -5,19 +5,22 @@
 #
 # Requires: .NET 8 SDK, and the Velopack CLI (dotnet tool install -g vpk)
 
-param([string]$Version = "0.1.0")
+param([string]$Version = "0.3.0")
 
 $ErrorActionPreference = 'Stop'
 $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
 Set-Location $PSScriptRoot
 
 Write-Host "==> Building" -ForegroundColor Cyan
-dotnet build Nextcalibur.sln -c Release --nologo
+dotnet build Nextcalibur.sln -c Release --nologo /p:Version=$Version
 
-Write-Host "==> Publishing self-contained (win-x64)" -ForegroundColor Cyan
+Write-Host "==> Publishing (framework-dependent, win-x64)" -ForegroundColor Cyan
 Remove-Item publish -Recurse -Force -ErrorAction SilentlyContinue
+# -p:Version keeps the assembly version and the package version in step; they
+# drifted apart once already.
 dotnet publish src\Nextcalibur.App\Nextcalibur.App.csproj `
-    -c Release -r win-x64 --self-contained true -o publish --nologo
+    -c Release -o publish --nologo /p:Version=$Version
+Remove-Item publish\*.pdb, publish\*.xml -ErrorAction SilentlyContinue
 
 Write-Host "==> Packaging Setup.exe" -ForegroundColor Cyan
 vpk pack `
@@ -27,6 +30,8 @@ vpk pack `
     --mainExe Nextcalibur.exe `
     --packTitle "Nextcalibur Control Center" `
     --packAuthors "Efe Bedelcigil" `
+    --framework net8.0-x64-desktop `
+    --icon src\Nextcalibur.App\Assets\app.ico `
     -o releases
 
 Write-Host "==> Done" -ForegroundColor Green
