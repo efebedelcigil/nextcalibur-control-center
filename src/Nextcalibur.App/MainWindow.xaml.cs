@@ -17,6 +17,8 @@ public partial class MainWindow : Window
     private readonly SystemModeService _modes = new();
     private readonly GpuModeService _gpu = new();
     private readonly ThemeService _theme = new();
+    private readonly CpuClockReader _cpuClock = new();
+    private readonly GpuClockReader _gpuClock = new();
     private readonly AppSettings _settings = AppSettings.Load();
     private readonly DispatcherTimer _timer = new();
 
@@ -107,6 +109,7 @@ public partial class MainWindow : Window
 
         _timer.Tick += (_, _) => Sample();
         Sample();
+        RefreshClocks();
         if (IsVisible) _timer.Start();
     }
 
@@ -131,6 +134,8 @@ public partial class MainWindow : Window
             _timer.Stop();
             _tray?.Dispose();
             _mailbox?.Dispose();
+            _cpuClock.Dispose();
+            _gpuClock.Dispose();
             _settings.Save();
             return;
         }
@@ -426,7 +431,19 @@ public partial class MainWindow : Window
         ColourByTemperature(CpuTemp, s.CpuTemperatureC);
         ColourByTemperature(GpuTemp, s.GpuTemperatureC);
 
+        RefreshClocks();
         SubtitleText.Text = $"Updated {s.Timestamp:HH:mm:ss}";
+    }
+
+    /// <summary>
+    /// Shows the frequencies the parts are actually running at. Either can be
+    /// unreadable — no NVIDIA card, an unavailable counter — and then the
+    /// reading is left blank rather than filled with a guess.
+    /// </summary>
+    private void RefreshClocks()
+    {
+        CpuClock.Text = _cpuClock.ReadGhz() is { } cpu ? $"{cpu:N2} GHz" : string.Empty;
+        GpuClock.Text = _gpuClock.ReadGhz() is { } gpu ? $"{gpu:N2} GHz" : string.Empty;
     }
 
     /// <summary>
