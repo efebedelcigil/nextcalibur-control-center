@@ -20,6 +20,7 @@ internal static class Program
                 "overlay" => Overlay(args),
                 "info" => Info(),
                 "led" => Led(args),
+                "clocks" => Clocks(),
                 _ => Help(),
             };
         }
@@ -43,6 +44,7 @@ internal static class Program
               nextcalibur info              Show hardware support and environment
               nextcalibur sensors           Read temperatures and fan speeds once
               nextcalibur watch [seconds]   Stream sensor readings (default 30)
+              nextcalibur clocks                 Show current CPU and GPU clock speeds
               nextcalibur led                    Show the stored lighting state
               nextcalibur led off                Turn the lighting off
               nextcalibur led colour <zone> <hex>  e.g. led colour left FF0000
@@ -120,6 +122,23 @@ internal static class Program
             Thread.Sleep(1000);
         }
 
+        return 0;
+    }
+
+    private static int Clocks()
+    {
+        using var cpu = new CpuClockReader();
+        using var gpu = new GpuClockReader();
+
+        for (var i = 0; i < 5; i++)
+        {
+            var c = cpu.ReadGhz();
+            var g = gpu.ReadGhz();
+            Console.WriteLine(
+                $"CPU {(c is null ? "  --  " : $"{c:N2} GHz")}    " +
+                $"GPU {(g is null ? "  --  " : $"{g:N2} GHz")}");
+            Thread.Sleep(900);
+        }
         return 0;
     }
 

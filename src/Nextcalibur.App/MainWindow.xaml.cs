@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         }
 
         // None of this needs the firmware interface, so it runs before the
-        // check that can bail out â€” an unsupported machine still gets its
+        // check that can bail out — an unsupported machine still gets its
         // device names, power page and storage readings.
         RefreshOverlay();
         LoadPowerModes();
@@ -236,7 +236,7 @@ public partial class MainWindow : Window
     /// The vendor software does this by disabling the graphics card as a device.
     /// Which of its three buttons produces which device state has not been
     /// observed on real hardware, and guessing could leave the machine with no
-    /// working display path â€” so nothing is changed until that is known.
+    /// working display path — so nothing is changed until that is known.
     /// </summary>
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
@@ -345,7 +345,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Swaps the palette dictionary. Everything else in the application
     /// references brushes with DynamicResource, so replacing the entry is all it
-    /// takes â€” no reload, no restart.
+    /// takes — no reload, no restart.
     /// </summary>
     private void ApplyTheme()
     {
@@ -370,7 +370,7 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// Asks the machine what its processor and graphics card are called. Read
-    /// once at startup â€” these do not change while the application runs, and no
+    /// once at startup — these do not change while the application runs, and no
     /// model name is ever written into the source.
     /// </summary>
     private void LoadDeviceNames()
@@ -418,23 +418,35 @@ public partial class MainWindow : Window
 
         _consecutiveFailures = 0;
 
-        CpuTemp.Text = $"{s.CpuTemperatureC} Â°C";
-        GpuTemp.Text = $"{s.GpuTemperatureC} Â°C";
+        CpuTemp.Text = $"{s.CpuTemperatureC} °C";
+        GpuTemp.Text = $"{s.GpuTemperatureC} °C";
         CpuFan.Text = $"{s.CpuFanRpm} rpm";
         GpuFan.Text = $"{s.GpuFanRpm} rpm";
 
-        CpuTemp.Foreground = TemperatureBrush(s.CpuTemperatureC);
-        GpuTemp.Foreground = TemperatureBrush(s.GpuTemperatureC);
+        ColourByTemperature(CpuTemp, s.CpuTemperatureC);
+        ColourByTemperature(GpuTemp, s.GpuTemperatureC);
 
         SubtitleText.Text = $"Updated {s.Timestamp:HH:mm:ss}";
     }
 
-    private SolidColorBrush TemperatureBrush(int celsius) => celsius switch
+    /// <summary>
+    /// Colours a reading by how hot it is.
+    ///
+    /// This attaches a resource reference rather than assigning a brush.
+    /// Assigning one sets a local value, which outranks the style and does not
+    /// follow a palette swap: the reading would keep the previous theme's
+    /// colour until the next timer tick, and often past it.
+    /// </summary>
+    private static void ColourByTemperature(TextBlock reading, int celsius)
     {
-        >= 90 => (SolidColorBrush)FindResource("Bad"),
-        >= 80 => (SolidColorBrush)FindResource("Warn"),
-        _ => (SolidColorBrush)FindResource("Ink"),
-    };
+        var key = celsius switch
+        {
+            >= 90 => "Bad",
+            >= 80 => "Warn",
+            _ => "Ink",
+        };
+        reading.SetResourceReference(ForegroundProperty, key);
+    }
 
     private void StartSlowTimer()
     {
@@ -457,7 +469,7 @@ public partial class MainWindow : Window
                 {
                     _overheatNotified = true;
                     _tray?.ShowMessage(
-                        $"CPU at {s.CpuTemperatureC} Â°C",
+                        $"CPU at {s.CpuTemperatureC} °C",
                         "Sustained temperatures this high usually mean the heatsink needs cleaning.");
                 }
             }
