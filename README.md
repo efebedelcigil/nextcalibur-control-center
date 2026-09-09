@@ -42,25 +42,48 @@ Nextcalibur detects and repairs this at install time, and keeps it from coming b
 ## Download
 
 **[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
-— `Nextcalibur-win-Setup.exe`, self-contained, no .NET runtime required.
+— `Nextcalibur-win-Setup.exe`, about 6 MB.
+
+It needs the **.NET 8 desktop runtime**, and installs it for you if the machine
+does not already have it — which means the first install wants an internet
+connection. The alternative was a seventy-megabyte download for everyone.
 
 The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
 anyway*. On first run the app repairs the power-overlay fault described above and
 tells you what it changed.
 
-## Status
+It never asks for administrator. The registry keys the repair writes are
+writable by a standard user, and the firmware interface needs no driver — unlike
+the vendor software, which installs a kernel driver and requires elevation.
 
-Early development. [docs/ROADMAP.md](docs/ROADMAP.md) has the current state, what
-is next, and the decisions behind it. [docs/PROTOCOL.md](docs/PROTOCOL.md)
-documents the hardware interface this is built on.
+## What it does
 
-| Component | Status |
+| | |
 |---|---|
-| Power plan + overlay management | protocol known |
-| Keyboard / zone LED control | protocol known |
-| GPU sensors (NVML) | protocol known |
-| GPU mode switching | partially known |
-| Fan reading / control | under investigation |
+| Power-mode overlay diagnosis and repair | working |
+| Office / Gaming / Performance system modes | working |
+| Windows power modes as choice cards | working |
+| Temperatures, fan speeds, clock speeds | working |
+| Memory and disk gauges, device names | working, read at runtime |
+| Keyboard lighting — three zones, colour, six effects, brightness | working |
+| Notification-area icon, start with Windows, overheat warning | working |
+| Dark / light / follow-system theme | working |
+| Coexistence with the vendor software | working |
+| Graphics mode | **reports only — it does not switch** |
+| Fan control | **deliberately not implemented** |
+
+Idle cost on the development machine: **0.029%** CPU with the window open,
+**0.002%** in the notification area.
+
+Graphics-mode switching and fan control are both left out on purpose, and
+[docs/ROADMAP.md](docs/ROADMAP.md) explains why — briefly, a wrong guess at
+either can leave a machine with no display or no cooling, and neither has been
+observed well enough to guess. [docs/PROTOCOL.md](docs/PROTOCOL.md) documents
+the hardware interface, with the evidence behind each claim.
+
+There is also a command line, `nextcalibur`, built alongside: `sensors`,
+`watch`, `clocks`, `info`, `overlay`, and `led` for colour, effect and
+brightness.
 
 ## Hardware
 
@@ -76,10 +99,17 @@ see [docs/PROTOCOL.md](docs/PROTOCOL.md) for why.
 
 ## Building
 
-Requires .NET 8 SDK.
+Requires the .NET 8 SDK.
 
 ```
-dotnet build src/Nextcalibur.sln -c Release
+dotnet build Nextcalibur.sln -c Release
+```
+
+To produce the installer as well, you also need the Velopack CLI
+(`dotnet tool install -g vpk`), then:
+
+```
+.\build.ps1
 ```
 
 ## Safety

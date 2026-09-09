@@ -48,10 +48,50 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 
 ## Next
 
-1. **Graphics mode** — determine what the vendor software actually does when each
+Taken from an audit of the repository rather than from memory, roughly in the
+order that would matter to somebody who installed this.
+
+1. **Updates never arrive.** Velopack is wired for the install, update and
+   uninstall *hooks*, but nothing ever calls `UpdateManager` to look for a new
+   version. Everyone who installed 0.3.0 is still on it and has no way to learn
+   otherwise. For an application that lives in the notification area and is
+   meant to be forgotten, this is the most consequential gap on the list.
+2. **Three settings have no interface.** `CpuWarningTemperatureC`,
+   `MinimiseToTray` and `PollIntervalMs` exist, are honoured, and are reachable
+   only by hand-editing the settings file. The warning threshold is the one that
+   matters: it is fixed at 90 °C, and the development machine sits at 92 °C
+   under load, so the person most likely to want it cannot change it.
+3. **The version is still 0.3.0** in the project file and in `build.ps1`, and
+   nothing since has been packaged or released. Everything below the leak fix —
+   the threading work, the tray reclamation, the whole lighting page — exists
+   only for people who build it themselves.
+4. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-2. Release 0.4.0.
+5. **There are no tests.** Not one project. The hardware paths cannot be tested
+   without the hardware, but the parts that can — `SmiCommand` round-tripping to
+   bytes, `LedState` persistence, the overlay diagnosis reading a known registry
+   shape, `SystemInfo.Tidy` stripping the noise out of a processor name — are
+   pure functions with no excuse.
+6. Release 0.4.0.
+
+## What the README claimed that was not true
+
+Found in the same audit, and fixed. Worth recording because a public README is
+the only thing most people will read:
+
+- It called the installer **self-contained, no .NET runtime required**. It is
+  framework-dependent; the installer acquires the runtime, which is a different
+  promise and needs an internet connection the first time.
+- Its build command pointed at `src/Nextcalibur.sln`. The solution is at the
+  repository root, so the one instruction a contributor would follow first
+  failed.
+- Its status table listed lighting, power and sensors as *protocol known* and
+  fan reading as *under investigation*, months after all of them shipped. It
+  described a project that does nothing yet.
+
+The status table there now says what works, and says plainly that graphics mode
+reports without switching and that fan control is deliberately absent.
 
 ## What things cost
 
