@@ -43,7 +43,7 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | One copy at a time | done — a second launch wakes the first |
 | Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
 | Handle leak | **fixed** — WMI from the interface thread; see below |
-| Graphics mode switching | **detection only** — see below |
+| Graphics mode switching | **reports only, by decision** — see below |
 | Fan control | **deliberately out of scope** — see below |
 
 ## Next
@@ -90,10 +90,11 @@ order that would matter to somebody who installed this.
    - **Some transitions need a restart**, and the page should say so before the
      user commits rather than after.
    - **What the current mode costs belongs on screen.** The code already reads
-     the card's draw and utilisation through NVML; in Discrete on the
-     development machine that is 16.5 W at rest, rising past 37 W and 79 °C
-     while the desktop is merely being drawn. A number does more than a warning
-     sentence.
+     the card's draw and utilisation through NVML — 16.5 W and 61 °C was the
+     quietest Discrete reading taken. A number does more than a warning
+     sentence. Do not quote the higher figures seen that day as the cost of the
+     mode: Wallpaper Engine was running and rendering continuously, and that
+     was probably most of them.
    - The three cards already exist and are named in [CONTRACT.md](CONTRACT.md).
      Nothing about them needs replacing — this is about states they cannot
      currently express: unavailable, needs-restart, and in-progress.
@@ -104,9 +105,12 @@ order that would matter to somebody who installed this.
    and the title bar. Also the design agent's, and it wants checking on a
    running installed copy rather than in the markup.
 
-4. **Graphics mode** — determine what the vendor software actually does when each
-   of its three buttons is pressed, by watching device state while a person
-   clicks them. Until then the page reports and does not switch.
+4. **Finish the graphics-mode comparison.** What the buttons do is now known and
+   written up in [PROTOCOL.md](PROTOCOL.md) — the software really does switch the
+   display path, through its kernel driver. What is *not* yet measured is what
+   the switch is worth, because the Discrete readings were taken with Wallpaper
+   Engine and the vendor software running and the Hybrid ones were not. A fair
+   comparison needs the same quiet conditions on both sides.
 
 ### 0.4.0 is out
 
