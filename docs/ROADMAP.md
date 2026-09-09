@@ -38,28 +38,21 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | RAM and disk gauges | done, fed from the system |
 | Device names and clock speeds | done, read at runtime |
 | Keyboard illustration | rebuilt from a clean vector |
-| Backing off while in the tray | written, **not yet verified** |
+| Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
 | Handle leak | **fixed** — WMI from the interface thread; see below |
 | Graphics mode switching | **detection only** — see below |
 | Fan control | **deliberately out of scope** — see below |
 
 ## Next
 
-1. **Verify the tray backoff.** The code is written: hidden, the slow timer moves
-   to thirty seconds and skips everything that only exists to keep the window
-   truthful. It has not been measured, because minimising the window
-   programmatically does not work on a frameless window and the earlier attempt
-   silently measured a window that was never minimised. It needs a person to
-   minimise it.
-2. **Confirm the lighting page still behaves** after the threading change. Sensor
-   readings now run off the interface thread, so a lighting write and a sample
-   can genuinely overlap where before they could not; the mailbox is locked for
-   whole sequences to prevent it, and that wants one pass by hand through the
-   colour wheel, the effects and the brightness slider.
-3. **Graphics mode** — determine what the vendor software actually does when each
+1. **Three interface faults on the lighting page**, written up in
+   [BRIEF.md](BRIEF.md) for the design agent: unselected zones render grey
+   instead of their own colour dimmed, selection paints a slab instead of
+   lifting the keys, and keys are cut in half at the zone boundaries.
+2. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-4. Release 0.4.0.
+3. Release 0.4.0.
 
 ## What things cost
 
@@ -145,6 +138,68 @@ The earlier note that this "blocks the release" and would reach hundreds of
 thousands of handles in a day was wrong on the second point: the count was
 bounded by garbage collection all along. It was still a real fault, and the
 first point stood.
+
+### Verified: the tray backoff, and what going quiet cost
+
+Hidden, the slow timer moves to thirty seconds and skips everything that only
+exists to keep the window truthful. Measured from a cold start, sent to the tray
+and left alone:
+
+| | On screen | In the tray |
+|---|---|---|
+| CPU | 6.4 ms/s (0.040%) | **0.34 ms/s (0.002%)** |
+| Working set | ~177 MB | 13–34 MB |
+
+Nineteen times cheaper. The earlier attempt to measure this failed because
+`ShowWindow(SW_MINIMIZE)` does nothing to a frameless window and said so
+nowhere, so it measured a window that was never minimised. `CloseMainWindow()`
+works, because `WM_CLOSE` goes through the window's own `OnClosing` handler and
+hides to the tray — through the application's code rather than around it. Any
+future measurement of this should record the window state alongside every
+sample, so a bad run is visible rather than silent.
+
+#### And what it broke
+
+Going quiet caused an accumulation. Each firmware read leaves a few objects
+whose handles are released only when a finaliser runs — about five and a half
+per read. On screen this never shows: drawing allocates enough to keep
+collections coming, and the finalisers run with them. Hidden, the application
+allocates almost nothing, so no collection happens and nothing runs them. The
+count climbed at **0.18 a second — some fifteen thousand a day** — and the
+working set crept from 13 to 34 MB in twelve minutes. Making the application
+cheaper is what made it accumulate.
+
+Every tenth hidden tick, so once every five minutes, it now forces a collection:
+queue the finalisers, wait for them — that is what actually closes the handles —
+then reclaim, then hand back the pages. Over sixteen minutes in the tray the
+count sawtooths and stays level, with no rise across cycles:
+
+| Reclamation at | Peak | Trough |
+|---|---|---|
+| 4:40 | 748 | 670 |
+| 9:40 | 720 | 666 |
+| 14:41 | 723 | 666 |
+
+Calling `GC.Collect` is normally the wrong instinct — the runtime schedules
+collections better than a guess. The exception is an application that has gone
+idle, where the heuristics have nothing left to work from. That is this case
+exactly, and it is the same reasoning that already justified `EmptyWorkingSet`
+on the same transition.
+
+### Known and bounded: lighting writes still run on the interface thread
+
+Only sensor reads were moved. A lighting write still goes through
+`System.Management` on the interface thread and pays the marshalling cost per
+write — during a colour-wheel drag the handle count was seen to reach 1183
+before falling back to around 800.
+
+This is churn, not a leak: it stops when the drag stops and a collection
+reclaims it. It is left alone deliberately. Moving it would mean making the
+write path asynchronous, and the lighting subsystem is the one that has just
+been tested by hand and found working; the trade is not worth it for a
+transient bounded by how long someone holds the mouse down. Worth revisiting if
+the write path is being changed for another reason anyway — the same change
+would also take a retry storm off the thread that draws the window.
 
 #### Found while measuring
 

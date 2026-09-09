@@ -33,6 +33,15 @@ public partial class MainWindow : Window
     /// </summary>
     private static readonly TimeSpan HiddenSlowInterval = TimeSpan.FromSeconds(30);
 
+    /// <summary>
+    /// How many hidden ticks pass between idle reclamations — ten of them, so
+    /// once every five minutes. See <see cref="ReclaimWhileIdle"/>.
+    /// </summary>
+    private const int HiddenTicksPerReclaim = 10;
+
+    /// <summary>Hidden slow-timer ticks since the last reclamation.</summary>
+    private int _hiddenTicks;
+
     private EcMailbox? _mailbox;
     private ThermalReader? _thermal;
     private LedController? _led;
@@ -213,6 +222,38 @@ public partial class MainWindow : Window
     /// looking at, which is what a tray application should do rather than
     /// holding a hundred-odd megabytes of rendering state on screen-less watch.
     /// </summary>
+    /// <summary>
+    /// Reclaims what the tray watch leaves behind, and hands back the pages.
+    ///
+    /// Each firmware read leaves a few objects whose handles are only released
+    /// when a finaliser runs — measured at about five and a half per read. With
+    /// the window on screen this never shows, because drawing allocates enough
+    /// to keep collections coming. Hidden, the application allocates almost
+    /// nothing, so no collection happens and nothing runs those finalisers: the
+    /// handle count climbed at 0.18 a second, about fifteen thousand a day, and
+    /// the working set crept from 13 to 34 MB over twelve minutes.
+    ///
+    /// Forcing a collection is normally the wrong instinct, because the runtime
+    /// schedules them better than a guess does. The exception is an application
+    /// that has gone idle, where the heuristics have nothing left to work from —
+    /// which is exactly this, and is the same reasoning that already justifies
+    /// <see cref="TrimWorkingSet"/> on the same transition. It runs every tenth
+    /// hidden tick, so once every five minutes, and only while nobody is
+    /// looking at the window.
+    /// </summary>
+    private static void ReclaimWhileIdle()
+    {
+        // The first pass queues the finalisers, the wait runs them — which is
+        // what actually closes the handles — and the second reclaims what they
+        // released. Blocking here is safe: the window is hidden, so the thread
+        // this runs on has nothing to draw.
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        TrimWorkingSet();
+    }
+
     private static void TrimWorkingSet()
     {
         try
@@ -592,6 +633,7 @@ public partial class MainWindow : Window
 
             if (onScreen)
             {
+                _hiddenTicks = 0;
                 RefreshBanner();
                 ApplyPollInterval();
                 RefreshStorage();
@@ -622,6 +664,13 @@ public partial class MainWindow : Window
             }
 
             _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
+
+            // Done after the read, so this tick's own leavings are included.
+            if (!onScreen && ++_hiddenTicks >= HiddenTicksPerReclaim)
+            {
+                _hiddenTicks = 0;
+                ReclaimWhileIdle();
+            }
 
             var limit = _settings.CpuWarningTemperatureC;
             if (limit > 0 && s.CpuTemperatureC >= limit)
