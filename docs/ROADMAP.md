@@ -37,7 +37,8 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Installer (Velopack, ~6 MB) | done |
 | RAM and disk gauges | done, fed from the system |
 | Device names and clock speeds | done, read at runtime |
-| Keyboard illustration | rebuilt from a clean vector |
+| Keyboard illustration | outlined keycaps in live zone colours; 0.033% CPU |
+| Zone selection | dimmed live colour plus a lift; verified on screen |
 | Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
 | Handle leak | **fixed** — WMI from the interface thread; see below |
 | Graphics mode switching | **detection only** — see below |
@@ -45,14 +46,10 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 
 ## Next
 
-1. **Three interface faults on the lighting page**, written up in
-   [BRIEF.md](BRIEF.md) for the design agent: unselected zones render grey
-   instead of their own colour dimmed, selection paints a slab instead of
-   lifting the keys, and keys are cut in half at the zone boundaries.
-2. **Graphics mode** — determine what the vendor software actually does when each
+1. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-3. Release 0.4.0.
+2. Release 0.4.0.
 
 ## What things cost
 
@@ -67,7 +64,8 @@ evidence rather than confidence.
 | after "simplification", with a costly clock reader | 0.449% | 177 MB |
 | PDH clock reader, pixel-trace illustration | 0.211% | 165 MB |
 | clean SVG, one path per zone, no shader | 0.135% | 180 MB |
-| firmware read moved off the interface thread | **0.042%** | 189 MB |
+| firmware read moved off the interface thread | 0.042% | 189 MB |
+| outlined keycaps, no backing slab | **0.033%** | 189 MB |
 
 The 0.135% row is the mean of three twenty-five-second runs: 0.168%, 0.082%,
 0.156%. **The spread between those runs is wider than most of the improvements

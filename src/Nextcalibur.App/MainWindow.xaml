@@ -17,13 +17,16 @@
         <c:TemperatureToDoubleConverter x:Key="TemperatureToDoubleConverter" />
         <c:RpmToDoubleConverter x:Key="RpmToDoubleConverter" />
         <StreamGeometry x:Key="KeyboardGeometryLeft" po:Freeze="True">M3 2h20v14h-20zM26 2h20v14h-20zM48 2h20v14h-20zM71 2h20v14h-20zM94 2h19v14h-19zM116 2h20v14h-20zM139 2h20v14h-20zM3 19h21v20h-21zM27 19h21v20h-21zM51 19h21v20h-21zM74 19h22v20h-22zM98 19h21v20h-21zM122 19h21v20h-21zM3 43h34v20h-34zM39 43h22v20h-22zM63 43h21v20h-21zM87 43h21v20h-21zM110 43h21v20h-21zM134 43h21v20h-21zM3 67h41v20h-41zM47 67h21v20h-21zM70 67h21v20h-21zM94 67h21v20h-21zM118 67h21v20h-21zM3 90h54v20h-54zM59 90h21v20h-21zM83 90h21v20h-21zM107 90h21v20h-21zM130 90h21v20h-21zM3 114h30v20h-30zM36 114h21v20h-21zM59 114h21v20h-21zM83 114h21v20h-21z</StreamGeometry>
-        <StreamGeometry x:Key="KeyboardGeometryMiddle" po:Freeze="True">M8.67 2h20v14h-20zM31.67 2h20v14h-20zM54.67 2h20v14h-20zM76.67 2h20v14h-20zM99.67 2h20v14h-20zM121.67 2h20v14h-20zM147.67 2h19v14h-19zM-7.33 19h22v20h-22zM16.67 19h20v20h-20zM39.67 19h21v20h-21zM63.67 19h20v20h-20zM87.67 19h20v20h-20zM110.67 19h21v20h-21zM134.67 19h20v20h-20zM4.67 43h21v20h-21zM28.67 43h21v20h-21zM52.67 43h21v20h-21zM76.67 43h21v20h-21zM99.67 43h21v20h-21zM123.67 43h21v20h-21zM-11.33 67h21v20h-21zM12.67 67h21v20h-21zM36.67 67h21v20h-21zM59.67 67h21v20h-21zM83.67 67h21v20h-21zM107.67 67h21v20h-21zM130.67 67h21v20h-21zM1.67 90h21v20h-21zM24.67 90h21v20h-21zM48.67 90h21v20h-21zM72.67 90h21v20h-21zM96.67 90h21v20h-21zM119.67 90h21v20h-21zM-45.33 114h115v20h-115zM72.67 114h21v20h-21zM96.67 114h21v20h-21zM119.67 114h38v20h-38z</StreamGeometry>
-        <StreamGeometry x:Key="KeyboardGeometryRight" po:Freeze="True">M17.33 2h20v14h-20zM40.33 2h19v14h-19zM62.33 2h19v14h-19zM85.33 2h20v14h-20zM108.33 2h19v14h-19zM130.33 2h20v14h-20zM9.33 19h46v20h-46zM57.33 19h21v20h-21zM81.33 19h21v20h-21zM105.33 19h21v20h-21zM129.33 19h21v44h-21zM-5.67 43h22v20h-22zM21.33 43h34v20h-34zM57.33 43h21v20h-21zM81.33 43h21v20h-21zM105.33 43h21v20h-21zM5.33 67h50v20h-50zM57.33 67h21v20h-21zM81.33 67h21v20h-21zM105.33 67h21v20h-21zM-6.67 90h38v20h-38zM34.33 90h21v20h-21zM57.33 90h21v20h-21zM81.33 90h21v20h-21zM105.33 90h21v20h-21zM129.33 90h21v44h-21zM10.33 114h21v20h-21zM34.33 114h21v20h-21zM57.33 114h21v20h-21zM81.33 114h21v20h-21zM105.33 114h21v20h-21z</StreamGeometry>
+        <StreamGeometry x:Key="KeyboardGeometryMiddle" po:Freeze="True">M161 2h20v14h-20zM184 2h20v14h-20zM207 2h20v14h-20zM229 2h20v14h-20zM252 2h20v14h-20zM274 2h20v14h-20zM300 2h19v14h-19zM145 19h22v20h-22zM169 19h20v20h-20zM192 19h21v20h-21zM216 19h20v20h-20zM240 19h20v20h-20zM263 19h21v20h-21zM287 19h20v20h-20zM157 43h21v20h-21zM181 43h21v20h-21zM205 43h21v20h-21zM229 43h21v20h-21zM252 43h21v20h-21zM276 43h21v20h-21zM141 67h21v20h-21zM165 67h21v20h-21zM189 67h21v20h-21zM212 67h21v20h-21zM236 67h21v20h-21zM260 67h21v20h-21zM283 67h21v20h-21zM154 90h21v20h-21zM177 90h21v20h-21zM201 90h21v20h-21zM225 90h21v20h-21zM249 90h21v20h-21zM272 90h21v20h-21zM107 114h115v20h-115zM225 114h21v20h-21zM249 114h21v20h-21zM272 114h38v20h-38z</StreamGeometry>
+        <StreamGeometry x:Key="KeyboardGeometryRight" po:Freeze="True">M322 2h20v14h-20zM345 2h19v14h-19zM367 2h19v14h-19zM390 2h20v14h-20zM413 2h19v14h-19zM435 2h20v14h-20zM314 19h46v20h-46zM362 19h21v20h-21zM386 19h21v20h-21zM410 19h21v20h-21zM434 19h21v44h-21zM299 43h22v20h-22zM326 43h34v20h-34zM362 43h21v20h-21zM386 43h21v20h-21zM410 43h21v20h-21zM310 67h50v20h-50zM362 67h21v20h-21zM386 67h21v20h-21zM410 67h21v20h-21zM298 90h38v20h-38zM339 90h21v20h-21zM362 90h21v20h-21zM386 90h21v20h-21zM410 90h21v20h-21zM434 90h21v44h-21zM315 114h21v20h-21zM339 114h21v20h-21zM362 114h21v20h-21zM386 114h21v20h-21zM410 114h21v20h-21z</StreamGeometry>
 
-        <!-- Keyboard Zone Elevation & Lighting Styles (Clean, Single-Path, Zero-Shader) -->
-        <Style x:Key="ZoneBorderStyleA" TargetType="Border">
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <!-- Keyboard Zone Elevation & Lighting Styles (Zero-Shader, Vector-Preserved, Whole Keycaps) -->
+        <Style x:Key="ZoneStyleA" TargetType="RadioButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0.40" />
             <Setter Property="Panel.ZIndex" Value="1" />
+            <Setter Property="RenderTransformOrigin" Value="0.177,0.486" />
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <TransformGroup>
@@ -32,28 +35,57 @@
                     </TransformGroup>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Path x:Name="Keycaps"
+                              Data="{StaticResource KeyboardGeometryLeft}"
+                              Stroke="{Binding Background, ElementName=PreviewA}"
+                              StrokeThickness="1.0"
+                              Fill="#01000000"
+                              StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              SnapsToDevicePixels="True" />
+                        <ControlTemplate.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
+                                    <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
                     </MultiDataTrigger.Conditions>
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.025" ScaleY="1.025" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
                     </Setter>
                 </MultiDataTrigger>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
@@ -65,11 +97,12 @@
                         <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Panel.ZIndex" Value="8" />
+                    <Setter Property="Opacity" Value="0.70" />
+                    <Setter Property="Panel.ZIndex" Value="5" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.015" ScaleY="1.015" />
+                                <ScaleTransform ScaleX="1.012" ScaleY="1.012" />
                                 <TranslateTransform Y="-1" />
                             </TransformGroup>
                         </Setter.Value>
@@ -81,11 +114,12 @@
                         <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Panel.ZIndex" Value="8" />
+                    <Setter Property="Opacity" Value="0.70" />
+                    <Setter Property="Panel.ZIndex" Value="5" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.015" ScaleY="1.015" />
+                                <ScaleTransform ScaleX="1.012" ScaleY="1.012" />
                                 <TranslateTransform Y="-1" />
                             </TransformGroup>
                         </Setter.Value>
@@ -94,83 +128,12 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ZonePathStyleA" TargetType="Path">
-            <Setter Property="Stroke" Value="#8E95A5" />
-            <Setter Property="StrokeThickness" Value="1.0" />
-            <Setter Property="StrokeLineJoin" Value="Round" />
-            <Setter Property="StrokeStartLineCap" Value="Round" />
-            <Setter Property="StrokeEndLineCap" Value="Round" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-            <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewA}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </MultiDataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewA}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewA}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewA}" />
-                    <Setter Property="Opacity" Value="0.65" />
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewA}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewA}" />
-                    <Setter Property="Opacity" Value="0.65" />
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZoneGlowStyleA" TargetType="Border">
-            <Setter Property="Opacity" Value="0.0" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Opacity" Value="0.22" />
-                </MultiDataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Opacity" Value="0.22" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewA}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Opacity" Value="0.10" />
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewA}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Opacity" Value="0.10" />
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZoneBorderStyleB" TargetType="Border">
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Style x:Key="ZoneStyleB" TargetType="RadioButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0.40" />
             <Setter Property="Panel.ZIndex" Value="1" />
+            <Setter Property="RenderTransformOrigin" Value="0.466,0.486" />
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <TransformGroup>
@@ -179,24 +142,49 @@
                     </TransformGroup>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Path x:Name="Keycaps"
+                              Data="{StaticResource KeyboardGeometryMiddle}"
+                              Stroke="{Binding Background, ElementName=PreviewB}"
+                              StrokeThickness="1.0"
+                              Fill="#01000000"
+                              StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              SnapsToDevicePixels="True" />
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True">
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.025" ScaleY="1.025" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
@@ -208,11 +196,12 @@
                         <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Panel.ZIndex" Value="8" />
+                    <Setter Property="Opacity" Value="0.70" />
+                    <Setter Property="Panel.ZIndex" Value="5" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.015" ScaleY="1.015" />
+                                <ScaleTransform ScaleX="1.012" ScaleY="1.012" />
                                 <TranslateTransform Y="-1" />
                             </TransformGroup>
                         </Setter.Value>
@@ -221,58 +210,12 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ZonePathStyleB" TargetType="Path">
-            <Setter Property="Stroke" Value="#8E95A5" />
-            <Setter Property="StrokeThickness" Value="1.0" />
-            <Setter Property="StrokeLineJoin" Value="Round" />
-            <Setter Property="StrokeStartLineCap" Value="Round" />
-            <Setter Property="StrokeEndLineCap" Value="Round" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True">
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewB}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewB}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewB}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewB}" />
-                    <Setter Property="Opacity" Value="0.65" />
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZoneGlowStyleB" TargetType="Border">
-            <Setter Property="Opacity" Value="0.0" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="True">
-                    <Setter Property="Opacity" Value="0.22" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Opacity" Value="0.22" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewB}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneB}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Opacity" Value="0.10" />
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZoneBorderStyleC" TargetType="Border">
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Style x:Key="ZoneStyleC" TargetType="RadioButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0.40" />
             <Setter Property="Panel.ZIndex" Value="1" />
+            <Setter Property="RenderTransformOrigin" Value="0.824,0.486" />
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <TransformGroup>
@@ -281,24 +224,49 @@
                     </TransformGroup>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Path x:Name="Keycaps"
+                              Data="{StaticResource KeyboardGeometryRight}"
+                              Stroke="{Binding Background, ElementName=PreviewC}"
+                              StrokeThickness="1.0"
+                              Fill="#01000000"
+                              StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              SnapsToDevicePixels="True" />
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True">
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                                <Setter TargetName="Keycaps" Property="StrokeThickness" Value="1.4" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.025" ScaleY="1.025" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
+                    <Setter Property="Opacity" Value="1.0" />
                     <Setter Property="Panel.ZIndex" Value="10" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.03" ScaleY="1.03" />
+                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
                                 <TranslateTransform Y="-2" />
                             </TransformGroup>
                         </Setter.Value>
@@ -310,64 +278,16 @@
                         <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
                         <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Panel.ZIndex" Value="8" />
+                    <Setter Property="Opacity" Value="0.70" />
+                    <Setter Property="Panel.ZIndex" Value="5" />
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <TransformGroup>
-                                <ScaleTransform ScaleX="1.015" ScaleY="1.015" />
+                                <ScaleTransform ScaleX="1.012" ScaleY="1.012" />
                                 <TranslateTransform Y="-1" />
                             </TransformGroup>
                         </Setter.Value>
                     </Setter>
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZonePathStyleC" TargetType="Path">
-            <Setter Property="Stroke" Value="#8E95A5" />
-            <Setter Property="StrokeThickness" Value="1.0" />
-            <Setter Property="StrokeLineJoin" Value="Round" />
-            <Setter Property="StrokeStartLineCap" Value="Round" />
-            <Setter Property="StrokeEndLineCap" Value="Round" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True">
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewC}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewC}" />
-                    <Setter Property="StrokeThickness" Value="1.2" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewC}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Stroke" Value="{Binding Background, ElementName=PreviewC}" />
-                    <Setter Property="Opacity" Value="0.65" />
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ZoneGlowStyleC" TargetType="Border">
-            <Setter Property="Opacity" Value="0.0" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="True">
-                    <Setter Property="Opacity" Value="0.22" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=SelectAll}" Value="True">
-                    <Setter Property="Opacity" Value="0.22" />
-                </DataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsMouseOver, ElementName=PreviewC}" Value="True" />
-                        <Condition Binding="{Binding IsChecked, ElementName=SelectAll}" Value="False" />
-                        <Condition Binding="{Binding IsChecked, ElementName=TabZoneC}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Opacity" Value="0.10" />
                 </MultiDataTrigger>
             </Style.Triggers>
         </Style>
@@ -396,10 +316,33 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: New Nextcalibur LogoMark Image + Wordmark -->
+                <!-- Left: Vector Nextcalibur LogoMark + Wordmark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Image Source="/Assets/app.ico" Width="30" Height="30" Stretch="Uniform"
-                           VerticalAlignment="Center" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <Viewbox Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Canvas Width="32" Height="32">
+                            <!-- Outer Shield Silhouette (Inverted Triangle) -->
+                            <Path Stroke="{DynamicResource Ink}" StrokeThickness="1.8" StrokeLineJoin="Miter"
+                                  StrokeStartLineCap="Square" StrokeEndLineCap="Square"
+                                  Data="M 11,5 L 3,5 L 16,29 L 29,5 L 21,5" />
+                            <Path Stroke="{DynamicResource Muted}" StrokeThickness="1.0"
+                                  Data="M 12,8 L 6,8 L 16,26 L 26,8 L 20,8" />
+
+                            <!-- Central Excalibur Sword (Downwards) -->
+                            <!-- Pommel & Hilt -->
+                            <Path Fill="{DynamicResource Accent}" Data="M 16,2 L 17.5,4 L 16,6 L 14.5,4 Z" />
+                            <Path Stroke="{DynamicResource Accent}" StrokeThickness="1.5" Data="M 16,5 L 16,8" />
+                            <!-- Crossguard -->
+                            <Path Fill="{DynamicResource Accent}" Data="M 11,8.5 Q 16,10 21,8.5 L 20.5,10 Q 16,11 11.5,10 Z" />
+                            <!-- Blade -->
+                            <Path Fill="{DynamicResource Accent}" Data="M 14.8,10.5 L 15.2,24 L 16,26 L 16.8,24 L 17.2,10.5 Z" />
+                            <Path Stroke="#FFFFFF" StrokeThickness="0.6" Opacity="0.8" Data="M 16,11 L 16,24" />
+
+                            <!-- 'N' Monogram -->
+                            <Path Stroke="{DynamicResource Accent}" StrokeThickness="2.2" StrokeLineJoin="Round"
+                                  StrokeStartLineCap="Square" StrokeEndLineCap="Square"
+                                  Data="M 10,11 L 10,21 L 22,11 L 22,21" />
+                        </Canvas>
+                    </Viewbox>
                     <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
                                Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
@@ -1094,13 +1037,11 @@
                                             </Grid.RowDefinitions>
 
                                             <!-- Top Vent Grille & Power Shield -->
+                                            <!-- Top Vent Grille & Power Shield Bar -->
                                             <Grid Grid.Row="0" Margin="0,0,0,6">
                                                 <!-- Dark Red Accent Grille Strip -->
                                                 <Border Background="#8A180E" Height="4" VerticalAlignment="Top"
                                                         HorizontalAlignment="Stretch" Margin="36,0,36,0" CornerRadius="2" />
-                                                <!-- Center Power Shield Indicator -->
-                                                <Path Data="M 0,0 L 12,0 L 6,8 Z" Fill="{DynamicResource Muted}"
-                                                      HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,3,0,0" />
                                             </Grid>
 
                                             <!-- Recessed Keyboard Well: Houses 3 Authentic Hardware Vector Backlight Zones -->
@@ -1108,71 +1049,25 @@
                                                     BorderThickness="1" CornerRadius="5" Padding="6,8,6,6"
                                                     HorizontalAlignment="Center">
                                                 <Grid Width="457" Height="140" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="152.333" />
-                                                        <ColumnDefinition Width="152.333" />
-                                                        <ColumnDefinition Width="152.334" />
-                                                    </Grid.ColumnDefinitions>
+                                                    <!-- Live Zone Colour Providers (Contract: code-behind assigns .Background and .BorderBrush) -->
+                                                    <Border x:Name="PreviewA" Visibility="Collapsed" />
+                                                    <Border x:Name="PreviewB" Visibility="Collapsed" />
+                                                    <Border x:Name="PreviewC" Visibility="Collapsed" />
 
-                                                    <!-- ================= ZONE A: LEFT KEYBOARD ================= -->
-                                                    <Border x:Name="PreviewA" Grid.Column="0" CornerRadius="3"
-                                                            BorderThickness="0" BorderBrush="Transparent"
-                                                            Background="#FFFFFF" SnapsToDevicePixels="True"
-                                                            Style="{StaticResource ZoneBorderStyleA}">
-                                                        <Grid Background="#0A0B0E" ClipToBounds="False">
-                                                            <!-- Diffuse Backlight Underglow Layer (Single Switched Layer) -->
-                                                            <Border Background="{Binding Background, ElementName=PreviewA}"
-                                                                    Style="{StaticResource ZoneGlowStyleA}" />
-                                                            <!-- Vector Keycap Outlines (Single Switched Stroke Path) -->
-                                                            <Path Data="{StaticResource KeyboardGeometryLeft}"
-                                                                  Style="{StaticResource ZonePathStyleA}" />
-                                                            <!-- Direct Keyboard Click Target: Clicking zone checks TabZoneA -->
-                                                            <RadioButton Focusable="False"
-                                                                         IsChecked="{Binding IsChecked, ElementName=TabZoneA, Mode=TwoWay}"
-                                                                         GroupName="DirectKeyboardZonePicker"
-                                                                         Opacity="0" Cursor="Hand" />
-                                                        </Grid>
-                                                    </Border>
+                                                    <!-- Zone A: Left Keyboard Vector -->
+                                                    <RadioButton Style="{StaticResource ZoneStyleA}"
+                                                                 IsChecked="{Binding IsChecked, ElementName=TabZoneA, Mode=TwoWay}"
+                                                                 GroupName="DirectKeyboardZonePicker" />
 
-                                                    <!-- ================= ZONE B: MIDDLE KEYBOARD ================= -->
-                                                    <Border x:Name="PreviewB" Grid.Column="1" CornerRadius="3"
-                                                            BorderThickness="0" BorderBrush="Transparent"
-                                                            Background="#FFFFFF" SnapsToDevicePixels="True"
-                                                            Style="{StaticResource ZoneBorderStyleB}">
-                                                        <Grid Background="#0A0B0E" ClipToBounds="False">
-                                                            <!-- Diffuse Backlight Underglow Layer (Single Switched Layer) -->
-                                                            <Border Background="{Binding Background, ElementName=PreviewB}"
-                                                                    Style="{StaticResource ZoneGlowStyleB}" />
-                                                            <!-- Vector Keycap Outlines (Single Switched Stroke Path) -->
-                                                            <Path Data="{StaticResource KeyboardGeometryMiddle}"
-                                                                  Style="{StaticResource ZonePathStyleB}" />
-                                                            <!-- Direct Keyboard Click Target: Clicking zone checks TabZoneB -->
-                                                            <RadioButton Focusable="False"
-                                                                         IsChecked="{Binding IsChecked, ElementName=TabZoneB, Mode=TwoWay}"
-                                                                         GroupName="DirectKeyboardZonePicker"
-                                                                         Opacity="0" Cursor="Hand" />
-                                                        </Grid>
-                                                    </Border>
+                                                    <!-- Zone B: Middle Keyboard Vector -->
+                                                    <RadioButton Style="{StaticResource ZoneStyleB}"
+                                                                 IsChecked="{Binding IsChecked, ElementName=TabZoneB, Mode=TwoWay}"
+                                                                 GroupName="DirectKeyboardZonePicker" />
 
-                                                    <!-- ================= ZONE C: RIGHT KEYBOARD ================= -->
-                                                    <Border x:Name="PreviewC" Grid.Column="2" CornerRadius="3"
-                                                            BorderThickness="0" BorderBrush="Transparent"
-                                                            Background="#FFFFFF" SnapsToDevicePixels="True"
-                                                            Style="{StaticResource ZoneBorderStyleC}">
-                                                        <Grid Background="#0A0B0E" ClipToBounds="False">
-                                                            <!-- Diffuse Backlight Underglow Layer (Single Switched Layer) -->
-                                                            <Border Background="{Binding Background, ElementName=PreviewC}"
-                                                                    Style="{StaticResource ZoneGlowStyleC}" />
-                                                            <!-- Vector Keycap Outlines (Single Switched Stroke Path) -->
-                                                            <Path Data="{StaticResource KeyboardGeometryRight}"
-                                                                  Style="{StaticResource ZonePathStyleC}" />
-                                                            <!-- Direct Keyboard Click Target: Clicking zone checks TabZoneC -->
-                                                            <RadioButton Focusable="False"
-                                                                         IsChecked="{Binding IsChecked, ElementName=TabZoneC, Mode=TwoWay}"
-                                                                         GroupName="DirectKeyboardZonePicker"
-                                                                         Opacity="0" Cursor="Hand" />
-                                                        </Grid>
-                                                    </Border>
+                                                    <!-- Zone C: Right Keyboard Vector -->
+                                                    <RadioButton Style="{StaticResource ZoneStyleC}"
+                                                                 IsChecked="{Binding IsChecked, ElementName=TabZoneC, Mode=TwoWay}"
+                                                                 GroupName="DirectKeyboardZonePicker" />
                                                 </Grid>
                                             </Border>
 
