@@ -35,6 +35,11 @@ public sealed class DonutGauge : FrameworkElement
             nameof(StrokeThickness), typeof(double), typeof(DonutGauge),
             new FrameworkPropertyMetadata(7.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
+    public static readonly DependencyProperty HubBrushProperty =
+        DependencyProperty.Register(
+            nameof(HubBrush), typeof(Brush), typeof(DonutGauge),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
     public double Value
     {
         get => (double)GetValue(ValueProperty);
@@ -63,6 +68,12 @@ public sealed class DonutGauge : FrameworkElement
     {
         get => (Brush?)GetValue(BracketBrushProperty);
         set => SetValue(BracketBrushProperty, value);
+    }
+
+    public Brush? HubBrush
+    {
+        get => (Brush?)GetValue(HubBrushProperty);
+        set => SetValue(HubBrushProperty, value);
     }
 
     public double StrokeThickness
@@ -125,7 +136,14 @@ public sealed class DonutGauge : FrameworkElement
 
         // 3. Draw inner hub solid disc
         var hubRadius = Math.Max(0.5, radius - strokeThick / 2.0 - 2.0);
-        dc.DrawEllipse(new SolidColorBrush(Color.FromRgb(32, 34, 40)), null, new Point(cx, cy), hubRadius, hubRadius);
+        var hubBrush = HubBrush;
+        if (hubBrush == null)
+        {
+            var fallback = new SolidColorBrush(Color.FromRgb(32, 34, 40));
+            fallback.Freeze();
+            hubBrush = fallback;
+        }
+        dc.DrawEllipse(hubBrush, null, new Point(cx, cy), hubRadius, hubRadius);
 
         // 4. Draw progress arc
         var max = Math.Max(0.001, Maximum);

@@ -31,6 +31,16 @@ public class FanGauge : ContentControl
             nameof(TrackBrush), typeof(Brush), typeof(FanGauge),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
+    public static readonly DependencyProperty HubBrushProperty =
+        DependencyProperty.Register(
+            nameof(HubBrush), typeof(Brush), typeof(FanGauge),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public static readonly DependencyProperty HubBorderBrushProperty =
+        DependencyProperty.Register(
+            nameof(HubBorderBrush), typeof(Brush), typeof(FanGauge),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
     public double Value
     {
         get => (double)GetValue(ValueProperty);
@@ -59,6 +69,18 @@ public class FanGauge : ContentControl
     {
         get => (Brush?)GetValue(TrackBrushProperty);
         set => SetValue(TrackBrushProperty, value);
+    }
+
+    public Brush? HubBrush
+    {
+        get => (Brush?)GetValue(HubBrushProperty);
+        set => SetValue(HubBrushProperty, value);
+    }
+
+    public Brush? HubBorderBrush
+    {
+        get => (Brush?)GetValue(HubBorderBrushProperty);
+        set => SetValue(HubBorderBrushProperty, value);
     }
 
     static FanGauge()
@@ -108,7 +130,7 @@ public class FanGauge : ContentControl
 
         // 3. Draw static 12-blade impeller turbine blades
         var rOuter = radius - 12.0;
-        var rInner = radius * 0.46;
+        var rInner = radius * 0.58;
         var bladeCount = 12;
         var angleStep = 360.0 / bladeCount;
 
@@ -138,12 +160,28 @@ public class FanGauge : ContentControl
             dc.DrawGeometry(defaultBlade, null, geo);
         }
 
-        // 4. Draw central dark hub disc
+        // 4. Draw central hub disc
         var hubRadius = rInner + 2.0;
-        var hubBrush = new SolidColorBrush(Color.FromRgb(22, 24, 28));
-        var hubBorder = new Pen(new SolidColorBrush(Color.FromRgb(45, 48, 56)), 1.5);
-        hubBrush.Freeze();
-        hubBorder.Freeze();
+        var hubBrush = HubBrush;
+        if (hubBrush == null)
+        {
+            var fallback = new SolidColorBrush(Color.FromRgb(22, 24, 28));
+            fallback.Freeze();
+            hubBrush = fallback;
+        }
+
+        Pen hubBorder;
+        if (HubBorderBrush != null)
+        {
+            hubBorder = new Pen(HubBorderBrush, 1.5);
+        }
+        else
+        {
+            var fallbackPen = new Pen(new SolidColorBrush(Color.FromRgb(45, 48, 56)), 1.5);
+            fallbackPen.Freeze();
+            hubBorder = fallbackPen;
+        }
+
         dc.DrawEllipse(hubBrush, hubBorder, new Point(cx, cy), hubRadius, hubRadius);
     }
 

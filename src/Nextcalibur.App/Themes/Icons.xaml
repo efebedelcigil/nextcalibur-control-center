@@ -70,6 +70,28 @@
         M 5,5 H 19 V 19 H 5 Z M 8,2 V 5 M 12,2 V 5 M 16,2 V 5 M 8,19 V 22 M 12,19 V 22 M 16,19 V 22 M 2,8 H 5 M 2,12 H 5 M 2,16 H 5 M 19,8 H 22 M 19,12 H 22 M 19,16 H 22 M 13,7 L 9,12.5 H 13 L 11,17 L 16,11.5 H 12 Z
     </StreamGeometry>
 
+    <!-- Windows Power Mode Option Card Illustrations -->
+    <!-- 1. Efficiency / Power Saver: Eco Leaf with Stem -->
+    <StreamGeometry x:Key="IconPowerSaver">
+        M 17,8 C 17,4 13,2 8,2 C 7,8 7,13 11,17 C 12,18 13.5,19 15.5,19 C 18,19 20,17 20,14.5 C 20,12 18.5,10 17,8 Z M 8,2 C 10,7 13,10 18,11 M 11,17 L 7,21
+    </StreamGeometry>
+
+    <!-- 2. Balanced: Centered Dial / Balanced Meter (Needle at 12 o'clock) -->
+    <StreamGeometry x:Key="IconPowerBalanced">
+        M 4,16 A 9,9 0 1 1 20,16 M 12,14 A 2,2 0 1 0 12,10 A 2,2 0 0 0 12,14 Z M 12,10 V 5 M 8,6.5 L 9,8 M 16,6.5 L 15,8
+    </StreamGeometry>
+
+    <!-- 3. Better Performance: Accelerated Tachometer Needle -->
+    <StreamGeometry x:Key="IconPowerPerformance">
+        M 4,16 A 9,9 0 1 1 20,16 M 12,14 A 2,2 0 1 0 12,10 A 2,2 0 0 0 12,14 Z M 12,11 L 18,7.5 M 15,5 L 17,7 M 18.5,8 L 20.5,9
+    </StreamGeometry>
+
+    <!-- 4. Best Performance: High Energy Lightning Bolt -->
+    <StreamGeometry x:Key="IconPowerBest">
+        M 13,2 L 5,13 H 12 L 10,22 L 20,10 H 13 Z
+    </StreamGeometry>
+
+
     <!-- Radio Indicator Geometries for Option Cards -->
     <StreamGeometry x:Key="IconRadioUnchecked">
         M 12,3 A 9,9 0 1 1 12,21 A 9,9 0 1 1 12,3 Z

@@ -514,4 +514,44 @@
         </Setter>
     </Style>
 
+    <!-- Windows Power Mode Option Card -->
+    <Style x:Key="PowerModeCard" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Height" Value="240" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="CardBorder" Background="{DynamicResource CardBackground}"
+                            BorderBrush="{DynamicResource CardBorder}" BorderThickness="1"
+                            CornerRadius="8" Padding="14,18">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource SelectedSurface}" />
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource HoverSurface}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource SelectedSurface}" />
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
