@@ -24,7 +24,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Nextcalibur Control Center</Product>
     <Company>Nextcalibur</Company>
-    <Version>0.1.0</Version>
+    <Version>0.3.0</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
   </PropertyGroup>
