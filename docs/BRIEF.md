@@ -1,100 +1,76 @@
-# Current brief — make the keyboard illustration cheap
+# Current brief
 
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-One job this round, and a measurement that has to come with it.
+**There is no structural interface work outstanding.** The keyboard illustration
+is finished and the logo is in place. The next instruction comes from the user.
 
 ---
 
-## The problem
+## What changed underneath since your last round
 
-The keyboard illustration on the Lighting page is the most expensive thing in
-the application. Measured on the development machine, idle, window open:
+Sensor readings no longer run on the interface thread. They were the
+application's handle leak: `System.Management` needs an MTA thread, and calling
+it from the STA one a window runs on cost a kernel event per call — 2.4 handles
+a second. The read now happens on the thread pool.
 
-| Build | CPU | Working set |
-|---|---|---|
-| before any keyboard illustration | **0.010%** | 145 MB |
-| first SVG trace | 0.319% | 157 MB |
-| after "simplification" | 0.449% | 177 MB |
-| after fixing an unrelated backend cost | 0.211% | 165 MB |
+Nothing in the markup has to change for that, but two things follow from it:
 
-The last row is the current state. It is still **twenty times** the cost of the
-build without the illustration, and `MainWindow.xaml` has grown to 118 KB.
+- **The lighting page needs a pass by hand.** A lighting write and a sensor
+  sample can now genuinely overlap where before they could not. The firmware
+  mailbox is locked for whole sequences to prevent it, but that wants trying:
+  the colour wheel, each effect, the brightness slider, select-all, and the
+  power toggle, with the System page's readings updating throughout.
+- **Idle cost has dropped to 0.042%** from 0.135%, measured over ten minutes.
+  That is the new number to beat, and it moves the goalposts: an addition that
+  would once have hidden inside the noise is now visible.
 
-The previous round reported that the simplification had "reduced CPU load to
-zero". It had not. That is the thing to avoid repeating — see *Measure, don't
-assert* below.
+## The state of the illustration
 
-## The job
+Three frozen `StreamGeometry` resources, one path per zone, no shader effects,
+about 2 KB of markup between them. `MainWindow.xaml` is 98 KB, which is roughly
+right — see *On the markup size* in the roadmap for why the earlier 40 KB target
+was mistaken.
 
-A smaller, cleaner SVG is being placed at `docs/keyboard_layout.svg`, replacing
-the pixel trace. Rebuild the keyboard from it.
+## The logo
 
-- Three frozen `StreamGeometry` resources, one per zone, as now:
-  `KeyboardGeometryLeft`, `KeyboardGeometryMiddle`, `KeyboardGeometryRight`.
-- Keep `PreviewA`, `PreviewB`, `PreviewC` and the contract around them.
-- Keep the behaviour added last round: no border frames, the selected zone
-  lifting slightly with a shadow, hover preview, click-to-select, white-grey
-  inactive keycaps against vibrant selected ones. Those are good and the user
-  likes them.
-- `po:Freeze="True"` on every geometry, as now.
+`Assets/app.ico` is the one to use, at any size. It carries hand-sharpened
+frames from 16 px to 256 px, so it stays crisp small — better than scaling
+`Assets/logo.png`, which is a single 512 px square kept as the brand master and
+is deliberately not compiled into the assembly.
 
-Aim to get `MainWindow.xaml` back under about 40 KB. If the new SVG cannot get
-you there without losing the look, say what the trade-off is rather than
-choosing silently.
+## Measuring, if you change anything
 
-### Two things worth checking while you are in there
-
-The lift and shadow on the selected zone are drawn with a `DropShadowEffect`.
-Effects in WPF are rendered per frame and are not free. If the measurement below
-shows the illustration is still expensive, try a static shadow — a soft
-translucent shape behind the zone — before concluding the geometry is at fault.
-
-Hover previewing the RGB at 45% opacity means a second full copy of the
-geometry is being drawn for every zone. Two layers per zone across three zones
-is six geometries. Consider whether the inactive and active looks can share one
-path with a switched brush.
-
-## Measure, don't assert
-
-**Report numbers, not adjectives.** "Reduced CPU to zero" is not a result; a
-measurement is. Do this before and after your change and put both in your
-report:
+Close the running application first — it locks its own build output. Build
+Release, then take **one ten-minute sample** rather than three short ones:
 
 ```powershell
-# Close the running app first, build Release, then:
-$p = Start-Process 'src\Nextcalibur.App\bin\Release\net8.0-windows\win-x64\Nextcalibur.exe' -PassThru
-Start-Sleep -Seconds 12                      # let startup settle
+$exe = 'src\Nextcalibur.App\bin\Release\net8.0-windows\win-x64\Nextcalibur.exe'
+$p = Start-Process $exe -PassThru
+Start-Sleep -Seconds 20
 $t = $p.TotalProcessorTime
-Start-Sleep -Seconds 25
+Start-Sleep -Seconds 600
 $p.Refresh()
-'CPU {0:N3}%  RAM {1} MB' -f `
-    (($p.TotalProcessorTime - $t).TotalMilliseconds / 25000 * 100 / [Environment]::ProcessorCount),
-    [math]::Round($p.WorkingSet64 / 1MB)
+'CPU {0:N3}%  RAM {1} MB  handles {2}' -f `
+    (($p.TotalProcessorTime - $t).TotalMilliseconds / 600000 * 100 / [Environment]::ProcessorCount),
+    [math]::Round($p.WorkingSet64 / 1MB), $p.HandleCount
 ```
 
-Leave the window open on the **Lighting page** while measuring — that is where
-the illustration is drawn. Also report the size of `MainWindow.xaml`.
+Twenty-five-second samples vary by more than most of the changes being measured;
+three of them disagreeing is not three results. Report the number you got, in
+either direction — a change that turned out not to help is a useful finding, and
+a claim that it helped when it did not costs the next round.
 
-If your change does not improve the numbers, say so. A change that turns out
-not to help is a useful finding; a claim that it helped when it did not costs
-everyone the next round.
+## Boundaries, unchanged
 
----
+Presentation is yours: styles, control templates, vector geometry, layout markup,
+drawing controls, brand assets. Not `src/Nextcalibur.Core/`, `MainWindow.xaml.cs`,
+`App.xaml.cs`, `TrayPresence.cs`, `Controls/ColourWheel.cs`, `src/Nextcalibur.Cli/`,
+`Nextcalibur.App.csproj`, `app.manifest`, `Assets/` or `tools/`.
 
-## Boundaries
-
-Presentation only. `src/Nextcalibur.Core/`, `MainWindow.xaml.cs`,
-`App.xaml.cs`, `TrayPresence.cs`, `Controls/ColourWheel.cs`,
-`src/Nextcalibur.Cli/`, `Nextcalibur.App.csproj`, `app.manifest`, `Assets/` and
-`tools/` all stay untouched.
-
-**If a fix appears to need a protected file, report it and stop.** Do not edit
-it, and do not revert it either — last round a revert of `MainWindow.xaml.cs`
-also discarded an encoding repair that had been made to the same file, and the
-broken version was then committed. Leave protected files exactly as you found
-them.
-
-Build Release before reporting, and close the running application first: it
-locks its own output and produces errors that look like code errors.
+When markup needs a handler that does not exist yet, wire it, let the build fail,
+and report. **Report and stop — do not revert either.** A protected file was once
+edited to fix a real bug and then reverted when that was pointed out; the revert
+also discarded an unrelated repair someone else had made to the same file, and
+the broken version was committed before anyone noticed.

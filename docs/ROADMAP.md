@@ -37,28 +37,29 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Installer (Velopack, ~6 MB) | done |
 | RAM and disk gauges | done, fed from the system |
 | Device names and clock speeds | done, read at runtime |
-| Keyboard illustration | rebuilt from a clean vector; 0.135% CPU |
+| Keyboard illustration | rebuilt from a clean vector |
 | Backing off while in the tray | written, **not yet verified** |
-| Handle leak | **open, blocks release** — see below |
+| Handle leak | **fixed** — WMI from the interface thread; see below |
 | Graphics mode switching | **detection only** — see below |
 | Fan control | **deliberately out of scope** — see below |
 
 ## Next
 
-1. **The handle leak.** Nothing ships until this is understood. It is the only
-   thing standing between the application and a release, and it is the sort of
-   fault that makes an application that runs unattended untrustworthy — which is
-   the whole point of one that lives in the notification area.
-2. **Verify the tray backoff.** The code is written: hidden, the slow timer moves
+1. **Verify the tray backoff.** The code is written: hidden, the slow timer moves
    to thirty seconds and skips everything that only exists to keep the window
    truthful. It has not been measured, because minimising the window
    programmatically does not work on a frameless window and the earlier attempt
-   silently measured a window that was never minimised.
-3. A small interface correction is pending with the design agent.
-4. **Graphics mode** — determine what the vendor software actually does when each
+   silently measured a window that was never minimised. It needs a person to
+   minimise it.
+2. **Confirm the lighting page still behaves** after the threading change. Sensor
+   readings now run off the interface thread, so a lighting write and a sample
+   can genuinely overlap where before they could not; the mailbox is locked for
+   whole sequences to prevent it, and that wants one pass by hand through the
+   colour wheel, the effects and the brightness slider.
+3. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
-5. Release 0.4.0.
+4. Release 0.4.0.
 
 ## What things cost
 
@@ -72,56 +73,88 @@ evidence rather than confidence.
 | first SVG trace | 0.319% | 157 MB |
 | after "simplification", with a costly clock reader | 0.449% | 177 MB |
 | PDH clock reader, pixel-trace illustration | 0.211% | 165 MB |
-| current: clean SVG, one path per zone, no shader | **0.135%** | 180 MB |
+| clean SVG, one path per zone, no shader | 0.135% | 180 MB |
+| firmware read moved off the interface thread | **0.042%** | 189 MB |
 
-The last row is the mean of three runs: 0.168%, 0.082%, 0.156%. **The spread
-between runs is wider than most of the improvements being measured**, so take a
-single reading as an indication and not a result — three runs minimum, and treat
-anything under a factor of two as noise.
+The 0.135% row is the mean of three twenty-five-second runs: 0.168%, 0.082%,
+0.156%. **The spread between those runs is wider than most of the improvements
+being measured**, which is the argument for the last row: 0.042% is a single
+*ten-minute* sample, and a window that long costs nothing but patience and does
+not need averaging. Prefer one long measurement to three short ones.
 
-Memory has gone the other way: 145 MB at the start, 180 MB now.
+Memory has gone the other way: 145 MB at the start, 189 MB now. It does settle —
+it climbed to 189 MB over six minutes and then stayed there for the remaining
+four — but it is worth a look before 1.0.
 
-### Open: a handle leak
+### Solved: WMI on the interface thread leaks a kernel handle per call
 
-The process gains kernel handles steadily — measured at roughly 3.5 per second,
-climbing from 949 to 1504 over three minutes with no plateau. Private memory is
-stable at 122–125 MB throughout, and GDI and USER object counts are flat at 41
-and 35, so this is neither a rendering leak nor a memory leak.
+**`System.Management` requires a multi-threaded apartment.** Called from the
+single-threaded interface thread — which is every thread a WPF window runs code
+on — each call is marshalled across to an MTA thread, and each marshalling
+leaves a kernel event behind that lives until the garbage collector finalises
+it. The firmware mailbox goes through `System.Management`, and it was being read
+from the timer on that thread.
 
-What is known:
+Measured at **2.4 handles a second** for the sensor timer alone, 3.5 with the
+slow timer as well. Moving the read to a thread-pool thread — pool threads are
+already MTA, so no marshalling happens — stops it completely: ten minutes with
+both timers running now moves between 668 and 709 handles and ends lower than it
+started.
 
-- It is **not** in `Nextcalibur.Core`. The command-line tool doing the same
-  sensor reads holds steady at 232 handles, and the clock readers at 264.
-- Caching two repeated WMI calls — the interface check that ran every five
-  seconds, and the vendor-process detection that ran on every sensor read —
-  reduced the rate but did not stop it.
-- It continues at the same rate whether or not the window is on screen.
+The same change took idle CPU from 0.135% to 0.042%, because a firmware round
+trip is no longer taken on the thread that draws the window.
 
-At this rate a machine left running for a day would reach a few hundred thousand
-handles. This blocks the release: an application that sits in the notification
-area is one nobody looks at for days, and that is exactly the case it would
-fail.
+Two consequences worth keeping in mind:
 
-Ruled out so far, and worth not re-testing:
+- `EcMailbox` is now reached from more than one thread, so it locks. The lock is
+  held across a whole command *and* its response, and `Hold()` extends it over a
+  sequence — writing the three lighting zones is one operation as far as the
+  hardware is concerned, and a sample landing in the middle makes it drop them.
+  Stopping the sampling timer used to be enough for that; it no longer is, since
+  a sample already in flight is on another thread.
+- `Sample` is `async void` off a timer, so it catches broadly. An exception
+  escaping it would take the process down rather than surface anywhere useful.
 
-| Suspect | Result |
-|---|---|
-| Firmware mailbox reads | CLI doing only those holds at 232 handles |
-| Clock readers (PDH, NVML) | CLI doing only those holds at 264 handles |
-| Repeated `EcMailbox.IsSupported()` | cached; rate fell, growth continued |
-| Repeated process enumeration | cached; rate fell, growth continued |
-| Rendering or brushes | GDI 41 and USER 35, both flat throughout |
-| Window being on screen | same rate hidden as visible |
+#### How it was found, which matters more than the fault
 
-What is left is the work the timers do inside the window: storage readings, the
-theme registry poll, the tray tooltip update, and the WMI round trips the
-mailbox makes through `System.Management`. The next step is to switch those off
-one at a time and watch the rate, rather than reason about which of them looks
-suspicious — two rounds of reasoning have now each removed real waste and left
-the growth untouched.
+Three earlier rounds reasoned about which call looked suspicious. Each removed
+real waste and left the growth exactly where it was. What actually worked:
 
-For comparison, the fault this application exists to fix pinned the processor at
-4.1 GHz while idle.
+1. **Count handles by object type, not in total.** `NtQuerySystemInformation`
+   with `SystemExtendedHandleInformation` gives every handle a process holds and
+   its type index; duplicating one handle per type and asking `NtQueryObject`
+   names them. This needs no driver, no elevation and no Sysinternals. The
+   answer came back as "100% of the growth is `Event`", which eliminated
+   rendering, files, registry keys and sockets in a single measurement.
+2. **Sample on a schedule, not before and after.** The count moves in a
+   sawtooth: it climbs, then a garbage collection reclaims several hundred at
+   once. A single before/after pair lands inside a climb or across a collapse
+   and reports anything you like — one such pair had earlier produced "3.5 per
+   second, no plateau", and another produced a *decrease*. Both were the same
+   process behaving the same way.
+3. **Bisect with a switch, not with an opinion.** Two environment variables that
+   skipped each timer turned six rebuilds into one. Both off: flat. Fast timer
+   only: the full fault. That located it in one afternoon after three rounds of
+   argument had not.
+4. **Isolate outside the application.** A small harness calling PDH and NVML
+   directly, and the existing command-line tool for the mailbox, each held flat
+   for seven minutes. That is what made the apartment the only remaining
+   difference — the command line runs MTA, the window does not.
+
+The earlier note that this "blocks the release" and would reach hundreds of
+thousands of handles in a day was wrong on the second point: the count was
+bounded by garbage collection all along. It was still a real fault, and the
+first point stood.
+
+#### Found while measuring
+
+`CpuClockReader.BaseMhz` caught only `ManagementException`, but WMI raises a
+bare `COMException` in some conditions — seen on this machine. On the interface
+thread that is an unhandled exception in a timer callback, which ends the
+process. It now catches the COM failures too, and asks only once: on a machine
+where the query fails it used to re-ask on every reading, which would have put a
+WMI call on a two-second timer and leaked handles far faster than the fault
+above.
 
 ### On the markup size
 
@@ -261,6 +294,12 @@ files.
 A custom `Main` in `App.xaml.cs` lets the installer's hooks run before any UI
 exists, which is why `App.xaml` is compiled as a `Page` rather than an
 `ApplicationDefinition`.
+
+Anything that touches `System.Management` belongs off the interface thread. It
+needs an MTA thread, and calling it from the STA one the window runs on costs a
+kernel handle per call — see the section above. `Task.Run` is enough; pool
+threads are already MTA. This applies to any WMI added later, not only the
+mailbox.
 
 Drawing controls must expose their colours as dependency properties bound with
 `DynamicResource`. A `Brush` cached in a field at construction survives a theme

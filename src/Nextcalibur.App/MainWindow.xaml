@@ -6,6 +6,7 @@
         xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="po"
         Title="Nextcalibur Control Center"
+        Icon="/Assets/app.ico"
         Width="1024" Height="556"
         ResizeMode="NoResize" SizeToContent="Manual"
         WindowStyle="None" AllowsTransparency="True"
@@ -15,9 +16,9 @@
     <Window.Resources>
         <c:TemperatureToDoubleConverter x:Key="TemperatureToDoubleConverter" />
         <c:RpmToDoubleConverter x:Key="RpmToDoubleConverter" />
-        <StreamGeometry x:Key="KeyboardGeometryLeft" po:Freeze="True">M3 2h20v14h-20zM26 2h20v14h-20zM48 2h20v14h-20zM71 2h20v14h-20zM94 2h19v14h-19zM116 2h20v14h-20zM139 2h20v14h-20zM3 19h21v20h-21zM27 19h21v20h-21zM51 19h21v20h-21zM74 19h22v20h-22zM98 19h21v20h-21zM122 19h21v20h-21zM3 43h34v20h-34zM39 43h22v20h-22zM63 43h21v20h-21zM87 43h21v20h-21zM110 43h21v20h-21zM134 43h21v20h-21zM3 67h41v20h-41zM47 67h21v20h-21zM70 67h21v20h-21zM94 67h21v20h-21zM118 67h21v20h-21zM141 67h21v20h-21zM3 90h54v20h-54zM59 90h21v20h-21zM83 90h21v20h-21zM107 90h21v20h-21zM130 90h21v20h-21zM3 114h30v20h-30zM36 114h21v20h-21zM59 114h21v20h-21zM83 114h21v20h-21z</StreamGeometry>
-        <StreamGeometry x:Key="KeyboardGeometryMiddle" po:Freeze="True">M8.67 2h20v14h-20zM31.67 2h20v14h-20zM54.67 2h20v14h-20zM76.67 2h20v14h-20zM99.67 2h20v14h-20zM121.67 2h20v14h-20zM-7.33 19h22v20h-22zM16.67 19h20v20h-20zM39.67 19h21v20h-21zM63.67 19h20v20h-20zM87.67 19h20v20h-20zM110.67 19h21v20h-21zM134.67 19h20v20h-20zM4.67 43h21v20h-21zM28.67 43h21v20h-21zM52.67 43h21v20h-21zM76.67 43h21v20h-21zM99.67 43h21v20h-21zM123.67 43h21v20h-21zM12.67 67h21v20h-21zM36.67 67h21v20h-21zM59.67 67h21v20h-21zM83.67 67h21v20h-21zM107.67 67h21v20h-21zM130.67 67h21v20h-21zM1.67 90h21v20h-21zM24.67 90h21v20h-21zM48.67 90h21v20h-21zM72.67 90h21v20h-21zM96.67 90h21v20h-21zM119.67 90h21v20h-21zM-45.33 114h115v20h-115zM72.67 114h21v20h-21zM96.67 114h21v20h-21zM119.67 114h38v20h-38z</StreamGeometry>
-        <StreamGeometry x:Key="KeyboardGeometryRight" po:Freeze="True">M-4.67 2h19v14h-19zM17.33 2h20v14h-20zM40.33 2h19v14h-19zM62.33 2h19v14h-19zM85.33 2h20v14h-20zM108.33 2h19v14h-19zM130.33 2h20v14h-20zM9.33 19h46v20h-46zM57.33 19h21v20h-21zM81.33 19h21v20h-21zM105.33 19h21v20h-21zM129.33 19h21v20h-21zM129.33 19h21v44h-21zM-5.67 43h22v20h-22zM21.33 43h34v20h-34zM57.33 43h21v20h-21zM81.33 43h21v20h-21zM105.33 43h21v20h-21zM5.33 67h50v20h-50zM57.33 67h21v20h-21zM81.33 67h21v20h-21zM105.33 67h21v20h-21zM-6.67 90h38v20h-38zM34.33 90h21v20h-21zM57.33 90h21v20h-21zM81.33 90h21v20h-21zM105.33 90h21v20h-21zM129.33 90h21v44h-21zM10.33 114h21v20h-21zM34.33 114h21v20h-21zM57.33 114h21v20h-21zM81.33 114h21v20h-21zM105.33 114h21v20h-21z</StreamGeometry>
+        <StreamGeometry x:Key="KeyboardGeometryLeft" po:Freeze="True">M3 2h20v14h-20zM26 2h20v14h-20zM48 2h20v14h-20zM71 2h20v14h-20zM94 2h19v14h-19zM116 2h20v14h-20zM139 2h20v14h-20zM3 19h21v20h-21zM27 19h21v20h-21zM51 19h21v20h-21zM74 19h22v20h-22zM98 19h21v20h-21zM122 19h21v20h-21zM3 43h34v20h-34zM39 43h22v20h-22zM63 43h21v20h-21zM87 43h21v20h-21zM110 43h21v20h-21zM134 43h21v20h-21zM3 67h41v20h-41zM47 67h21v20h-21zM70 67h21v20h-21zM94 67h21v20h-21zM118 67h21v20h-21zM3 90h54v20h-54zM59 90h21v20h-21zM83 90h21v20h-21zM107 90h21v20h-21zM130 90h21v20h-21zM3 114h30v20h-30zM36 114h21v20h-21zM59 114h21v20h-21zM83 114h21v20h-21z</StreamGeometry>
+        <StreamGeometry x:Key="KeyboardGeometryMiddle" po:Freeze="True">M8.67 2h20v14h-20zM31.67 2h20v14h-20zM54.67 2h20v14h-20zM76.67 2h20v14h-20zM99.67 2h20v14h-20zM121.67 2h20v14h-20zM147.67 2h19v14h-19zM-7.33 19h22v20h-22zM16.67 19h20v20h-20zM39.67 19h21v20h-21zM63.67 19h20v20h-20zM87.67 19h20v20h-20zM110.67 19h21v20h-21zM134.67 19h20v20h-20zM4.67 43h21v20h-21zM28.67 43h21v20h-21zM52.67 43h21v20h-21zM76.67 43h21v20h-21zM99.67 43h21v20h-21zM123.67 43h21v20h-21zM-11.33 67h21v20h-21zM12.67 67h21v20h-21zM36.67 67h21v20h-21zM59.67 67h21v20h-21zM83.67 67h21v20h-21zM107.67 67h21v20h-21zM130.67 67h21v20h-21zM1.67 90h21v20h-21zM24.67 90h21v20h-21zM48.67 90h21v20h-21zM72.67 90h21v20h-21zM96.67 90h21v20h-21zM119.67 90h21v20h-21zM-45.33 114h115v20h-115zM72.67 114h21v20h-21zM96.67 114h21v20h-21zM119.67 114h38v20h-38z</StreamGeometry>
+        <StreamGeometry x:Key="KeyboardGeometryRight" po:Freeze="True">M17.33 2h20v14h-20zM40.33 2h19v14h-19zM62.33 2h19v14h-19zM85.33 2h20v14h-20zM108.33 2h19v14h-19zM130.33 2h20v14h-20zM9.33 19h46v20h-46zM57.33 19h21v20h-21zM81.33 19h21v20h-21zM105.33 19h21v20h-21zM129.33 19h21v44h-21zM-5.67 43h22v20h-22zM21.33 43h34v20h-34zM57.33 43h21v20h-21zM81.33 43h21v20h-21zM105.33 43h21v20h-21zM5.33 67h50v20h-50zM57.33 67h21v20h-21zM81.33 67h21v20h-21zM105.33 67h21v20h-21zM-6.67 90h38v20h-38zM34.33 90h21v20h-21zM57.33 90h21v20h-21zM81.33 90h21v20h-21zM105.33 90h21v20h-21zM129.33 90h21v44h-21zM10.33 114h21v20h-21zM34.33 114h21v20h-21zM57.33 114h21v20h-21zM81.33 114h21v20h-21zM105.33 114h21v20h-21z</StreamGeometry>
 
         <!-- Keyboard Zone Elevation & Lighting Styles (Clean, Single-Path, Zero-Shader) -->
         <Style x:Key="ZoneBorderStyleA" TargetType="Border">
@@ -397,8 +398,8 @@
 
                 <!-- Left: New Nextcalibur LogoMark Image + Wordmark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Image Source="/Assets/logo.png" Width="41" Height="30" Stretch="Uniform"
-                           VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <Image Source="/Assets/app.ico" Width="30" Height="30" Stretch="Uniform"
+                           VerticalAlignment="Center" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
                                Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
