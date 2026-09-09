@@ -361,20 +361,22 @@ public partial class MainWindow : Window
     /// <summary>
     /// Reports the current setting and puts the selection back.
     ///
-    /// This is settled rather than pending. The vendor software was taken apart
-    /// to find out what its three buttons do, and the answer is that they do not
-    /// switch a display path: there is no MUX write, no firmware variable and no
-    /// mailbox command anywhere in it — its executable, its native library, its
-    /// daemon and its kernel driver together contain not one call to
-    /// SetFirmwareEnvironmentVariable. All it does is disable two NVIDIA devices
-    /// through SetupDi, which is why it asks for a restart afterwards: Windows
-    /// has to rebuild the display stack, not because a BIOS setting is waiting
-    /// for a boot.
+    /// The vendor software genuinely does switch the display path — watched on
+    /// hardware: MS Hybrid plus a restart moved the panel from the discrete card
+    /// to the integrated one. An earlier reading of this concluded the opposite
+    /// and was wrong; the search had covered the managed code, where no firmware
+    /// API appears, and missed that DeviceIoControl lives in the native library
+    /// and reaches the kernel driver the vendor installs. A driver needs no such
+    /// API.
     ///
-    /// So Discrete against MS Hybrid is a BIOS setting and no software changes
-    /// it. The one thing software can do — switching the card off entirely —
-    /// needs administrator, and this application has committed to never asking
-    /// for it. Both reasons stand on their own.
+    /// Nextcalibur does not switch it because of what that would take: an
+    /// undocumented IOCTL into a driver this project does not ship and will not
+    /// install, and administrator rights it has committed never to request.
+    /// That is a decision, not a gap waiting to be filled.
+    ///
+    /// See PROTOCOL.md for the evidence, including the cost nobody mentions —
+    /// the change invalidates TPM-sealed credentials, and the Windows PIN has to
+    /// be set up again afterwards.
     /// </summary>
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
@@ -386,19 +388,21 @@ public partial class MainWindow : Window
 
         MessageBox.Show(this,
             """
-            This one lives in your BIOS, not in any application.
+            Nextcalibur will not change this one.
 
-            Whether your screen is driven by the graphics card or by the built-in
-            graphics is decided before Windows starts. Casper's own Control Center
-            cannot change it either — its buttons only switch the graphics card off
-            and on as a device, which is why it asks you to restart afterwards.
+            It can be changed — Casper's Control Center does it, and your BIOS setup
+            may offer it too. But it is done through the kernel driver that software
+            installs, and it needs administrator rights. Nextcalibur installs no
+            driver and never asks for administrator, so this is one thing it reports
+            rather than touches.
 
-            To change it for real: restart, open BIOS setup, and look for a display
-            or graphics mode setting. MS Hybrid lets the card idle; Discrete keeps
-            it driving the screen at all times.
+            If you do change it, two things to expect. It takes a restart. And it
+            will probably make you set up your Windows PIN again: moving the display
+            path changes what the TPM measures at startup, which can also ask for a
+            BitLocker recovery key. Have that key to hand before you start.
 
-            Nextcalibur will not switch the card off on your behalf. That needs
-            administrator rights, and this application never asks for them.
+            MS Hybrid lets the card idle when nothing needs it. Discrete keeps it
+            driving the screen, and drawing power, at all times.
             """,
             "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
 
