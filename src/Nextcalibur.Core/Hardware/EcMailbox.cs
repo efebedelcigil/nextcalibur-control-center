@@ -97,6 +97,19 @@ public sealed class EcMailbox : IDisposable
 
     private readonly ManagementScope _scope;
 
+    /// <summary>
+    /// Serialises whole command/response pairs.
+    ///
+    /// The mailbox is one buffer. A write followed by a read is only meaningful
+    /// if nothing else writes in between, and callers now reach this from more
+    /// than one thread: sensor reads run on the thread pool — <c>System.Management</c>
+    /// leaks a kernel handle per call when driven from a single-threaded
+    /// apartment — while lighting changes still arrive from the user-interface
+    /// thread. Without this the two would interleave and each would read the
+    /// other's answer.
+    /// </summary>
+    private readonly object _gate = new();
+
     // The mailbox is a single fixed WMI instance. Re-running a WQL query for
     // every read would cost far more than refreshing the object we already
     // hold, and this type is polled continuously.
@@ -167,19 +180,25 @@ public sealed class EcMailbox : IDisposable
     /// <summary>Reads the raw mailbox contents without interpreting them.</summary>
     public byte[] ReadRaw()
     {
-        var mo = Instance();
-        mo.Get();   // refresh in place - no new query
-        if (mo[BufferProperty] is not byte[] buffer || buffer.Length < SmiCommand.SizeBytes)
-            throw new EcMailboxUnavailableException($"{BufferProperty} was not a {SmiCommand.SizeBytes}-byte array.");
-        return buffer;
+        lock (_gate)
+        {
+            var mo = Instance();
+            mo.Get();   // refresh in place - no new query
+            if (mo[BufferProperty] is not byte[] buffer || buffer.Length < SmiCommand.SizeBytes)
+                throw new EcMailboxUnavailableException($"{BufferProperty} was not a {SmiCommand.SizeBytes}-byte array.");
+            return buffer;
+        }
     }
 
     /// <summary>Writes a command into the mailbox.</summary>
     public void Write(SmiCommand command)
     {
-        var mo = Instance();
-        mo[BufferProperty] = command.ToBytes();
-        mo.Put();
+        lock (_gate)
+        {
+            var mo = Instance();
+            mo[BufferProperty] = command.ToBytes();
+            mo.Put();
+        }
     }
 
     /// <summary>
@@ -202,37 +221,69 @@ public sealed class EcMailbox : IDisposable
     {
         ArgumentNullException.ThrowIfNull(isValid);
 
-        Exception? last = null;
-        for (var attempt = 0; attempt < attempts; attempt++)
+        // Held across the retries, not just around each call: a response only
+        // belongs to us if nothing wrote between our write and our read.
+        lock (_gate)
         {
-            try
+            Exception? last = null;
+            for (var attempt = 0; attempt < attempts; attempt++)
             {
-                Write(command);
-                var response = SmiCommand.FromBytes(ReadRaw());
+                try
+                {
+                    Write(command);
+                    var response = SmiCommand.FromBytes(ReadRaw());
 
-                // The header must come back as sent; otherwise another writer
-                // raced us for the mailbox and this response belongs to them.
-                if (response.A0 == command.A0 && response.A1 == command.A1 && isValid(response))
-                    return response;
-            }
-            catch (ManagementException ex)
-            {
-                last = ex;
-                Invalidate();   // stale handle - rebind on the next attempt
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                throw new EcMailboxUnavailableException(
-                    "Access denied writing to the mailbox. Try running elevated.", ex);
+                    // The header must come back as sent; otherwise another writer
+                    // raced us for the mailbox and this response belongs to them.
+                    if (response.A0 == command.A0 && response.A1 == command.A1 && isValid(response))
+                        return response;
+                }
+                catch (ManagementException ex)
+                {
+                    last = ex;
+                    Invalidate();   // stale handle - rebind on the next attempt
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    throw new EcMailboxUnavailableException(
+                        "Access denied writing to the mailbox. Try running elevated.", ex);
+                }
+
+                Thread.Sleep(delayMs);
             }
 
-            Thread.Sleep(delayMs);
+            throw new EcMailboxUnavailableException(
+                $"No valid response after {attempts} attempts. " +
+                "Another application may be using the mailbox - close the vendor Control Center and retry.",
+                last);
         }
+    }
 
-        throw new EcMailboxUnavailableException(
-            $"No valid response after {attempts} attempts. " +
-            "Another application may be using the mailbox - close the vendor Control Center and retry.",
-            last);
+    /// <summary>
+    /// Holds the mailbox until the returned object is disposed.
+    ///
+    /// <see cref="Execute"/> already keeps one command and its response
+    /// together, but some operations are a sequence — writing the three lighting
+    /// zones, for instance — and the hardware drops the sequence if anything
+    /// else writes partway through. Stopping the sampling timer is no longer
+    /// enough to prevent that, because a sample already in flight runs on
+    /// another thread.
+    /// </summary>
+    public IDisposable Hold()
+    {
+        Monitor.Enter(_gate);
+        return new Held(_gate);
+    }
+
+    private sealed class Held(object gate) : IDisposable
+    {
+        private object? _gate = gate;
+
+        public void Dispose()
+        {
+            var taken = Interlocked.Exchange(ref _gate, null);
+            if (taken is not null) Monitor.Exit(taken);
+        }
     }
 
     /// <summary>
@@ -246,6 +297,6 @@ public sealed class EcMailbox : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
-        Invalidate();
+        lock (_gate) Invalidate();
     }
 }

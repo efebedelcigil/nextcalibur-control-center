@@ -56,13 +56,28 @@ public sealed class CpuClockReader : IDisposable
     private bool _tried;
     private bool _disposed;
     private uint _baseMhz;
+    private bool _baseTried;
 
-    /// <summary>The processor's base frequency in MHz, read once from WMI.</summary>
+    /// <summary>
+    /// The processor's base frequency in MHz, read once from WMI.
+    ///
+    /// Asked exactly once, whether or not the answer arrives. Retrying on every
+    /// reading would put a WMI query on a two-second timer for a number that
+    /// cannot change, and on the window's thread each of those costs a kernel
+    /// handle — precisely the fault this codebase already had once.
+    ///
+    /// The failure is caught broadly on purpose. WMI reports trouble as
+    /// <see cref="ManagementException"/> in some conditions and as a raw
+    /// <see cref="COMException"/> in others — the latter was observed on this
+    /// machine — and a frequency this cannot supply is a blank reading, never a
+    /// reason to take the application down.
+    /// </summary>
     private uint BaseMhz
     {
         get
         {
-            if (_baseMhz != 0) return _baseMhz;
+            if (_baseMhz != 0 || _baseTried) return _baseMhz;
+            _baseTried = true;
 
             try
             {
@@ -75,7 +90,10 @@ public sealed class CpuClockReader : IDisposable
                     }
                 }
             }
-            catch (ManagementException)
+            catch (Exception ex) when (ex is ManagementException
+                                          or COMException
+                                          or TypeInitializationException
+                                          or UnauthorizedAccessException)
             {
                 // Leaves the value at zero, which ReadGhz reports as unknown.
             }

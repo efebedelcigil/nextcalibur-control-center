@@ -40,6 +40,14 @@ public partial class MainWindow : Window
 
     private int _consecutiveFailures;
     private bool _exiting;
+
+    /// <summary>
+    /// True while a firmware read is in flight. The read now happens off the
+    /// user-interface thread, so a slow one must not have a second started on
+    /// top of it — the mailbox holds one command at a time.
+    /// </summary>
+    private bool _sampling;
+
     private bool _overheatNotified;
     private bool _mailboxFailed;
 
@@ -468,19 +476,55 @@ public partial class MainWindow : Window
 
     // ---------------------------------------------------------------- sensors
 
-    private void Sample()
+    /// <summary>
+    /// Takes one reading and puts it on screen.
+    ///
+    /// The firmware read happens on a thread-pool thread, and that is not a
+    /// performance flourish — it is the fix for a handle leak. The mailbox goes
+    /// through <c>System.Management</c>, which requires an MTA thread; called
+    /// from the single-threaded user-interface thread every call is marshalled
+    /// across, and each marshalling leaves a kernel event behind that lives
+    /// until the garbage collector finalises it. Measured at 2.4 handles a
+    /// second, climbing past a thousand between collections. Thread-pool threads
+    /// are already MTA, so the marshalling — and the leak — simply stops.
+    /// Taking a firmware round trip off the UI thread is the smaller benefit.
+    /// </summary>
+    private async void Sample()
     {
-        if (_thermal is null) return;
+        if (_thermal is null || _sampling) return;
 
-        if (!_thermal.TryRead(out var s))
+        ThermalSample s;
+        var reader = _thermal;
+
+        _sampling = true;
+        try
         {
-            // A single miss is normal when something else touches the mailbox.
-            if (++_consecutiveFailures >= 5)
+            var reading = await Task.Run(
+                () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
+
+            if (reading is null)
             {
-                SubtitleText.Text = "Readings have stalled. Close Casper's Control Center and reopen this window.";
-                _timer.Stop();
+                // A single miss is normal when something else touches the mailbox.
+                if (++_consecutiveFailures >= 5)
+                {
+                    SubtitleText.Text = "Readings have stalled. Close Casper's Control Center and reopen this window.";
+                    _timer.Stop();
+                }
+                return;
             }
+
+            s = reading.Value;
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // This runs as async void off a timer: an escaping exception would
+            // take the process down rather than surface anywhere useful.
+            _consecutiveFailures++;
             return;
+        }
+        finally
+        {
+            _sampling = false;
         }
 
         _consecutiveFailures = 0;
@@ -530,7 +574,7 @@ public partial class MainWindow : Window
     private void StartSlowTimer()
     {
         var slow = new DispatcherTimer { Interval = VisibleSlowInterval };
-        slow.Tick += (_, _) =>
+        slow.Tick += async (_, _) =>
         {
             // Everything below the guard exists to keep the window truthful.
             // While it is in the notification area there is nothing to keep
@@ -550,7 +594,24 @@ public partial class MainWindow : Window
             // hidden — it is the reason the application stays resident at all.
             if (_settings.CpuWarningTemperatureC <= 0 && !onScreen) return;
 
-            if (_thermal is null || !_thermal.TryRead(out var s)) return;
+            if (_thermal is null) return;
+
+            // Off the user-interface thread for the same reason as Sample: see
+            // the note there. This read is the one that keeps the tray tooltip
+            // and the overheat warning alive while the window is put away.
+            var reader = _thermal;
+            ThermalSample s;
+            try
+            {
+                var reading = await Task.Run(
+                    () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
+                if (reading is null) return;
+                s = reading.Value;
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                return;
+            }
 
             _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
 
@@ -805,6 +866,12 @@ public partial class MainWindow : Window
     {
         var wasRunning = _timer.IsEnabled;
         _timer.Stop();
+
+        // Stopping the timer keeps a new sample from starting, but sampling now
+        // happens on another thread and one may already be in flight. Holding
+        // the mailbox is what actually keeps a multi-zone write together.
+        using var hold = _mailbox?.Hold();
+
         try
         {
             action();
