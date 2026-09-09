@@ -10,3 +10,4 @@ installer/output/
 releases/
 
 tools/graphics-*.json
+tools/graphics-*.csv
