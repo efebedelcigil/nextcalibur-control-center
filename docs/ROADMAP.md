@@ -61,10 +61,28 @@ evidence rather than confidence.
 | no keyboard illustration | 0.010% | 145 MB |
 | first SVG trace | 0.319% | 157 MB |
 | after "simplification", with a costly clock reader | 0.449% | 177 MB |
-| current: PDH clock reader, same illustration | **0.211%** | 165 MB |
+| PDH clock reader, pixel-trace illustration | 0.211% | 165 MB |
+| current: clean SVG, one path per zone, no shader | **0.135%** | 180 MB |
+
+The last row is the mean of three runs: 0.168%, 0.082%, 0.156%. **The spread
+between runs is wider than most of the improvements being measured**, so take a
+single reading as an indication and not a result — three runs minimum, and treat
+anything under a factor of two as noise.
+
+Memory has gone the other way: 145 MB at the start, 180 MB now. Worth a look
+before release.
 
 For comparison, the fault this application exists to fix pinned the processor at
 4.1 GHz while idle.
+
+### On the markup size
+
+An earlier brief asked for `MainWindow.xaml` back under 40 KB, on the assumption
+the keyboard was most of its bulk. That was wrong: git history shows the file
+was already 87–91 KB before any keyboard illustration existed, and the three
+keyboard geometries now occupy about 2 KB of it. The rest is four pages of
+markup, templates and two palettes. The file is 98 KB and that is roughly what
+it should be.
 
 ## Decisions worth keeping
 
