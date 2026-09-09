@@ -345,7 +345,7 @@ public partial class MainWindow : Window
     private void LoadGpuMode()
     {
         var config = _gpu.Detect();
-        GpuModeDetail.Text = GpuModeService.Describe(config);
+        GpuModeDetail.Text = GpuModeService.Describe(config, _gpuClock.ReadLoad());
 
         if (config.Mode is not { } mode) return;
         GpuButtonFor(mode).IsChecked = true;
@@ -359,32 +359,46 @@ public partial class MainWindow : Window
     };
 
     /// <summary>
-    /// Switching graphics mode is not implemented yet, so this reports the
-    /// current setting and puts the selection back.
+    /// Reports the current setting and puts the selection back.
     ///
-    /// The vendor software does this by disabling the graphics card as a device.
-    /// Which of its three buttons produces which device state has not been
-    /// observed on real hardware, and guessing could leave the machine with no
-    /// working display path — so nothing is changed until that is known.
+    /// This is settled rather than pending. The vendor software was taken apart
+    /// to find out what its three buttons do, and the answer is that they do not
+    /// switch a display path: there is no MUX write, no firmware variable and no
+    /// mailbox command anywhere in it — its executable, its native library, its
+    /// daemon and its kernel driver together contain not one call to
+    /// SetFirmwareEnvironmentVariable. All it does is disable two NVIDIA devices
+    /// through SetupDi, which is why it asks for a restart afterwards: Windows
+    /// has to rebuild the display stack, not because a BIOS setting is waiting
+    /// for a boot.
+    ///
+    /// So Discrete against MS Hybrid is a BIOS setting and no software changes
+    /// it. The one thing software can do — switching the card off entirely —
+    /// needs administrator, and this application has committed to never asking
+    /// for it. Both reasons stand on their own.
     /// </summary>
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
         var config = _gpu.Detect();
-        GpuModeDetail.Text = GpuModeService.Describe(config);
+        GpuModeDetail.Text = GpuModeService.Describe(config, _gpuClock.ReadLoad());
 
         if (config.Mode is not { } current) return;
         if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
 
         MessageBox.Show(this,
             """
-            Changing graphics mode is not available yet.
+            This one lives in your BIOS, not in any application.
 
-            This setting decides whether your screen is driven by the graphics card or
-            the built-in graphics. Getting it wrong can leave you with a blank screen,
-            so Nextcalibur will not change it until the switch has been proven safe on
-            this model.
+            Whether your screen is driven by the graphics card or by the built-in
+            graphics is decided before Windows starts. Casper's own Control Center
+            cannot change it either — its buttons only switch the graphics card off
+            and on as a device, which is why it asks you to restart afterwards.
 
-            For now you can change it in your laptop's BIOS setup.
+            To change it for real: restart, open BIOS setup, and look for a display
+            or graphics mode setting. MS Hybrid lets the card idle; Discrete keeps
+            it driving the screen at all times.
+
+            Nextcalibur will not switch the card off on your behalf. That needs
+            administrator rights, and this application never asks for them.
             """,
             "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
 

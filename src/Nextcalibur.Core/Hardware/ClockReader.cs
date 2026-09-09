@@ -153,6 +153,11 @@ public sealed class CpuClockReader : IDisposable
     }
 }
 
+/// <summary>What the graphics card is drawing, and how busy it is.</summary>
+/// <param name="Watts">Board power draw.</param>
+/// <param name="UtilisationPercent">How much of the last sampling period the GPU was busy.</param>
+public readonly record struct GpuLoad(double Watts, int UtilisationPercent);
+
 /// <summary>
 /// Reads the graphics card's clock through NVML, the library NVIDIA ships with
 /// its driver. The vendor software uses the same one.
@@ -178,6 +183,19 @@ public sealed class GpuClockReader : IDisposable
     [DllImport(Nvml, EntryPoint = "nvmlDeviceGetClockInfo")]
     private static extern int GetClock(IntPtr device, int type, out uint mhz);
 
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetPowerUsage")]
+    private static extern int GetPower(IntPtr device, out uint milliwatts);
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetUtilizationRates")]
+    private static extern int GetUtilisation(IntPtr device, out NvmlUtilisation rates);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NvmlUtilisation
+    {
+        public uint Gpu;
+        public uint Memory;
+    }
+
     private IntPtr _device;
     private bool _ready;
     private bool _tried;
@@ -202,6 +220,32 @@ public sealed class GpuClockReader : IDisposable
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {
             return false;
+        }
+    }
+
+    /// <summary>
+    /// What the card is drawing and how busy it is, or null when unreadable.
+    ///
+    /// Together these say something neither says alone. A card at 16 watts under
+    /// load is working; a card at 16 watts doing nothing is a machine left in a
+    /// display mode that never lets it idle, which is the graphics twin of the
+    /// power-overlay fault this project was started for.
+    /// </summary>
+    public GpuLoad? ReadLoad()
+    {
+        if (!EnsureReady()) return null;
+
+        try
+        {
+            if (GetPower(_device, out var milliwatts) != Success) return null;
+            if (GetUtilisation(_device, out var rates) != Success) return null;
+
+            return new GpuLoad(milliwatts / 1000.0, (int)rates.Gpu);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            _ready = false;
+            return null;
         }
     }
 

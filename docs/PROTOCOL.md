@@ -249,6 +249,35 @@ bundled INI list of NVIDIA PCI IDs.
 No code path was found that sends a `GPUMMode` value to firmware. **The real
 display-path setting lives in BIOS.** Software can only disable the discrete GPU.
 
+#### Confirmed, including the restart
+
+The restart the vendor software asks for after a mode change was the reason to
+look again — a reboot usually means something persistent was written. Nothing
+was.
+
+| Checked | Result |
+|---|---|
+| `SetFirmwareEnvironmentVariable` / `NtSetSystemEnvironmentValue` / NVRAM / UEFI, across `ControlCenter.exe`, `ControlCenterC64.dll`, `ControlCenterDaemon.exe` and `ControlCenter64.sys` | **zero occurrences** |
+| What `MyGPUFunc::SwitchDevice` does | reads `VGA_HWID` and `VGA_Framework`, disables the first, `Thread::Sleep(1000)`, disables the second |
+| How the disable is performed | `DisableHardware::DisableDevice` → `SP_PROPCHANGE_PARAMS` → `SetupDiSetClassInstallParams` → `SetupDiChangeState`, with `DICS_DISABLE` / `DICS_ENABLE` and `DICS_FLAG_GLOBAL` |
+| What the two devices are, from `VGA.ini` | `[HWID]` — eighteen `PCI\VEN_10DE&…&SUBSYS_…152D` display adapters; `[Framework]` — `ACPI\VEN_NVDA&DEV_0820`, the Optimus ACPI companion |
+
+So the restart is Windows rebuilding the display stack after a display adapter
+is disabled or enabled. It is not a BIOS setting waiting for a boot, because
+nothing writes one.
+
+`HSR` is a separate feature and not a graphics mode at all: the strings around
+it are `HSR_OFF_120_OnClick`, `HSR_ON_240_OnClick` and icons named
+`ic_hsr_120_mode_*` / `ic_hsr_240_mode_*`. It switches the panel between 120 Hz
+and 240 Hz, and it has its own restart prompt — `HSR Click Force restart`.
+
+**Consequence for this project.** Discrete against MS Hybrid cannot be changed
+by any application, including the one that shipped with the machine. The single
+thing software can do is switch the card off, and `SetupDiChangeState` with
+`DICS_FLAG_GLOBAL` requires administrator — which this project has committed
+never to request. Both reasons are sufficient on their own, so the page reports
+and does not switch, and says where the setting really is.
+
 Consequence worth knowing: on a machine left in Discrete mode, the panel is
 driven by the dGPU, the iGPU drives nothing, and the dGPU never reaches its low
 power states — measured 2220 MHz / 17 W at 1–6% utilisation.

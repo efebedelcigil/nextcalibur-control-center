@@ -95,13 +95,27 @@ public sealed class GpuModeService
             mode, discreteName, discretePresent, discreteDrives, integratedDrives);
     }
 
-    /// <summary>A sentence describing the current configuration, for the user.</summary>
-    public static string Describe(GpuConfiguration c) => c.Mode switch
+    /// <summary>
+    /// A sentence describing the current configuration, for the user.
+    /// </summary>
+    /// <param name="c">The configuration to describe.</param>
+    /// <param name="load">
+    /// What the card is drawing, when it can be read. In Discrete mode this
+    /// turns a general warning into a measurement of what the setting is
+    /// costing right now, which is the difference between advice somebody
+    /// ignores and advice they act on.
+    /// </param>
+    public static string Describe(GpuConfiguration c, GpuLoad? load = null) => c.Mode switch
     {
         GpuMode.Discrete =>
             $"Your screen is driven by the {c.DiscreteName ?? "graphics card"} directly. " +
             "This gives the best performance in games, but the card never powers down, " +
-            "so the laptop runs hotter and the battery drains faster.",
+            "so the laptop runs hotter and the battery drains faster." +
+            IdleCost(load) +
+            "\n\nThis is set in your laptop's BIOS, not here — no software can change it, " +
+            "including the software that came with the machine. If you want the card to " +
+            "idle, restart, open BIOS setup and look for a display or graphics mode " +
+            "setting, then choose MS Hybrid.",
 
         GpuMode.Hybrid =>
             "Your screen is driven by the built-in graphics, and the graphics card wakes " +
@@ -114,4 +128,24 @@ public sealed class GpuModeService
 
         _ => "Nextcalibur could not work out how your graphics are currently set up.",
     };
+
+    /// <summary>
+    /// Names what this mode is costing right now.
+    ///
+    /// Deliberately not gated on the card looking idle. In this mode the card
+    /// also draws the desktop, so there is no idle moment to catch — measured on
+    /// the development machine, simply moving a window put it at 30% use. The
+    /// honest statement is structural rather than momentary: the card is always
+    /// on, and here is the draw.
+    ///
+    /// The lower bound only rejects a nonsense reading.
+    /// </summary>
+    private static string IdleCost(GpuLoad? load)
+    {
+        if (load is not { } l || l.Watts < 1) return string.Empty;
+
+        return $"\n\nRight now it is drawing {l.Watts:N1} W. In this mode the card draws your " +
+               "desktop as well, so it never reaches its low-power states — that is battery " +
+               "spent whether or not anything needs the card, and heat the fans have to move.";
+    }
 }
