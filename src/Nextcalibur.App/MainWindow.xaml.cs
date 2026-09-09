@@ -855,9 +855,25 @@ public partial class MainWindow : Window
         return Color.FromRgb(r, g, b);
     }
 
+    /// <summary>
+    /// Picks a zone to edit.
+    ///
+    /// Choosing one clears Select all, because otherwise the tabs do nothing
+    /// anyone can see: with every zone selected they are all drawn at full
+    /// strength and all lifted, so pressing Zone A, B or C leaves the keyboard
+    /// pixel for pixel identical. Clicking a zone tab says "this is the one I
+    /// want to edit", and the interface should agree rather than silently
+    /// ignore it.
+    /// </summary>
     private void OnZoneTabChanged(object sender, RoutedEventArgs e)
     {
         if (!_ledUiReady) return;
+
+        // Assigning IsChecked does not raise Click, which is what
+        // OnSelectAllToggled is wired to, so the refresh has to happen here.
+        // The markup's own triggers follow the property change by themselves.
+        if (SelectAll.IsChecked == true) SelectAll.IsChecked = false;
+
         RefreshPreview();
     }
 
