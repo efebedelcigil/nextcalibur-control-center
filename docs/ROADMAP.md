@@ -77,13 +77,34 @@ order that would matter to somebody who installed this.
    alongside `Theme`; what happens to text the machine supplies, which is not
    ours to translate — processor names, Windows power-mode names.
 
-2. **An icon audit.** Confirm there is an icon everywhere one belongs and that
+2. **The Display page, once the graphics-mode work concludes.** Also the design
+   agent's, and it should wait for the answer rather than anticipate it — but
+   some of it is already known and can be planned:
+
+   - **A mode can be unavailable, and the page has to say why.** The vendor
+     software refuses to go from Discrete straight to UMA — "Please switch to
+     Hybrid mode first" — because in Discrete the panel is driven by the
+     discrete card and switching it off would take the screen with it. Whatever
+     this page becomes, an unreachable mode needs to look unreachable and give
+     its reason, not fail on click.
+   - **Some transitions need a restart**, and the page should say so before the
+     user commits rather than after.
+   - **What the current mode costs belongs on screen.** The code already reads
+     the card's draw and utilisation through NVML; in Discrete on the
+     development machine that is 16.5 W at rest, rising past 37 W and 79 °C
+     while the desktop is merely being drawn. A number does more than a warning
+     sentence.
+   - The three cards already exist and are named in [CONTRACT.md](CONTRACT.md).
+     Nothing about them needs replacing — this is about states they cannot
+     currently express: unavailable, needs-restart, and in-progress.
+
+3. **An icon audit.** Confirm there is an icon everywhere one belongs and that
    they are the current mark: window and taskbar, Alt-Tab, notification area,
    the installer, the desktop and Start-menu shortcuts, Add or Remove Programs,
    and the title bar. Also the design agent's, and it wants checking on a
    running installed copy rather than in the markup.
 
-3. **Graphics mode** — determine what the vendor software actually does when each
+4. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
 
