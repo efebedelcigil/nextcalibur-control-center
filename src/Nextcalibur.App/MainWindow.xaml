@@ -3,531 +3,600 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Nextcalibur.App.Controls"
         Title="Nextcalibur Control Center"
-        Height="610" Width="1120"
+        Width="1024" Height="556"
         ResizeMode="NoResize" SizeToContent="Manual"
         WindowStyle="None" AllowsTransparency="True"
         Background="Transparent"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="Ink"    Color="#E8EAF0" />
-        <SolidColorBrush x:Key="Muted"  Color="#7C8394" />
-        <SolidColorBrush x:Key="Panel"  Color="#171A23" />
-        <SolidColorBrush x:Key="Rail"   Color="#12141B" />
-        <SolidColorBrush x:Key="Line"   Color="#272C38" />
-        <SolidColorBrush x:Key="Accent" Color="#4C8DFF" />
-        <SolidColorBrush x:Key="Good"   Color="#3FBF7F" />
-        <SolidColorBrush x:Key="Warn"   Color="#E8A33D" />
-        <SolidColorBrush x:Key="Bad"    Color="#E5484D" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Palette.xaml" />
+                <ResourceDictionary Source="Themes/Typography.xaml" />
+                <ResourceDictionary Source="Themes/Icons.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <Style x:Key="Card" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Panel}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="16,14" />
-        </Style>
-
-        <Style x:Key="Label" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-        </Style>
-
-        <Style x:Key="Value" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Ink}" />
-            <Setter Property="FontSize" Value="27" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-
-        <Style x:Key="NavItem" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg" Background="Transparent" Padding="0,18">
-                            <StackPanel HorizontalAlignment="Center">
-                                <ContentPresenter HorizontalAlignment="Center" />
-                                <TextBlock Text="{TemplateBinding Tag}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           FontSize="11.5" FontFamily="Segoe UI"
-                                           HorizontalAlignment="Center" Margin="0,8,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#1B1F2A" />
-                                <Setter Property="Foreground" Value="{StaticResource Accent}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#191D27" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="ZoneTab" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Margin" Value="0,0,10,0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg" Background="#1B1F2A" CornerRadius="6" Padding="22,8"
-                                BorderBrush="{StaticResource Line}" BorderThickness="1">
-                            <ContentPresenter />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#243049" />
-                                <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource Accent}" />
-                                <Setter Property="Foreground" Value="{StaticResource Ink}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.3" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="EffectButton" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg" Background="Transparent" CornerRadius="8" Padding="4,8" Width="72">
-                            <StackPanel HorizontalAlignment="Center">
-                                <Path Data="{TemplateBinding Tag}" Width="26" Height="22"
-                                      Stretch="Uniform" Stroke="{TemplateBinding Foreground}"
-                                      StrokeThickness="1.8" StrokeEndLineCap="Round"
-                                      StrokeStartLineCap="Round" StrokeLineJoin="Round" />
-                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
-                                           FontSize="10.5" FontFamily="Segoe UI" TextAlignment="Center"
-                                           TextWrapping="Wrap" Margin="0,7,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#243049" />
-                                <Setter Property="Foreground" Value="{StaticResource Accent}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#1E2331" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.3" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="ProfileButton" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg" Background="#151821" CornerRadius="8" Padding="18,10" Margin="6,0"
-                                BorderBrush="{StaticResource Line}" BorderThickness="1">
-                            <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
-                                       FontSize="12" FontFamily="Segoe UI" TextAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#243049" />
-                                <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource Accent}" />
-                                <Setter Property="Foreground" Value="{StaticResource Ink}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.3" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="Pill" TargetType="ToggleButton">
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="Track" Background="#2A3040" CornerRadius="11" Width="56" Height="22">
-                            <Grid>
-                                <TextBlock x:Name="Text" Text="off" Foreground="{StaticResource Muted}"
-                                           FontSize="10" FontFamily="Segoe UI" VerticalAlignment="Center"
-                                           HorizontalAlignment="Right" Margin="0,0,9,0" />
-                                <Ellipse x:Name="Knob" Width="16" Height="16" Fill="White"
-                                         HorizontalAlignment="Left" Margin="3,0,0,0" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="{StaticResource Accent}" />
-                                <Setter TargetName="Text" Property="Text" Value="on" />
-                                <Setter TargetName="Text" Property="HorizontalAlignment" Value="Left" />
-                                <Setter TargetName="Text" Property="Margin" Value="9,0,0,0" />
-                                <Setter TargetName="Text" Property="Foreground" Value="White" />
-                                <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right" />
-                                <Setter TargetName="Knob" Property="Margin" Value="0,0,3,0" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.35" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Window caption buttons. The native chrome is switched off, so these
-             are the only way to minimise or close. -->
-        <Style x:Key="CaptionButton" TargetType="Button">
-            <Setter Property="Width" Value="44" />
-            <Setter Property="Height" Value="34" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Foreground" Value="{StaticResource Muted}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bg" Background="Transparent">
-                            <Path Data="{TemplateBinding Tag}" Width="11" Height="11"
-                                  Stretch="Uniform" Stroke="{TemplateBinding Foreground}"
-                                  StrokeThickness="1.4" StrokeEndLineCap="Round"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#222733" />
-                                <Setter Property="Foreground" Value="{StaticResource Ink}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="White" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource Accent}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="12.5" />
-            <Setter Property="Padding" Value="14,7" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.35" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+            <c:TemperatureToDoubleConverter x:Key="TemperatureToDoubleConverter" />
+            <c:RpmToDoubleConverter x:Key="RpmToDoubleConverter" />
+        </ResourceDictionary>
     </Window.Resources>
 
-  <Border Background="#0E1016" CornerRadius="10" BorderBrush="{StaticResource Line}" BorderThickness="1">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="38" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <!-- Outer Window Border with Square Corners (0px) -->
+    <Border Background="{StaticResource WindowBackground}"
+            BorderBrush="{StaticResource Line}"
+            BorderThickness="1"
+            CornerRadius="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <!-- Custom title bar -->
-        <Grid x:Name="TitleBar" Grid.Row="0" Background="#12141B" MouseLeftButtonDown="OnTitleBarDrag">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="NEXTCALIBUR  CONTROL CENTER" Foreground="{StaticResource Ink}"
-                       FontSize="11.5" FontFamily="Segoe UI" FontWeight="SemiBold"
-                       VerticalAlignment="Center" Margin="16,0,0,0" />
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Style="{StaticResource CaptionButton}" Click="OnMinimiseClick"
-                        Tag="M0,6 H12" ToolTip="Minimise" />
-                <Button Style="{StaticResource CloseButton}" Click="OnCloseClick"
-                        Tag="M0,0 L11,11 M11,0 L0,11" ToolTip="Close" />
-            </StackPanel>
-        </Grid>
+            <!-- ================= TITLE BAR ================= -->
+            <Grid x:Name="TitleBar" Grid.Row="0"
+                  Background="{StaticResource TitleBarBackground}"
+                  MouseLeftButtonDown="OnTitleBarDrag">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-    <Grid Grid.Row="1">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="112" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <!-- Navigation rail -->
-        <Border Grid.Column="0" Background="{StaticResource Rail}" BorderBrush="{StaticResource Line}"
-                BorderThickness="0,0,1,0">
-            <StackPanel>
-                <TextBlock Text="NEXT" Foreground="{StaticResource Accent}" FontSize="15" FontWeight="Bold"
-                           FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,20,0,0" />
-                <TextBlock Text="CALIBUR" Foreground="{StaticResource Ink}" FontSize="11"
-                           FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,0,0,16" />
-
-                <RadioButton x:Name="NavSystem" Style="{StaticResource NavItem}" Tag="System"
-                             GroupName="Nav" IsChecked="True" Checked="OnNavChanged">
-                    <Path Data="M3,17 L7,9 L11,13 L15,4 L19,11" Stretch="Uniform" Width="26" Height="20"
-                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                          StrokeThickness="1.8" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
-                </RadioButton>
-
-                <RadioButton x:Name="NavPower" Style="{StaticResource NavItem}" Tag="Power"
-                             GroupName="Nav" Checked="OnNavChanged">
-                    <Path Data="M12,2 L6,12 H11 L10,20 L17,9 H12 Z" Stretch="Uniform" Width="26" Height="20"
-                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                          StrokeThickness="1.8" StrokeLineJoin="Round" />
-                </RadioButton>
-
-                <RadioButton x:Name="NavLighting" Style="{StaticResource NavItem}" Tag="Lighting"
-                             GroupName="Nav" Checked="OnNavChanged">
-                    <Path Data="M12,3 A6,6 0 0,1 15,14 V17 H9 V14 A6,6 0 0,1 12,3 Z M9,20 H15"
-                          Stretch="Uniform" Width="26" Height="20"
-                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                          StrokeThickness="1.8" StrokeLineJoin="Round" />
-                </RadioButton>
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Column="1" Margin="20">
-
-            <!-- ===== SYSTEM ===== -->
-            <Grid x:Name="PageSystem">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                    <TextBlock Text="System" FontSize="19" FontWeight="SemiBold" FontFamily="Segoe UI"
-                               Foreground="{StaticResource Ink}" />
-                    <TextBlock x:Name="SubtitleText" Style="{StaticResource Label}" Margin="0,4,0,0"
-                               Text="Reading sensors..." />
+                <!-- Left: LogoMark + Wordmark -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                    <Path Data="{StaticResource LogoMarkGeometry}" Fill="#FFFFFF"
+                          Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
+                               Style="{StaticResource WordmarkTextStyle}" />
                 </StackPanel>
 
-                <Border x:Name="Banner" Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,14"
-                        Visibility="Collapsed" BorderBrush="{StaticResource Warn}">
-                    <StackPanel>
-                        <TextBlock x:Name="BannerTitle" Foreground="{StaticResource Warn}" FontSize="13"
-                                   FontWeight="SemiBold" FontFamily="Segoe UI" TextWrapping="Wrap" />
-                        <TextBlock x:Name="BannerBody" Style="{StaticResource Label}" Margin="0,6,0,0"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
-                </Border>
+                <!-- Center/Right: Abstract Copper Circuit Header Artwork with Gradient Fade -->
+                <Viewbox Grid.Column="2" Stretch="UniformToFill" Width="380" Height="36"
+                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <Viewbox.OpacityMask>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00000000" Offset="0.0" />
+                            <GradientStop Color="#00000000" Offset="0.2" />
+                            <GradientStop Color="#FF000000" Offset="0.6" />
+                            <GradientStop Color="#FF000000" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Viewbox.OpacityMask>
+                    <Image Source="{StaticResource HeaderCircuitImage}" Width="380" Height="36" />
+                </Viewbox>
 
-                <UniformGrid Grid.Row="2" Columns="4">
-                    <Border Style="{StaticResource Card}" Margin="0,0,7,0">
-                        <StackPanel>
-                            <TextBlock Text="CPU TEMPERATURE" Style="{StaticResource Label}" />
-                            <TextBlock x:Name="CpuTemp" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource Card}" Margin="7,0">
-                        <StackPanel>
-                            <TextBlock Text="CPU FAN" Style="{StaticResource Label}" />
-                            <TextBlock x:Name="CpuFan" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource Card}" Margin="7,0">
-                        <StackPanel>
-                            <TextBlock Text="GPU TEMPERATURE" Style="{StaticResource Label}" />
-                            <TextBlock x:Name="GpuTemp" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource Card}" Margin="7,0,0,0">
-                        <StackPanel>
-                            <TextBlock Text="GPU FAN" Style="{StaticResource Label}" />
-                            <TextBlock x:Name="GpuFan" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
+                <!-- Right: Caption Buttons (Minimise & Close) -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Style="{StaticResource CaptionButton}" Click="OnMinimiseClick"
+                            Tag="{StaticResource IconMinimise}" ToolTip="Minimise" />
+                    <Button Style="{StaticResource CloseButton}" Click="OnCloseClick"
+                            Tag="{StaticResource IconClose}" ToolTip="Close" />
+                </StackPanel>
             </Grid>
 
-            <!-- ===== POWER ===== -->
-            <Grid x:Name="PagePower" Visibility="Collapsed">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+            <!-- ================= MAIN BODY ================= -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Text="Power" FontSize="19" FontWeight="SemiBold" FontFamily="Segoe UI"
-                           Foreground="{StaticResource Ink}" Margin="0,0,0,16" />
-
-                <Border Grid.Row="1" Style="{StaticResource Card}">
+                <!-- Navigation Rail -->
+                <Border Grid.Column="0" Background="{StaticResource RailBackground}"
+                        BorderBrush="{StaticResource RailBorder}" BorderThickness="0,0,1,0">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="POWER MODE" Style="{StaticResource Label}" />
-                            <TextBlock x:Name="OverlayState" Foreground="{StaticResource Ink}" FontSize="16"
-                                       FontFamily="Segoe UI" FontWeight="SemiBold" Margin="0,6,0,0" Text="Checking..." />
-                            <TextBlock x:Name="OverlayDetail" Style="{StaticResource Label}" Margin="0,8,20,0"
-                                       TextWrapping="Wrap" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Rail Wordmark -->
+                        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,16,0,18">
+                            <TextBlock Text="NEXT" Foreground="{StaticResource Accent}"
+                                       FontSize="15" FontWeight="Bold" FontFamily="Segoe UI"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="CALIBUR" Foreground="{StaticResource Ink}"
+                                       FontSize="10.5" FontWeight="SemiBold" FontFamily="Segoe UI"
+                                       HorizontalAlignment="Center" Margin="0,-2,0,0" />
                         </StackPanel>
-                        <Button x:Name="FixButton" Grid.Column="1" Content="Repair" VerticalAlignment="Center"
-                                Visibility="Collapsed" Click="OnRepairClick" />
+
+                        <!-- Nav Rail Buttons -->
+                        <StackPanel Grid.Row="1">
+                            <RadioButton x:Name="NavSystem" Style="{StaticResource NavItem}" Tag="System"
+                                         GroupName="Nav" IsChecked="True" Checked="OnNavChanged">
+                                <Path Data="{StaticResource IconNavSystem}" Width="24" Height="22" Stretch="Uniform"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavPower" Style="{StaticResource NavItem}" Tag="Power"
+                                         GroupName="Nav" Checked="OnNavChanged">
+                                <Path Data="{StaticResource IconNavPower}" Width="24" Height="22" Stretch="Uniform"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavLighting" Style="{StaticResource NavItem}" Tag="Lighting"
+                                         GroupName="Nav" Checked="OnNavChanged">
+                                <Path Data="{StaticResource IconNavLighting}" Width="24" Height="22" Stretch="Uniform"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                            </RadioButton>
+                        </StackPanel>
                     </Grid>
                 </Border>
-            </Grid>
 
-            <!-- ===== LIGHTING ===== -->
-            <Grid x:Name="PageLighting" Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="336" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <!-- Main Content Area Container -->
+                <Grid Grid.Column="1" Margin="18,14,18,16">
 
-                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,14">
-                    <RadioButton x:Name="TabZoneA" Style="{StaticResource ZoneTab}" Content="Zone A"
-                                 GroupName="Zone" IsChecked="True" Checked="OnZoneTabChanged" Tag="Left" />
-                    <RadioButton x:Name="TabZoneB" Style="{StaticResource ZoneTab}" Content="Zone B"
-                                 GroupName="Zone" Checked="OnZoneTabChanged" Tag="Middle" />
-                    <RadioButton x:Name="TabZoneC" Style="{StaticResource ZoneTab}" Content="Zone C"
-                                 GroupName="Zone" Checked="OnZoneTabChanged" Tag="Right" />
-                </StackPanel>
+                    <!-- ================= PAGE: SYSTEM ================= -->
+                    <Grid x:Name="PageSystem" Visibility="Visible">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="310" />
+                        </Grid.ColumnDefinitions>
 
-                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,16,0">
-                    <Viewbox Stretch="Uniform" MaxHeight="300">
-                        <Grid Width="500" Height="250">
-                            <Border Background="#0A0C11" CornerRadius="12" />
-                            <UniformGrid x:Name="PreviewGrid" Columns="3" Margin="20">
-                                <Border x:Name="PreviewA" CornerRadius="8" Margin="5" Background="#FFFFFF"
-                                        BorderBrush="{StaticResource Accent}" BorderThickness="3">
-                                    <TextBlock Text="A" FontSize="40" FontFamily="Segoe UI" FontWeight="Bold"
-                                               Foreground="#2E000000" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
-                                <Border x:Name="PreviewB" CornerRadius="8" Margin="5" Background="#FFFFFF"
-                                        BorderBrush="Transparent" BorderThickness="3">
-                                    <TextBlock Text="B" FontSize="40" FontFamily="Segoe UI" FontWeight="Bold"
-                                               Foreground="#2E000000" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
-                                <Border x:Name="PreviewC" CornerRadius="8" Margin="5" Background="#FFFFFF"
-                                        BorderBrush="Transparent" BorderThickness="3">
-                                    <TextBlock Text="C" FontSize="40" FontFamily="Segoe UI" FontWeight="Bold"
-                                               Foreground="#2E000000" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
-                            </UniformGrid>
-                        </Grid>
-                    </Viewbox>
-                </Border>
+                        <!-- Left Column: System Status, Banner, and Center Fan Gauges -->
+                        <Grid Grid.Column="0" Margin="0,0,16,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                <StackPanel x:Name="ProfileRow" Grid.Row="2" Grid.Column="0" Orientation="Horizontal"
-                            Margin="0,14,16,0" HorizontalAlignment="Center">
-                    <RadioButton x:Name="ProfOffice" Style="{StaticResource ProfileButton}" Content="Office"
-                                 GroupName="Profile" Checked="OnProfileChecked" Tag="Office" />
-                    <RadioButton x:Name="ProfGaming" Style="{StaticResource ProfileButton}" Content="Gaming"
-                                 GroupName="Profile" Checked="OnProfileChecked" Tag="Gaming" />
-                    <RadioButton x:Name="ProfPerformance" Style="{StaticResource ProfileButton}" Content="Performance"
-                                 GroupName="Profile" Checked="OnProfileChecked" Tag="Performance" />
-                    <RadioButton x:Name="ProfUser" Style="{StaticResource ProfileButton}" Content="User Define"
-                                 GroupName="Profile" IsChecked="True" Checked="OnProfileChecked" Tag="UserDefine" />
-                </StackPanel>
-
-                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Style="{StaticResource Card}">
-                    <StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <ToggleButton x:Name="LedPower" Style="{StaticResource Pill}" IsChecked="True"
-                                              HorizontalAlignment="Left" Click="OnLedPowerToggled" />
-                                <TextBlock Text="LED on/off" Style="{StaticResource Label}" Margin="0,7,0,0" />
+                            <!-- Header & Status Subtitle -->
+                            <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                                <TextBlock Text="System Sensors" FontSize="19" FontWeight="SemiBold"
+                                           Foreground="{StaticResource Ink}" />
+                                <TextBlock x:Name="SubtitleText" Style="{StaticResource StatusTextStyle}"
+                                           Margin="0,3,0,0" Text="Reading sensors..." />
                             </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <ToggleButton x:Name="SelectAll" Style="{StaticResource Pill}"
-                                              HorizontalAlignment="Left" Click="OnSelectAllToggled" />
-                                <TextBlock Text="Select all" Style="{StaticResource Label}" Margin="0,7,0,0" />
+
+                            <!-- Warning Banner (starts Collapsed) -->
+                            <Border x:Name="Banner" Grid.Row="1" Style="{StaticResource Card}"
+                                    Margin="0,0,0,12" Visibility="Collapsed" BorderBrush="{StaticResource Warn}">
+                                <StackPanel>
+                                    <TextBlock x:Name="BannerTitle" Foreground="{StaticResource Warn}"
+                                               FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock x:Name="BannerBody" Style="{StaticResource StatusTextStyle}"
+                                               Margin="0,4,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Center Gauges Dashboard Area -->
+                            <Border Grid.Row="2" Style="{StaticResource Card}" VerticalAlignment="Stretch">
+                                <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="240" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="240" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- CPU Fan & Temp Unit -->
+                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                        <c:FanGauge x:Name="CpuFanGauge" Width="180" Height="180"
+                                                    Value="{Binding Text, ElementName=CpuFan, Converter={StaticResource RpmToDoubleConverter}}"
+                                                    Maximum="6000"
+                                                    ArcBrush="{StaticResource Accent}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,16,0,0">
+                                                <TextBlock x:Name="CpuFan" Text="-- rpm"
+                                                           Style="{StaticResource Value}" FontSize="21"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="CPU FAN" Style="{StaticResource Label}"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </c:FanGauge>
+
+                                        <Border Background="{StaticResource PanelBackground}"
+                                                BorderBrush="{StaticResource Line}" BorderThickness="1"
+                                                CornerRadius="5" Padding="12,8" Margin="0,16,0,0" Width="180">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="CPU TEMPERATURE" Style="{StaticResource Label}"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock x:Name="CpuTemp" Text="-- °C"
+                                                           Style="{StaticResource Value}" FontSize="24"
+                                                           HorizontalAlignment="Center" Margin="0,3,0,0" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- Subtle Vertical Divider -->
+                                    <Border Grid.Column="1" Width="1" Background="{StaticResource Line}"
+                                            Height="240" HorizontalAlignment="Center" />
+
+                                    <!-- GPU Fan & Temp Unit -->
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <c:FanGauge x:Name="GpuFanGauge" Width="180" Height="180"
+                                                    Value="{Binding Text, ElementName=GpuFan, Converter={StaticResource RpmToDoubleConverter}}"
+                                                    Maximum="6000"
+                                                    ArcBrush="{StaticResource Accent}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,16,0,0">
+                                                <TextBlock x:Name="GpuFan" Text="-- rpm"
+                                                           Style="{StaticResource Value}" FontSize="21"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="GPU FAN" Style="{StaticResource Label}"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </c:FanGauge>
+
+                                        <Border Background="{StaticResource PanelBackground}"
+                                                BorderBrush="{StaticResource Line}" BorderThickness="1"
+                                                CornerRadius="5" Padding="12,8" Margin="0,16,0,0" Width="180">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="GPU TEMPERATURE" Style="{StaticResource Label}"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock x:Name="GpuTemp" Text="-- °C"
+                                                           Style="{StaticResource Value}" FontSize="24"
+                                                           HorizontalAlignment="Center" Margin="0,3,0,0" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Right Column: Chamfered Panels for CPU & GPU and Memory & Disk -->
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Panel 1: CPU & GPU -->
+                            <Grid Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Chamfered Header Tab -->
+                                <Border Grid.Row="0" Background="{StaticResource HeaderTabBackground}"
+                                        BorderBrush="{StaticResource Line}" BorderThickness="1,1,1,0"
+                                        HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
+                                        CornerRadius="4,12,0,0">
+                                    <TextBlock Text="CPU &amp; GPU" Style="{StaticResource PanelHeaderTextStyle}" />
+                                </Border>
+
+                                <!-- Panel Content Card -->
+                                <Border Grid.Row="1" Style="{StaticResource Card}" CornerRadius="0,6,6,6">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <!-- CPU Device Row -->
+                                        <Grid Margin="0,0,0,6">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Ellipse Width="8" Height="8" Fill="{StaticResource Good}" Margin="0,0,8,0" />
+                                                <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{StaticResource Ink}" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Text, ElementName=CpuTemp}"
+                                                       Foreground="{Binding Foreground, ElementName=CpuTemp}"
+                                                       FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" />
+                                        </Grid>
+                                        <c:SegmentedBar Value="{Binding Text, ElementName=CpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
+                                                        Minimum="0" Maximum="100" SegmentCount="16" Height="10"
+                                                        LitBrush="{Binding Foreground, ElementName=CpuTemp}" />
+
+                                        <!-- GPU Device Row -->
+                                        <Grid Margin="0,18,0,6">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Ellipse Width="8" Height="8" Fill="{StaticResource Good}" Margin="0,0,8,0" />
+                                                <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{StaticResource Ink}" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Text, ElementName=GpuTemp}"
+                                                       Foreground="{Binding Foreground, ElementName=GpuTemp}"
+                                                       FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" />
+                                        </Grid>
+                                        <c:SegmentedBar Value="{Binding Text, ElementName=GpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
+                                                        Minimum="0" Maximum="100" SegmentCount="16" Height="10"
+                                                        LitBrush="{Binding Foreground, ElementName=GpuTemp}" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Panel 2: Memory & Disk -->
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Chamfered Header Tab -->
+                                <Border Grid.Row="0" Background="{StaticResource HeaderTabBackground}"
+                                        BorderBrush="{StaticResource Line}" BorderThickness="1,1,1,0"
+                                        HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
+                                        CornerRadius="4,12,0,0">
+                                    <TextBlock Text="Memory &amp; Disk" Style="{StaticResource PanelHeaderTextStyle}" />
+                                </Border>
+
+                                <!-- Donut Gauges Card -->
+                                <Border Grid.Row="1" Style="{StaticResource Card}" CornerRadius="0,6,6,6">
+                                    <UniformGrid Columns="2" VerticalAlignment="Center">
+                                        <!-- RAM Donut -->
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <c:DonutGauge Value="42" Maximum="100" Width="82" Height="82"
+                                                          ArcBrush="{StaticResource Accent}" StrokeThickness="7" />
+                                            <TextBlock Text="RAM" Style="{StaticResource Label}"
+                                                       HorizontalAlignment="Center" Margin="0,8,0,0" />
+                                            <TextBlock Text="42%" Style="{StaticResource Value}" FontSize="15"
+                                                       HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                        </StackPanel>
+
+                                        <!-- SSD Donut -->
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <c:DonutGauge Value="68" Maximum="100" Width="82" Height="82"
+                                                          ArcBrush="{StaticResource Accent}" StrokeThickness="7" />
+                                            <TextBlock Text="SSD" Style="{StaticResource Label}"
+                                                       HorizontalAlignment="Center" Margin="0,8,0,0" />
+                                            <TextBlock Text="68%" Style="{StaticResource Value}" FontSize="15"
+                                                       HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                    </UniformGrid>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <!-- ================= PAGE: POWER ================= -->
+                    <Grid x:Name="PagePower" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Power Management" FontSize="19" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Ink}" Margin="0,0,0,16" />
+
+                        <Border Grid.Row="1" Style="{StaticResource Card}">
+                            <Grid VerticalAlignment="Center" Margin="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="ACTIVE POWER OVERLAY" Style="{StaticResource Label}" />
+                                    <TextBlock x:Name="OverlayState" Foreground="{StaticResource Good}"
+                                               FontSize="20" FontWeight="SemiBold" Margin="0,6,0,0"
+                                               Text="Checking..." />
+                                    <TextBlock x:Name="OverlayDetail" Style="{StaticResource StatusTextStyle}"
+                                               Margin="0,10,32,0" TextWrapping="Wrap" LineHeight="18" />
+                                </StackPanel>
+
+                                <Button x:Name="FixButton" Grid.Column="1" Content="Repair"
+                                        VerticalAlignment="Center" Visibility="Collapsed"
+                                        Click="OnRepairClick" Padding="18,8" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ================= PAGE: LIGHTING ================= -->
+                    <Grid x:Name="PageLighting" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="316" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left: Zone Tabs, Vector Keyboard Backlight Preview, Profile Row -->
+                        <Grid Grid.Column="0" Margin="0,0,16,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Zone Selection Tabs -->
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                                <RadioButton x:Name="TabZoneA" Style="{StaticResource ZoneTab}" Content="Zone A"
+                                             GroupName="Zone" IsChecked="True" Checked="OnZoneTabChanged" Tag="Left" />
+                                <RadioButton x:Name="TabZoneB" Style="{StaticResource ZoneTab}" Content="Zone B"
+                                             GroupName="Zone" Checked="OnZoneTabChanged" Tag="Middle" />
+                                <RadioButton x:Name="TabZoneC" Style="{StaticResource ZoneTab}" Content="Zone C"
+                                             GroupName="Zone" Checked="OnZoneTabChanged" Tag="Right" />
                             </StackPanel>
-                            <Button x:Name="ReloadButton" Grid.Column="2" Content="Reload" Click="OnReloadClick"
-                                    Background="#2A3040" Padding="12,5" VerticalAlignment="Top" />
+
+                            <!-- Keyboard Vector Chassis & Backlight Zones Preview -->
+                            <Border Grid.Row="1" Style="{StaticResource Card}" Padding="16">
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Laptop Keyboard Recessed Well -->
+                                    <Border Background="#08090C" BorderBrush="{StaticResource Line}"
+                                            BorderThickness="1.5" CornerRadius="8" Padding="8">
+                                        <Grid Height="240">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Zone A (Left) Backlight Surface -->
+                                            <Border x:Name="PreviewA" Grid.Column="0" CornerRadius="6"
+                                                    Margin="4" Background="#FFFFFF"
+                                                    BorderBrush="{StaticResource Accent}" BorderThickness="2">
+                                                <!-- Realistic Keycap Grid Overlay -->
+                                                <UniformGrid Columns="4" Rows="5" Margin="6" Opacity="0.88">
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                </UniformGrid>
+                                            </Border>
+
+                                            <!-- Zone B (Middle) Backlight Surface -->
+                                            <Border x:Name="PreviewB" Grid.Column="1" CornerRadius="6"
+                                                    Margin="4" Background="#FFFFFF"
+                                                    BorderBrush="Transparent" BorderThickness="2">
+                                                <UniformGrid Columns="4" Rows="5" Margin="6" Opacity="0.88">
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                </UniformGrid>
+                                            </Border>
+
+                                            <!-- Zone C (Right) Backlight Surface -->
+                                            <Border x:Name="PreviewC" Grid.Column="2" CornerRadius="6"
+                                                    Margin="4" Background="#FFFFFF"
+                                                    BorderBrush="Transparent" BorderThickness="2">
+                                                <UniformGrid Columns="4" Rows="5" Margin="6" Opacity="0.88">
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                    <Border Background="#14161C" CornerRadius="3" Margin="2" />
+                                                </UniformGrid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Profile Presets Dock -->
+                            <StackPanel x:Name="ProfileRow" Grid.Row="2" Orientation="Horizontal"
+                                        HorizontalAlignment="Center" Margin="0,12,0,0">
+                                <RadioButton x:Name="ProfOffice" Style="{StaticResource ProfileButton}" Content="Office"
+                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Office" />
+                                <RadioButton x:Name="ProfGaming" Style="{StaticResource ProfileButton}" Content="Gaming"
+                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Gaming" />
+                                <RadioButton x:Name="ProfPerformance" Style="{StaticResource ProfileButton}" Content="Performance"
+                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Performance" />
+                                <RadioButton x:Name="ProfUser" Style="{StaticResource ProfileButton}" Content="User Define"
+                                             GroupName="Profile" IsChecked="True" Checked="OnProfileChecked" Tag="UserDefine" />
+                            </StackPanel>
                         </Grid>
 
-                        <Border Height="1" Background="{StaticResource Line}" Margin="0,16" />
+                        <!-- Right: Lighting Controls Panel -->
+                        <Border Grid.Column="1" Style="{StaticResource Card}" Background="{StaticResource PanelBackground}">
+                            <StackPanel>
+                                <!-- Switches & Reload Row -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                        <WrapPanel x:Name="EffectPanel" HorizontalAlignment="Center">
-                            <RadioButton x:Name="FxStatic" Style="{StaticResource EffectButton}" Content="Static"
-                                         GroupName="Fx" IsChecked="True" Checked="OnEffectChecked"
-                                         Tag="M4,12 A8,8 0 1,1 20,12 A8,8 0 1,1 4,12 Z" />
-                            <RadioButton x:Name="FxBreathing" Style="{StaticResource EffectButton}" Content="Breathing"
-                                         GroupName="Fx" Checked="OnEffectChecked"
-                                         Tag="M2,12 C6,2 10,2 12,12 C14,22 18,22 22,12" />
-                            <RadioButton x:Name="FxBlink" Style="{StaticResource EffectButton}" Content="Blink"
-                                         GroupName="Fx" Checked="OnEffectChecked"
-                                         Tag="M2,18 H7 V6 H13 V18 H18 V6 H22" />
-                            <RadioButton x:Name="FxHeartbeat" Style="{StaticResource EffectButton}" Content="Heartbeat"
-                                         GroupName="Fx" Checked="OnEffectChecked"
-                                         Tag="M2,14 H6 L9,5 L13,20 L16,14 H22" />
-                            <RadioButton x:Name="FxCycle" Style="{StaticResource EffectButton}" Content="Colour cycle"
-                                         GroupName="Fx" Checked="OnEffectChecked"
-                                         Tag="M20,12 A8,8 0 1,1 12,4 M12,1 L12,7 M17,7 L23,7" />
-                            <RadioButton x:Name="FxWave" Style="{StaticResource EffectButton}" Content="Wave"
-                                         GroupName="Fx" Checked="OnEffectChecked"
-                                         Tag="M2,8 C6,3 8,13 12,8 C16,3 18,13 22,8 M2,16 C6,11 8,21 12,16 C16,11 18,21 22,16" />
-                        </WrapPanel>
+                                    <!-- LED On/Off Toggle -->
+                                    <StackPanel Grid.Column="0">
+                                        <ToggleButton x:Name="LedPower" Style="{StaticResource Pill}" IsChecked="True"
+                                                      HorizontalAlignment="Left" Click="OnLedPowerToggled" />
+                                        <TextBlock Text="LED on/off" Style="{StaticResource Label}" Margin="0,5,0,0" />
+                                    </StackPanel>
 
-                        <c:ColourWheel x:Name="Wheel" Width="222" Height="222" Margin="0,16,0,0"
-                                       HorizontalAlignment="Center" ColourPicked="OnColourPicked" />
+                                    <!-- Select All Toggle -->
+                                    <StackPanel Grid.Column="1">
+                                        <ToggleButton x:Name="SelectAll" Style="{StaticResource Pill}"
+                                                      HorizontalAlignment="Left" Click="OnSelectAllToggled" />
+                                        <TextBlock Text="Select all" Style="{StaticResource Label}" Margin="0,5,0,0" />
+                                    </StackPanel>
 
-                        <TextBlock x:Name="WheelHint" Style="{StaticResource Label}" Margin="0,8,0,0"
-                                   TextAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed"
-                                   Text="This effect drives its own colours in firmware, so the wheel does not apply." />
+                                    <!-- Reload Button -->
+                                    <Button x:Name="ReloadButton" Grid.Column="2" Content="Reload"
+                                            Click="OnReloadClick" VerticalAlignment="Top" />
+                                </Grid>
 
-                        <Grid Margin="0,16,0,0">
-                            <TextBlock Text="Brightness" Style="{StaticResource Label}"
-                                       HorizontalAlignment="Left" VerticalAlignment="Center" />
-                            <TextBlock x:Name="BrightnessValue" Text="100%" Foreground="{StaticResource Ink}"
-                                       FontSize="19" FontFamily="Segoe UI" FontWeight="SemiBold"
-                                       HorizontalAlignment="Right" />
-                        </Grid>
-                        <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="100" Value="100"
-                                TickFrequency="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
-                                Margin="0,6,0,0" ValueChanged="OnBrightnessChanged" />
-                    </StackPanel>
-                </Border>
+                                <!-- Subtle Separator -->
+                                <Border Height="1" Background="{StaticResource Line}" Margin="0,10" />
+
+                                <!-- Lighting Effects Grid -->
+                                <UniformGrid x:Name="EffectPanel" Columns="3" HorizontalAlignment="Center">
+                                    <RadioButton x:Name="FxStatic" Style="{StaticResource EffectButton}" Content="Static"
+                                                 GroupName="Fx" IsChecked="True" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxStatic}" />
+                                    <RadioButton x:Name="FxBreathing" Style="{StaticResource EffectButton}" Content="Breathing"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxBreathing}" />
+                                    <RadioButton x:Name="FxBlink" Style="{StaticResource EffectButton}" Content="Blink"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxBlink}" />
+                                    <RadioButton x:Name="FxHeartbeat" Style="{StaticResource EffectButton}" Content="Heartbeat"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxHeartbeat}" />
+                                    <RadioButton x:Name="FxCycle" Style="{StaticResource EffectButton}" Content="Colour cycle"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxCycle}" />
+                                    <RadioButton x:Name="FxWave" Style="{StaticResource EffectButton}" Content="Wave"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{StaticResource IconFxWave}" />
+                                </UniformGrid>
+
+                                <!-- Hardware Colour Wheel -->
+                                <c:ColourWheel x:Name="Wheel" Width="170" Height="170" Margin="0,8,0,0"
+                                               HorizontalAlignment="Center" ColourPicked="OnColourPicked" />
+
+                                <!-- Colour Wheel Hint Text (starts Collapsed) -->
+                                <TextBlock x:Name="WheelHint" Style="{StaticResource Label}" Margin="0,4,0,0"
+                                           TextAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed"
+                                           Text="This effect drives its own colours in firmware, so the wheel does not apply." />
+
+                                <!-- Brightness Controls -->
+                                <Grid Margin="0,8,0,0">
+                                    <TextBlock Text="Brightness" Style="{StaticResource Label}"
+                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="BrightnessValue" Text="100%"
+                                               FontSize="15" FontWeight="SemiBold"
+                                               Foreground="{StaticResource Ink}"
+                                               HorizontalAlignment="Right" />
+                                </Grid>
+                                <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="100" Value="100"
+                                        TickFrequency="10" IsSnapToTickEnabled="True" TickPlacement="None"
+                                        Margin="0,3,0,0" ValueChanged="OnBrightnessChanged" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
-    </Grid>
-    </Grid>
-  </Border>
+    </Border>
 </Window>

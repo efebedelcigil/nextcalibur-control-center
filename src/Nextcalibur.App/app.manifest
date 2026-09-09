@@ -19,6 +19,14 @@
     </application>
   </compatibility>
 
+  <!-- Per-monitor DPI awareness. For WPF this manifest entry is the only way to
+       get PerMonitorV2; without it the process falls back to system-aware and
+       blurs when moved between monitors of different scaling.
+
+       The WinForms analyzer (WFAC010) objects to this and asks for
+       ApplicationHighDpiMode instead. That advice does not apply here: this is a
+       WPF application which enables WinForms solely for the notification-area
+       icon. The warning is suppressed in the project file for that reason. -->
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>
       <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
