@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Nextcalibur.App.Controls"
         Title="Nextcalibur Control Center"
-        Height="670" Width="1050" MinHeight="620" MinWidth="980"
+        Height="610" Width="1120"
+        ResizeMode="NoResize" SizeToContent="Manual"
         Background="#0E1016"
         WindowStartupLocation="CenterScreen">
 
