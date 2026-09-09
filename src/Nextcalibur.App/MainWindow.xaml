@@ -5,7 +5,8 @@
         Title="Nextcalibur Control Center"
         Height="610" Width="1120"
         ResizeMode="NoResize" SizeToContent="Manual"
-        Background="#0E1016"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -190,6 +191,41 @@
             </Setter>
         </Style>
 
+        <!-- Window caption buttons. The native chrome is switched off, so these
+             are the only way to minimise or close. -->
+        <Style x:Key="CaptionButton" TargetType="Button">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="Transparent">
+                            <Path Data="{TemplateBinding Tag}" Width="11" Height="11"
+                                  Stretch="Uniform" Stroke="{TemplateBinding Foreground}"
+                                  StrokeThickness="1.4" StrokeEndLineCap="Round"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#222733" />
+                                <Setter Property="Foreground" Value="{StaticResource Ink}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style TargetType="Button">
             <Setter Property="Background" Value="{StaticResource Accent}" />
             <Setter Property="Foreground" Value="White" />
@@ -215,7 +251,31 @@
         </Style>
     </Window.Resources>
 
+  <Border Background="#0E1016" CornerRadius="10" BorderBrush="{StaticResource Line}" BorderThickness="1">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Custom title bar -->
+        <Grid x:Name="TitleBar" Grid.Row="0" Background="#12141B" MouseLeftButtonDown="OnTitleBarDrag">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="NEXTCALIBUR  CONTROL CENTER" Foreground="{StaticResource Ink}"
+                       FontSize="11.5" FontFamily="Segoe UI" FontWeight="SemiBold"
+                       VerticalAlignment="Center" Margin="16,0,0,0" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Style="{StaticResource CaptionButton}" Click="OnMinimiseClick"
+                        Tag="M0,6 H12" ToolTip="Minimise" />
+                <Button Style="{StaticResource CloseButton}" Click="OnCloseClick"
+                        Tag="M0,0 L11,11 M11,0 L0,11" ToolTip="Close" />
+            </StackPanel>
+        </Grid>
+
+    <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="112" />
             <ColumnDefinition Width="*" />
@@ -468,4 +528,6 @@
             </Grid>
         </Grid>
     </Grid>
+    </Grid>
+  </Border>
 </Window>
