@@ -6,6 +6,16 @@ namespace Nextcalibur.App;
 
 public partial class App : Application
 {
+    /// <summary>
+    /// Names for the single-instance handshake. Both are per-session rather than
+    /// global: two people signed in at once should each get their own window,
+    /// not fight over one.
+    /// </summary>
+    private const string InstanceMutexName = "Nextcalibur.SingleInstance";
+    private const string ShowWindowEventName = "Nextcalibur.ShowWindow";
+
+    private static Mutex? _instanceLock;
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -15,9 +25,78 @@ public partial class App : Application
             .OnFirstRun(_ => RepairPowerOverlayOnFirstRun())
             .Run();
 
+        // One copy at a time. Two would drive the same firmware mailbox and put
+        // two icons in the notification area, and the mailbox holds one command
+        // at a time — a write from one can land between another's, which is the
+        // failure the lighting code takes a lock to avoid within a process.
+        _instanceLock = new Mutex(initiallyOwned: true, InstanceMutexName, out var isFirst);
+        if (!isFirst)
+        {
+            // Someone asked for the application while it was already running,
+            // most likely from the Start menu with the window in the tray. Ask
+            // the copy that is running to show itself, rather than dying
+            // silently and looking like nothing happened.
+            WakeRunningInstance();
+            return;
+        }
+
         var app = new App();
         app.InitializeComponent();
+        ListenForWakeRequests(app);
         app.Run();
+
+        _instanceLock.ReleaseMutex();
+    }
+
+    /// <summary>Signals the running copy to bring its window forward.</summary>
+    private static void WakeRunningInstance()
+    {
+        try
+        {
+            using var wake = EventWaitHandle.OpenExisting(ShowWindowEventName);
+            wake.Set();
+        }
+        catch (WaitHandleCannotBeOpenedException)
+        {
+            // The other copy is starting or stopping and has no handle yet.
+            // Nothing useful to do; it is about to have a window of its own.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // A copy running as another user. Not ours to talk to.
+        }
+    }
+
+    /// <summary>
+    /// Waits for another copy to ask us to show ourselves.
+    ///
+    /// A background thread rather than a timer: it costs nothing while nothing
+    /// happens, which is the normal case for the whole life of the process.
+    /// </summary>
+    private static void ListenForWakeRequests(Application app)
+    {
+        var wake = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+
+        var listener = new Thread(() =>
+        {
+            while (true)
+            {
+                wake.WaitOne();
+                app.Dispatcher.Invoke(() =>
+                {
+                    if (app.MainWindow is not { } window) return;
+                    window.Show();
+                    window.WindowState = WindowState.Normal;
+                    window.Activate();
+                });
+            }
+        })
+        {
+            IsBackground = true,
+            Name = "Nextcalibur wake listener",
+        };
+
+        listener.Start();
     }
 
     /// <summary>
