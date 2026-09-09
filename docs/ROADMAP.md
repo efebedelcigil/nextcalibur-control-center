@@ -39,6 +39,8 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Device names and clock speeds | done, read at runtime |
 | Keyboard illustration | outlined keycaps in live zone colours; 0.033% CPU |
 | Zone selection | dimmed live colour plus a lift; verified on screen |
+| Keyboard hover | stationary, with continuous hit regions; no flicker |
+| One copy at a time | done — a second launch wakes the first |
 | Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
 | Handle leak | **fixed** — WMI from the interface thread; see below |
 | Graphics mode switching | **detection only** — see below |
@@ -65,7 +67,12 @@ evidence rather than confidence.
 | PDH clock reader, pixel-trace illustration | 0.211% | 165 MB |
 | clean SVG, one path per zone, no shader | 0.135% | 180 MB |
 | firmware read moved off the interface thread | 0.042% | 189 MB |
-| outlined keycaps, no backing slab | **0.033%** | 189 MB |
+| outlined keycaps, no backing slab | 0.033% | 189 MB |
+| continuous hit regions, hover stationary | **0.029%** | 185 MB |
+
+A round reported the last change at 0.075% from a **thirty-second** sample and
+called it a cost. Ten minutes on the same build measured 0.029% — the lowest
+figure recorded. The short window was measuring its own noise.
 
 The 0.135% row is the mean of three twenty-five-second runs: 0.168%, 0.082%,
 0.156%. **The spread between those runs is wider than most of the improvements
@@ -136,6 +143,39 @@ The earlier note that this "blocks the release" and would reach hundreds of
 thousands of handles in a day was wrong on the second point: the count was
 bounded by garbage collection all along. It was still a real fault, and the
 first point stood.
+
+### Nothing that moves on hover may move hit-testing
+
+The keyboard's hover state flickered with the pointer held completely still —
+two captures a second apart, no input between them, showed the zone bright in
+one and dim in the other. It was a loop the hover made for itself: hovering
+applied a scale and a translate to the zone, a render transform carries
+hit-testing with it, the moved geometry dropped the pointer into the gap
+between two keycaps, and the gaps had no hit-testable fill. Hover lost,
+transform reverted, hover returned.
+
+Hover now changes opacity only. The lift is kept for the **selected** state,
+where a click rather than the pointer decides it and no feedback is possible.
+Each zone also carries a transparent region behind its keycaps covering the gaps,
+so crossing between two keys no longer drops the highlight.
+
+The general rule, because this will come up again with any growing button or
+sliding card: **whatever moves on hover must not be what is being hovered.**
+Keep hover changes to colour and opacity, and attach movement to a click.
+
+### One copy at a time
+
+Launching the application while it was already running started a second copy:
+two processes on the same firmware mailbox, two notification-area icons. The
+mailbox holds one command at a time, so writes from one could land inside the
+other's sequence — the fault `EcMailbox.Hold()` exists to prevent within a
+process.
+
+A named mutex now decides who runs. The copy that loses signals a named event
+and exits; the copy that owns it brings its window forward, which is what
+someone launching an application that is already in the tray means. Both names
+are per-session rather than global, so two people signed in at once each get
+their own.
 
 ### Verified: the tray backoff, and what going quiet cost
 
