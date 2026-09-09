@@ -55,12 +55,7 @@ order that would matter to somebody who installed this.
    0.3.0 has reached anybody: the threading work, the tray reclamation, the
    whole lighting page and the two items below exist only for people who build
    it themselves.
-2. **There are no tests.** Not one project. The hardware paths cannot be tested
-   without the hardware, but the parts that can — `SmiCommand` round-tripping to
-   bytes, `LedState` persistence, the overlay diagnosis reading a known registry
-   shape, `SystemInfo.Tidy` stripping the noise out of a processor name — are
-   pure functions with no excuse.
-3. **Graphics mode** — determine what the vendor software actually does when each
+2. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
 
@@ -76,6 +71,31 @@ unzip has nothing to replace, and switches itself off rather than failing.
 
 This does not rescue anybody already on 0.3.0 — that version has no updater and
 cannot be told about this one. The chain starts at 0.4.0.
+
+**There are tests** — `tests/Nextcalibur.Core.Tests`, 31 of them, run with
+`dotnet test`. They cover what can be covered without the machine: the 32-byte
+firmware block, asserted against the byte offsets rather than only against a
+round trip, since a round trip agrees with itself when both halves are wrong the
+same way; lighting state, including that black is a colour and not an absent
+one, and that each profile keeps its own; storage arithmetic; processor-name
+tidying; and the coexistence policy, where the invariant that matters is
+*politeness only ever slows us down* — inverting it would turn a collision into
+a stall for both applications.
+
+They were checked by breaking something on purpose: a byte offset moved by four
+in `SmiCommand.ToBytes` failed exactly one test and no others. A test suite
+nobody has seen fail is not evidence.
+
+Two findings came out of writing them. `StorageUse.Describe` took a `unit`
+parameter nothing ever passed, and it only relabelled the string — `Describe("TB")`
+would have printed gigabyte figures with "TB" after them. It is gone.
+`SystemInfo.Tidy` is now `internal` rather than private, with
+`InternalsVisibleTo`, which is the one accommodation the production code makes
+for the tests.
+
+Lighting **persistence** is deliberately not covered: `LedState.Save` writes to
+the real settings directory, and a test that clobbers somebody's keyboard
+colours to prove it can save them costs more than it finds.
 
 **The three settings have an interface**, in the tray menu rather than the
 window: the close button's behaviour, the overheat threshold (never, 80, 85, 90,

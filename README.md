@@ -103,6 +103,7 @@ Requires the .NET 8 SDK.
 
 ```
 dotnet build Nextcalibur.sln -c Release
+dotnet test Nextcalibur.sln -c Release
 ```
 
 To produce the installer as well, you also need the Velopack CLI
