@@ -8,3 +8,5 @@ publish/
 installer/output/
 *.log
 releases/
+
+tools/graphics-*.json
