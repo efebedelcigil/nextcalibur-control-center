@@ -16,7 +16,7 @@
         <Setter Property="Foreground" Value="{StaticResource Muted}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Width" Value="100" />
-        <Setter Property="Height" Value="74" />
+        <Setter Property="Height" Value="68" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
@@ -367,6 +367,100 @@
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- System Mode Tab (Office / Gaming / High Performance) -->
+    <Style x:Key="SystemModeTab" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Width" Value="170" />
+        <Setter Property="Height" Value="46" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border x:Name="Bg" Background="{StaticResource ModeTabInactiveBackground}"
+                                BorderBrush="{StaticResource ModeTabBorder}" BorderThickness="1"
+                                CornerRadius="6">
+                            <Grid>
+                                <!-- Top 2px Highlight Strip (Visible when checked) -->
+                                <Rectangle x:Name="TopStrip" Height="2" VerticalAlignment="Top"
+                                           Fill="{StaticResource ModeTabTopHighlight}" RadiusX="1" RadiusY="1"
+                                           Visibility="Collapsed" Margin="2,0,2,0" />
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource ModeTabActiveBackground}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource ModeTabActiveBorder}" />
+                            <Setter TargetName="TopStrip" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Bg" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="14" ShadowDepth="3" Direction="270" Color="#B05500" Opacity="0.45" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="#FFFFFF" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource HoverSurface}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource ModeTabActiveBackground}" />
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- GPU Display Mode Option Card (Discrete / MS Hybrid / UMA Mode) -->
+    <Style x:Key="GpuOptionCard" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Width" Value="240" />
+        <Setter Property="Height" Value="230" />
+        <Setter Property="Margin" Value="10,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="CardBorder" Background="{StaticResource CardBackground}"
+                            BorderBrush="{StaticResource CardBorder}" BorderThickness="1"
+                            CornerRadius="8" Padding="16,20">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="#151C2B" />
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter Property="Foreground" Value="{StaticResource Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="{StaticResource HoverSurface}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="CardBorder" Property="Background" Value="#182236" />
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

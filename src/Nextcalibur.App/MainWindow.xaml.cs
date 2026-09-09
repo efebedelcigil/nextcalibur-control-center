@@ -14,6 +14,8 @@ namespace Nextcalibur.App;
 public partial class MainWindow : Window
 {
     private readonly PowerOverlayService _power = new();
+    private readonly SystemModeService _modes = new();
+    private readonly GpuModeService _gpu = new();
     private readonly AppSettings _settings = AppSettings.Load();
     private readonly DispatcherTimer _timer = new();
 
@@ -32,6 +34,13 @@ public partial class MainWindow : Window
     /// events a click does.
     /// </summary>
     private bool _ledUiReady;
+
+    /// <summary>
+    /// Same purpose as <see cref="_ledUiReady"/>, for the mode tabs: assigning
+    /// IsChecked while showing the machine's current state must not be mistaken
+    /// for the user asking to change it.
+    /// </summary>
+    private bool _modeUiReady;
 
     public MainWindow()
     {
@@ -91,6 +100,8 @@ public partial class MainWindow : Window
             return;
         }
 
+        LoadSystemMode();
+        LoadGpuMode();
         LoadLightingUi();
 
         _timer.Tick += (_, _) => Sample();
@@ -157,6 +168,93 @@ public partial class MainWindow : Window
         PageLighting.Visibility = NavLighting.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
         if (NavPower.IsChecked == true) RefreshOverlay();
+    }
+
+    // ----------------------------------------------------------- system mode
+
+    private void LoadSystemMode()
+    {
+        _modeUiReady = false;
+        var current = _modes.DetectCurrent();
+        if (current is { } mode) ModeButtonFor(mode).IsChecked = true;
+        _modeUiReady = true;
+    }
+
+    private RadioButton ModeButtonFor(SystemMode mode) => mode switch
+    {
+        SystemMode.Gaming => ModeGaming,
+        SystemMode.Performance => ModePerformance,
+        _ => ModeOffice,
+    };
+
+    private void OnSystemModeChanged(object sender, RoutedEventArgs e)
+    {
+        if (!_modeUiReady) return;
+        if (sender is not RadioButton button || button.Tag is not string tag) return;
+        if (!Enum.TryParse<SystemMode>(tag, out var mode)) return;
+
+        try
+        {
+            SubtitleText.Text = _modes.Apply(mode);
+            RefreshOverlay();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Could not switch mode",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            LoadSystemMode();
+        }
+    }
+
+    // ------------------------------------------------------------ graphics
+
+    private void LoadGpuMode()
+    {
+        var config = _gpu.Detect();
+        GpuModeDetail.Text = GpuModeService.Describe(config);
+
+        if (config.Mode is not { } mode) return;
+        GpuButtonFor(mode).IsChecked = true;
+    }
+
+    private RadioButton GpuButtonFor(GpuMode mode) => mode switch
+    {
+        GpuMode.Hybrid => ModeHybrid,
+        GpuMode.Uma => ModeUma,
+        _ => ModeDiscrete,
+    };
+
+    /// <summary>
+    /// Switching graphics mode is not implemented yet, so this reports the
+    /// current setting and puts the selection back.
+    ///
+    /// The vendor software does this by disabling the graphics card as a device.
+    /// Which of its three buttons produces which device state has not been
+    /// observed on real hardware, and guessing could leave the machine with no
+    /// working display path — so nothing is changed until that is known.
+    /// </summary>
+    private void OnGpuModeChanged(object sender, RoutedEventArgs e)
+    {
+        var config = _gpu.Detect();
+        GpuModeDetail.Text = GpuModeService.Describe(config);
+
+        if (config.Mode is not { } current) return;
+        if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
+
+        MessageBox.Show(this,
+            """
+            Changing graphics mode is not available yet.
+
+            This setting decides whether your screen is driven by the graphics card or
+            the built-in graphics. Getting it wrong can leave you with a blank screen,
+            so Nextcalibur will not change it until the switch has been proven safe on
+            this model.
+
+            For now you can change it in your laptop's BIOS setup.
+            """,
+            "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        GpuButtonFor(current).IsChecked = true;
     }
 
     // ---------------------------------------------------------------- sensors
@@ -435,6 +533,8 @@ public partial class MainWindow : Window
         if (sender is not RadioButton button || button.Tag is not string name) return;
 
         RunLighting(() => _led.SetProfile(name));
+        LoadSystemMode();
+        LoadGpuMode();
         LoadLightingUi();
     }
 

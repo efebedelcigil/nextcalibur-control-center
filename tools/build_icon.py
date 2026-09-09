@@ -96,40 +96,40 @@ def write_ico(images_with_sizes, output_path):
             f.write(png_bytes)
 
 def render_logo_png(size=512):
-    scale = 2
-    r_size = size * scale
+    # Render at 4x supersampling for ultra-crisp antialiased edges
+    scale_factor = 4
+    r_size = size * scale_factor
     im = Image.new('RGBA', (r_size, r_size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(im)
-    s = r_size / 100.0
     
-    # Left facet: crisp white (#FFFFFF)
-    left_facet = [
-        (50*s, 8*s),
-        (50*s, 94*s),
-        (44*s, 86*s),
-        (43*s, 68*s),
-        (24*s, 76*s),
-        (14*s, 64*s),
-        (43*s, 56*s),
-        (34*s, 42*s),
+    # Base polygon points normalized to 0-100
+    base_pts = [
+        (50.0, 8.0),
+        (66.0, 42.0),
+        (57.0, 56.0),
+        (86.0, 64.0),
+        (76.0, 76.0),
+        (57.0, 68.0),
+        (56.0, 86.0),
+        (50.0, 94.0),
+        (44.0, 86.0),
+        (43.0, 68.0),
+        (24.0, 76.0),
+        (14.0, 64.0),
+        (43.0, 56.0),
+        (34.0, 42.0),
     ]
-    draw.polygon(left_facet, fill=(255, 255, 255, 255))
     
-    # Right facet: electric cobalt accent tint (#4C8DFF)
-    right_facet = [
-        (50*s, 8*s),
-        (66*s, 42*s),
-        (57*s, 56*s),
-        (86*s, 64*s),
-        (76*s, 76*s),
-        (57*s, 68*s),
-        (56*s, 86*s),
-        (50*s, 94*s),
-    ]
-    draw.polygon(right_facet, fill=(76, 141, 255, 255))
+    # Bounding box is x in [14, 86] (width 72), y in [8, 94] (height 86)
+    # Center is at (50, 51)
+    # Scale to fit 512 canvas with clean margins (~46px margin on top/bottom)
+    target_height = (size - 92) * scale_factor
+    scale = target_height / 86.0
+    cx = (r_size) / 2.0
+    cy = (r_size) / 2.0
     
-    # Central bevel ridge highlight
-    draw.line([(50*s, 8*s), (50*s, 94*s)], fill=(255, 255, 255, 255), width=max(1, int(3*s)))
+    pts = [(cx + (x - 50.0) * scale, cy + (y - 51.0) * scale) for (x, y) in base_pts]
+    draw.polygon(pts, fill=(255, 255, 255, 255))
     
     im = im.resize((size, size), Image.Resampling.LANCZOS)
     return im
@@ -141,17 +141,10 @@ def main():
     os.makedirs(assets_dir, exist_ok=True)
     os.makedirs(docs_dir, exist_ok=True)
     
-    sizes = [16, 20, 24, 32, 48, 64, 256]
-    images = [render_icon_variant(sz) for sz in sizes]
-    
-    ico_path = os.path.join(assets_dir, 'app.ico')
-    write_ico(images, ico_path)
-    print(f"Generated {ico_path} with sizes {sizes}")
-    
     logo_path = os.path.join(docs_dir, 'logo.png')
     logo_im = render_logo_png(512)
     logo_im.save(logo_path, format='PNG')
-    print(f"Generated {logo_path} (512x512)")
+    print(f"Generated {logo_path} (512x512, centered white symmetric mark)")
 
 if __name__ == '__main__':
     main()
