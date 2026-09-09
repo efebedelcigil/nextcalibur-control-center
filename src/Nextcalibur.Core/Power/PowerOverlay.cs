@@ -24,13 +24,39 @@ public static class PowerOverlays
 
     public static string Describe(Guid overlay)
     {
-        if (overlay == None) return "Balanced (no overlay)";
+        if (overlay == None) return "Balanced";
         if (overlay == BetterBattery) return "Best power efficiency";
         if (overlay == HighPerformance) return "Better performance";
         if (overlay == MaxPerformance) return "Best performance";
-        return $"Unknown ({overlay})";
+        return "Unrecognised";
     }
+
+    /// <summary>The four power modes Windows offers, in order from coolest to fastest.</summary>
+    public static IReadOnlyList<PowerModeOption> All { get; } =
+    [
+        new(BetterBattery, "Best power efficiency",
+            "Longest battery life and the quietest fans. The processor is held back, so " +
+            "heavy work takes longer."),
+
+        new(None, "Balanced",
+            "Windows decides. Speeds up when you need it and settles down when you don't. " +
+            "The right choice for most of the time."),
+
+        new(HighPerformance, "Better performance",
+            "Leans towards speed. Slightly warmer and noisier than Balanced, with quicker " +
+            "responses under load."),
+
+        new(MaxPerformance, "Best performance",
+            "Everything the machine has. Expect noticeably more heat, louder fans and " +
+            "shorter battery life."),
+    ];
 }
+
+/// <summary>One of the power modes offered on the Power page.</summary>
+/// <param name="Overlay">The overlay this option selects.</param>
+/// <param name="Name">Its name, as Windows calls it.</param>
+/// <param name="Description">What choosing it means, in plain terms.</param>
+public readonly record struct PowerModeOption(Guid Overlay, string Name, string Description);
 
 /// <summary>Result of inspecting the machine's power-overlay configuration.</summary>
 /// <param name="ActiveOverlay">The overlay currently in effect.</param>

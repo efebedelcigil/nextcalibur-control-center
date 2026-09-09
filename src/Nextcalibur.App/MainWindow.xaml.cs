@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     private int _consecutiveFailures;
     private bool _exiting;
     private bool _overheatNotified;
+    private bool _mailboxFailed;
 
     /// <summary>
     /// Suppresses hardware writes while the lighting controls are being filled
@@ -66,24 +67,12 @@ public partial class MainWindow : Window
 
         RefreshOverlay();
 
+        RefreshBanner();
+
         if (!EcMailbox.IsSupported())
         {
-            ShowBanner(
-                "This machine is not supported",
-                "Nextcalibur could not find the RW_GMWMI firmware interface. Sensor readings and " +
-                "lighting are unavailable. Power-mode repair still works.",
-                (SolidColorBrush)FindResource("Bad"));
             NavLighting.IsEnabled = false;
             return;
-        }
-
-        if (StockSoftwareIsRunning())
-        {
-            ShowBanner(
-                "The vendor Control Center is running",
-                "It writes to the same firmware mailbox as Nextcalibur, so both will compete and " +
-                "readings may stall. Close it for reliable results.",
-                (SolidColorBrush)FindResource("Warn"));
         }
 
         try
@@ -92,10 +81,10 @@ public partial class MainWindow : Window
             _thermal = new ThermalReader(_mailbox);
             _led = new LedController(_mailbox);
         }
-        catch (EcMailboxUnavailableException ex)
+        catch (EcMailboxUnavailableException)
         {
-            ShowBanner("Could not open the firmware interface", ex.Message,
-                (SolidColorBrush)FindResource("Bad"));
+            _mailboxFailed = true;
+            RefreshBanner();
             NavLighting.IsEnabled = false;
             return;
         }
@@ -165,9 +154,14 @@ public partial class MainWindow : Window
 
         PageSystem.Visibility = NavSystem.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PagePower.Visibility = NavPower.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PageDisplay.Visibility = NavDisplay.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PageLighting.Visibility = NavLighting.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
+        // Both pages describe state that other software can change while we are
+        // running, so re-read it when the page comes into view rather than
+        // showing whatever was true at startup.
         if (NavPower.IsChecked == true) RefreshOverlay();
+        if (NavDisplay.IsChecked == true) LoadGpuMode();
     }
 
     // ----------------------------------------------------------- system mode
@@ -296,9 +290,11 @@ public partial class MainWindow : Window
 
     private void StartTrayPolling()
     {
-        var slow = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
+        var slow = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
         slow.Tick += (_, _) =>
         {
+            RefreshBanner();
+
             if (_thermal is null || !_thermal.TryRead(out var s)) return;
 
             _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
@@ -568,6 +564,40 @@ public partial class MainWindow : Window
     }
 
     // ----------------------------------------------------------------- shared
+
+    /// <summary>
+    /// Decides what the banner should say right now, and hides it when there is
+    /// nothing to say.
+    ///
+    /// This is re-evaluated on a timer rather than only at startup: the most
+    /// common reason for the banner to appear is the vendor software running,
+    /// and the user's natural response is to close it. A warning that stays up
+    /// after the problem is gone teaches people to ignore warnings.
+    /// </summary>
+    private void RefreshBanner()
+    {
+        if (_mailboxFailed || !EcMailbox.IsSupported())
+        {
+            ShowBanner(
+                "This laptop isn't supported",
+                "Nextcalibur can't find the sensors and lighting on this machine, so those " +
+                "pages won't work. Power settings still do.",
+                (SolidColorBrush)FindResource("Bad"));
+            return;
+        }
+
+        if (StockSoftwareIsRunning())
+        {
+            ShowBanner(
+                "Casper's Control Center is open",
+                "Both apps are talking to the same hardware, so readings may stall and " +
+                "lighting changes may not stick. Close it and this message will clear itself.",
+                (SolidColorBrush)FindResource("Warn"));
+            return;
+        }
+
+        Banner.Visibility = Visibility.Collapsed;
+    }
 
     private void ShowBanner(string title, string body, SolidColorBrush colour)
     {
