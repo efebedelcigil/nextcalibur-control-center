@@ -112,10 +112,13 @@ public sealed class GpuModeService
             "This gives the best performance in games, but the card never powers down, " +
             "so the laptop runs hotter and the battery drains faster." +
             IdleCost(load) +
-            "\n\nThis is set in your laptop's BIOS, not here — no software can change it, " +
-            "including the software that came with the machine. If you want the card to " +
-            "idle, restart, open BIOS setup and look for a display or graphics mode " +
-            "setting, then choose MS Hybrid.",
+            "\n\nCasper's own Control Center can change this, through the kernel driver it " +
+            "installs. Nextcalibur will not: it would need that driver and administrator " +
+            "rights, and this application asks for neither. Your BIOS setup may also offer " +
+            "it, as a display or graphics mode setting." +
+            "\n\nWhichever way you do it, expect a restart — and be ready to set up your " +
+            "Windows PIN again. Changing the display path changes what the TPM measures at " +
+            "boot, which can also ask for a BitLocker recovery key. Have it to hand.",
 
         GpuMode.Hybrid =>
             "Your screen is driven by the built-in graphics, and the graphics card wakes " +

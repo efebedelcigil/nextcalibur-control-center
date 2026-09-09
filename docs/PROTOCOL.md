@@ -249,38 +249,72 @@ bundled INI list of NVIDIA PCI IDs.
 No code path was found that sends a `GPUMMode` value to firmware. **The real
 display-path setting lives in BIOS.** Software can only disable the discrete GPU.
 
-#### Confirmed, including the restart
+#### Corrected: the software *can* switch, through its kernel driver
 
-The restart the vendor software asks for after a mode change was the reason to
-look again — a reboot usually means something persistent was written. Nothing
-was.
+An earlier version of this section said the display path was a BIOS setting that
+no software could change, and that the restart prompt proved nothing. **Both
+were wrong**, and the machine disproved them: pressing MS Hybrid and accepting
+the restart moved the panel from the discrete card to the integrated one.
 
-| Checked | Result |
+| | Before the change | After the reboot |
+|---|---|---|
+| Intel UHD | no display | **1920x1080, driving the panel** |
+| RTX 4050 | 1920x1080, driving the panel | **no display** |
+
+The mistake was searching the wrong layer. `SetFirmwareEnvironmentVariable` and
+friends appear nowhere in the managed code, which is true and was measured — but
+irrelevant, because the managed code does not talk to firmware. `DeviceIoControl`
+lives in `ControlCenterC64.dll`, the native library, which reaches
+`ControlCenter64.sys`, the kernel driver the vendor installs. A kernel driver
+needs no such API: it can address the embedded controller or ACPI directly, and
+nothing it does surfaces as a string in the managed assembly.
+
+**A negative result only covers where you looked.**
+
+#### What the buttons do
+
+| Button | Effect |
 |---|---|
-| `SetFirmwareEnvironmentVariable` / `NtSetSystemEnvironmentValue` / NVRAM / UEFI, across `ControlCenter.exe`, `ControlCenterC64.dll`, `ControlCenterDaemon.exe` and `ControlCenter64.sys` | **zero occurrences** |
-| What `MyGPUFunc::SwitchDevice` does | reads `VGA_HWID` and `VGA_Framework`, disables the first, `Thread::Sleep(1000)`, disables the second |
-| How the disable is performed | `DisableHardware::DisableDevice` → `SP_PROPCHANGE_PARAMS` → `SetupDiSetClassInstallParams` → `SetupDiChangeState`, with `DICS_DISABLE` / `DICS_ENABLE` and `DICS_FLAG_GLOBAL` |
-| What the two devices are, from `VGA.ini` | `[HWID]` — eighteen `PCI\VEN_10DE&…&SUBSYS_…152D` display adapters; `[Framework]` — `ACPI\VEN_NVDA&DEV_0820`, the Optimus ACPI companion |
+| MS Hybrid | switches the display path to the integrated GPU, through the driver; persists across reboot |
+| Discrete | switches it back to the discrete GPU |
+| UMA | disables the discrete GPU as a device, through SetupDi — refused directly from Discrete: *"Please switch to Hybrid mode first"* |
 
-So the restart is Windows rebuilding the display stack after a display adapter
-is disabled or enabled. It is not a BIOS setting waiting for a boot, because
-nothing writes one.
+That refusal is the vendor enforcing the same safety rule this project derived
+independently: in Discrete the panel is driven by the discrete card, so
+disabling it takes the screen with it.
+
+The SetupDi path is real and was decoded — `MyGPUFunc::SwitchDevice` reads
+`VGA_HWID` and `VGA_Framework`, disables the first, sleeps a second, disables
+the second, via `SP_PROPCHANGE_PARAMS`, `SetupDiSetClassInstallParams` and
+`SetupDiChangeState`. `VGA.ini` names them: eighteen `PCI\VEN_10DE&…&SUBSYS_…152D`
+adapters and `ACPI\VEN_NVDA&DEV_0820`, the Optimus ACPI companion. On the
+development machine that second device does not exist, so only the adapter is
+touched. But that path is UMA, not the Discrete/Hybrid switch.
+
+#### The restart has a cost nobody mentions
+
+Changing the mode **invalidated the Windows Hello PIN**. It had to be set up
+again from scratch. That is the signature of a change to something measured at
+boot: TPM-sealed credentials are bound to platform configuration registers, and
+moving the display path changes what is measured.
+
+Worth stating plainly for anyone who does this: on a machine with BitLocker
+bound to the TPM, the same change can ask for a recovery key at the next boot.
+**Have it to hand before switching.** The vendor software gives no such warning.
+
+#### Why Nextcalibur still does not switch
+
+Not because it is impossible — because of how it would have to be done. The
+switch needs an undocumented IOCTL into a kernel driver this project does not
+ship and will not install, and it needs administrator. Both are things this
+project has ruled out, and neither is a limitation to be worked around later
+without the decision being revisited deliberately.
 
 `HSR` is a separate feature and not a graphics mode at all: the strings around
 it are `HSR_OFF_120_OnClick`, `HSR_ON_240_OnClick` and icons named
 `ic_hsr_120_mode_*` / `ic_hsr_240_mode_*`. It switches the panel between 120 Hz
-and 240 Hz, and it has its own restart prompt — `HSR Click Force restart`.
-
-**Consequence for this project.** Discrete against MS Hybrid cannot be changed
-by any application, including the one that shipped with the machine. The single
-thing software can do is switch the card off, and `SetupDiChangeState` with
-`DICS_FLAG_GLOBAL` requires administrator — which this project has committed
-never to request. Both reasons are sufficient on their own, so the page reports
-and does not switch, and says where the setting really is.
-
-Consequence worth knowing: on a machine left in Discrete mode, the panel is
-driven by the dGPU, the iGPU drives nothing, and the dGPU never reaches its low
-power states — measured 2220 MHz / 17 W at 1–6% utilisation.
+and 240 Hz, and it has its own restart prompt. Out of scope by the user's
+decision: NVIDIA's and Windows' own settings already do that.
 
 ### Power management
 
