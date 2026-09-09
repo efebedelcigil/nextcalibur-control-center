@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -46,7 +45,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        _timer.Interval = TimeSpan.FromMilliseconds(_settings.PollIntervalMs);
+        ApplyPollInterval();
         Loaded += OnLoaded;
         StateChanged += OnStateChanged;
         Closing += OnClosing;
@@ -294,6 +293,7 @@ public partial class MainWindow : Window
         slow.Tick += (_, _) =>
         {
             RefreshBanner();
+            ApplyPollInterval();
 
             if (_thermal is null || !_thermal.TryRead(out var s)) return;
 
@@ -574,6 +574,17 @@ public partial class MainWindow : Window
     /// and the user's natural response is to close it. A warning that stays up
     /// after the problem is gone teaches people to ignore warnings.
     /// </summary>
+    /// <summary>
+    /// Sets the sampling interval for present conditions. Sharing the mailbox
+    /// with the vendor software means backing off rather than competing.
+    /// </summary>
+    private void ApplyPollInterval()
+    {
+        var ms = VendorSoftware.PollIntervalMs(_settings.PollIntervalMs);
+        if (Math.Abs(_timer.Interval.TotalMilliseconds - ms) < 1) return;
+        _timer.Interval = TimeSpan.FromMilliseconds(ms);
+    }
+
     private void RefreshBanner()
     {
         if (_mailboxFailed || !EcMailbox.IsSupported())
@@ -586,7 +597,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (StockSoftwareIsRunning())
+        if (VendorSoftware.IsRunning())
         {
             ShowBanner(
                 "Casper's Control Center is open",
@@ -608,20 +619,4 @@ public partial class MainWindow : Window
         Banner.Visibility = Visibility.Visible;
     }
 
-    private static bool StockSoftwareIsRunning()
-    {
-        foreach (var name in new[] { "ControlCenter", "ControlCenterDaemon" })
-        {
-            var found = Process.GetProcessesByName(name);
-            try
-            {
-                if (found.Length > 0) return true;
-            }
-            finally
-            {
-                foreach (var p in found) p.Dispose();
-            }
-        }
-        return false;
-    }
 }

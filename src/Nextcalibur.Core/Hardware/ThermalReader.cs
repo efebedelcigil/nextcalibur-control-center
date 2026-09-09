@@ -34,9 +34,12 @@ public sealed class ThermalReader(EcMailbox mailbox)
     /// </summary>
     public ThermalSample Read()
     {
+        // Retry less hard while the vendor software is running; hammering a
+        // shared mailbox turns one collision into a stall for both of us.
         var response = _mailbox.Execute(
             SmiCommand.For(SmiFamily.Read, SmiSubsystem.Thermal),
-            IsComplete);
+            IsComplete,
+            attempts: VendorSoftware.Attempts());
 
         return new ThermalSample(
             CpuTemperatureC: (int)response.A2,
