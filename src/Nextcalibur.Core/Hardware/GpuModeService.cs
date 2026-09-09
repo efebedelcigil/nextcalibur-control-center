@@ -116,9 +116,10 @@ public sealed class GpuModeService
             "installs. Nextcalibur will not: it would need that driver and administrator " +
             "rights, and this application asks for neither. Your BIOS setup may also offer " +
             "it, as a display or graphics mode setting." +
-            "\n\nWhichever way you do it, expect a restart — and be ready to set up your " +
-            "Windows PIN again. Changing the display path changes what the TPM measures at " +
-            "boot, which can also ask for a BitLocker recovery key. Have it to hand.",
+            "\n\nIf you change it anywhere: find your BitLocker recovery key first. " +
+            "Switching which chip drives the screen changes what the TPM measures at " +
+            "startup, and the next boot can ask for that key — without it the drive does " +
+            "not open. Expect it to reset your Windows PIN as well.",
 
         GpuMode.Hybrid =>
             "Your screen is driven by the built-in graphics, and the graphics card wakes " +
