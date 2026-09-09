@@ -177,6 +177,17 @@ broadcast selectors — but both broadcasts do work.
 | 3+ | off (out of range) |
 
 Three levels, matching the three stops on the vendor UI's brightness slider.
+Levels 1 and 2 are visibly distinct on the hardware.
+
+Three steps is too coarse to be a useful control, so **Nextcalibur does not use
+this field for brightness**. It pins it to 2 and dims by scaling the RGB values
+instead — the same technique the vendor software uses, visible in the captured
+value `0x10101010`, a dark grey rather than a reduced brightness field.
+
+Scaling was measured across the full range in ten-point steps. All eleven levels
+from 0% to 100% are distinguishable by eye, and the progression reads as even,
+so no gamma correction is applied. Mixing both mechanisms was rejected: the
+hardware field would silently cap what the scaling could reach.
 
 ### Effects (`E`)
 

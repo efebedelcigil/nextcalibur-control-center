@@ -38,6 +38,28 @@
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
 
+        <Style x:Key="Swatch" TargetType="Button">
+            <Setter Property="Width" Value="66" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6"
+                                BorderBrush="{StaticResource Line}" BorderThickness="1" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Width" Value="150" />
+        </Style>
+
         <Style TargetType="Button">
             <Setter Property="Background" Value="{StaticResource Accent}" />
             <Setter Property="Foreground" Value="White" />
@@ -115,8 +137,10 @@
             </Border>
         </UniformGrid>
 
-        <!-- Power -->
-        <Border Grid.Row="3" Style="{StaticResource Card}" VerticalAlignment="Top">
+        <!-- Power + lighting -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -135,6 +159,57 @@
                         Visibility="Collapsed" Click="OnRepairClick" />
             </Grid>
         </Border>
+
+        <!-- Lighting -->
+        <Border x:Name="LedCard" Style="{StaticResource Card}" Margin="0,14,0,0">
+            <StackPanel>
+                <TextBlock Text="KEYBOARD LIGHTING" Style="{StaticResource Label}" />
+
+                <TextBlock Style="{StaticResource Label}" Margin="0,10,0,0" TextWrapping="Wrap"
+                           Text="Colour is per zone. Effect and brightness apply to the whole keyboard." />
+
+                <UniformGrid Columns="3" Margin="0,12,0,0">
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Zone A - left" Style="{StaticResource Label}" Margin="0,0,0,6" />
+                        <Button x:Name="ZoneA" Style="{StaticResource Swatch}" HorizontalAlignment="Left"
+                                Background="#FFFFFF" Click="OnZoneClick" Tag="Left" />
+                    </StackPanel>
+                    <StackPanel Margin="10,0">
+                        <TextBlock Text="Zone B - middle" Style="{StaticResource Label}" Margin="0,0,0,6" />
+                        <Button x:Name="ZoneB" Style="{StaticResource Swatch}" HorizontalAlignment="Left"
+                                Background="#FFFFFF" Click="OnZoneClick" Tag="Middle" />
+                    </StackPanel>
+                    <StackPanel Margin="10,0,0,0">
+                        <TextBlock Text="Zone C - right" Style="{StaticResource Label}" Margin="0,0,0,6" />
+                        <Button x:Name="ZoneC" Style="{StaticResource Swatch}" HorizontalAlignment="Left"
+                                Background="#FFFFFF" Click="OnZoneClick" Tag="Right" />
+                    </StackPanel>
+                </UniformGrid>
+
+                <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Effect" Style="{StaticResource Label}" Margin="0,0,0,6" />
+                        <ComboBox x:Name="EffectBox" SelectionChanged="OnEffectChanged" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,20,0" Width="240">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBlock Text="Brightness" Style="{StaticResource Label}" />
+                            <TextBlock x:Name="BrightnessValue" Style="{StaticResource Label}"
+                                       Margin="8,0,0,0" Foreground="{StaticResource Ink}" Text="100%" />
+                        </StackPanel>
+                        <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="100"
+                                TickFrequency="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
+                                VerticalAlignment="Center"
+                                ValueChanged="OnBrightnessChanged" />
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom">
+                        <Button Content="Lights off" Click="OnLightsOffClick" Background="#33384A" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        </StackPanel>
+        </ScrollViewer>
 
         <TextBlock Grid.Row="4" Style="{StaticResource Label}" Margin="0,16,0,0" TextWrapping="Wrap"
                    Text="Not affiliated with Casper, Tongfang, or Uniwill. Trademarks belong to their owners." />
