@@ -1,0 +1,142 @@
+<Window x:Class="Nextcalibur.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nextcalibur Control Center"
+        Height="560" Width="880"
+        MinHeight="480" MinWidth="720"
+        Background="#12141A"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Ink"     Color="#E8EAF0" />
+        <SolidColorBrush x:Key="Muted"   Color="#8A90A0" />
+        <SolidColorBrush x:Key="Panel"   Color="#1B1E27" />
+        <SolidColorBrush x:Key="Line"    Color="#2A2F3D" />
+        <SolidColorBrush x:Key="Accent"  Color="#4C8DFF" />
+        <SolidColorBrush x:Key="Good"    Color="#3FBF7F" />
+        <SolidColorBrush x:Key="Warn"    Color="#E8A33D" />
+        <SolidColorBrush x:Key="Bad"     Color="#E5484D" />
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Panel}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="18,16" />
+        </Style>
+
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+        </Style>
+
+        <Style x:Key="Value" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Ink}" />
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Accent}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,18">
+            <TextBlock Text="Nextcalibur Control Center" FontSize="20" FontWeight="SemiBold"
+                       FontFamily="Segoe UI" Foreground="{StaticResource Ink}" />
+            <TextBlock x:Name="SubtitleText" Style="{StaticResource Label}" Margin="0,4,0,0"
+                       Text="Independent open-source control center" />
+        </StackPanel>
+
+        <!-- Banner -->
+        <Border x:Name="Banner" Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,14"
+                Visibility="Collapsed" BorderBrush="{StaticResource Warn}">
+            <StackPanel>
+                <TextBlock x:Name="BannerTitle" Foreground="{StaticResource Warn}" FontSize="13"
+                           FontWeight="SemiBold" FontFamily="Segoe UI" TextWrapping="Wrap" />
+                <TextBlock x:Name="BannerBody" Style="{StaticResource Label}" Margin="0,6,0,0"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <!-- Sensors -->
+        <UniformGrid Grid.Row="2" Columns="4" Margin="0,0,0,14">
+            <Border Style="{StaticResource Card}" Margin="0,0,7,0">
+                <StackPanel>
+                    <TextBlock Text="CPU TEMPERATURE" Style="{StaticResource Label}" />
+                    <TextBlock x:Name="CpuTemp" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="7,0,7,0">
+                <StackPanel>
+                    <TextBlock Text="CPU FAN" Style="{StaticResource Label}" />
+                    <TextBlock x:Name="CpuFan" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="7,0,7,0">
+                <StackPanel>
+                    <TextBlock Text="GPU TEMPERATURE" Style="{StaticResource Label}" />
+                    <TextBlock x:Name="GpuTemp" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="7,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="GPU FAN" Style="{StaticResource Label}" />
+                    <TextBlock x:Name="GpuFan" Style="{StaticResource Value}" Text="--" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Power -->
+        <Border Grid.Row="3" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="POWER MODE" Style="{StaticResource Label}" />
+                    <TextBlock x:Name="OverlayState" Foreground="{StaticResource Ink}" FontSize="17"
+                               FontFamily="Segoe UI" FontWeight="SemiBold" Margin="0,6,0,0" Text="Checking..." />
+                    <TextBlock x:Name="OverlayDetail" Style="{StaticResource Label}" Margin="0,8,0,0"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Button x:Name="FixButton" Grid.Column="1" Content="Repair" VerticalAlignment="Center"
+                        Visibility="Collapsed" Click="OnRepairClick" />
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Row="4" Style="{StaticResource Label}" Margin="0,16,0,0" TextWrapping="Wrap"
+                   Text="Not affiliated with Casper, Tongfang, or Uniwill. Trademarks belong to their owners." />
+    </Grid>
+</Window>

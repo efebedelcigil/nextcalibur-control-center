@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Nextcalibur</AssemblyName>
+    <RootNamespace>Nextcalibur.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Product>Nextcalibur Control Center</Product>
+    <Company>Nextcalibur</Company>
+    <Version>0.1.0</Version>
+    <StartupObject>Nextcalibur.App.App</StartupObject>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+
+  <!-- A custom Main is needed so Velopack's hooks run before any UI exists.
+       WPF would otherwise generate its own entry point from App.xaml, so App.xaml
+       is compiled as a Page and the entry point is declared explicitly above. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Nextcalibur.Core\Nextcalibur.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.0" />
+  </ItemGroup>
+
+</Project>
