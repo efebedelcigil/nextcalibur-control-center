@@ -107,10 +107,7 @@ application knows what the machine is set to.
 need a dependency property bound with `DynamicResource`. A `Brush` stored in a
 field at construction will not follow a theme change.
 
-## Still missing
-
-The RAM and disk gauges on the System page have no `x:Name`, so the code cannot
-feed them real values and they currently show fixed numbers. They need:
+### Memory and disk
 
 | `x:Name` | Type | Notes |
 |---|---|---|
@@ -118,5 +115,12 @@ feed them real values and they currently show fixed numbers. They need:
 | `RamPercent`, `SsdPercent` | `TextBlock` | the large reading |
 | `RamDetail`, `SsdDetail` | `TextBlock` | the capacity line |
 
-Until then those four numbers are placeholders, which is the one thing this
-project does not otherwise do.
+### Device names
+
+| `x:Name` | Type | Notes |
+|---|---|---|
+| `CpuName`, `GpuName` | `TextBlock` | code writes the model read from the system |
+
+No hardware model may appear in the markup. The repository is public: a
+hardcoded name would be wrong on every other machine and would publish a detail
+of the author's own. Leave these empty; the code fills them at startup.
