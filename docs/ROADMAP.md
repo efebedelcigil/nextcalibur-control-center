@@ -69,8 +69,28 @@ between runs is wider than most of the improvements being measured**, so take a
 single reading as an indication and not a result — three runs minimum, and treat
 anything under a factor of two as noise.
 
-Memory has gone the other way: 145 MB at the start, 180 MB now. Worth a look
-before release.
+Memory has gone the other way: 145 MB at the start, 180 MB now.
+
+### Open: a handle leak
+
+The process gains kernel handles steadily — measured at roughly 3.5 per second,
+climbing from 949 to 1504 over three minutes with no plateau. Private memory is
+stable at 122–125 MB throughout, and GDI and USER object counts are flat at 41
+and 35, so this is neither a rendering leak nor a memory leak.
+
+What is known:
+
+- It is **not** in `Nextcalibur.Core`. The command-line tool doing the same
+  sensor reads holds steady at 232 handles, and the clock readers at 264.
+- Caching two repeated WMI calls — the interface check that ran every five
+  seconds, and the vendor-process detection that ran on every sensor read —
+  reduced the rate but did not stop it.
+- It continues at the same rate whether or not the window is on screen.
+
+At this rate a machine left running for a day would reach a few hundred thousand
+handles, so it does need fixing before anyone relies on the application running
+unattended. Finding it properly needs a handle profiler, or bisecting the work
+the timers do until the growth stops.
 
 For comparison, the fault this application exists to fix pinned the processor at
 4.1 GHz while idle.

@@ -35,8 +35,42 @@ public static class VendorSoftware
     /// </summary>
     public const int PoliteAttempts = 3;
 
+    /// <summary>
+    /// How long a detection result is reused.
+    ///
+    /// This matters more than it looks. Answering the question costs a full
+    /// process enumeration, and the answer is needed on every sensor read — so
+    /// without a cache the hot path walked every process on the machine twice a
+    /// second. That leaked handles at roughly four a second and showed up as
+    /// steadily climbing memory.
+    /// </summary>
+    private static readonly TimeSpan CacheFor = TimeSpan.FromSeconds(4);
+
+    private static readonly object Gate = new();
+    private static DateTime _checkedAt = DateTime.MinValue;
+    private static bool _running;
+
     /// <summary>True when the vendor Control Center or its daemon is running.</summary>
     public static bool IsRunning()
+    {
+        lock (Gate)
+        {
+            var now = DateTime.UtcNow;
+            if (now - _checkedAt < CacheFor) return _running;
+
+            _running = Detect();
+            _checkedAt = now;
+            return _running;
+        }
+    }
+
+    /// <summary>Forces the next <see cref="IsRunning"/> call to look again.</summary>
+    public static void Invalidate()
+    {
+        lock (Gate) _checkedAt = DateTime.MinValue;
+    }
+
+    private static bool Detect()
     {
         foreach (var name in ProcessNames)
         {
@@ -47,6 +81,8 @@ public static class VendorSoftware
             }
             finally
             {
+                // Each Process holds a handle. Left undisposed these accumulate
+                // for the life of the application.
                 foreach (var p in found) p.Dispose();
             }
         }

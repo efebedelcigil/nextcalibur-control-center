@@ -22,6 +22,17 @@ public partial class MainWindow : Window
     private readonly AppSettings _settings = AppSettings.Load();
     private readonly DispatcherTimer _timer = new();
 
+    /// <summary>Slow-timer cadence while the window is on screen.</summary>
+    private static readonly TimeSpan VisibleSlowInterval = TimeSpan.FromSeconds(5);
+
+    /// <summary>
+    /// Slow-timer cadence while hidden in the notification area. Only the
+    /// overheat check runs at this point, and a fault that has been building for
+    /// half a minute is not less of a fault for being noticed a few seconds
+    /// later.
+    /// </summary>
+    private static readonly TimeSpan HiddenSlowInterval = TimeSpan.FromSeconds(30);
+
     private EcMailbox? _mailbox;
     private ThermalReader? _thermal;
     private LedController? _led;
@@ -31,6 +42,17 @@ public partial class MainWindow : Window
     private bool _exiting;
     private bool _overheatNotified;
     private bool _mailboxFailed;
+
+    /// <summary>
+    /// Whether the firmware interface was found at startup.
+    ///
+    /// Cached deliberately. Asking WMI costs a fresh scope connection and a
+    /// query, and the banner asked every five seconds — which leaked kernel
+    /// handles at roughly four a second and was the application's only leak.
+    /// The answer cannot change while the process runs: the interface is a
+    /// property of the machine, not of anything we do.
+    /// </summary>
+    private bool _mailboxSupported;
 
     /// <summary>
     /// Suppresses hardware writes while the lighting controls are being filled
@@ -76,6 +98,8 @@ public partial class MainWindow : Window
         // None of this needs the firmware interface, so it runs before the
         // check that can bail out — an unsupported machine still gets its
         // device names, power page and storage readings.
+        _mailboxSupported = EcMailbox.IsSupported();
+
         RefreshOverlay();
         LoadPowerModes();
         LoadDeviceNames();
@@ -84,7 +108,7 @@ public partial class MainWindow : Window
         RefreshBanner();
         StartSlowTimer();
 
-        if (!EcMailbox.IsSupported())
+        if (!_mailboxSupported)
         {
             NavLighting.IsEnabled = false;
             return;
@@ -123,8 +147,15 @@ public partial class MainWindow : Window
     {
         // Sampling costs a firmware round trip. There is nothing to update while
         // the window is not on screen, so stop rather than burn the mailbox.
-        if (WindowState == WindowState.Minimized) _timer.Stop();
-        else if (_thermal is not null) _timer.Start();
+        if (WindowState == WindowState.Minimized)
+        {
+            _timer.Stop();
+            TrimWorkingSet();
+        }
+        else if (_thermal is not null)
+        {
+            _timer.Start();
+        }
     }
 
     private void OnClosing(object? sender, CancelEventArgs e)
@@ -145,6 +176,7 @@ public partial class MainWindow : Window
         e.Cancel = true;
         Hide();
         _timer.Stop();
+        TrimWorkingSet();
     }
 
     // ------------------------------------------------------------ window chrome
@@ -158,6 +190,36 @@ public partial class MainWindow : Window
     }
 
     private void OnMinimiseClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    [System.Runtime.InteropServices.DllImport("psapi.dll")]
+    private static extern bool EmptyWorkingSet(IntPtr process);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    private static extern IntPtr GetCurrentProcess();
+
+    /// <summary>
+    /// Asks Windows to page out what the window was using.
+    ///
+    /// This does not free memory — the pages are still committed and come back
+    /// when needed. It hands back the resident set of a window nobody is
+    /// looking at, which is what a tray application should do rather than
+    /// holding a hundred-odd megabytes of rendering state on screen-less watch.
+    /// </summary>
+    private static void TrimWorkingSet()
+    {
+        try
+        {
+            // The kernel32 call returns a pseudo-handle that needs no cleanup.
+            // Process.GetCurrentProcess() would hand back an object holding a
+            // real handle, which is the sort of thing this method exists to
+            // avoid accumulating.
+            EmptyWorkingSet(GetCurrentProcess());
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            // A nicety; never worth failing over.
+        }
+    }
 
     // Close hides to the tray; OnClosing decides. Exit is in the tray menu.
     private void OnCloseClick(object sender, RoutedEventArgs e) => Close();
@@ -467,13 +529,26 @@ public partial class MainWindow : Window
 
     private void StartSlowTimer()
     {
-        var slow = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+        var slow = new DispatcherTimer { Interval = VisibleSlowInterval };
         slow.Tick += (_, _) =>
         {
-            RefreshBanner();
-            ApplyPollInterval();
-            RefreshStorage();
-            if (_theme.PollForChange()) ApplyTheme();
+            // Everything below the guard exists to keep the window truthful.
+            // While it is in the notification area there is nothing to keep
+            // truthful, so none of it runs and the timer itself slows down.
+            var onScreen = IsVisible && WindowState != WindowState.Minimized;
+            slow.Interval = onScreen ? VisibleSlowInterval : HiddenSlowInterval;
+
+            if (onScreen)
+            {
+                RefreshBanner();
+                ApplyPollInterval();
+                RefreshStorage();
+                if (_theme.PollForChange()) ApplyTheme();
+            }
+
+            // The overheat warning is the one thing worth a firmware read while
+            // hidden — it is the reason the application stays resident at all.
+            if (_settings.CpuWarningTemperatureC <= 0 && !onScreen) return;
 
             if (_thermal is null || !_thermal.TryRead(out var s)) return;
 
@@ -773,7 +848,7 @@ public partial class MainWindow : Window
 
     private void RefreshBanner()
     {
-        if (_mailboxFailed || !EcMailbox.IsSupported())
+        if (_mailboxFailed || !_mailboxSupported)
         {
             ShowBanner(
                 "This laptop isn't supported",
