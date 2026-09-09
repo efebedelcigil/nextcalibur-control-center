@@ -3,13 +3,59 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-**Nothing is outstanding.** The four faults from the previous brief are fixed
-and checked against the running application, not against the report of it. The
-next instruction comes from the user.
+One fault, and it is the hover state on the keyboard.
+
+---
+
+## Hovering a zone flickers, and the hover is what breaks it
+
+Park the pointer on the spacebar and leave it there. The middle zone alternates
+between hovered and not hovered, on its own, with the mouse held still. Two
+captures a second apart with no input between them show the zone bright in one
+and dim in the other.
+
+It is a feedback loop, and both halves of it are in `MainWindow.xaml`:
+
+1. Hovering a zone applies `ScaleTransform 1.012` and `TranslateTransform Y="-1"`
+   to the whole `RadioButton`. A render transform moves hit-testing with it, and
+   the scale is about the origin rather than the centre, so points far from the
+   top-left move by several pixels, not one.
+2. The moved geometry slides the pointer off a keycap and into the gap between
+   two keys — and the gaps are not hit-testable. `Fill="#01000000"` covers the
+   keycap rectangles only, so there is nothing to hover between them.
+
+Hover is lost, the transform reverts, the pointer is back over the keycap, hover
+returns. Round and round, at layout speed.
+
+### What to change
+
+**Hover must not move anything.** Take `RenderTransform` out of both hover
+triggers in all three zone styles. Hover may change opacity, stroke thickness,
+stroke colour — anything that does not alter where the shape is. Keep the lift
+for the **selected** state: selection comes from a click, so it cannot feed back
+into the pointer.
+
+**Give each zone a continuous hit region.** Even standing still, dragging across
+the deck should not drop the hover every time the pointer crosses between two
+keys. Put a transparent filled shape behind each zone's keycaps covering that
+zone's whole area, gaps included, and let that carry the hit-testing. The three
+regions tile the deck and do not overlap, so no zone can steal another's hover.
+
+Once the zones no longer overlap or move, the `Panel.ZIndex` juggling on hover
+has nothing left to do and can go.
+
+### How to check it
+
+Park the pointer over a large key and watch for ten seconds without touching the
+mouse: the zone must hold one state. Then move slowly across a zone, over keys
+and the gaps between them: the highlight must stay on, not blink at every gap.
+Do this before reporting it fixed.
 
 ---
 
 ## What the last round settled, so it does not get undone
+
+These are right. Do not disturb them while fixing the hover.
 
 - **Zone colour is never grey.** Each zone's key outlines are bound to that
   zone's own live colour, published by the code-behind on `PreviewA`, `PreviewB`
