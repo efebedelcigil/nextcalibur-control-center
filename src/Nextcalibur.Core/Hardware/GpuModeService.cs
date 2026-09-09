@@ -31,14 +31,23 @@ public readonly record struct GpuConfiguration(
 /// <summary>
 /// Reports the machine's graphics configuration.
 ///
-/// **Detection only — this class does not switch modes.**
+/// **Detection only — this class does not switch modes, and that is a decision
+/// rather than a gap.**
 ///
-/// The vendor software's Display Mode page does not touch a hardware MUX. It
-/// finds the discrete GPU by PCI hardware ID and disables the device through the
-/// SetupDi API. Which of its three buttons maps to which device state has not
-/// been established yet, and switching on a guess would leave a machine with no
-/// working display path. Until that is observed on real hardware, this reports
-/// what is true and changes nothing.
+/// The vendor software does switch the display path: watched on hardware, its
+/// MS Hybrid button plus a restart moved the panel from the discrete card to the
+/// integrated one. It reaches firmware through the kernel driver it installs —
+/// `DeviceIoControl` in its native library, not in its managed code, which is
+/// why an earlier search of the managed assembly found nothing and concluded,
+/// wrongly, that no software could do this.
+///
+/// Nextcalibur does not follow, because doing so needs an undocumented IOCTL
+/// into a driver this project neither ships nor installs, and administrator
+/// rights it has committed never to request. It also carries a cost the vendor
+/// never mentions: the change invalidates TPM-sealed credentials, so the Windows
+/// PIN has to be set up again and BitLocker can demand its recovery key.
+///
+/// See PROTOCOL.md for the evidence.
 /// </summary>
 public sealed class GpuModeService
 {
@@ -137,10 +146,14 @@ public sealed class GpuModeService
     /// Names what this mode is costing right now.
     ///
     /// Deliberately not gated on the card looking idle. In this mode the card
-    /// also draws the desktop, so there is no idle moment to catch — measured on
-    /// the development machine, simply moving a window put it at 30% use. The
-    /// honest statement is structural rather than momentary: the card is always
-    /// on, and here is the draw.
+    /// draws the desktop too, so a low utilisation reading is not something to
+    /// wait for. The honest statement is structural rather than momentary: the
+    /// card is always on, and here is the draw.
+    ///
+    /// Resist reading much into a single high figure. Readings of 30-43% and
+    /// 27-37 W were once taken as the cost of the mode; a wallpaper renderer was
+    /// running at the time and was probably most of it. What the mode costs is
+    /// the floor, not the peak.
     ///
     /// The lower bound only rejects a nonsense reading.
     /// </summary>
