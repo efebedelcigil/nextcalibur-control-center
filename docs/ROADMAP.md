@@ -186,20 +186,33 @@ idle, where the heuristics have nothing left to work from. That is this case
 exactly, and it is the same reasoning that already justified `EmptyWorkingSet`
 on the same transition.
 
-### Known and bounded: lighting writes still run on the interface thread
+### Lighting writes now take the same route
 
-Only sensor reads were moved. A lighting write still goes through
-`System.Management` on the interface thread and pays the marshalling cost per
-write — during a colour-wheel drag the handle count was seen to reach 1183
-before falling back to around 800.
+Lighting writes had the same fault as the sensor reads and were left behind at
+first: a colour-wheel drag pushed the handle count to 1183 before a collection
+took it back. They now go to a thread-pool thread as well. Measured with an
+automated drag — thirty-four wheel positions and two sweeps of the brightness
+slider — the count went from 673 to 675, where the same interaction used to add
+several hundred.
 
-This is churn, not a leak: it stops when the drag stops and a collection
-reclaims it. It is left alone deliberately. Moving it would mean making the
-write path asynchronous, and the lighting subsystem is the one that has just
-been tested by hand and found working; the trade is not worth it for a
-transient bounded by how long someone holds the mouse down. Worth revisiting if
-the write path is being changed for another reason anyway — the same change
-would also take a retry storm off the thread that draws the window.
+The write path is deliberately **not** asynchronous. `RunLighting` puts the work
+on the pool and then blocks the interface thread waiting for it, which changes
+the apartment and nothing else:
+
+- Every caller here assumes the write has finished when it returns —
+  `OnColourPicked` refreshes the preview on the next line, `OnProfileChecked`
+  reloads four panels. Making it asynchronous means auditing all of that.
+- Blocking is what throttles a drag. Mouse moves coalesce against a busy
+  interface thread; freed from it, a drag would queue writes faster than the
+  hardware takes them and the keyboard would trail the pointer. Fixing that
+  needs coalescing, and coalescing has to know which writes supersede each other
+  — a colour replaces a colour, but a brightness change must not swallow an
+  effect change.
+
+The hold is taken **inside** the lambda, on the thread that writes. `Monitor` is
+thread-affine: taking it on the interface thread and writing on the pool one
+would block the pool thread against a lock the interface thread owns while the
+interface thread waits for the pool thread.
 
 #### Found while measuring
 
