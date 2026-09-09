@@ -36,6 +36,9 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add("Open Nextcalibur", null, (_, _) => ShowWindow());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_startupItem);
+        menu.Items.Add(CloseBehaviourItem());
+        menu.Items.Add(OverheatWarningMenu());
+        menu.Items.Add(ReadingIntervalMenu());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Exit", null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
 
@@ -51,6 +54,101 @@ public sealed class TrayPresence : IDisposable
 
     /// <summary>Raised when the user chooses Exit.</summary>
     public event EventHandler? ExitRequested;
+
+    // ------------------------------------------------------------- settings
+    //
+    // These three settings were honoured by the application and reachable only
+    // by hand-editing the settings file — the overheat threshold in particular,
+    // fixed at 90 °C on machines that idle warmer than that. They live here
+    // rather than in the window because this is a tray application and it is
+    // where Windows users look for its preferences; adding a fifth page would
+    // also break the deliberate resemblance to the software this replaces.
+    //
+    // Nothing has to be told about a change: this is the same settings object
+    // the window holds, and the window reads these values as it needs them
+    // rather than caching them. The close behaviour applies immediately, the
+    // warning threshold at the next slow tick, and the sampling interval when
+    // that tick next reconsiders it — a few seconds at worst.
+
+    private Forms.ToolStripMenuItem CloseBehaviourItem()
+    {
+        var item = new Forms.ToolStripMenuItem("Close button keeps it running")
+        {
+            CheckOnClick = true,
+            Checked = _settings.MinimiseToTray,
+        };
+
+        item.CheckedChanged += (_, _) =>
+        {
+            _settings.MinimiseToTray = item.Checked;
+            _settings.Save();
+        };
+
+        return item;
+    }
+
+    private Forms.ToolStripMenuItem OverheatWarningMenu()
+    {
+        var menu = new Forms.ToolStripMenuItem("Warn when the CPU reaches");
+        var choices = new (string Label, int Celsius)[]
+        {
+            ("Never", 0), ("80 °C", 80), ("85 °C", 85), ("90 °C", 90), ("95 °C", 95),
+        };
+
+        foreach (var (label, celsius) in choices)
+        {
+            var choice = new Forms.ToolStripMenuItem(label)
+            {
+                Checked = _settings.CpuWarningTemperatureC == celsius,
+            };
+
+            choice.Click += (_, _) =>
+            {
+                _settings.CpuWarningTemperatureC = celsius;
+                _settings.Save();
+                Tick(menu, choice);
+            };
+
+            menu.DropDownItems.Add(choice);
+        }
+
+        return menu;
+    }
+
+    private Forms.ToolStripMenuItem ReadingIntervalMenu()
+    {
+        var menu = new Forms.ToolStripMenuItem("Read the sensors every");
+        var choices = new (string Label, int Ms)[]
+        {
+            ("Second", 1000), ("2 seconds", 2000), ("5 seconds", 5000), ("10 seconds", 10000),
+        };
+
+        foreach (var (label, ms) in choices)
+        {
+            var choice = new Forms.ToolStripMenuItem(label)
+            {
+                Checked = _settings.PollIntervalMs == ms,
+            };
+
+            choice.Click += (_, _) =>
+            {
+                _settings.PollIntervalMs = ms;
+                _settings.Save();
+                Tick(menu, choice);
+            };
+
+            menu.DropDownItems.Add(choice);
+        }
+
+        return menu;
+    }
+
+    /// <summary>Leaves exactly one item in a group ticked.</summary>
+    private static void Tick(Forms.ToolStripMenuItem group, Forms.ToolStripMenuItem chosen)
+    {
+        foreach (Forms.ToolStripMenuItem item in group.DropDownItems)
+            item.Checked = ReferenceEquals(item, chosen);
+    }
 
     /// <summary>
     /// Updates the tooltip. Windows truncates tray tooltips at 63 characters, so

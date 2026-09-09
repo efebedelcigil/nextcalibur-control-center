@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private readonly CpuClockReader _cpuClock = new();
     private readonly GpuClockReader _gpuClock = new();
     private readonly AppSettings _settings = AppSettings.Load();
+    private readonly UpdateService _updates = new();
     private readonly DispatcherTimer _timer = new();
 
     /// <summary>Slow-timer cadence while the window is on screen.</summary>
@@ -106,6 +107,13 @@ public partial class MainWindow : Window
         _tray = new TrayPresence(this, _settings);
         _tray.ExitRequested += (_, _) => Exit();
 
+        // Said once, through the tray, because that is where this application
+        // lives when it has something to say and no window on screen.
+        _updates.UpdateReady += (_, version) => _tray?.ShowMessage(
+            $"Nextcalibur {version} is ready",
+            "It will be installed the next time you close the application from the tray menu.");
+        _updates.Start();
+
         if (_settings.StartMinimised &&
             Environment.GetCommandLineArgs().Contains("--tray", StringComparer.OrdinalIgnoreCase))
         {
@@ -185,6 +193,11 @@ public partial class MainWindow : Window
             _cpuClock.Dispose();
             _gpuClock.Dispose();
             _settings.Save();
+
+            // Last, and after everything else is released: this hands a staged
+            // release to an installer that waits for this process to go away.
+            _updates.ApplyOnExit();
+            _updates.Dispose();
             return;
         }
 

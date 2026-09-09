@@ -51,29 +51,39 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 Taken from an audit of the repository rather than from memory, roughly in the
 order that would matter to somebody who installed this.
 
-1. **Updates never arrive.** Velopack is wired for the install, update and
-   uninstall *hooks*, but nothing ever calls `UpdateManager` to look for a new
-   version. Everyone who installed 0.3.0 is still on it and has no way to learn
-   otherwise. For an application that lives in the notification area and is
-   meant to be forgotten, this is the most consequential gap on the list.
-2. **Three settings have no interface.** `CpuWarningTemperatureC`,
-   `MinimiseToTray` and `PollIntervalMs` exist, are honoured, and are reachable
-   only by hand-editing the settings file. The warning threshold is the one that
-   matters: it is fixed at 90 °C, and the development machine sits at 92 °C
-   under load, so the person most likely to want it cannot change it.
-3. **The version is still 0.3.0** in the project file and in `build.ps1`, and
-   nothing since has been packaged or released. Everything below the leak fix —
-   the threading work, the tray reclamation, the whole lighting page — exists
-   only for people who build it themselves.
-4. **Graphics mode** — determine what the vendor software actually does when each
-   of its three buttons is pressed, by watching device state while a person
-   clicks them. Until then the page reports and does not switch.
-5. **There are no tests.** Not one project. The hardware paths cannot be tested
+1. **Publish 0.4.0.** It is built and waiting in `releases/`. Nothing since
+   0.3.0 has reached anybody: the threading work, the tray reclamation, the
+   whole lighting page and the two items below exist only for people who build
+   it themselves.
+2. **There are no tests.** Not one project. The hardware paths cannot be tested
    without the hardware, but the parts that can — `SmiCommand` round-tripping to
    bytes, `LedState` persistence, the overlay diagnosis reading a known registry
    shape, `SystemInfo.Tidy` stripping the noise out of a processor name — are
    pure functions with no excuse.
-6. Release 0.4.0.
+3. **Graphics mode** — determine what the vendor software actually does when each
+   of its three buttons is pressed, by watching device state while a person
+   clicks them. Until then the page reports and does not switch.
+
+### Done from the audit
+
+**Updates now arrive.** `UpdateService` checks GitHub a minute after startup and
+every six hours after that, downloads what it finds, and says once — through the
+tray, which is where this application lives when it has something to say and no
+window on screen. The release is written on the way out, when the user closes
+the application themselves, because restarting an application under somebody
+using it is worse than waiting. A copy running from a build output or a portable
+unzip has nothing to replace, and switches itself off rather than failing.
+
+This does not rescue anybody already on 0.3.0 — that version has no updater and
+cannot be told about this one. The chain starts at 0.4.0.
+
+**The three settings have an interface**, in the tray menu rather than the
+window: the close button's behaviour, the overheat threshold (never, 80, 85, 90,
+95 °C) and the sampling interval (1, 2, 5, 10 seconds). That is where Windows
+users look for a tray application's preferences, and a fifth page would have
+broken the deliberate resemblance to the software this replaces. The menu holds
+the same settings object the window does, so a change applies at once rather
+than being read back from disk.
 
 ## What the README claimed that was not true
 
