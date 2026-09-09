@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -71,9 +71,16 @@ public partial class MainWindow : Window
             Hide();
         }
 
+        // None of this needs the firmware interface, so it runs before the
+        // check that can bail out â€” an unsupported machine still gets its
+        // device names, power page and storage readings.
         RefreshOverlay();
         LoadPowerModes();
+        LoadDeviceNames();
+        LoadGpuMode();
+        RefreshStorage();
         RefreshBanner();
+        StartSlowTimer();
 
         if (!EcMailbox.IsSupported())
         {
@@ -96,13 +103,11 @@ public partial class MainWindow : Window
         }
 
         LoadSystemMode();
-        LoadGpuMode();
         LoadLightingUi();
 
         _timer.Tick += (_, _) => Sample();
         Sample();
         if (IsVisible) _timer.Start();
-        StartTrayPolling();
     }
 
     private void Exit()
@@ -200,7 +205,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Could not switch mode",
+            MessageBox.Show(this, ex.Message, "Could not change mode",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             LoadSystemMode();
         }
@@ -231,7 +236,7 @@ public partial class MainWindow : Window
     /// The vendor software does this by disabling the graphics card as a device.
     /// Which of its three buttons produces which device state has not been
     /// observed on real hardware, and guessing could leave the machine with no
-    /// working display path — so nothing is changed until that is known.
+    /// working display path â€” so nothing is changed until that is known.
     /// </summary>
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
@@ -302,7 +307,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Could not change power mode",
+            MessageBox.Show(this, ex.Message, "Could not change mode",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             LoadPowerModes();
         }
@@ -340,7 +345,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Swaps the palette dictionary. Everything else in the application
     /// references brushes with DynamicResource, so replacing the entry is all it
-    /// takes — no reload, no restart.
+    /// takes â€” no reload, no restart.
     /// </summary>
     private void ApplyTheme()
     {
@@ -361,6 +366,39 @@ public partial class MainWindow : Window
         }
     }
 
+    // ------------------------------------------------------------ device names
+
+    /// <summary>
+    /// Asks the machine what its processor and graphics card are called. Read
+    /// once at startup â€” these do not change while the application runs, and no
+    /// model name is ever written into the source.
+    /// </summary>
+    private void LoadDeviceNames()
+    {
+        var cpu = SystemInfo.ProcessorName();
+        var gpu = SystemInfo.GraphicsName();
+
+        CpuName.Text = cpu ?? string.Empty;
+        GpuName.Text = gpu ?? string.Empty;
+        CpuName.ToolTip = cpu;
+        GpuName.ToolTip = gpu;
+    }
+
+    // ------------------------------------------------------- memory and disk
+
+    private void RefreshStorage()
+    {
+        var memory = SystemInfo.Memory();
+        RamGauge.Value = memory.Percent;
+        RamPercent.Text = $"{memory.Percent:N1}%";
+        RamDetail.Text = memory.Describe();
+
+        var disk = SystemInfo.SystemDrive();
+        SsdGauge.Value = disk.Percent;
+        SsdPercent.Text = $"{disk.Percent:N1}%";
+        SsdDetail.Text = disk.Describe();
+    }
+
     // ---------------------------------------------------------------- sensors
 
     private void Sample()
@@ -372,7 +410,7 @@ public partial class MainWindow : Window
             // A single miss is normal when something else touches the mailbox.
             if (++_consecutiveFailures >= 5)
             {
-                SubtitleText.Text = "Sensor readings stalled - close the vendor Control Center and reopen.";
+                SubtitleText.Text = "Readings have stalled. Close Casper's Control Center and reopen this window.";
                 _timer.Stop();
             }
             return;
@@ -380,15 +418,15 @@ public partial class MainWindow : Window
 
         _consecutiveFailures = 0;
 
-        CpuTemp.Text = $"{s.CpuTemperatureC} °C";
-        GpuTemp.Text = $"{s.GpuTemperatureC} °C";
+        CpuTemp.Text = $"{s.CpuTemperatureC} Â°C";
+        GpuTemp.Text = $"{s.GpuTemperatureC} Â°C";
         CpuFan.Text = $"{s.CpuFanRpm} rpm";
         GpuFan.Text = $"{s.GpuFanRpm} rpm";
 
         CpuTemp.Foreground = TemperatureBrush(s.CpuTemperatureC);
         GpuTemp.Foreground = TemperatureBrush(s.GpuTemperatureC);
 
-        SubtitleText.Text = $"Live - updated {s.Timestamp:HH:mm:ss}";
+        SubtitleText.Text = $"Updated {s.Timestamp:HH:mm:ss}";
     }
 
     private SolidColorBrush TemperatureBrush(int celsius) => celsius switch
@@ -398,13 +436,14 @@ public partial class MainWindow : Window
         _ => (SolidColorBrush)FindResource("Ink"),
     };
 
-    private void StartTrayPolling()
+    private void StartSlowTimer()
     {
         var slow = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
         slow.Tick += (_, _) =>
         {
             RefreshBanner();
             ApplyPollInterval();
+            RefreshStorage();
             if (_theme.PollForChange()) ApplyTheme();
 
             if (_thermal is null || !_thermal.TryRead(out var s)) return;
@@ -418,7 +457,7 @@ public partial class MainWindow : Window
                 {
                     _overheatNotified = true;
                     _tray?.ShowMessage(
-                        $"CPU at {s.CpuTemperatureC} °C",
+                        $"CPU at {s.CpuTemperatureC} Â°C",
                         "Sustained temperatures this high usually mean the heatsink needs cleaning.");
                 }
             }
@@ -441,9 +480,8 @@ public partial class MainWindow : Window
         if (!d.NeedsRepair)
         {
             OverlayDetail.Text =
-                "Your power plan is in control. The Best-performance overlay is neutralised " +
-                $"(minimum processor state {d.MinProcessorStateOverride}%), so it cannot pin the CPU " +
-                "if another application switches to it.";
+                "Your chosen mode is in charge, and Nextcalibur has made sure the fastest " +
+                "mode can no longer hold the processor at full speed while the laptop is idle.";
             OverlayState.Foreground = (SolidColorBrush)FindResource("Good");
             FixButton.Visibility = Visibility.Collapsed;
             return;
@@ -452,11 +490,12 @@ public partial class MainWindow : Window
         var problems = new List<string>();
         if (d.OverlayIsStuck)
             problems.Add(
-                "The Best-performance overlay is active. It overrides your power plan and pins the " +
-                "CPU at maximum frequency even at idle - which is why changing modes appears to do nothing.");
+                "Windows is set to Best performance, and it is holding your processor at full speed " +
+                "even when the laptop is doing nothing. That is why changing modes seems to have no effect.");
         if (d.GuardMissing)
             problems.Add(
-                "No guard is in place, so any application can re-activate that overlay and pin the CPU again.");
+                "Nothing is stopping another application from switching to that mode and holding the " +
+                "processor at full speed again.");
 
         OverlayDetail.Text = string.Join(" ", problems);
         OverlayState.Foreground = (SolidColorBrush)FindResource("Warn");
@@ -471,17 +510,17 @@ public partial class MainWindow : Window
             RefreshOverlay();
             MessageBox.Show(this,
                 actions.Count == 0 ? "Nothing needed changing." : string.Join("\n\n", actions),
-                "Repair complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                "Fixed", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (UnauthorizedAccessException)
         {
             MessageBox.Show(this,
-                "Windows refused the change. Run Nextcalibur as administrator and try again.",
-                "Repair failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                "Windows would not allow the change. Try running Nextcalibur as administrator.",
+                "Could not fix it", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Repair failed",
+            MessageBox.Show(this, ex.Message, "Could not fix it",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -641,6 +680,7 @@ public partial class MainWindow : Window
         if (sender is not RadioButton button || button.Tag is not string name) return;
 
         RunLighting(() => _led.SetProfile(name));
+        LoadDeviceNames();
         LoadSystemMode();
         LoadGpuMode();
         LoadLightingUi();
@@ -665,9 +705,14 @@ public partial class MainWindow : Window
         {
             action();
         }
-        catch (Exception ex)
+        catch (EcMailboxUnavailableException)
         {
-            MessageBox.Show(this, ex.Message, "Lighting", MessageBoxButton.OK, MessageBoxImage.Warning);
+            // The message deliberately names the likely cause rather than
+            // repeating the exception, which talks about mailboxes and retries.
+            MessageBox.Show(this,
+                "The keyboard lighting did not respond. If Casper's Control Center is open, " +
+                "close it and try again.",
+                "Lighting", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
         {
@@ -732,3 +777,4 @@ public partial class MainWindow : Window
     }
 
 }
+
