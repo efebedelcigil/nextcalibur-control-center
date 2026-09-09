@@ -15,15 +15,41 @@ a2 = device selector
 a3 = packed 32-bit value
 ```
 
-Two things are **not** known and must not be guessed:
-
-- what the high byte of `a3` means (mode? brightness? effect?)
-- which `a2` value maps to which physical zone
-
 LED **reads** were tried first and are useless here: firmware echoes `a0`, `a1`
 and `a2` correctly but returns zero in `a3`–`a5` for every device index. There is
-no current value to read back and preserve, so the values below are written
+no current value to read back and preserve, so values have to be written
 outright.
+
+### What passive capture established
+
+Watching the mailbox while the vendor software drove the lighting caught its
+writes directly:
+
+```
+a0=0xFB00 a1=0x0100 a2=5 a3=0x11F2FFF7
+a0=0xFB00 a1=0x0100 a2=4 a3=0x11F2FFF7
+a0=0xFB00 a1=0x0100 a2=3 a3=0x11F2FFF7
+
+a0=0xFB00 a1=0x0100 a2=5 a3=0x10101010
+a0=0xFB00 a1=0x0100 a2=4 a3=0x10101010
+a0=0xFB00 a1=0x0100 a2=3 a3=0x10101010
+```
+
+Confirmed by this:
+
+- Lighting really does go through the mailbox on this model.
+- **The keyboard zones are device indices 3, 4 and 5.** The software writes all
+  three in a burst roughly 25–40 ms apart. Indices 0 and 6 appear in the vendor's
+  code as broadcast selectors but were never used in practice.
+- The packed value is `0xMMRRGGBB`. `F2FFF7` matches the RGB stored in the
+  vendor's `HighPerformance` profile exactly.
+
+Still **not** known, and not to be guessed:
+
+- what the high byte means — only `0x10` and `0x11` were observed live, with
+  `0x12`, `0x60` and `0x61` appearing in stored profiles
+- which of 3, 4 and 5 is Zone A, B and C
+- whether indices 1 and 2 address the light bar
 
 ## Safety
 
@@ -55,16 +81,21 @@ Each command is a single line:
 The value `0x11FF0000` is lifted verbatim from the vendor's `PowerSaving`
 profile, where it is one of five entries.
 
-| # | Command | Expected if the channel works |
-|---|---|---|
-| 1.1 | `-Device 6 -Value 0x11FF0000` | keyboard turns red |
-| 1.2 | `-Device 6 -Value 0x1100FF00` | keyboard turns green |
-| 1.3 | `-Device 6 -Value 0x110000FF` | keyboard turns blue |
-| 1.4 | `-Device 0 -Value 0x11FF0000` | *everything* red, light bar included |
+Start with the exact value captured from the vendor software, so the very first
+write is one the firmware demonstrably just accepted.
 
-**If nothing changes in 1.1–1.4**, the mailbox is not the channel the vendor
-software uses for lighting on this model, and the rest of this plan is moot —
-stop and investigate HID feature reports instead.
+| # | Command | Expected |
+|---|---|---|
+| 1.1 | `-Device 3 -Value 0x11F2FFF7` | one keyboard zone turns near-white |
+| 1.2 | `-Device 4 -Value 0x11F2FFF7` | a second zone matches it |
+| 1.3 | `-Device 5 -Value 0x11F2FFF7` | the third zone matches — whole keyboard white |
+| 1.4 | `-Device 3 -Value 0x11FF0000` | that zone turns pure red |
+
+1.1–1.3 replay captured traffic verbatim. 1.4 is the first genuinely new value:
+same mode byte, different colour.
+
+**If 1.1 does nothing**, stop — something about replaying the write differs from
+how the vendor software issues it, and that needs investigating before going on.
 
 ## Phase 2 — device mapping
 
@@ -74,19 +105,24 @@ devices. Establish which index is which by lighting one at a time.
 
 Set everything to a dim base first, then light a single device bright:
 
+Light one device at a time in a distinct colour, leaving the others white from
+Phase 1, so the mapping is unambiguous.
+
 | # | Command | Record |
 |---|---|---|
-| 2.0 | `-Device 0 -Value 0x11202020` | all dim grey (baseline) |
-| 2.1 | `-Device 1 -Value 0x11FF0000` | which area turned red? |
-| 2.2 | `-Device 2 -Value 0x11FF0000` | which area? |
-| 2.3 | `-Device 3 -Value 0x11FF0000` | which area? |
-| 2.4 | `-Device 4 -Value 0x11FF0000` | which area? |
-| 2.5 | `-Device 5 -Value 0x11FF0000` | which area? |
+| 2.1 | `-Device 3 -Value 0x11FF0000` | which physical area turned red? |
+| 2.2 | `-Device 4 -Value 0x1100FF00` | which area turned green? |
+| 2.3 | `-Device 5 -Value 0x110000FF` | which area turned blue? |
 
-Repeat 2.0 between each step so only one device is bright at a time.
+That settles Zone A/B/C. Then probe the indices never seen in live traffic —
+these are new territory, so note carefully whether anything at all responds:
 
-Expected outcome: three of these correspond to Zone A, B and C; the others to
-the light bar and possibly a logo.
+| # | Command | Record |
+|---|---|---|
+| 2.4 | `-Device 1 -Value 0x11FF00FF` | anything? light bar? |
+| 2.5 | `-Device 2 -Value 0x11FFFF00` | anything? |
+| 2.6 | `-Device 6 -Value 0x1100FFFF` | all three zones at once? |
+| 2.7 | `-Device 0 -Value 0x11FFFFFF` | everything including light bar? |
 
 ## Phase 3 — the mode byte
 
@@ -95,12 +131,12 @@ profiles are `0x10`, `0x11`, `0x12`, `0x60`, `0x61`.
 
 | # | Command | Record |
 |---|---|---|
-| 3.1 | `-Device 6 -Value 0x10FF0000` | brightness? effect? |
-| 3.2 | `-Device 6 -Value 0x11FF0000` | compare with 3.1 |
-| 3.3 | `-Device 6 -Value 0x12FF0000` | compare |
-| 3.4 | `-Device 6 -Value 0x13FF0000` | does it go further? |
-| 3.5 | `-Device 6 -Value 0x60FF0000` | different effect? |
-| 3.6 | `-Device 6 -Value 0x61FF0000` | compare with 3.5 |
+| 3.1 | `-Device 3 -Value 0x10FF0000` | brightness? effect? |
+| 3.2 | `-Device 3 -Value 0x11FF0000` | compare with 3.1 |
+| 3.3 | `-Device 3 -Value 0x12FF0000` | compare |
+| 3.4 | `-Device 3 -Value 0x13FF0000` | does it go further? |
+| 3.5 | `-Device 3 -Value 0x60FF0000` | different effect? |
+| 3.6 | `-Device 3 -Value 0x61FF0000` | compare with 3.5 |
 
 Hypothesis to confirm or reject: the **low nibble** is a brightness step
 (`0x10` → `0x11` → `0x12` getting brighter) and the **high nibble** selects an
@@ -111,10 +147,10 @@ profile uses `6`, all others use `1`, which is what suggests this.
 
 | # | Command | Record |
 |---|---|---|
-| 4.1 | `-Device 6 -Value 0x00000000` | do the lights go off? |
-| 4.2 | `-Device 6 -Value 0x11000000` | off, or black-but-on? |
-| 4.3 | `-Device 6 -Value 0x20FF0000` | unknown high nibble — any effect? |
-| 4.4 | `-Device 6 -Value 0x30FF0000` | unknown high nibble |
+| 4.1 | `-Device 3 -Value 0x10101010` | the other captured value — dim? |
+| 4.2 | `-Device 3 -Value 0x00000000` | do the lights go off? |
+| 4.3 | `-Device 3 -Value 0x11000000` | off, or black-but-on? |
+| 4.4 | `-Device 3 -Value 0x20FF0000` | unknown high nibble — any effect? |
 
 The vendor UI offers Static, Breathing, Colorful cycle and Ambilight. Only two
 high nibbles appear in saved profiles, so the remaining effects are likely
