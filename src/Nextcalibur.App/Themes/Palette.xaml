@@ -37,6 +37,17 @@
     <SolidColorBrush x:Key="TrackBrush" Color="#22252E" />
     <SolidColorBrush x:Key="GaugeTrackBrush" Color="#25272F" />
 
+    <!-- System Mode Tab Brushes -->
+    <LinearGradientBrush x:Key="ModeTabActiveBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#6B3D08" Offset="0.0" />
+        <GradientStop Color="#301A04" Offset="0.4" />
+        <GradientStop Color="#171210" Offset="1.0" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ModeTabTopHighlight" Color="#FFA000" />
+    <SolidColorBrush x:Key="ModeTabActiveBorder" Color="#8C4C14" />
+    <SolidColorBrush x:Key="ModeTabInactiveBackground" Color="#16181E" />
+    <SolidColorBrush x:Key="ModeTabBorder" Color="#25272F" />
+
     <!-- Circuit Trace Artwork Palette -->
     <SolidColorBrush x:Key="CircuitDarkCopper" Color="#3D1E14" />
     <SolidColorBrush x:Key="CircuitMidCopper" Color="#753B1A" />

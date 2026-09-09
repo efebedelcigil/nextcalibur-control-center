@@ -12,14 +12,59 @@
         M 4,16 A 9,9 0 1 1 20,16 M 12,12 L 16,7 M 12,14 A 2,2 0 1 0 12,10 A 2,2 0 0 0 12,14 Z
     </StreamGeometry>
 
-    <!-- Power Lightning Bolt -->
+    <!-- Power Plug with Gauge Arc (Unambiguous Power Mode Icon) -->
     <StreamGeometry x:Key="IconNavPower">
-        M 13,2 L 5,13 H 11 L 9,22 L 19,10 H 13 Z
+        M 8,3 V 7 M 16,3 V 7 M 5,7 H 19 V 12 A 7,7 0 0 1 13,19 V 22 H 11 V 19 A 7,7 0 0 1 5,12 Z M 9,13 A 3,3 0 0 1 15,13
+    </StreamGeometry>
+
+    <!-- Display Clamshell Laptop with Dual Pane Screen -->
+    <StreamGeometry x:Key="IconNavDisplay">
+        M 4,4 H 20 V 16 H 4 Z M 2,18 H 22 L 20,20 H 4 Z M 12,4 V 16 M 7,9 H 9 M 15,8 H 17 M 16,7 V 9
     </StreamGeometry>
 
     <!-- Keyboard Lighting Emitter -->
     <StreamGeometry x:Key="IconNavLighting">
         M 12,2 A 6.5,6.5 0 0 0 7,13 V 16 H 17 V 13 A 6.5,6.5 0 0 0 12,2 Z M 8.5,19 H 15.5 M 9.5,21.5 H 14.5
+    </StreamGeometry>
+
+    <!-- System Mode Tab Icons (24x24 standard) -->
+    <!-- Office Mode: Monitor with document lines -->
+    <StreamGeometry x:Key="IconModeOffice">
+        M 3,4 H 21 V 16 H 3 Z M 8,20 H 16 M 12,16 V 20 M 6,8 H 18 M 6,11 H 15 M 6,13 H 11
+    </StreamGeometry>
+
+    <!-- Gaming Mode: Console Gamepad Controller -->
+    <StreamGeometry x:Key="IconModeGaming">
+        M 6,8 H 18 A 4,4 0 0 1 22,12 C 22,17 19,20 17,20 C 15.5,20 14.5,18.5 13.5,17 H 10.5 C 9.5,18.5 8.5,20 7,20 C 5,20 2,17 2,12 A 4,4 0 0 1 6,8 Z M 6,12 H 10 M 8,10 V 14 M 16,11 A 1,1 0 1 0 16,13 A 1,1 0 0 0 16,11 Z M 18,13 A 1,1 0 1 0 18,15 A 1,1 0 0 0 18,13 Z
+    </StreamGeometry>
+
+    <!-- High Performance Mode: Tachometer at Redline -->
+    <StreamGeometry x:Key="IconModePerformance">
+        M 4,16 A 9,9 0 1 1 20,16 M 12,14 A 2,2 0 1 0 12,10 A 2,2 0 0 0 12,14 Z M 12,11 L 18,7.5 M 16,5 L 18,7 M 19,8 L 21,9
+    </StreamGeometry>
+
+    <!-- GPU Display Mode Card Illustrations -->
+    <!-- Discrete GPU: Stylized multi-blade cooling turbine with GPU hub -->
+    <StreamGeometry x:Key="IconGpuDiscrete">
+        M 12,2 A 10,10 0 1 1 12,22 A 10,10 0 1 1 12,2 Z M 12,7 A 5,5 0 1 1 12,17 A 5,5 0 1 1 12,7 Z M 12,2 C 14,5 14,7 12,7 M 19,5 C 18,8 16,9 15.5,8 M 22,12 C 19,14 17,14 17,12 M 19,19 C 16,18 15,16 15.5,15.5 M 12,22 C 10,19 10,17 12,17 M 5,19 C 6,16 8,15 8.5,16 M 2,12 C 5,10 7,10 7,12 M 5,5 C 8,6 9,8 8.5,8.5
+    </StreamGeometry>
+
+    <!-- MS Hybrid: Turbine on left linked to chip on right via curved arrows -->
+    <StreamGeometry x:Key="IconGpuHybrid">
+        M 7,7 A 4.5,4.5 0 1 1 7,16 A 4.5,4.5 0 1 1 7,7 Z M 15,8 H 21 V 15 H 15 Z M 15,11.5 H 21 M 18,8 V 15 M 7,5 C 10,3.5 14,4 16,6.5 M 14,6.5 H 17 V 3.5 M 17,17.5 C 14,20 10,19.5 7,18 M 9,18 H 6 V 21
+    </StreamGeometry>
+
+    <!-- UMA Mode: Semiconductor processor chip with lightning bolt -->
+    <StreamGeometry x:Key="IconGpuUma">
+        M 5,5 H 19 V 19 H 5 Z M 8,2 V 5 M 12,2 V 5 M 16,2 V 5 M 8,19 V 22 M 12,19 V 22 M 16,19 V 22 M 2,8 H 5 M 2,12 H 5 M 2,16 H 5 M 19,8 H 22 M 19,12 H 22 M 19,16 H 22 M 13,7 L 9,12.5 H 13 L 11,17 L 16,11.5 H 12 Z
+    </StreamGeometry>
+
+    <!-- Radio Indicator Geometries for Option Cards -->
+    <StreamGeometry x:Key="IconRadioUnchecked">
+        M 12,3 A 9,9 0 1 1 12,21 A 9,9 0 1 1 12,3 Z
+    </StreamGeometry>
+    <StreamGeometry x:Key="IconRadioChecked">
+        M 12,2 A 10,10 0 1 1 12,22 A 10,10 0 1 1 12,2 Z M 7.5,12 L 10.5,15 L 16.5,9
     </StreamGeometry>
 
     <!-- Window Caption Icons -->
