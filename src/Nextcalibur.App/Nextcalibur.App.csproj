@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -17,7 +17,6 @@
     <PublishSingleFile>true</PublishSingleFile>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <TieredPGO>true</TieredPGO>
-    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Nextcalibur</AssemblyName>
     <RootNamespace>Nextcalibur.App</RootNamespace>
@@ -27,6 +26,12 @@
     <Version>0.3.0</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+
+    <!-- WFAC010 is a WinForms analyzer asking for ApplicationHighDpiMode instead of
+         the manifest's dpiAware block. This is a WPF application; the manifest is
+         the only route to PerMonitorV2 here, and WinForms is enabled only for the
+         tray icon. See app.manifest. -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
   </PropertyGroup>
 
   <!-- A custom Main is needed so Velopack's hooks run before any UI exists.
@@ -57,6 +62,8 @@
     <Using Include="System.Windows.Input.MouseButtonEventArgs" Alias="MouseButtonEventArgs" />
     <Using Include="System.Windows.Controls.RadioButton" Alias="RadioButton" />
     <Using Include="System.Windows.Media.Brushes" Alias="Brushes" />
+    <Using Include="System.Windows.Media.Brush" Alias="Brush" />
+    <Using Include="System.Windows.Media.Pen" Alias="Pen" />
     <Using Include="System.Windows.Shapes" />
   </ItemGroup>
 
@@ -65,3 +72,5 @@
   </ItemGroup>
 
 </Project>
+
+
