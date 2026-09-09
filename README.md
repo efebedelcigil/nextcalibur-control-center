@@ -39,6 +39,15 @@ Measured on a Casper Excalibur G870 (i7-12650H, base 2300 MHz):
 
 Nextcalibur detects and repairs this at install time, and keeps it from coming back.
 
+## Download
+
+**[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
+— `Nextcalibur-win-Setup.exe`, self-contained, no .NET runtime required.
+
+The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
+anyway*. On first run the app repairs the power-overlay fault described above and
+tells you what it changed.
+
 ## Status
 
 Early development. See [docs/PROTOCOL.md](docs/PROTOCOL.md) for the hardware
