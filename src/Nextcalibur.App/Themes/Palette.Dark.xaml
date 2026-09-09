@@ -1,0 +1,156 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Primary Text & Indicator Colors (Reachable via FindResource in MainWindow.xaml.cs) -->
+    <Color x:Key="ColorInk">#EAECEF</Color>
+    <Color x:Key="ColorMuted">#7B8190</Color>
+    <Color x:Key="ColorAccent">#1FC8E0</Color>
+    <Color x:Key="ColorGood">#3FBF7F</Color>
+    <Color x:Key="ColorWarn">#E8A33D</Color>
+    <Color x:Key="ColorBad">#E5484D</Color>
+
+    <SolidColorBrush x:Key="Ink" Color="{StaticResource ColorInk}" />
+    <SolidColorBrush x:Key="Muted" Color="{StaticResource ColorMuted}" />
+    <SolidColorBrush x:Key="Accent" Color="{StaticResource ColorAccent}" />
+    <SolidColorBrush x:Key="Good" Color="{StaticResource ColorGood}" />
+    <SolidColorBrush x:Key="Warn" Color="{StaticResource ColorWarn}" />
+    <SolidColorBrush x:Key="Bad" Color="{StaticResource ColorBad}" />
+
+    <!-- Chrome & Surface Colors -->
+    <SolidColorBrush x:Key="WindowBackground" Color="#050507" />
+    <SolidColorBrush x:Key="TitleBarBackground" Color="#272A34" />
+    <SolidColorBrush x:Key="TitleBarBorder" Color="#1B1C22" />
+    <SolidColorBrush x:Key="RailBackground" Color="#0C0D11" />
+    <SolidColorBrush x:Key="RailBorder" Color="#181920" />
+    <SolidColorBrush x:Key="PanelBackground" Color="#101114" />
+    <SolidColorBrush x:Key="CardBackground" Color="#14161C" />
+    <SolidColorBrush x:Key="CardBorder" Color="#222530" />
+    <SolidColorBrush x:Key="CardBorderSubtle" Color="#1A1C24" />
+    <SolidColorBrush x:Key="Line" Color="#1E212A" />
+
+    <!-- Interactive & State Surface Colors -->
+    <SolidColorBrush x:Key="SurfaceHighlight" Color="#1A1D27" />
+    <SolidColorBrush x:Key="HoverSurface" Color="#1E222D" />
+    <SolidColorBrush x:Key="SelectedSurface" Color="#1C2538" />
+    <SolidColorBrush x:Key="SelectedTabBorder" Color="#1FC8E0" />
+    <SolidColorBrush x:Key="HeaderTabBackground" Color="#1E212C" />
+    <SolidColorBrush x:Key="TrackBrush" Color="#22252E" />
+    <SolidColorBrush x:Key="GaugeTrackBrush" Color="#25272F" />
+
+    <!-- System Mode Tab Brushes -->
+    <LinearGradientBrush x:Key="ModeTabActiveBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#6B3D08" Offset="0.0" />
+        <GradientStop Color="#301A04" Offset="0.4" />
+        <GradientStop Color="#171210" Offset="1.0" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ModeTabTopHighlight" Color="#FFA000" />
+    <SolidColorBrush x:Key="ModeTabActiveBorder" Color="#8C4C14" />
+    <SolidColorBrush x:Key="ModeTabInactiveBackground" Color="#16181E" />
+    <SolidColorBrush x:Key="ModeTabBorder" Color="#25272F" />
+
+    <!-- Circuit Trace Artwork Palette -->
+    <SolidColorBrush x:Key="CircuitDarkCopper" Color="#3D1E14" />
+    <SolidColorBrush x:Key="CircuitMidCopper" Color="#753B1A" />
+    <SolidColorBrush x:Key="CircuitBrightCopper" Color="#BC530E" />
+    <SolidColorBrush x:Key="CircuitHotCopper" Color="#E25B0C" />
+    <SolidColorBrush x:Key="CircuitAccent" Color="#1FC8E0" />
+
+    <!-- Header Circuit Graphic Artwork (380x36 px copper PCB trace network) -->
+    <DrawingGroup x:Key="HeaderCircuitArtwork">
+        <!-- Layer 1: Dark base copper bus traces -->
+        <GeometryDrawing>
+            <GeometryDrawing.Pen>
+                <Pen Brush="{StaticResource CircuitDarkCopper}" Thickness="1.8" EndLineCap="Round" StartLineCap="Round" />
+            </GeometryDrawing.Pen>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <LineGeometry StartPoint="0,18" EndPoint="70,18" />
+                    <LineGeometry StartPoint="70,18" EndPoint="86,6" />
+                    <LineGeometry StartPoint="86,6" EndPoint="170,6" />
+                    <LineGeometry StartPoint="170,6" EndPoint="186,18" />
+                    <LineGeometry StartPoint="186,18" EndPoint="260,18" />
+                    <LineGeometry StartPoint="30,26" EndPoint="110,26" />
+                    <LineGeometry StartPoint="110,26" EndPoint="124,32" />
+                    <LineGeometry StartPoint="124,32" EndPoint="220,32" />
+                    <LineGeometry StartPoint="220,32" EndPoint="232,24" />
+                    <LineGeometry StartPoint="232,24" EndPoint="320,24" />
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+
+        <!-- Layer 2: Mid copper signal traces -->
+        <GeometryDrawing>
+            <GeometryDrawing.Pen>
+                <Pen Brush="{StaticResource CircuitMidCopper}" Thickness="1.4" EndLineCap="Round" StartLineCap="Round" />
+            </GeometryDrawing.Pen>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <LineGeometry StartPoint="40,12" EndPoint="100,12" />
+                    <LineGeometry StartPoint="100,12" EndPoint="112,22" />
+                    <LineGeometry StartPoint="112,22" EndPoint="160,22" />
+                    <LineGeometry StartPoint="160,22" EndPoint="174,10" />
+                    <LineGeometry StartPoint="174,10" EndPoint="280,10" />
+                    <LineGeometry StartPoint="280,10" EndPoint="292,16" />
+                    <LineGeometry StartPoint="292,16" EndPoint="360,16" />
+                    <LineGeometry StartPoint="130,16" EndPoint="148,4" />
+                    <LineGeometry StartPoint="148,4" EndPoint="210,4" />
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+
+        <!-- Layer 3: Bright copper active traces -->
+        <GeometryDrawing>
+            <GeometryDrawing.Pen>
+                <Pen Brush="{StaticResource CircuitBrightCopper}" Thickness="1.2" EndLineCap="Round" StartLineCap="Round" />
+            </GeometryDrawing.Pen>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <LineGeometry StartPoint="90,16" EndPoint="104,26" />
+                    <LineGeometry StartPoint="104,26" EndPoint="150,26" />
+                    <LineGeometry StartPoint="150,26" EndPoint="162,16" />
+                    <LineGeometry StartPoint="162,16" EndPoint="240,16" />
+                    <LineGeometry StartPoint="240,16" EndPoint="252,6" />
+                    <LineGeometry StartPoint="252,6" EndPoint="340,6" />
+                    <LineGeometry StartPoint="200,28" EndPoint="214,14" />
+                    <LineGeometry StartPoint="214,14" EndPoint="290,14" />
+                    <LineGeometry StartPoint="290,14" EndPoint="302,26" />
+                    <LineGeometry StartPoint="302,26" EndPoint="370,26" />
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+
+        <!-- Layer 4: Hot copper nodes & via rings -->
+        <GeometryDrawing Brush="{StaticResource CircuitHotCopper}">
+            <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <EllipseGeometry Center="86,6" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="170,6" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="112,22" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="160,22" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="240,16" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="280,10" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="214,14" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="290,14" RadiusX="2.5" RadiusY="2.5" />
+                    <EllipseGeometry Center="340,6" RadiusX="2.8" RadiusY="2.8" />
+                    <EllipseGeometry Center="360,16" RadiusX="2.8" RadiusY="2.8" />
+                    <EllipseGeometry Center="370,26" RadiusX="2.8" RadiusY="2.8" />
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+
+        <!-- Layer 5: Accent test points -->
+        <GeometryDrawing Brush="{StaticResource CircuitAccent}">
+            <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <EllipseGeometry Center="148,4" RadiusX="1.8" RadiusY="1.8" />
+                    <EllipseGeometry Center="210,4" RadiusX="1.8" RadiusY="1.8" />
+                    <EllipseGeometry Center="252,6" RadiusX="1.8" RadiusY="1.8" />
+                    <EllipseGeometry Center="302,26" RadiusX="1.8" RadiusY="1.8" />
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+    </DrawingGroup>
+
+    <DrawingImage x:Key="HeaderCircuitImage" Drawing="{StaticResource HeaderCircuitArtwork}" />
+
+</ResourceDictionary>

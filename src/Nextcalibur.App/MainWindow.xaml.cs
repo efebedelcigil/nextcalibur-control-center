@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,6 +16,7 @@ public partial class MainWindow : Window
     private readonly PowerOverlayService _power = new();
     private readonly SystemModeService _modes = new();
     private readonly GpuModeService _gpu = new();
+    private readonly ThemeService _theme = new();
     private readonly AppSettings _settings = AppSettings.Load();
     private readonly DispatcherTimer _timer = new();
 
@@ -42,6 +44,9 @@ public partial class MainWindow : Window
     /// </summary>
     private bool _modeUiReady;
 
+    /// <summary>Same guard again, for the theme buttons.</summary>
+    private bool _themeUiReady;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -55,6 +60,8 @@ public partial class MainWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        LoadTheme();
+
         _tray = new TrayPresence(this, _settings);
         _tray.ExitRequested += (_, _) => Exit();
 
@@ -65,7 +72,7 @@ public partial class MainWindow : Window
         }
 
         RefreshOverlay();
-
+        LoadPowerModes();
         RefreshBanner();
 
         if (!EcMailbox.IsSupported())
@@ -250,6 +257,110 @@ public partial class MainWindow : Window
         GpuButtonFor(current).IsChecked = true;
     }
 
+    // --------------------------------------------------------------- power mode
+
+    private void LoadPowerModes()
+    {
+        _modeUiReady = false;
+
+        var active = PowerOverlayService.GetActiveOverlay();
+        foreach (var (option, button, text) in PowerModeControls())
+        {
+            text.Text = option.Description;
+            if (option.Overlay == active) button.IsChecked = true;
+        }
+
+        _modeUiReady = true;
+    }
+
+    private IEnumerable<(PowerModeOption Option, RadioButton Button, TextBlock Text)> PowerModeControls()
+    {
+        var buttons = new[] { PowerModeEfficiency, PowerModeBalanced, PowerModeBetter, PowerModeBest };
+        var texts = new[] { PowerModeEfficiencyText, PowerModeBalancedText, PowerModeBetterText, PowerModeBestText };
+
+        // PowerOverlays.All is ordered coolest to fastest, matching the cards.
+        for (var i = 0; i < PowerOverlays.All.Count && i < buttons.Length; i++)
+            yield return (PowerOverlays.All[i], buttons[i], texts[i]);
+    }
+
+    private void OnPowerModeChanged(object sender, RoutedEventArgs e)
+    {
+        if (!_modeUiReady) return;
+        if (sender is not RadioButton button) return;
+
+        var chosen = PowerModeControls().FirstOrDefault(x => ReferenceEquals(x.Button, button));
+        if (chosen.Button is null) return;
+
+        try
+        {
+            PowerOverlayService.SetActiveOverlay(chosen.Option.Overlay);
+            RefreshOverlay();
+
+            // Changing the overlay can move the machine out of whichever system
+            // mode it matched, so that page has to be re-read too.
+            LoadSystemMode();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Could not change power mode",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            LoadPowerModes();
+        }
+    }
+
+    // -------------------------------------------------------------------- theme
+
+    private void LoadTheme()
+    {
+        _theme.Preference = _settings.Theme;
+        ApplyTheme();
+
+        _themeUiReady = false;
+        (_settings.Theme switch
+        {
+            ThemePreference.Dark => ThemeDark,
+            ThemePreference.Light => ThemeLight,
+            _ => ThemeSystem,
+        }).IsChecked = true;
+        _themeUiReady = true;
+    }
+
+    private void OnThemeChanged(object sender, RoutedEventArgs e)
+    {
+        if (!_themeUiReady) return;
+        if (sender is not RadioButton button || button.Tag is not string tag) return;
+        if (!Enum.TryParse<ThemePreference>(tag, out var preference)) return;
+
+        _theme.Preference = preference;
+        _settings.Theme = preference;
+        _settings.Save();
+        ApplyTheme();
+    }
+
+    /// <summary>
+    /// Swaps the palette dictionary. Everything else in the application
+    /// references brushes with DynamicResource, so replacing the entry is all it
+    /// takes — no reload, no restart.
+    /// </summary>
+    private void ApplyTheme()
+    {
+        var wanted = _theme.Resolved == Theme.Light
+            ? "Themes/Palette.Light.xaml"
+            : "Themes/Palette.Dark.xaml";
+
+        var merged = Application.Current.Resources.MergedDictionaries;
+        for (var i = 0; i < merged.Count; i++)
+        {
+            var source = merged[i].Source?.OriginalString;
+            if (source is null || !source.Contains("Palette.", StringComparison.OrdinalIgnoreCase)) continue;
+            if (source.EndsWith(wanted, StringComparison.OrdinalIgnoreCase)) return;
+
+            merged[i] = new ResourceDictionary { Source = new Uri(wanted, UriKind.Relative) };
+            _theme.MarkApplied();
+            return;
+        }
+    }
+
     // ---------------------------------------------------------------- sensors
 
     private void Sample()
@@ -294,6 +405,7 @@ public partial class MainWindow : Window
         {
             RefreshBanner();
             ApplyPollInterval();
+            if (_theme.PollForChange()) ApplyTheme();
 
             if (_thermal is null || !_thermal.TryRead(out var s)) return;
 

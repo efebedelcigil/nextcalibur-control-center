@@ -4,7 +4,7 @@
     <!-- Base TextBlock Style -->
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="Foreground" Value="{StaticResource Ink}" />
+        <Setter Property="Foreground" Value="{DynamicResource Ink}" />
         <Setter Property="FontSize" Value="12" />
     </Style>
 
@@ -13,7 +13,7 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="11.5" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource Ink}" />
+        <Setter Property="Foreground" Value="{DynamicResource Ink}" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -22,7 +22,7 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Foreground" Value="{StaticResource Ink}" />
+        <Setter Property="Foreground" Value="{DynamicResource Ink}" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -31,7 +31,7 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="10.5" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
     </Style>
 
     <!-- Primary Metric Reading (24-28px, Bold/SemiBold) -->
@@ -39,14 +39,14 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="26" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource Ink}" />
+        <Setter Property="Foreground" Value="{DynamicResource Ink}" />
     </Style>
 
     <!-- Status & Subtitle Text -->
     <Style x:Key="StatusTextStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="11.5" />
-        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
     </Style>
 
 </ResourceDictionary>
