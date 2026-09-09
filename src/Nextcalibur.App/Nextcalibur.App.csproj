@@ -6,6 +6,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
+    <!-- Framework-dependent keeps the download at a few megabytes instead of
+         seventy. The installer declares a dependency on the .NET 8 desktop
+         runtime and fetches it only if the machine does not already have it. -->
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <TieredPGO>true</TieredPGO>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Nextcalibur</AssemblyName>
     <RootNamespace>Nextcalibur.App</RootNamespace>
@@ -26,6 +38,20 @@
 
   <ItemGroup>
     <PackageReference Include="Velopack" Version="1.2.0" />
+  </ItemGroup>
+
+  <!-- UseWindowsForms is on for the tray icon only, which makes several type
+       names ambiguous with WPF. Bind the WPF ones project-wide so call sites
+       stay readable. -->
+  <ItemGroup>
+    <Using Include="System.Windows.Application" Alias="Application" />
+    <Using Include="System.Windows.MessageBox" Alias="MessageBox" />
+    <Using Include="System.Windows.MessageBoxButton" Alias="MessageBoxButton" />
+    <Using Include="System.Windows.MessageBoxImage" Alias="MessageBoxImage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
   </ItemGroup>
 
 </Project>

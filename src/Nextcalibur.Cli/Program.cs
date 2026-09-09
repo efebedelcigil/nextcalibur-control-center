@@ -19,6 +19,7 @@ internal static class Program
                 "watch" => Watch(args),
                 "overlay" => Overlay(args),
                 "info" => Info(),
+                "led" => Led(),
                 _ => Help(),
             };
         }
@@ -42,6 +43,7 @@ internal static class Program
               nextcalibur info              Show hardware support and environment
               nextcalibur sensors           Read temperatures and fan speeds once
               nextcalibur watch [seconds]   Stream sensor readings (default 30)
+              nextcalibur led               Read the current LED state
               nextcalibur overlay           Diagnose the Windows power-mode overlay
               nextcalibur overlay --fix     Repair the stuck-overlay fault
 
@@ -113,6 +115,26 @@ internal static class Program
             Thread.Sleep(1000);
         }
 
+        return 0;
+    }
+
+    private static int Led()
+    {
+        using var mailbox = new EcMailbox();
+        var state = new LedController(mailbox).TryReadState();
+
+        if (state is null)
+        {
+            Warn("The LED subsystem did not answer.");
+            return 5;
+        }
+
+        Console.WriteLine($"LED value : {state}");
+        if (state.Value.Raw == 0)
+        {
+            Warn("Firmware reported an all-zero LED state.");
+            Warn("On this model that usually means addressable lighting is not exposed.");
+        }
         return 0;
     }
 

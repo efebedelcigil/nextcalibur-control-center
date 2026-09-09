@@ -96,6 +96,11 @@ public sealed class EcMailbox : IDisposable
     private const string BufferProperty = "BufferBytes";
 
     private readonly ManagementScope _scope;
+
+    // The mailbox is a single fixed WMI instance. Re-running a WQL query for
+    // every read would cost far more than refreshing the object we already
+    // hold, and this type is polled continuously.
+    private ManagementObject? _instance;
     private bool _disposed;
 
     public EcMailbox()
@@ -135,21 +140,35 @@ public sealed class EcMailbox : IDisposable
         return false;
     }
 
-    private ManagementObject GetInstance()
+    private ManagementObject Instance()
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_instance is not null) return _instance;
+
         using var searcher = new ManagementObjectSearcher(
             _scope, new ObjectQuery($"SELECT * FROM {ClassName}"));
         using var results = searcher.Get();
         foreach (ManagementObject mo in results)
-            return mo;
+        {
+            _instance = mo;
+            return _instance;
+        }
 
         throw new EcMailboxUnavailableException($"No {ClassName} instance found.");
+    }
+
+    /// <summary>Drops the cached instance so the next call re-binds it.</summary>
+    private void Invalidate()
+    {
+        _instance?.Dispose();
+        _instance = null;
     }
 
     /// <summary>Reads the raw mailbox contents without interpreting them.</summary>
     public byte[] ReadRaw()
     {
-        using var mo = GetInstance();
+        var mo = Instance();
+        mo.Get();   // refresh in place - no new query
         if (mo[BufferProperty] is not byte[] buffer || buffer.Length < SmiCommand.SizeBytes)
             throw new EcMailboxUnavailableException($"{BufferProperty} was not a {SmiCommand.SizeBytes}-byte array.");
         return buffer;
@@ -158,7 +177,7 @@ public sealed class EcMailbox : IDisposable
     /// <summary>Writes a command into the mailbox.</summary>
     public void Write(SmiCommand command)
     {
-        using var mo = GetInstance();
+        var mo = Instance();
         mo[BufferProperty] = command.ToBytes();
         mo.Put();
     }
@@ -199,6 +218,7 @@ public sealed class EcMailbox : IDisposable
             catch (ManagementException ex)
             {
                 last = ex;
+                Invalidate();   // stale handle - rebind on the next attempt
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -211,7 +231,7 @@ public sealed class EcMailbox : IDisposable
 
         throw new EcMailboxUnavailableException(
             $"No valid response after {attempts} attempts. " +
-            "Another application may be using the mailbox — close the vendor Control Center and retry.",
+            "Another application may be using the mailbox - close the vendor Control Center and retry.",
             last);
     }
 
@@ -226,5 +246,6 @@ public sealed class EcMailbox : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        Invalidate();
     }
 }

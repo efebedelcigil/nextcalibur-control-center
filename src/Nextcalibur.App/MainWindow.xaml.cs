@@ -1,7 +1,9 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Hardware;
 using Nextcalibur.Core.Power;
 
@@ -10,21 +12,69 @@ namespace Nextcalibur.App;
 public partial class MainWindow : Window
 {
     private readonly PowerOverlayService _power = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly AppSettings _settings = AppSettings.Load();
+    private readonly DispatcherTimer _timer = new();
 
     private EcMailbox? _mailbox;
     private ThermalReader? _thermal;
+    private TrayPresence? _tray;
     private int _consecutiveFailures;
+    private bool _exiting;
+    private bool _overheatNotified;
 
     public MainWindow()
     {
         InitializeComponent();
+        _timer.Interval = TimeSpan.FromMilliseconds(_settings.PollIntervalMs);
         Loaded += OnLoaded;
-        Closed += (_, _) => { _timer.Stop(); _mailbox?.Dispose(); };
+        StateChanged += OnStateChanged;
+        Closing += OnClosing;
+    }
+
+    /// <summary>Ends the process rather than hiding to the tray.</summary>
+    private void Exit()
+    {
+        _exiting = true;
+        Close();
+    }
+
+    private void OnStateChanged(object? sender, EventArgs e)
+    {
+        // Sampling costs a firmware round trip. There is nothing to update while
+        // the window is not on screen, so stop rather than burn the mailbox.
+        if (WindowState == WindowState.Minimized) _timer.Stop();
+        else if (_thermal is not null) _timer.Start();
+    }
+
+    private void OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (_exiting || !_settings.MinimiseToTray || _tray is null)
+        {
+            _timer.Stop();
+            _tray?.Dispose();
+            _mailbox?.Dispose();
+            _settings.Save();
+            return;
+        }
+
+        // Closing the window keeps the app alive in the notification area, which
+        // is the only way the temperature warning is of any use.
+        e.Cancel = true;
+        Hide();
+        _timer.Stop();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        _tray = new TrayPresence(this, _settings);
+        _tray.ExitRequested += (_, _) => Exit();
+
+        if (_settings.StartMinimised &&
+            Environment.GetCommandLineArgs().Contains("--tray", StringComparer.OrdinalIgnoreCase))
+        {
+            Hide();
+        }
+
         RefreshOverlay();
 
         if (!EcMailbox.IsSupported())
@@ -59,8 +109,45 @@ public partial class MainWindow : Window
         }
 
         _timer.Tick += (_, _) => Sample();
-        _timer.Start();
         Sample();
+
+        // A hidden window has nothing to draw; the tray tooltip is refreshed on
+        // the slow timer below instead.
+        if (IsVisible) _timer.Start();
+        StartTrayPolling();
+    }
+
+    /// <summary>
+    /// Refreshes the tray tooltip and the overheat warning on a slow cadence
+    /// that runs whether or not the window is on screen.
+    /// </summary>
+    private void StartTrayPolling()
+    {
+        var slow = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
+        slow.Tick += (_, _) =>
+        {
+            if (_thermal is null || !_thermal.TryRead(out var s)) return;
+
+            _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
+
+            var limit = _settings.CpuWarningTemperatureC;
+            if (limit > 0 && s.CpuTemperatureC >= limit)
+            {
+                if (!_overheatNotified)
+                {
+                    _overheatNotified = true;
+                    _tray?.ShowMessage(
+                        $"CPU at {s.CpuTemperatureC} °C",
+                        "Sustained temperatures this high usually mean the heatsink needs cleaning.");
+                }
+            }
+            else if (s.CpuTemperatureC < limit - 8)
+            {
+                // Re-arm only after a clear drop, so the balloon cannot flap.
+                _overheatNotified = false;
+            }
+        };
+        slow.Start();
     }
 
     private void Sample()
