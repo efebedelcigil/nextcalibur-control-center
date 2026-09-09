@@ -51,13 +51,76 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 Taken from an audit of the repository rather than from memory, roughly in the
 order that would matter to somebody who installed this.
 
-1. **Publish 0.4.0.** It is built and waiting in `releases/`. Nothing since
-   0.3.0 has reached anybody: the threading work, the tray reclamation, the
-   whole lighting page and the two items below exist only for people who build
-   it themselves.
-2. **Graphics mode** — determine what the vendor software actually does when each
+1. **Turkish and English, switched from the title bar**, taking effect at once —
+   the interface and everything it says, notifications included. **The design
+   agent plans this one**, and the plan comes before the work.
+
+   It is not only a markup job, and a plan that assumes it is will produce a
+   half-translated application. Most of the words a person sees are in the
+   markup, but a good number are not: the banner that explains the vendor
+   software is running, "Readings have stalled…", the overheat balloon, the tray
+   tooltip and its whole settings menu, the update notice, the power-repair
+   dialogue at first run, and every message box. Those live in
+   `MainWindow.xaml.cs`, `TrayPresence.cs`, `UpdateService.cs` and `App.xaml.cs`,
+   which the design agent does not touch.
+
+   So the first decision is the shared one: **where do strings live, and how
+   does a running window re-read them?** A `ResourceDictionary` per language
+   that swaps like the palettes already do would let markup bind with
+   `DynamicResource` and let the code behind look up by key — the theme swap is
+   the working precedent for changing everything on screen without a restart.
+   Once that is settled the two halves can proceed independently: markup and the
+   toggle on one side, the strings that come from code on the other.
+
+   Worth deciding in the plan, not during it: what the toggle looks like beside
+   the existing theme control; whether the choice is remembered in `AppSettings`
+   alongside `Theme`; what happens to text the machine supplies, which is not
+   ours to translate — processor names, Windows power-mode names.
+
+2. **An icon audit.** Confirm there is an icon everywhere one belongs and that
+   they are the current mark: window and taskbar, Alt-Tab, notification area,
+   the installer, the desktop and Start-menu shortcuts, Add or Remove Programs,
+   and the title bar. Also the design agent's, and it wants checking on a
+   running installed copy rather than in the markup.
+
+3. **Graphics mode** — determine what the vendor software actually does when each
    of its three buttons is pressed, by watching device state while a person
    clicks them. Until then the page reports and does not switch.
+
+### 0.4.0 is out
+
+Published, and installed over 0.3.0 on the development machine: version 0.4.0,
+package replaced, application running. The release carries what the updater
+needs — `releases.win.json` and both nupkgs — which **0.3.0 did not**: that
+release had only the installer and the portable zip, so even an updater would
+have found no metadata to read.
+
+Measured on the installed build, which is the one people get:
+
+| | |
+|---|---|
+| Warm, window open | 0.053% CPU, handles flat over five minutes |
+| First three minutes | 0.117% CPU, +147 handles |
+
+The first row is what it costs. The second is startup and the update check that
+fires a minute in; those handles are held until a collection rather than
+accumulating, and the count is level afterwards. It reads higher than the 0.029%
+measured on a build output because that figure came from an already-settled
+process and this one includes the update path and single-file startup.
+
+**The update chain has not been proven end to end.** The metadata and the
+package are reachable over HTTP and the application runs without complaint
+through its first check, but nothing has yet been observed *updating*: the
+installed copy and the newest release are both 0.4.0. The next release proves
+it, or does not.
+
+The versions read 0.1.0, 0.3.0, 0.4.0 — 0.2.0 was never released. Renumbering
+was considered and rejected: 0.3.0 is installed on this machine, so publishing
+this build as 0.3.0 would leave that copy believing it was already current, and
+renaming the 0.3.0 release to 0.2.0 would put 0.3.0 packages inside a release
+called 0.2.0 — Velopack reads the version from the package, not from the name.
+A gap nobody ever occupied costs nothing; renumbering a published version costs
+the updater.
 
 ### Done from the audit
 
