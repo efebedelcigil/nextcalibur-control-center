@@ -55,8 +55,8 @@ Still **not** known, and not to be guessed:
 
 - These commands only ever address `a1 = 0x0100`. The thermal subsystem is never
   touched, so nothing here can affect fan behaviour.
-- Every value in Phase 1 and 2 is taken from the vendor software's own saved
-  profiles, so the firmware already accepts them.
+- Phase 1 replays values captured from the vendor software itself, so the
+  firmware has demonstrably just accepted them.
 - Lighting is recoverable: reopen the vendor Control Center and pick a profile,
   or reboot.
 
@@ -78,9 +78,6 @@ Each command is a single line:
 
 ## Phase 1 — does a write do anything at all?
 
-The value `0x11FF0000` is lifted verbatim from the vendor's `PowerSaving`
-profile, where it is one of five entries.
-
 Start with the exact value captured from the vendor software, so the very first
 write is one the firmware demonstrably just accepted.
 
@@ -98,12 +95,6 @@ same mode byte, different colour.
 how the vendor software issues it, and that needs investigating before going on.
 
 ## Phase 2 — device mapping
-
-The vendor UI exposes three keyboard zones (A, B, C) plus a light bar. Saved
-profiles carry five packed values, so there are believed to be five addressable
-devices. Establish which index is which by lighting one at a time.
-
-Set everything to a dim base first, then light a single device bright:
 
 Light one device at a time in a distinct colour, leaving the others white from
 Phase 1, so the mapping is unambiguous.
