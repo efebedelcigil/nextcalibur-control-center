@@ -131,6 +131,21 @@ public partial class MainWindow : Window
         _timer.Stop();
     }
 
+    // ------------------------------------------------------------ window chrome
+
+    // The native title bar is switched off, so dragging and the caption buttons
+    // are ours to provide.
+
+    private void OnTitleBarDrag(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed) DragMove();
+    }
+
+    private void OnMinimiseClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    // Close hides to the tray; OnClosing decides. Exit is in the tray menu.
+    private void OnCloseClick(object sender, RoutedEventArgs e) => Close();
+
     // ------------------------------------------------------------- navigation
 
     private void OnNavChanged(object sender, RoutedEventArgs e)
