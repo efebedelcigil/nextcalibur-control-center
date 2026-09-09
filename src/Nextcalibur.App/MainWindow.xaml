@@ -10,52 +10,44 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/Palette.xaml" />
-                <ResourceDictionary Source="Themes/Typography.xaml" />
-                <ResourceDictionary Source="Themes/Icons.xaml" />
-                <ResourceDictionary Source="Themes/Controls.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-            <c:TemperatureToDoubleConverter x:Key="TemperatureToDoubleConverter" />
-            <c:RpmToDoubleConverter x:Key="RpmToDoubleConverter" />
-        </ResourceDictionary>
+        <c:TemperatureToDoubleConverter x:Key="TemperatureToDoubleConverter" />
+        <c:RpmToDoubleConverter x:Key="RpmToDoubleConverter" />
     </Window.Resources>
 
     <!-- Outer Window Border with Square Corners (0px) -->
-    <Border Background="{StaticResource WindowBackground}"
-            BorderBrush="{StaticResource Line}"
+    <Border Background="{DynamicResource WindowBackground}"
+            BorderBrush="{DynamicResource Line}"
             BorderThickness="1"
             CornerRadius="0">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="36" />
+                <RowDefinition Height="38" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <!-- ================= TITLE BAR ================= -->
             <Grid x:Name="TitleBar" Grid.Row="0"
-                  Background="{StaticResource TitleBarBackground}"
+                  Background="{DynamicResource TitleBarBackground}"
                   MouseLeftButtonDown="OnTitleBarDrag">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: LogoMark + Wordmark -->
+                <!-- Left: New Nextcalibur LogoMark Image + Wordmark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Path Data="{StaticResource LogoMarkGeometry}" Fill="#FFFFFF"
-                          Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <Image Source="/Assets/logo.png" Width="41" Height="30" Stretch="Uniform"
+                           VerticalAlignment="Center" Margin="0,0,10,0" />
                     <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
-                               Style="{StaticResource WordmarkTextStyle}" />
+                               Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
 
                 <!-- Center/Right: Abstract Copper Circuit Header Artwork with Gradient Fade -->
-                <Viewbox Grid.Column="2" Stretch="UniformToFill" Width="380" Height="36"
-                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+                <Viewbox Grid.Column="2" Stretch="UniformToFill" Width="360" Height="36"
+                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0">
                     <Viewbox.OpacityMask>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                             <GradientStop Color="#00000000" Offset="0.0" />
@@ -64,15 +56,38 @@
                             <GradientStop Color="#FF000000" Offset="1.0" />
                         </LinearGradientBrush>
                     </Viewbox.OpacityMask>
-                    <Image Source="{StaticResource HeaderCircuitImage}" Width="380" Height="36" />
+                    <Image Source="{DynamicResource HeaderCircuitImage}" Width="380" Height="36" />
                 </Viewbox>
 
+                <!-- Three-way Theme Setting: Dark / Light / Follow-System -->
+                <Border Grid.Column="3" Background="{DynamicResource CardBackground}"
+                        BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                        CornerRadius="4" Padding="2" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="ThemeDark" Style="{DynamicResource ThemeToggleButtonStyle}"
+                                     GroupName="Theme" Tag="Dark" Checked="OnThemeChanged" ToolTip="Dark theme">
+                            <Path Data="{DynamicResource IconThemeDark}" Width="12" Height="12" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                        </RadioButton>
+                        <RadioButton x:Name="ThemeLight" Style="{DynamicResource ThemeToggleButtonStyle}"
+                                     GroupName="Theme" Tag="Light" Checked="OnThemeChanged" ToolTip="Light theme">
+                            <Path Data="{DynamicResource IconThemeLight}" Width="12" Height="12" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                        </RadioButton>
+                        <RadioButton x:Name="ThemeSystem" Style="{DynamicResource ThemeToggleButtonStyle}"
+                                     GroupName="Theme" Tag="System" Checked="OnThemeChanged" ToolTip="Follow Windows theme">
+                            <Path Data="{DynamicResource IconThemeSystem}" Width="12" Height="12" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
+
                 <!-- Right: Caption Buttons (Minimise & Close) -->
-                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Top">
-                    <Button Style="{StaticResource CaptionButton}" Click="OnMinimiseClick"
-                            Tag="{StaticResource IconMinimise}" ToolTip="Minimise" />
-                    <Button Style="{StaticResource CloseButton}" Click="OnCloseClick"
-                            Tag="{StaticResource IconClose}" ToolTip="Close" />
+                <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Style="{DynamicResource CaptionButton}" Click="OnMinimiseClick"
+                            Tag="{DynamicResource IconMinimise}" ToolTip="Minimise" />
+                    <Button Style="{DynamicResource CloseButton}" Click="OnCloseClick"
+                            Tag="{DynamicResource IconClose}" ToolTip="Close" />
                 </StackPanel>
             </Grid>
 
@@ -84,8 +99,8 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Navigation Rail (4 items: System, Power Mode, Display, Lighting) -->
-                <Border Grid.Column="0" Background="{StaticResource RailBackground}"
-                        BorderBrush="{StaticResource RailBorder}" BorderThickness="0,0,1,0">
+                <Border Grid.Column="0" Background="{DynamicResource RailBackground}"
+                        BorderBrush="{DynamicResource RailBorder}" BorderThickness="0,0,1,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -94,114 +109,123 @@
 
                         <!-- Rail Wordmark -->
                         <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,14,0,14">
-                            <TextBlock Text="NEXT" Foreground="{StaticResource Accent}"
+                            <TextBlock Text="NEXT" Foreground="{DynamicResource Accent}"
                                        FontSize="15" FontWeight="Bold" FontFamily="Segoe UI"
                                        HorizontalAlignment="Center" />
-                            <TextBlock Text="CALIBUR" Foreground="{StaticResource Ink}"
-                                       FontSize="10.5" FontWeight="SemiBold" FontFamily="Segoe UI"
-                                       HorizontalAlignment="Center" Margin="0,-2,0,0" />
+                            <TextBlock Text="CALIBUR" Foreground="{DynamicResource Ink}"
+                                       FontSize="15" FontWeight="Bold" FontFamily="Segoe UI"
+                                       HorizontalAlignment="Center" />
                         </StackPanel>
 
-                        <!-- Nav Rail Buttons -->
-                        <StackPanel Grid.Row="1">
-                            <!-- 1. System -->
-                            <RadioButton x:Name="NavSystem" Style="{StaticResource NavItem}" Tag="System"
+                        <!-- Navigation Items Stack -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Top">
+                            <!-- 1. System Dashboard -->
+                            <RadioButton x:Name="NavSystem" Style="{DynamicResource NavItem}" Tag="System"
                                          GroupName="Nav" IsChecked="True" Checked="OnNavChanged">
-                                <Path Data="{StaticResource IconNavSystem}" Width="24" Height="22" Stretch="Uniform"
+                                <Path Data="{DynamicResource IconNavSystem}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                                      StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
                             </RadioButton>
 
-                            <!-- 2. Power Mode (Relabelled & redrawn unambiguous power plug) -->
-                            <RadioButton x:Name="NavPower" Style="{StaticResource NavItem}" Tag="Power Mode"
+                            <!-- Subtle Divider -->
+                            <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
+
+                            <!-- 2. Power Mode -->
+                            <RadioButton x:Name="NavPower" Style="{DynamicResource NavItem}" Tag="Power Mode"
                                          GroupName="Nav" Checked="OnNavChanged">
-                                <Path Data="{StaticResource IconNavPower}" Width="24" Height="22" Stretch="Uniform"
+                                <Path Data="{DynamicResource IconNavPower}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                                      StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
                             </RadioButton>
+
+                            <!-- Subtle Divider -->
+                            <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
 
                             <!-- 3. Display Mode -->
-                            <RadioButton x:Name="NavDisplay" Style="{StaticResource NavItem}" Tag="Display"
+                            <RadioButton x:Name="NavDisplay" Style="{DynamicResource NavItem}" Tag="Display"
                                          GroupName="Nav" Checked="OnNavChanged">
-                                <Path Data="{StaticResource IconNavDisplay}" Width="24" Height="22" Stretch="Uniform"
+                                <Path Data="{DynamicResource IconNavDisplay}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                                      StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
                             </RadioButton>
 
-                            <!-- 4. Lighting -->
-                            <RadioButton x:Name="NavLighting" Style="{StaticResource NavItem}" Tag="Lighting"
+                            <!-- Subtle Divider -->
+                            <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
+
+                            <!-- 4. LED / Lighting Control -->
+                            <RadioButton x:Name="NavLighting" Style="{DynamicResource NavItem}" Tag="Lighting"
                                          GroupName="Nav" Checked="OnNavChanged">
-                                <Path Data="{StaticResource IconNavLighting}" Width="24" Height="22" Stretch="Uniform"
+                                <Path Data="{DynamicResource IconNavLighting}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                      StrokeThickness="1.7" StrokeLineJoin="Round" StrokeEndLineCap="Round" />
+                                      StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
                             </RadioButton>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Main Content Area Container -->
-                <Grid Grid.Column="1" Margin="18,12,18,14">
+                <!-- Page Content Area -->
+                <Grid Grid.Column="1" Margin="16,14,16,14">
 
                     <!-- ================= PAGE: SYSTEM ================= -->
                     <Grid x:Name="PageSystem" Visibility="Visible">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" /> <!-- Top System Mode Tabs -->
+                            <RowDefinition Height="*" />    <!-- Main Content & Right Telemetry Panels -->
                         </Grid.RowDefinitions>
 
-                        <!-- System Mode Tabs Across Top (y=61-111, None checked by default) -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                            <!-- Office Mode -->
-                            <RadioButton x:Name="ModeOffice" Style="{StaticResource SystemModeTab}"
+                        <!-- Row 0: System Mode Tabs (Office, Gaming, Performance) -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                            <!-- 1. Office Mode -->
+                            <RadioButton x:Name="ModeOffice" Style="{DynamicResource SystemModeTab}"
                                          Tag="Office" GroupName="Mode" Checked="OnSystemModeChanged">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconModeOffice}" Width="20" Height="20" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconModeOffice}" Width="20" Height="20" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Office" FontSize="12.5" FontFamily="Segoe UI" FontWeight="SemiBold"
+                                          VerticalAlignment="Center" Margin="0,0,10,0" />
+                                    <TextBlock Text="Office" FontSize="13" FontWeight="SemiBold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </RadioButton>
 
-                            <!-- Gaming Mode -->
-                            <RadioButton x:Name="ModeGaming" Style="{StaticResource SystemModeTab}"
+                            <!-- 2. Gaming Mode -->
+                            <RadioButton x:Name="ModeGaming" Style="{DynamicResource SystemModeTab}"
                                          Tag="Gaming" GroupName="Mode" Checked="OnSystemModeChanged">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconModeGaming}" Width="20" Height="20" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconModeGaming}" Width="20" Height="20" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Gaming" FontSize="12.5" FontFamily="Segoe UI" FontWeight="SemiBold"
+                                          VerticalAlignment="Center" Margin="0,0,10,0" />
+                                    <TextBlock Text="Gaming" FontSize="13" FontWeight="SemiBold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </RadioButton>
 
-                            <!-- High Performance Mode -->
-                            <RadioButton x:Name="ModePerformance" Style="{StaticResource SystemModeTab}"
+                            <!-- 3. High Performance Mode -->
+                            <RadioButton x:Name="ModePerformance" Style="{DynamicResource SystemModeTab}"
                                          Tag="Performance" GroupName="Mode" Checked="OnSystemModeChanged">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconModePerformance}" Width="20" Height="20" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconModePerformance}" Width="20" Height="20" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="High Performance" FontSize="12.5" FontFamily="Segoe UI" FontWeight="SemiBold"
+                                          VerticalAlignment="Center" Margin="0,0,10,0" />
+                                    <TextBlock Text="Performance" FontSize="13" FontWeight="SemiBold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>
 
-                        <!-- System Sensors & Gauges Area -->
+                        <!-- Row 1: Left Center Fan Gauges + Right Stats Panels -->
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="310" />
+                                <ColumnDefinition Width="280" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Left: Status Header, Warning Banner, Center Fan Gauges -->
+                            <!-- Left/Center: Dual Fan Gauges, Temperatures & Status Subtitle -->
                             <Grid Grid.Column="0" Margin="0,0,16,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -209,90 +233,91 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Header & Subtitle (Human text: System / Starting up...) -->
+                                <!-- Status Subtitle -->
                                 <StackPanel Grid.Row="0" Margin="0,0,0,10">
-                                    <TextBlock Text="System" FontSize="18" FontWeight="SemiBold"
-                                               Foreground="{StaticResource Ink}" />
-                                    <TextBlock x:Name="SubtitleText" Style="{StaticResource StatusTextStyle}"
-                                               Margin="0,2,0,0" Text="Starting up..." />
+                                    <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Ink}" />
+                                    <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
+                                               Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0" />
                                 </StackPanel>
 
-                                <!-- Warning Banner (starts Collapsed) -->
-                                <Border x:Name="Banner" Grid.Row="1" Style="{StaticResource Card}"
-                                        Margin="0,0,0,10" Visibility="Collapsed" BorderBrush="{StaticResource Warn}">
+                                <!-- Overheat / Warning Banner -->
+                                <Border x:Name="Banner" Grid.Row="1" Style="{DynamicResource Card}"
+                                        Margin="0,0,0,10" Visibility="Collapsed" BorderBrush="{DynamicResource Warn}">
                                     <StackPanel>
-                                        <TextBlock x:Name="BannerTitle" Foreground="{StaticResource Warn}"
-                                                   FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                        <TextBlock x:Name="BannerBody" Style="{StaticResource StatusTextStyle}"
-                                                   Margin="0,4,0,0" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="BannerTitle" Foreground="{DynamicResource Warn}"
+                                                   FontWeight="Bold" FontSize="13" />
+                                        <TextBlock x:Name="BannerBody" Style="{DynamicResource StatusTextStyle}"
+                                                   Margin="0,3,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Center Fan Gauges Dashboard -->
-                                <Border Grid.Row="2" Style="{StaticResource Card}" VerticalAlignment="Stretch">
-                                    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <!-- Fan Speed Gauges Card -->
+                                <Border Grid.Row="2" Style="{DynamicResource Card}" VerticalAlignment="Stretch">
+                                    <Grid VerticalAlignment="Center">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="235" />
-                                            <ColumnDefinition Width="20" />
-                                            <ColumnDefinition Width="235" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- CPU Fan & Temp Unit -->
+                                        <!-- CPU Fan & Temp Column -->
                                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                            <c:FanGauge x:Name="CpuFanGauge" Width="170" Height="170"
+                                            <c:FanGauge x:Name="CpuFanGauge" Width="130" Height="130"
                                                         Value="{Binding Text, ElementName=CpuFan, Converter={StaticResource RpmToDoubleConverter}}"
-                                                        Maximum="6000"
-                                                        ArcBrush="{StaticResource Accent}">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,14,0,0">
-                                                    <TextBlock x:Name="CpuFan" Text="-- rpm"
-                                                               Style="{StaticResource Value}" FontSize="20"
-                                                               HorizontalAlignment="Center" />
-                                                    <TextBlock Text="CPU FAN" Style="{StaticResource Label}"
+                                                        BladeBrush="{DynamicResource Accent}"
+                                                        ArcBrush="{DynamicResource Accent}"
+                                                        TrackBrush="{DynamicResource GaugeTrackBrush}">
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="CpuFan" Text="0 rpm"
+                                                               Style="{DynamicResource Value}" FontSize="20"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="CPU FAN" Style="{DynamicResource Label}"
                                                                HorizontalAlignment="Center" Margin="0,2,0,0" />
                                                 </StackPanel>
                                             </c:FanGauge>
 
-                                            <Border Background="{StaticResource PanelBackground}"
-                                                    BorderBrush="{StaticResource Line}" BorderThickness="1"
-                                                    CornerRadius="5" Padding="10,6" Margin="0,12,0,0" Width="170">
+                                            <Border Background="{DynamicResource PanelBackground}"
+                                                    BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                                                    CornerRadius="4" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center">
-                                                    <TextBlock Text="CPU TEMPERATURE" Style="{StaticResource Label}"
+                                                    <TextBlock Text="CPU TEMPERATURE" Style="{DynamicResource Label}"
                                                                HorizontalAlignment="Center" />
                                                     <TextBlock x:Name="CpuTemp" Text="-- °C"
-                                                               Style="{StaticResource Value}" FontSize="22"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                                               Style="{DynamicResource Value}" FontSize="22"
+                                                               HorizontalAlignment="Center" Margin="0,1,0,0" />
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
 
-                                        <!-- Subtle Divider -->
-                                        <Border Grid.Column="1" Width="1" Background="{StaticResource Line}"
-                                                Height="220" HorizontalAlignment="Center" />
+                                        <!-- Vertical Divider -->
+                                        <Border Grid.Column="1" Width="1" Background="{DynamicResource Line}" Margin="10,20" />
 
-                                        <!-- GPU Fan & Temp Unit -->
+                                        <!-- GPU Fan & Temp Column -->
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <c:FanGauge x:Name="GpuFanGauge" Width="170" Height="170"
+                                            <c:FanGauge x:Name="GpuFanGauge" Width="130" Height="130"
                                                         Value="{Binding Text, ElementName=GpuFan, Converter={StaticResource RpmToDoubleConverter}}"
-                                                        Maximum="6000"
-                                                        ArcBrush="{StaticResource Accent}">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,14,0,0">
-                                                    <TextBlock x:Name="GpuFan" Text="-- rpm"
-                                                               Style="{StaticResource Value}" FontSize="20"
-                                                               HorizontalAlignment="Center" />
-                                                    <TextBlock Text="GPU FAN" Style="{StaticResource Label}"
+                                                        BladeBrush="{DynamicResource Accent}"
+                                                        ArcBrush="{DynamicResource Accent}"
+                                                        TrackBrush="{DynamicResource GaugeTrackBrush}">
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="GpuFan" Text="0 rpm"
+                                                               Style="{DynamicResource Value}" FontSize="20"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="GPU FAN" Style="{DynamicResource Label}"
                                                                HorizontalAlignment="Center" Margin="0,2,0,0" />
                                                 </StackPanel>
                                             </c:FanGauge>
 
-                                            <Border Background="{StaticResource PanelBackground}"
-                                                    BorderBrush="{StaticResource Line}" BorderThickness="1"
-                                                    CornerRadius="5" Padding="10,6" Margin="0,12,0,0" Width="170">
+                                            <Border Background="{DynamicResource PanelBackground}"
+                                                    BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                                                    CornerRadius="4" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center">
-                                                    <TextBlock Text="GPU TEMPERATURE" Style="{StaticResource Label}"
+                                                    <TextBlock Text="GPU TEMPERATURE" Style="{DynamicResource Label}"
                                                                HorizontalAlignment="Center" />
                                                     <TextBlock x:Name="GpuTemp" Text="-- °C"
-                                                               Style="{StaticResource Value}" FontSize="22"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                                               Style="{DynamicResource Value}" FontSize="22"
+                                                               HorizontalAlignment="Center" Margin="0,1,0,0" />
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
@@ -300,15 +325,15 @@
                                 </Border>
                             </Grid>
 
-                            <!-- Right Column: Chamfered Panels for CPU & GPU and Memory & Disk -->
+                            <!-- Right Column: CPU & GPU Segmented Telemetry + Memory & Disk Conditions -->
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="12" />
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Panel 1: CPU & GPU -->
+                                <!-- Panel 1: CPU & GPU Thermal Telemetry -->
                                 <Grid Grid.Row="0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="24" />
@@ -316,85 +341,126 @@
                                     </Grid.RowDefinitions>
 
                                     <!-- Chamfered Header Tab -->
-                                    <Border Grid.Row="0" Background="{StaticResource HeaderTabBackground}"
-                                            BorderBrush="{StaticResource Line}" BorderThickness="1,1,1,0"
+                                    <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
+                                            BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
                                             HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
                                             CornerRadius="4,12,0,0">
-                                        <TextBlock Text="CPU &amp; GPU" Style="{StaticResource PanelHeaderTextStyle}" />
+                                        <TextBlock Text="CPU &amp; GPU" Style="{DynamicResource PanelHeaderTextStyle}" />
                                     </Border>
 
-                                    <!-- Panel Content Card -->
-                                    <Border Grid.Row="1" Style="{StaticResource Card}" CornerRadius="0,6,6,6">
+                                    <!-- Panel Card -->
+                                    <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6">
                                         <StackPanel VerticalAlignment="Center">
-                                            <!-- CPU Row -->
-                                            <Grid Margin="0,0,0,6">
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Ellipse Width="8" Height="8" Fill="{StaticResource Good}" Margin="0,0,8,0" />
-                                                    <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{StaticResource Ink}" />
+                                            <!-- CPU Indicator & Bar -->
+                                            <Grid>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
+                                                    <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Text, ElementName=CpuTemp}"
-                                                           Foreground="{Binding Foreground, ElementName=CpuTemp}"
-                                                           FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" />
+                                                           HorizontalAlignment="Right" Style="{DynamicResource Label}"
+                                                           Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
                                             </Grid>
                                             <c:SegmentedBar Value="{Binding Text, ElementName=CpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
-                                                            Minimum="0" Maximum="100" SegmentCount="16" Height="10"
-                                                            LitBrush="{Binding Foreground, ElementName=CpuTemp}" />
+                                                            LitBrush="{DynamicResource Accent}"
+                                                            UnlitBrush="{DynamicResource GaugeTrackBrush}"
+                                                            Height="8" Margin="0,6,0,14" />
 
-                                            <!-- GPU Row -->
-                                            <Grid Margin="0,16,0,6">
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Ellipse Width="8" Height="8" Fill="{StaticResource Good}" Margin="0,0,8,0" />
-                                                    <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{StaticResource Ink}" />
+                                            <!-- GPU Indicator & Bar -->
+                                            <Grid>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
+                                                    <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Text, ElementName=GpuTemp}"
-                                                           Foreground="{Binding Foreground, ElementName=GpuTemp}"
-                                                           FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" />
+                                                           HorizontalAlignment="Right" Style="{DynamicResource Label}"
+                                                           Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
                                             </Grid>
                                             <c:SegmentedBar Value="{Binding Text, ElementName=GpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
-                                                            Minimum="0" Maximum="100" SegmentCount="16" Height="10"
-                                                            LitBrush="{Binding Foreground, ElementName=GpuTemp}" />
+                                                            LitBrush="{DynamicResource Accent}"
+                                                            UnlitBrush="{DynamicResource GaugeTrackBrush}"
+                                                            Height="8" Margin="0,6,0,0" />
                                         </StackPanel>
                                     </Border>
                                 </Grid>
 
-                                <!-- Panel 2: Memory & Disk -->
+                                <!-- Panel 2: Memory & Disk Conditions (Matching Reference Images with Stacked Donut Rows) -->
                                 <Grid Grid.Row="2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="24" />
-                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <!-- Chamfered Header Tab -->
-                                    <Border Grid.Row="0" Background="{StaticResource HeaderTabBackground}"
-                                            BorderBrush="{StaticResource Line}" BorderThickness="1,1,1,0"
+                                    <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
+                                            BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
                                             HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
                                             CornerRadius="4,12,0,0">
-                                        <TextBlock Text="Memory &amp; Disk" Style="{StaticResource PanelHeaderTextStyle}" />
+                                        <TextBlock Text="Memory &amp; Disk" Style="{DynamicResource PanelHeaderTextStyle}" />
                                     </Border>
 
-                                    <!-- Donut Gauges Card -->
-                                    <Border Grid.Row="1" Style="{StaticResource Card}" CornerRadius="0,6,6,6">
-                                        <UniformGrid Columns="2" VerticalAlignment="Center">
-                                            <!-- RAM Donut -->
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <c:DonutGauge Value="42" Maximum="100" Width="78" Height="78"
-                                                              ArcBrush="{StaticResource Accent}" StrokeThickness="7" />
-                                                <TextBlock Text="RAM" Style="{StaticResource Label}"
-                                                           HorizontalAlignment="Center" Margin="0,6,0,0" />
-                                                <TextBlock Text="42%" Style="{StaticResource Value}" FontSize="15"
-                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
-                                            </StackPanel>
+                                    <!-- Donut Gauges Card with Stacked RAM & SSD Rows -->
+                                    <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6" Padding="14,10">
+                                        <StackPanel>
+                                            <!-- Row 1: RAM Condition (Yellow-Amber Arc, Bullet, Percentage, Capacity) -->
+                                            <Grid Margin="0,2,0,6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="68" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
 
-                                            <!-- SSD Donut -->
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <c:DonutGauge Value="68" Maximum="100" Width="78" Height="78"
-                                                              ArcBrush="{StaticResource Accent}" StrokeThickness="7" />
-                                                <TextBlock Text="SSD" Style="{StaticResource Label}"
-                                                           HorizontalAlignment="Center" Margin="0,6,0,0" />
-                                                <TextBlock Text="68%" Style="{StaticResource Value}" FontSize="15"
-                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
-                                            </StackPanel>
-                                        </UniformGrid>
+                                                <!-- Left: Donut Gauge with Yellow-Amber Arc -->
+                                                <c:DonutGauge Grid.Column="0" Value="46.8" Maximum="100" Width="64" Height="64"
+                                                              ArcBrush="#FFA000"
+                                                              TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                              BracketBrush="{DynamicResource Line}"
+                                                              StrokeThickness="7" HorizontalAlignment="Left" />
+
+                                                <!-- Right: Metric Bullet, Percentage & Secondary Capacity -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Ellipse Width="6" Height="6" Fill="#FF7700" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <TextBlock Text="RAM" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
+                                                                   FontWeight="Bold" FontSize="11" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="46,8%" Style="{DynamicResource Value}" FontSize="22"
+                                                               Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
+                                                    <TextBlock Text="14,9/31,7GB" Style="{DynamicResource Label}"
+                                                               FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Subtle Row Divider -->
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,4,0,8" />
+
+                                            <!-- Row 2: SSD Condition (Cyan-Blue Arc, Bullet, Percentage, Capacity) -->
+                                            <Grid Margin="0,0,0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="68" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Left: Donut Gauge with Cyan-Blue Arc -->
+                                                <c:DonutGauge Grid.Column="0" Value="52.5" Maximum="100" Width="64" Height="64"
+                                                              ArcBrush="#0088FF"
+                                                              TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                              BracketBrush="{DynamicResource Line}"
+                                                              StrokeThickness="7" HorizontalAlignment="Left" />
+
+                                                <!-- Right: Metric Bullet, Percentage & Secondary Capacity -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Ellipse Width="6" Height="6" Fill="#FF7700" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <TextBlock Text="SSD" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
+                                                                   FontWeight="Bold" FontSize="11" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="52,5%" Style="{DynamicResource Value}" FontSize="22"
+                                                               Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
+                                                    <TextBlock Text="733,0/1396,0G" Style="{DynamicResource Label}"
+                                                               FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
                                     </Border>
                                 </Grid>
                             </Grid>
@@ -404,15 +470,87 @@
                     <!-- ================= PAGE: POWER ================= -->
                     <Grid x:Name="PagePower" Visibility="Collapsed">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" /> <!-- Header -->
+                            <RowDefinition Height="Auto" /> <!-- 4 Power Mode Option Cards -->
+                            <RowDefinition Height="*" />    <!-- Status and Repair Bar -->
                         </Grid.RowDefinitions>
 
-                        <!-- Header rewritten: Power Mode -->
+                        <!-- Header -->
                         <TextBlock Grid.Row="0" Text="Power Mode" FontSize="19" FontWeight="SemiBold"
-                                   Foreground="{StaticResource Ink}" Margin="0,0,0,16" />
+                                   Foreground="{DynamicResource Ink}" Margin="0,0,0,16" />
 
-                        <Border Grid.Row="1" Style="{StaticResource Card}">
+                        <!-- Four Windows Power Overlay Cards in a Row (None checked by default) -->
+                        <Grid Grid.Row="1" Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 1. Best Power Efficiency -->
+                            <RadioButton x:Name="PowerModeEfficiency" Grid.Column="0"
+                                         Style="{DynamicResource PowerModeCard}"
+                                         Tag="Efficiency" GroupName="PowerMode" Checked="OnPowerModeChanged"
+                                         Margin="0,0,6,0">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Power Saver" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock x:Name="PowerModeEfficiencyText"
+                                               Style="{DynamicResource StatusTextStyle}"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" TextAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <!-- 2. Balanced -->
+                            <RadioButton x:Name="PowerModeBalanced" Grid.Column="1"
+                                         Style="{DynamicResource PowerModeCard}"
+                                         Tag="Balanced" GroupName="PowerMode" Checked="OnPowerModeChanged"
+                                         Margin="3,0,3,0">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Balanced" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock x:Name="PowerModeBalancedText"
+                                               Style="{DynamicResource StatusTextStyle}"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" TextAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <!-- 3. Better Performance -->
+                            <RadioButton x:Name="PowerModeBetter" Grid.Column="2"
+                                         Style="{DynamicResource PowerModeCard}"
+                                         Tag="Better" GroupName="PowerMode" Checked="OnPowerModeChanged"
+                                         Margin="3,0,3,0">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="High Performance" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock x:Name="PowerModeBetterText"
+                                               Style="{DynamicResource StatusTextStyle}"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" TextAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <!-- 4. Best Performance -->
+                            <RadioButton x:Name="PowerModeBest" Grid.Column="3"
+                                         Style="{DynamicResource PowerModeCard}"
+                                         Tag="Best" GroupName="PowerMode" Checked="OnPowerModeChanged"
+                                         Margin="6,0,0,0">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Ultimate" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock x:Name="PowerModeBestText"
+                                               Style="{DynamicResource StatusTextStyle}"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" TextAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                        </Grid>
+
+                        <!-- Diagnosis and Repair Strip -->
+                        <Border Grid.Row="2" Style="{DynamicResource Card}">
                             <Grid VerticalAlignment="Center" Margin="24">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -420,12 +558,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
-                                    <!-- Label rewritten: CURRENT MODE -->
-                                    <TextBlock Text="CURRENT MODE" Style="{StaticResource Label}" />
-                                    <TextBlock x:Name="OverlayState" Foreground="{StaticResource Good}"
+                                    <TextBlock Text="CURRENT MODE" Style="{DynamicResource Label}" />
+                                    <TextBlock x:Name="OverlayState" Foreground="{DynamicResource Good}"
                                                FontSize="20" FontWeight="SemiBold" Margin="0,6,0,0"
                                                Text="Checking..." />
-                                    <TextBlock x:Name="OverlayDetail" Style="{StaticResource StatusTextStyle}"
+                                    <TextBlock x:Name="OverlayDetail" Style="{DynamicResource StatusTextStyle}"
                                                Margin="0,10,32,0" TextWrapping="Wrap" LineHeight="18" />
                                 </StackPanel>
 
@@ -446,74 +583,60 @@
 
                         <!-- Header -->
                         <TextBlock Grid.Row="0" Text="Display Mode" FontSize="19" FontWeight="SemiBold"
-                                   Foreground="{StaticResource Ink}" Margin="0,0,0,24" />
+                                   Foreground="{DynamicResource Ink}" Margin="0,0,0,24" />
 
                         <!-- Three GPU Mode Option Cards in a Row (None checked by default) -->
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                             <!-- 1. Discrete GPU -->
-                            <RadioButton x:Name="ModeDiscrete" Style="{StaticResource GpuOptionCard}"
+                            <RadioButton x:Name="ModeDiscrete" Style="{DynamicResource GpuOptionCard}"
                                          Tag="Discrete" GroupName="Gpu" Checked="OnGpuModeChanged">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconGpuDiscrete}" Width="68" Height="68" Stretch="Uniform"
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Path Data="{DynamicResource IconGpuDiscrete}" Width="68" Height="68" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          HorizontalAlignment="Center" Margin="0,10,0,24" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Ellipse Width="16" Height="16" Margin="0,0,8,0"
-                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                 StrokeThickness="1.8" Fill="Transparent" />
-                                        <TextBlock Text="Discrete GPU"
-                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                   FontSize="13.5" FontFamily="Segoe UI" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
+                                          StrokeThickness="1.5" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Discrete GPU" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
+                                    <TextBlock Text="Dedicated graphics only"
+                                               Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                 </StackPanel>
                             </RadioButton>
 
                             <!-- 2. MS Hybrid -->
-                            <RadioButton x:Name="ModeHybrid" Style="{StaticResource GpuOptionCard}"
+                            <RadioButton x:Name="ModeHybrid" Style="{DynamicResource GpuOptionCard}"
                                          Tag="Hybrid" GroupName="Gpu" Checked="OnGpuModeChanged">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconGpuHybrid}" Width="68" Height="68" Stretch="Uniform"
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Path Data="{DynamicResource IconGpuHybrid}" Width="68" Height="68" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          HorizontalAlignment="Center" Margin="0,10,0,24" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Ellipse Width="16" Height="16" Margin="0,0,8,0"
-                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                 StrokeThickness="1.8" Fill="Transparent" />
-                                        <TextBlock Text="MS Hybrid"
-                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                   FontSize="13.5" FontFamily="Segoe UI" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
+                                          StrokeThickness="1.5" HorizontalAlignment="Center" />
+                                    <TextBlock Text="MS Hybrid" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
+                                    <TextBlock Text="Dynamic graphics switching"
+                                               Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                 </StackPanel>
                             </RadioButton>
 
                             <!-- 3. UMA Mode -->
-                            <RadioButton x:Name="ModeUma" Style="{StaticResource GpuOptionCard}"
+                            <RadioButton x:Name="ModeUma" Style="{DynamicResource GpuOptionCard}"
                                          Tag="Uma" GroupName="Gpu" Checked="OnGpuModeChanged">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconGpuUma}" Width="68" Height="68" Stretch="Uniform"
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Path Data="{DynamicResource IconGpuUma}" Width="68" Height="68" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          HorizontalAlignment="Center" Margin="0,10,0,24" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Ellipse Width="16" Height="16" Margin="0,0,8,0"
-                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                 StrokeThickness="1.8" Fill="Transparent" />
-                                        <TextBlock Text="UMA Mode"
-                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                                   FontSize="13.5" FontFamily="Segoe UI" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
+                                          StrokeThickness="1.5" HorizontalAlignment="Center" />
+                                    <TextBlock Text="UMA Mode" FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
+                                    <TextBlock Text="Integrated graphics only"
+                                               Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>
 
-                        <!-- Explanation Line -->
-                        <TextBlock x:Name="GpuModeDetail" Grid.Row="2" Style="{StaticResource StatusTextStyle}"
-                                   HorizontalAlignment="Center" Margin="0,28,0,0" TextWrapping="Wrap" />
+                        <!-- Bottom Explanation -->
+                        <TextBlock x:Name="GpuModeDetail" Grid.Row="2" Style="{DynamicResource StatusTextStyle}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   TextWrapping="Wrap" TextAlignment="Center" MaxWidth="680" LineHeight="20" />
                     </Grid>
 
                     <!-- ================= PAGE: LIGHTING ================= -->
@@ -523,7 +646,7 @@
                             <ColumnDefinition Width="316" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Left: Zone Tabs, Actual G870 Laptop Hardware Keyboard Backlight Preview, Profile Row -->
+                        <!-- Left: Zone Tabs, Realistic G870 Laptop Hardware Keyboard Backlight Preview, Profile Row -->
                         <Grid Grid.Column="0" Margin="0,0,16,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -533,40 +656,47 @@
 
                             <!-- Zone Selection Tabs -->
                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                <RadioButton x:Name="TabZoneA" Style="{StaticResource ZoneTab}" Content="Zone A"
-                                             GroupName="Zone" IsChecked="True" Checked="OnZoneTabChanged" Tag="Left" />
-                                <RadioButton x:Name="TabZoneB" Style="{StaticResource ZoneTab}" Content="Zone B"
+                                <RadioButton x:Name="TabZoneA" Style="{DynamicResource ZoneTab}" Content="Zone A"
+                                             GroupName="Zone" Checked="OnZoneTabChanged" Tag="Left" />
+                                <RadioButton x:Name="TabZoneB" Style="{DynamicResource ZoneTab}" Content="Zone B"
                                              GroupName="Zone" Checked="OnZoneTabChanged" Tag="Middle" />
-                                <RadioButton x:Name="TabZoneC" Style="{StaticResource ZoneTab}" Content="Zone C"
+                                <RadioButton x:Name="TabZoneC" Style="{DynamicResource ZoneTab}" Content="Zone C"
                                              GroupName="Zone" Checked="OnZoneTabChanged" Tag="Right" />
                             </StackPanel>
 
                             <!-- Authentic Casper Excalibur G870 Laptop Chassis & 3-Zone Keyboard Backlight Preview -->
-                            <Border Grid.Row="1" Style="{StaticResource Card}" Padding="10">
+                            <Border Grid.Row="1" Style="{DynamicResource Card}" Padding="8">
                                 <Grid VerticalAlignment="Center">
-                                    <!-- Laptop Deck Enclosure (Flat vector styling, deck seen from above) -->
-                                    <Border Background="#101217" BorderBrush="#1C202B" BorderThickness="1.5"
-                                            CornerRadius="8" Padding="8,10,8,8">
+                                    <!-- Laptop Deck Enclosure (Metallic anodized titanium/silver finish with bevels) -->
+                                    <Border CornerRadius="8" Padding="10,8,10,8"
+                                            BorderThickness="1.5" BorderBrush="{DynamicResource CardBorder}">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#2C2F38" Offset="0.0" />
+                                                <GradientStop Color="#202229" Offset="0.25" />
+                                                <GradientStop Color="#181A20" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
                                         <Grid>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" /> <!-- Top Exhaust Vents & Power Button Bar -->
+                                                <RowDefinition Height="Auto" /> <!-- Top Exhaust Vents & Power Shield Bar -->
                                                 <RowDefinition Height="Auto" /> <!-- Recessed Keyboard Well with 3 Zones -->
                                                 <RowDefinition Height="Auto" /> <!-- Palm Rest & Centered Touchpad -->
                                             </Grid.RowDefinitions>
 
-                                            <!-- Top Vent Grille & Power Button -->
-                                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                            <!-- Top Vent Grille & Power Shield -->
+                                            <Grid Grid.Row="0" Margin="0,0,0,6">
                                                 <!-- Dark Red Accent Grille Strip -->
-                                                <Border Background="#45120E" Height="4" VerticalAlignment="Top"
-                                                        HorizontalAlignment="Stretch" Margin="30,0,30,0" CornerRadius="2" />
+                                                <Border Background="#8A180E" Height="4" VerticalAlignment="Top"
+                                                        HorizontalAlignment="Stretch" Margin="36,0,36,0" CornerRadius="2" />
                                                 <!-- Center Power Shield Indicator -->
-                                                <Path Data="M 0,0 L 10,0 L 5,7 Z" Fill="#282C38"
+                                                <Path Data="M 0,0 L 12,0 L 6,8 Z" Fill="{DynamicResource Muted}"
                                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,3,0,0" />
                                             </Grid>
 
                                             <!-- Recessed Keyboard Well: Houses 3 Backlight Zones -->
-                                            <Border Grid.Row="1" Background="#07080A" BorderBrush="#181B24"
-                                                    BorderThickness="1" CornerRadius="4" Padding="4">
+                                            <Border Grid.Row="1" Background="#0A0B0E" BorderBrush="#161822"
+                                                    BorderThickness="1" CornerRadius="4" Padding="3">
                                                 <Grid Height="160">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="154" /> <!-- Zone A (Left) -->
@@ -577,118 +707,124 @@
                                                     <!-- ================= ZONE A: LEFT KEYBOARD ================= -->
                                                     <Border x:Name="PreviewA" Grid.Column="0" CornerRadius="3"
                                                             Margin="1" Background="#FFFFFF"
-                                                            BorderBrush="{StaticResource Accent}" BorderThickness="1.5">
-                                                        <!-- Keycaps take backlight colour via Binding to PreviewA.Background -->
+                                                            BorderBrush="{DynamicResource Accent}" BorderThickness="1.5">
                                                         <Grid Margin="2">
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="16" /> <!-- Fn row -->
-                                                                <RowDefinition Height="24" /> <!-- Num row -->
-                                                                <RowDefinition Height="24" /> <!-- QWERTY -->
-                                                                <RowDefinition Height="24" /> <!-- Home -->
-                                                                <RowDefinition Height="24" /> <!-- ZXCV -->
-                                                                <RowDefinition Height="26" /> <!-- Modifiers -->
-                                                            </Grid.RowDefinitions>
+                                                            <!-- Diffuse Backlight Underglow Layer -->
+                                                            <Border Background="{Binding Background, ElementName=PreviewA}"
+                                                                    Opacity="0.20" CornerRadius="2" />
 
-                                                            <!-- Row 0: Esc, F1-F5 -->
-                                                            <UniformGrid Grid.Row="0" Columns="6" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                            <!-- Keycaps take backlight colour via Binding to PreviewA.Background -->
+                                                            <Grid Margin="1">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="16" /> <!-- Fn row -->
+                                                                    <RowDefinition Height="24" /> <!-- Num row -->
+                                                                    <RowDefinition Height="24" /> <!-- QWERTY -->
+                                                                    <RowDefinition Height="24" /> <!-- Home -->
+                                                                    <RowDefinition Height="24" /> <!-- ZXCV -->
+                                                                    <RowDefinition Height="26" /> <!-- Modifiers -->
+                                                                </Grid.RowDefinitions>
 
-                                                            <!-- Row 1: ~, 1-5 -->
-                                                            <UniformGrid Grid.Row="1" Columns="6" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                                <!-- Row 0: Esc, F1-F5 -->
+                                                                <UniformGrid Grid.Row="0" Columns="6" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 2: Tab (wide), Q, W (gamer key), E, R, T -->
-                                                            <Grid Grid.Row="2" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="1.5*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <!-- W (WASD Gamer Key highlight) -->
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
-                                                                    <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
-                                                                </Border>
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 1: ~, 1-5 -->
+                                                                <UniformGrid Grid.Row="1" Columns="6" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 3: CapsLock (wide), A, S, D (gamer keys), F, G -->
-                                                            <Grid Grid.Row="3" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="1.8*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <!-- A -->
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
-                                                                    <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
-                                                                </Border>
-                                                                <!-- S -->
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
-                                                                    <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
-                                                                </Border>
-                                                                <!-- D -->
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
-                                                                    <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
-                                                                </Border>
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 2: Tab (wide), Q, W (gamer key), E, R, T -->
+                                                                <Grid Grid.Row="2" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="1.5*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <!-- W (WASD Gamer Key highlight) -->
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
+                                                                        <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
+                                                                    </Border>
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
 
-                                                            <!-- Row 4: LeftShift (extra wide), Z, X, C, V, B -->
-                                                            <Grid Grid.Row="4" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="2.2*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 3: Caps (wide), A, S, D (gamer keys), F, G -->
+                                                                <Grid Grid.Row="3" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="1.7*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <!-- A (WASD Gamer Key highlight) -->
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
+                                                                        <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
+                                                                    </Border>
+                                                                    <!-- S (WASD Gamer Key highlight) -->
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
+                                                                        <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
+                                                                    </Border>
+                                                                    <!-- D (WASD Gamer Key highlight) -->
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1.5" CornerRadius="2" Margin="1">
+                                                                        <Border BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" Margin="2" CornerRadius="1" />
+                                                                    </Border>
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
 
-                                                            <!-- Row 5: Ctrl, Fn, Win, Alt, SpaceLeft -->
-                                                            <Grid Grid.Row="5" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="1.3*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="1.2*" />
-                                                                    <ColumnDefinition Width="2.5*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                <!-- Row 4: L-Shift (extra wide), Z, X, C, V, B -->
+                                                                <Grid Grid.Row="4" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2.1*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
+
+                                                                <!-- Row 5: L-Ctrl, Fn, Win, Alt, Space (left half) -->
+                                                                <Grid Grid.Row="5" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="1.2*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="1.1*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewA}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
                                                             </Grid>
                                                         </Grid>
                                                     </Border>
@@ -696,313 +832,341 @@
                                                     <!-- ================= ZONE B: MIDDLE KEYBOARD ================= -->
                                                     <Border x:Name="PreviewB" Grid.Column="1" CornerRadius="3"
                                                             Margin="1" Background="#FFFFFF"
-                                                            BorderBrush="Transparent" BorderThickness="1.5">
+                                                            BorderBrush="{DynamicResource Accent}" BorderThickness="1.5">
                                                         <Grid Margin="2">
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="16" /> <!-- Fn row -->
-                                                                <RowDefinition Height="24" /> <!-- Num row -->
-                                                                <RowDefinition Height="24" /> <!-- QWERTY -->
-                                                                <RowDefinition Height="24" /> <!-- Home -->
-                                                                <RowDefinition Height="24" /> <!-- ZXCV -->
-                                                                <RowDefinition Height="26" /> <!-- Modifiers -->
-                                                            </Grid.RowDefinitions>
+                                                            <!-- Diffuse Backlight Underglow Layer -->
+                                                            <Border Background="{Binding Background, ElementName=PreviewB}"
+                                                                    Opacity="0.20" CornerRadius="2" />
 
-                                                            <!-- Row 0: F6-F11 -->
-                                                            <UniformGrid Grid.Row="0" Columns="6" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                            <!-- Keycaps take backlight colour via Binding to PreviewB.Background -->
+                                                            <Grid Margin="1">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="16" /> <!-- Fn row -->
+                                                                    <RowDefinition Height="24" /> <!-- Num row -->
+                                                                    <RowDefinition Height="24" /> <!-- QWERTY -->
+                                                                    <RowDefinition Height="24" /> <!-- Home -->
+                                                                    <RowDefinition Height="24" /> <!-- ZXCV -->
+                                                                    <RowDefinition Height="26" /> <!-- Modifiers -->
+                                                                </Grid.RowDefinitions>
 
-                                                            <!-- Row 1: 6, 7, 8, 9, 0 -->
-                                                            <UniformGrid Grid.Row="1" Columns="5" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                                <!-- Row 0: F6-F10 -->
+                                                                <UniformGrid Grid.Row="0" Columns="5" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 2: Y, U, I, O, P -->
-                                                            <UniformGrid Grid.Row="2" Columns="5" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                                <!-- Row 1: 6, 7, 8, 9, 0 -->
+                                                                <UniformGrid Grid.Row="1" Columns="5" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 3: H, J, K, L, ; -->
-                                                            <UniformGrid Grid.Row="3" Columns="5" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                                <!-- Row 2: Y, U, I, O, P -->
+                                                                <UniformGrid Grid.Row="2" Columns="5" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 4: N, M, ,, . -->
-                                                            <UniformGrid Grid.Row="4" Columns="4" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                                <!-- Row 3: H, J, K, L, ; -->
+                                                                <UniformGrid Grid.Row="3" Columns="5" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 5: SpaceRight, Alt, Context, Ctrl -->
-                                                            <Grid Grid.Row="5" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="2*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="1.2*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                <!-- Row 4: N, M, ,, ., / -->
+                                                                <UniformGrid Grid.Row="4" Columns="5" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
+
+                                                                <!-- Row 5: Space (right half), AltGr, Fn, Ctrl -->
+                                                                <Grid Grid.Row="5" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2.5*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewB}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
                                                             </Grid>
                                                         </Grid>
                                                     </Border>
 
-                                                    <!-- ================= ZONE C: RIGHT KEYBOARD & NUMPAD ================= -->
+                                                    <!-- ================= ZONE C: RIGHT KEYBOARD + NUMPAD ================= -->
                                                     <Border x:Name="PreviewC" Grid.Column="2" CornerRadius="3"
                                                             Margin="1" Background="#FFFFFF"
-                                                            BorderBrush="Transparent" BorderThickness="1.5">
+                                                            BorderBrush="{DynamicResource Accent}" BorderThickness="1.5">
                                                         <Grid Margin="2">
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="16" /> <!-- Fn row -->
-                                                                <RowDefinition Height="24" /> <!-- Num row -->
-                                                                <RowDefinition Height="24" /> <!-- QWERTY -->
-                                                                <RowDefinition Height="24" /> <!-- Home -->
-                                                                <RowDefinition Height="24" /> <!-- ZXCV -->
-                                                                <RowDefinition Height="26" /> <!-- Modifiers + Inverted-T Arrows -->
-                                                            </Grid.RowDefinitions>
+                                                            <!-- Diffuse Backlight Underglow Layer -->
+                                                            <Border Background="{Binding Background, ElementName=PreviewC}"
+                                                                    Opacity="0.20" CornerRadius="2" />
 
-                                                            <!-- Row 0: F12, Pause, PrtSc, Del, Home, End, PgUp, PgDn -->
-                                                            <UniformGrid Grid.Row="0" Columns="8" Margin="0,1">
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </UniformGrid>
+                                                            <!-- Keycaps take backlight colour via Binding to PreviewC.Background -->
+                                                            <Grid Margin="1">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="16" /> <!-- Fn / Nav row -->
+                                                                    <RowDefinition Height="24" /> <!-- -, =, Backspace, NumLock, /, * -->
+                                                                    <RowDefinition Height="24" /> <!-- [, ], Enter, 7, 8, 9, - -->
+                                                                    <RowDefinition Height="24" /> <!-- ', \, 4, 5, 6, + -->
+                                                                    <RowDefinition Height="24" /> <!-- R-Shift, Up, 1, 2, 3, Enter -->
+                                                                    <RowDefinition Height="26" /> <!-- Left, Down, Right, 0, . -->
+                                                                </Grid.RowDefinitions>
 
-                                                            <!-- Row 1: -, =, Backspace (wide), NumLock, /, *, - -->
-                                                            <Grid Grid.Row="1" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="2*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="6" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 0: F11, F12, PrtSc, Del, Numpad top -->
+                                                                <UniformGrid Grid.Row="0" Columns="7" Margin="0,1">
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </UniformGrid>
 
-                                                            <!-- Row 2: [, ], \, 7, 8, 9, Numpad + (tall) -->
-                                                            <Grid Grid.Row="2" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="1.8*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="6" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 1: -, =, Backspace (wide), NumLk, /, * -->
+                                                                <Grid Grid.Row="1" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
 
-                                                            <!-- Row 3: ', Enter (wide), 4, 5, 6 -->
-                                                            <Grid Grid.Row="3" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="2.8*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 2: [, ], Enter (wide), 7, 8, 9, - -->
+                                                                <Grid Grid.Row="2" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="1.8*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="6" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
 
-                                                            <!-- Row 4: /, RightShift (wide), UpArrow, 1, 2, 3, Numpad Enter (tall) -->
-                                                            <Grid Grid.Row="4" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="1.8*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <!-- Up Arrow -->
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="6" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                            </Grid>
+                                                                <!-- Row 3: ', #, 4, 5, 6, + (tall) -->
+                                                                <Grid Grid.Row="3" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="1.8*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
 
-                                                            <!-- Row 5: LeftArrow, DownArrow, RightArrow (Inverted-T), 0 (wide), . -->
-                                                            <Grid Grid.Row="5" Margin="0,1">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="2*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <!-- Left, Down, Right Arrows -->
-                                                                <Border Grid.Column="0" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="1" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="2" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <!-- 0 (wide) -->
-                                                                <Border Grid.Column="3" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <!-- . -->
-                                                                <Border Grid.Column="4" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
-                                                                <Border Grid.Column="5" Background="#13151D" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                <!-- Row 4: R-Shift (wide), Up Arrow, 1, 2, 3, Enter -->
+                                                                <Grid Grid.Row="4" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="1.8*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
+
+                                                                <!-- Row 5: Left, Down, Right, 0 (wide), . -->
+                                                                <Grid Grid.Row="5" Margin="0,1">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Grid.Column="0" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="1" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="2" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="3" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="4" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                    <Border Grid.Column="5" Background="#161822" BorderBrush="{Binding Background, ElementName=PreviewC}" BorderThickness="1" CornerRadius="2" Margin="1" />
+                                                                </Grid>
                                                             </Grid>
                                                         </Grid>
                                                     </Border>
                                                 </Grid>
                                             </Border>
 
-                                            <!-- Palm Rest with Realistic Centered Touchpad -->
-                                            <Grid Grid.Row="2" Height="70" Margin="0,8,0,0">
-                                                <!-- Touchpad centered under alpha typing field -->
-                                                <Border Width="130" Height="62" HorizontalAlignment="Center"
-                                                        Margin="-60,0,0,0" CornerRadius="4"
-                                                        Background="#13161F" BorderBrush="#222634" BorderThickness="1" />
-                                            </Grid>
+                                            <!-- Palm Rest & Precision Touchpad -->
+                                            <Border Grid.Row="2" Height="52" Margin="0,6,0,0">
+                                                <Border Width="154" Height="44" HorizontalAlignment="Center"
+                                                        CornerRadius="4" BorderThickness="1"
+                                                        BorderBrush="{DynamicResource CardBorderSubtle}" Background="#161820" />
+                                            </Border>
                                         </Grid>
                                     </Border>
                                 </Grid>
                             </Border>
 
-                            <!-- Profile Presets Dock -->
+                            <!-- Bottom: Lighting Profile Buttons (Office, Gaming, Performance, User Define) -->
                             <StackPanel x:Name="ProfileRow" Grid.Row="2" Orientation="Horizontal"
                                         HorizontalAlignment="Center" Margin="0,10,0,0">
-                                <RadioButton x:Name="ProfOffice" Style="{StaticResource ProfileButton}" Content="Office"
-                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Office" />
-                                <RadioButton x:Name="ProfGaming" Style="{StaticResource ProfileButton}" Content="Gaming"
-                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Gaming" />
-                                <RadioButton x:Name="ProfPerformance" Style="{StaticResource ProfileButton}" Content="Performance"
-                                             GroupName="Profile" Checked="OnProfileChecked" Tag="Performance" />
-                                <RadioButton x:Name="ProfUser" Style="{StaticResource ProfileButton}" Content="User Define"
-                                             GroupName="Profile" IsChecked="True" Checked="OnProfileChecked" Tag="UserDefine" />
+                                <RadioButton x:Name="ProfOffice" Style="{DynamicResource ProfileButton}" Content="Office"
+                                             Tag="Office" GroupName="Profile" Checked="OnProfileChecked" />
+                                <RadioButton x:Name="ProfGaming" Style="{DynamicResource ProfileButton}" Content="Gaming"
+                                             Tag="Gaming" GroupName="Profile" Checked="OnProfileChecked" />
+                                <RadioButton x:Name="ProfPerformance" Style="{DynamicResource ProfileButton}" Content="Performance"
+                                             Tag="Performance" GroupName="Profile" Checked="OnProfileChecked" />
+                                <RadioButton x:Name="ProfUser" Style="{DynamicResource ProfileButton}" Content="User Define"
+                                             Tag="UserDefine" GroupName="Profile" Checked="OnProfileChecked" />
                             </StackPanel>
                         </Grid>
 
-                        <!-- Right: Lighting Controls Panel -->
-                        <Border Grid.Column="1" Style="{StaticResource Card}" Background="{StaticResource PanelBackground}">
-                            <StackPanel>
-                                <!-- Switches & Reload Row -->
-                                <Grid>
+                        <!-- Right: Master Switches, Effects Grid, Color Wheel, Brightness Slider -->
+                        <Border Grid.Column="1" Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" /> <!-- Master switches -->
+                                    <RowDefinition Height="Auto" /> <!-- Effects Panel -->
+                                    <RowDefinition Height="*" />    <!-- Color Wheel & Brightness Slider -->
+                                </Grid.RowDefinitions>
+
+                                <!-- 1. Master Switches (LED on/off, Select all, Reload) -->
+                                <Grid Grid.Row="0" Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- LED On/Off Toggle -->
-                                    <StackPanel Grid.Column="0">
-                                        <ToggleButton x:Name="LedPower" Style="{StaticResource Pill}" IsChecked="True"
-                                                      HorizontalAlignment="Left" Click="OnLedPowerToggled" />
-                                        <TextBlock Text="LED on/off" Style="{StaticResource Label}" Margin="0,5,0,0" />
+                                    <!-- LED on/off -->
+                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                        <ToggleButton x:Name="LedPower" Style="{DynamicResource Pill}" IsChecked="True"
+                                                      Click="OnLedPowerToggled" />
+                                        <TextBlock Text="LED on/off" Style="{DynamicResource Label}" Margin="0,5,0,0"
+                                                   HorizontalAlignment="Center" />
                                     </StackPanel>
 
-                                    <!-- Select All Toggle -->
-                                    <StackPanel Grid.Column="1">
-                                        <ToggleButton x:Name="SelectAll" Style="{StaticResource Pill}"
-                                                      HorizontalAlignment="Left" Click="OnSelectAllToggled" />
-                                        <TextBlock Text="Select all" Style="{StaticResource Label}" Margin="0,5,0,0" />
+                                    <!-- Select all -->
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <ToggleButton x:Name="SelectAll" Style="{DynamicResource Pill}"
+                                                      Click="OnSelectAllToggled" />
+                                        <TextBlock Text="Select all" Style="{DynamicResource Label}" Margin="0,5,0,0"
+                                                   HorizontalAlignment="Center" />
                                     </StackPanel>
 
                                     <!-- Reload Button -->
-                                    <Button x:Name="ReloadButton" Grid.Column="2" Content="Reload"
-                                            Click="OnReloadClick" VerticalAlignment="Top" />
+                                    <Button x:Name="ReloadButton" Grid.Column="2" Click="OnReloadClick"
+                                            VerticalAlignment="Top" Margin="0,2,4,0" ToolTip="Reload settings">
+                                        <Path Data="{DynamicResource IconReload}" Width="16" Height="16" Stretch="Uniform"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                              StrokeThickness="1.5" StrokeEndLineCap="Round" />
+                                    </Button>
                                 </Grid>
 
-                                <!-- Subtle Separator -->
-                                <Border Height="1" Background="{StaticResource Line}" Margin="0,10" />
+                                <!-- Divider -->
+                                <Border Height="1" Background="{DynamicResource Line}" Margin="0,6" />
 
-                                <!-- Lighting Effects Grid (6 effects) -->
-                                <UniformGrid x:Name="EffectPanel" Columns="3" HorizontalAlignment="Center">
-                                    <RadioButton x:Name="FxStatic" Style="{StaticResource EffectButton}" Content="Static"
-                                                 GroupName="Fx" IsChecked="True" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxStatic}" />
-                                    <RadioButton x:Name="FxBreathing" Style="{StaticResource EffectButton}" Content="Breathing"
+                                <!-- 2. Lighting Effect Selection (Static, Breathing, Blink, Heartbeat, Cycle, Wave) -->
+                                <UniformGrid x:Name="EffectPanel" Grid.Row="1" Columns="3" Margin="0,0,0,6">
+                                    <RadioButton x:Name="FxStatic" Style="{DynamicResource EffectButton}" Content="Static"
                                                  GroupName="Fx" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxBreathing}" />
-                                    <RadioButton x:Name="FxBlink" Style="{StaticResource EffectButton}" Content="Blink"
+                                                 Tag="{DynamicResource IconFxStatic}" />
+                                    <RadioButton x:Name="FxBreathing" Style="{DynamicResource EffectButton}" Content="Breathing"
                                                  GroupName="Fx" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxBlink}" />
-                                    <RadioButton x:Name="FxHeartbeat" Style="{StaticResource EffectButton}" Content="Heartbeat"
+                                                 Tag="{DynamicResource IconFxBreathing}" />
+                                    <RadioButton x:Name="FxBlink" Style="{DynamicResource EffectButton}" Content="Blink"
                                                  GroupName="Fx" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxHeartbeat}" />
-                                    <RadioButton x:Name="FxCycle" Style="{StaticResource EffectButton}" Content="Colour cycle"
+                                                 Tag="{DynamicResource IconFxBlink}" />
+                                    <RadioButton x:Name="FxHeartbeat" Style="{DynamicResource EffectButton}" Content="Heartbeat"
                                                  GroupName="Fx" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxCycle}" />
-                                    <RadioButton x:Name="FxWave" Style="{StaticResource EffectButton}" Content="Wave"
+                                                 Tag="{DynamicResource IconFxHeartbeat}" />
+                                    <RadioButton x:Name="FxCycle" Style="{DynamicResource EffectButton}" Content="Colour cycle"
                                                  GroupName="Fx" Checked="OnEffectChecked"
-                                                 Tag="{StaticResource IconFxWave}" />
+                                                 Tag="{DynamicResource IconFxCycle}" />
+                                    <RadioButton x:Name="FxWave" Style="{DynamicResource EffectButton}" Content="Wave"
+                                                 GroupName="Fx" Checked="OnEffectChecked"
+                                                 Tag="{DynamicResource IconFxWave}" />
                                 </UniformGrid>
 
-                                <!-- Hardware Colour Wheel -->
-                                <c:ColourWheel x:Name="Wheel" Width="170" Height="170" Margin="0,8,0,0"
-                                               HorizontalAlignment="Center" ColourPicked="OnColourPicked" />
+                                <!-- 3. Polar Color Wheel & Brightness Slider -->
+                                <Grid Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                                <!-- Colour Wheel Hint Text (Human text: This effect picks its own colours.) -->
-                                <TextBlock x:Name="WheelHint" Style="{StaticResource Label}" Margin="0,4,0,0"
-                                           TextAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed"
-                                           Text="This effect picks its own colours." />
+                                    <!-- Color Wheel & Hint Message -->
+                                    <Grid Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <c:ColourWheel x:Name="Wheel" Width="140" Height="140"
+                                                       ColourPicked="OnColourPicked" />
+                                        <TextBlock x:Name="WheelHint" Style="{DynamicResource Label}" Margin="0,4,0,0"
+                                                   Text="Fixed colour cycle" Foreground="{DynamicResource Muted}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Visibility="Collapsed" />
+                                    </Grid>
 
-                                <!-- Brightness Controls -->
-                                <Grid Margin="0,8,0,0">
-                                    <TextBlock Text="Brightness" Style="{StaticResource Label}"
-                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="BrightnessValue" Text="100%"
-                                               FontSize="15" FontWeight="SemiBold"
-                                               Foreground="{StaticResource Ink}"
-                                               HorizontalAlignment="Right" />
+                                    <!-- Brightness Slider & Readout -->
+                                    <StackPanel Grid.Row="1" Margin="6,6,6,0">
+                                        <Grid Margin="0,0,0,4">
+                                            <TextBlock Text="Brightness" Style="{DynamicResource Label}"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock x:Name="BrightnessValue" Text="100%"
+                                                       Style="{DynamicResource Value}" FontSize="13"
+                                                       Foreground="{DynamicResource Ink}"
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                        </Grid>
+                                        <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="100"
+                                                TickFrequency="10" IsSnapToTickEnabled="True"
+                                                ValueChanged="OnBrightnessChanged" />
+                                    </StackPanel>
                                 </Grid>
-                                <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="100" Value="100"
-                                        TickFrequency="10" IsSnapToTickEnabled="True" TickPlacement="None"
-                                        Margin="0,3,0,0" ValueChanged="OnBrightnessChanged" />
-                            </StackPanel>
+                            </Grid>
                         </Border>
                     </Grid>
+
                 </Grid>
             </Grid>
         </Grid>

@@ -50,7 +50,7 @@ change in the code-behind, stop and report which change and why.
 | `x:Name` | Type | Notes |
 |---|---|---|
 | `TabZoneA`, `TabZoneB`, `TabZoneC` | `RadioButton` | `GroupName="Zone"`, `Tag` = `Left` / `Middle` / `Right` |
-| `KeyboardPreview` | `KeyboardPreview` | drawing control; the code sets its zone brushes |
+| `PreviewA`, `PreviewB`, `PreviewC` | `Border` | zone regions of the keyboard illustration; the code sets `.Background` and `.BorderBrush` |
 | `ProfileRow` | `Panel` | dimmed as a unit |
 | `ProfOffice`, `ProfGaming`, `ProfPerformance`, `ProfUser` | `RadioButton` | `GroupName="Profile"`, `Tag` = `Office` / `Gaming` / `Performance` / `UserDefine` |
 | `LedPower`, `SelectAll` | `ToggleButton` | pill switches |
@@ -106,3 +106,17 @@ application knows what the machine is set to.
 **Controls must not cache brushes.** Drawing controls that read a colour in C#
 need a dependency property bound with `DynamicResource`. A `Brush` stored in a
 field at construction will not follow a theme change.
+
+## Still missing
+
+The RAM and disk gauges on the System page have no `x:Name`, so the code cannot
+feed them real values and they currently show fixed numbers. They need:
+
+| `x:Name` | Type | Notes |
+|---|---|---|
+| `RamGauge`, `SsdGauge` | `DonutGauge` | code sets `.Value` |
+| `RamPercent`, `SsdPercent` | `TextBlock` | the large reading |
+| `RamDetail`, `SsdDetail` | `TextBlock` | the capacity line |
+
+Until then those four numbers are placeholders, which is the one thing this
+project does not otherwise do.

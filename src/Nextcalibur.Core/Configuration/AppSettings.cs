@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Win32;
 
 namespace Nextcalibur.Core.Configuration;
@@ -17,6 +18,10 @@ public sealed class AppSettings
 
     /// <summary>Warn when the CPU exceeds this temperature, in °C. Zero disables.</summary>
     public int CpuWarningTemperatureC { get; set; } = 90;
+
+    /// <summary>Dark, light, or follow Windows.</summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public ThemePreference Theme { get; set; } = ThemePreference.System;
 
     private static string Path => System.IO.Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
