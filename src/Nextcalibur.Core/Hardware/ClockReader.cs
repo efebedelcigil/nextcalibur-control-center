@@ -8,22 +8,56 @@ namespace Nextcalibur.Core.Hardware;
 ///
 /// <c>Win32_Processor.CurrentClockSpeed</c> is not usable for this: on modern
 /// parts it reports the base clock whatever the processor is doing. The
-/// dependable figure is the performance counter "% Processor Performance",
-/// which is the ratio of actual to base frequency and goes well above 100%
-/// under turbo — measured at 180% on the machine this was written for, while
-/// the WMI property still read 2300 MHz.
+/// dependable figure is the counter "% Processor Performance", the ratio of
+/// actual to base frequency, which goes well above 100% under turbo — measured
+/// at 180% on the machine this was written for, while the WMI property still
+/// read 2300 MHz.
+///
+/// The counter is read through PDH rather than WMI. The equivalent WMI query
+/// was measured at <b>275 ms</b> on this machine; called every couple of
+/// seconds on the UI thread that is roughly a seventh of a core, permanently,
+/// for one number. PDH answers the same question in well under a millisecond.
+///
+/// <c>PdhAddEnglishCounter</c> is deliberate: counter paths are localised, and
+/// the English form is the only one that works on every machine.
 /// </summary>
 public sealed class CpuClockReader : IDisposable
 {
-    private const string CounterQuery =
-        "SELECT PercentProcessorPerformance FROM Win32_PerfFormattedData_Counters_ProcessorInformation " +
-        "WHERE Name = '_Total'";
+    private const string CounterPath = @"\Processor Information(_Total)\% Processor Performance";
+    private const uint PdhFmtDouble = 0x00000200;
+    private const uint Success = 0;
 
-    private readonly ManagementObjectSearcher _searcher = new(CounterQuery);
-    private uint _baseMhz;
+    [DllImport("pdh.dll")]
+    private static extern uint PdhOpenQueryW(string? dataSource, IntPtr userData, out IntPtr query);
+
+    [DllImport("pdh.dll", CharSet = CharSet.Unicode)]
+    private static extern uint PdhAddEnglishCounterW(IntPtr query, string path, IntPtr userData, out IntPtr counter);
+
+    [DllImport("pdh.dll")]
+    private static extern uint PdhCollectQueryData(IntPtr query);
+
+    [DllImport("pdh.dll")]
+    private static extern uint PdhGetFormattedCounterValue(
+        IntPtr counter, uint format, out uint type, out PdhFmtCounterValue value);
+
+    [DllImport("pdh.dll")]
+    private static extern uint PdhCloseQuery(IntPtr query);
+
+    [StructLayout(LayoutKind.Explicit)]
+    private struct PdhFmtCounterValue
+    {
+        [FieldOffset(0)] public uint Status;
+        [FieldOffset(8)] public double DoubleValue;
+    }
+
+    private IntPtr _query;
+    private IntPtr _counter;
+    private bool _ready;
+    private bool _tried;
     private bool _disposed;
+    private uint _baseMhz;
 
-    /// <summary>The processor's base frequency in MHz, read once.</summary>
+    /// <summary>The processor's base frequency in MHz, read once from WMI.</summary>
     private uint BaseMhz
     {
         get
@@ -43,43 +77,61 @@ public sealed class CpuClockReader : IDisposable
             }
             catch (ManagementException)
             {
-                // Leaves _baseMhz at zero, which Read() reports as unknown.
+                // Leaves the value at zero, which ReadGhz reports as unknown.
             }
 
             return _baseMhz;
         }
     }
 
+    private bool EnsureReady()
+    {
+        if (_ready) return true;
+        if (_tried || _disposed) return false;
+
+        _tried = true;
+        try
+        {
+            if (PdhOpenQueryW(null, IntPtr.Zero, out _query) != Success) return false;
+
+            if (PdhAddEnglishCounterW(_query, CounterPath, IntPtr.Zero, out _counter) != Success)
+            {
+                PdhCloseQuery(_query);
+                _query = IntPtr.Zero;
+                return false;
+            }
+
+            // This counter is a rate, so the first collection only establishes a
+            // baseline. The reading that follows is the first usable one.
+            PdhCollectQueryData(_query);
+            return _ready = true;
+        }
+        catch (DllNotFoundException)
+        {
+            return false;
+        }
+    }
+
     /// <summary>Current frequency in GHz, or null when it cannot be read.</summary>
     public double? ReadGhz()
     {
-        if (_disposed || BaseMhz == 0) return null;
+        if (!EnsureReady() || BaseMhz == 0) return null;
 
-        try
-        {
-            using var results = _searcher.Get();
-            foreach (ManagementObject row in results)
-            {
-                using (row)
-                {
-                    if (row["PercentProcessorPerformance"] is not ulong percent) continue;
-                    return BaseMhz * percent / 100.0 / 1000.0;
-                }
-            }
-        }
-        catch (ManagementException)
-        {
-            // A missed sample is not worth reporting; the caller shows nothing.
-        }
+        if (PdhCollectQueryData(_query) != Success) return null;
+        if (PdhGetFormattedCounterValue(_counter, PdhFmtDouble, out _, out var value) != Success) return null;
 
-        return null;
+        return BaseMhz * value.DoubleValue / 100.0 / 1000.0;
     }
 
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
-        _searcher.Dispose();
+
+        if (_query == IntPtr.Zero) return;
+        PdhCloseQuery(_query);
+        _query = IntPtr.Zero;
+        _ready = false;
     }
 }
 
@@ -129,11 +181,7 @@ public sealed class GpuClockReader : IDisposable
             }
             return _ready = true;
         }
-        catch (DllNotFoundException)
-        {
-            return false;
-        }
-        catch (EntryPointNotFoundException)
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {
             return false;
         }
