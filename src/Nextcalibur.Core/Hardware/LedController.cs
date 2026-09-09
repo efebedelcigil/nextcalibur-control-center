@@ -90,26 +90,41 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
         State.Save();
     }
 
-    /// <summary>Sets the brightness for the whole keyboard.</summary>
-    public void SetBrightness(LedBrightness brightness)
+    /// <summary>Brightness moves in ten-point steps, giving eleven levels.</summary>
+    public const int BrightnessStep = 10;
+
+    /// <summary>
+    /// Sets the perceived brightness for the whole keyboard.
+    ///
+    /// The value is rounded to the nearest ten. Testing on the hardware showed
+    /// every one of the eleven resulting levels to be tell-apart-able, while
+    /// finer steps are not — so this is the honest resolution of the control
+    /// rather than an arbitrary limit imposed on the UI alone.
+    /// </summary>
+    public void SetBrightness(int percent)
     {
-        State.Brightness = brightness;
+        var clamped = Math.Clamp(percent, 0, 100);
+        State.BrightnessPercent = (int)Math.Round(clamped / (double)BrightnessStep) * BrightnessStep;
         ReapplyAllZones();
         State.Save();
     }
 
     /// <summary>Turns the lighting off without forgetting the colours.</summary>
-    public void TurnOff()
-    {
-        // Effect 0 overrides brightness, so this is the reliable way off.
-        Send(LedZone.AllKeyboard, 0, 0, 0, LedEffect.Off);
-    }
+    public void TurnOff() => Send(LedZone.AllKeyboard, 0, 0, 0, LedEffect.Off);
 
     /// <summary>Re-sends the stored state, for example after resume.</summary>
     public void Apply() => ReapplyAllZones();
 
     private void ReapplyAllZones()
     {
+        if (State.BrightnessPercent == 0)
+        {
+            // Scaling to zero would send black, which on some effects still
+            // drives the LEDs. Effect 0 is the real off switch.
+            Send(LedZone.AllKeyboard, 0, 0, 0, LedEffect.Off);
+            return;
+        }
+
         // Each zone keeps its own colour, so a global change has to be written
         // once per zone rather than broadcast.
         foreach (var zone in new[] { LedZone.Left, LedZone.Middle, LedZone.Right })
@@ -126,11 +141,22 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     private void Send(LedZone zone, byte r, byte g, byte b, LedEffect? effectOverride = null)
     {
         var effect = effectOverride ?? State.Effect;
-        var mode = (byte)(((byte)effect << 4) | (byte)State.Brightness);
+
+        // The hardware brightness field stays at its top step; the useful range
+        // comes from scaling the colour. Mixing both would make one control
+        // silently limit the other.
+        var mode = (byte)(((byte)effect << 4) | (byte)LedBrightness.Full);
 
         var command = SmiCommand.For(SmiFamily.Write, SmiSubsystem.Led);
         command.A2 = (uint)zone;
-        command.A3 = ((uint)mode << 24) | ((uint)r << 16) | ((uint)g << 8) | b;
+        command.A3 = ((uint)mode << 24)
+                   | ((uint)Scale(r) << 16)
+                   | ((uint)Scale(g) << 8)
+                   | Scale(b);
         _mailbox.Write(command);
     }
+
+    /// <summary>Applies the brightness percentage to one colour channel.</summary>
+    private byte Scale(byte channel) =>
+        (byte)Math.Clamp(channel * State.BrightnessPercent / 100, 0, 255);
 }

@@ -17,8 +17,16 @@ public sealed class LedState
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public LedEffect Effect { get; set; } = LedEffect.Static;
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public LedBrightness Brightness { get; set; } = LedBrightness.Full;
+    /// <summary>
+    /// Perceived brightness, 0-100.
+    ///
+    /// The hardware's own brightness field has only three steps, which is too
+    /// coarse to be useful, so this is applied by scaling the colour instead —
+    /// the same technique the vendor software uses. Scaling happens at write
+    /// time so the colours below stay at full strength: dimming and restoring
+    /// must not lose the colour the user picked.
+    /// </summary>
+    public int BrightnessPercent { get; set; } = 100;
 
     /// <summary>Per-zone colour as 0xRRGGBB, keyed by zone name.</summary>
     public Dictionary<string, uint> Colours { get; set; } = new()

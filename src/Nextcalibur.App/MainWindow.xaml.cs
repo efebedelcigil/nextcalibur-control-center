@@ -18,6 +18,8 @@ public partial class MainWindow : Window
     private EcMailbox? _mailbox;
     private ThermalReader? _thermal;
     private TrayPresence? _tray;
+    private LedController? _led;
+    private bool _ledUiReady;
     private int _consecutiveFailures;
     private bool _exiting;
     private bool _overheatNotified;
@@ -108,6 +110,8 @@ public partial class MainWindow : Window
             return;
         }
 
+        SetUpLighting();
+
         _timer.Tick += (_, _) => Sample();
         Sample();
 
@@ -115,6 +119,100 @@ public partial class MainWindow : Window
         // the slow timer below instead.
         if (IsVisible) _timer.Start();
         StartTrayPolling();
+    }
+
+    private void SetUpLighting()
+    {
+        if (_mailbox is null) { LedCard.Visibility = Visibility.Collapsed; return; }
+
+        _led = new LedController(_mailbox);
+
+        EffectBox.ItemsSource = new[]
+        {
+            LedEffect.Static, LedEffect.Breathing, LedEffect.Blink, LedEffect.Heartbeat,
+            LedEffect.ColourCycle, LedEffect.Wave, LedEffect.Off,
+        };
+        EffectBox.SelectedItem = _led.State.Effect;
+        BrightnessSlider.Value = _led.State.BrightnessPercent;
+        BrightnessValue.Text = $"{_led.State.BrightnessPercent}%";
+        foreach (var (button, zone) in ZoneButtons()) button.Background = BrushFor(zone);
+
+        // Only now may the selection handlers write to hardware; assigning the
+        // values above raises SelectionChanged.
+        _ledUiReady = true;
+    }
+
+    private IEnumerable<(System.Windows.Controls.Button Button, LedZone Zone)> ZoneButtons()
+    {
+        yield return (ZoneA, LedZone.Left);
+        yield return (ZoneB, LedZone.Middle);
+        yield return (ZoneC, LedZone.Right);
+    }
+
+    private SolidColorBrush BrushFor(LedZone zone)
+    {
+        var (r, g, b) = _led!.State.GetColour(zone);
+        return new SolidColorBrush(Color.FromRgb(r, g, b));
+    }
+
+    private void OnZoneClick(object sender, RoutedEventArgs e)
+    {
+        if (_led is null || sender is not System.Windows.Controls.Button button) return;
+        if (!Enum.TryParse<LedZone>(button.Tag?.ToString(), out var zone)) return;
+
+        var (r, g, b) = _led.State.GetColour(zone);
+        using var dialog = new System.Windows.Forms.ColorDialog
+        {
+            Color = System.Drawing.Color.FromArgb(r, g, b),
+            FullOpen = true,
+        };
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+
+        RunLighting(() => _led.SetColour(zone, dialog.Color.R, dialog.Color.G, dialog.Color.B));
+        button.Background = BrushFor(zone);
+    }
+
+    private void OnEffectChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (!_ledUiReady || _led is null || EffectBox.SelectedItem is not LedEffect effect) return;
+        RunLighting(() => _led.SetEffect(effect));
+    }
+
+    private void OnBrightnessChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        var percent = (int)Math.Round(e.NewValue);
+        BrightnessValue.Text = $"{percent}%";
+        if (!_ledUiReady || _led is null) return;
+        RunLighting(() => _led.SetBrightness(percent));
+    }
+
+    private void OnLightsOffClick(object sender, RoutedEventArgs e)
+    {
+        if (_led is null) return;
+        RunLighting(_led.TurnOff);
+    }
+
+    /// <summary>
+    /// Runs a lighting change, pausing sensor sampling first. Both share the
+    /// firmware mailbox, and a sample landing between zone writes makes the
+    /// hardware drop them.
+    /// </summary>
+    private void RunLighting(Action action)
+    {
+        var wasRunning = _timer.IsEnabled;
+        _timer.Stop();
+        try
+        {
+            action();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Lighting", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            if (wasRunning) _timer.Start();
+        }
     }
 
     /// <summary>

@@ -48,6 +48,7 @@
     <Using Include="System.Windows.MessageBox" Alias="MessageBox" />
     <Using Include="System.Windows.MessageBoxButton" Alias="MessageBoxButton" />
     <Using Include="System.Windows.MessageBoxImage" Alias="MessageBoxImage" />
+    <Using Include="System.Windows.Media.Color" Alias="Color" />
   </ItemGroup>
 
   <ItemGroup>

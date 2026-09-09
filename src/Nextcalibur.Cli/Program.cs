@@ -48,7 +48,7 @@ internal static class Program
               nextcalibur led colour <zone> <hex>  e.g. led colour left FF0000
               nextcalibur led effect <name>      static blink breathing heartbeat
                                                  cycle wave off
-              nextcalibur led brightness <0|1|2> off, half, full
+              nextcalibur led brightness <0-100>  in steps of 10
               nextcalibur overlay           Diagnose the Windows power-mode overlay
               nextcalibur overlay --fix     Repair the stuck-overlay fault
 
@@ -133,7 +133,7 @@ internal static class Program
         {
             case "show":
                 Console.WriteLine($"Effect     : {led.State.Effect}");
-                Console.WriteLine($"Brightness : {led.State.Brightness}");
+                Console.WriteLine($"Brightness : {led.State.BrightnessPercent}%");
                 foreach (var zone in new[] { LedZone.Left, LedZone.Middle, LedZone.Right })
                 {
                     var (r, g, b) = led.State.GetColour(zone);
@@ -172,13 +172,13 @@ internal static class Program
                 return 0;
 
             case "brightness":
-                if (args.Length < 3 || !int.TryParse(args[2], out var level) || level is < 0 or > 2)
+                if (args.Length < 3 || !int.TryParse(args[2], out var level) || level is < 0 or > 100)
                 {
-                    Error("usage: nextcalibur led brightness <0|1|2>");
+                    Error("usage: nextcalibur led brightness <0-100>");
                     return 1;
                 }
-                led.SetBrightness((LedBrightness)level);
-                Console.WriteLine($"Brightness set to {(LedBrightness)level}.");
+                led.SetBrightness(level);
+                Console.WriteLine($"Brightness set to {led.State.BrightnessPercent}%.");
                 return 0;
 
             default:
