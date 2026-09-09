@@ -18,6 +18,14 @@ param(
     [switch]$Uninstall,
     [string]$Mark,
     [int]$Minutes = 12,
+
+    # Off by default, and that is the point. Asking NVML for a clock or a power
+    # figure wakes the card out of its low-power state, so a logger that polls it
+    # every few seconds holds awake the very thing the test is about. Which chip
+    # drives the panel — the actual question — comes from WMI and costs nothing.
+    # Turn this on only when the card is known to be busy anyway.
+    [switch]$WithNvml,
+
     [string]$LogFile = "$PSScriptRoot\graphics-boot-log.csv"
 )
 
@@ -55,6 +63,7 @@ function Get-RegGpuMode {
 }
 
 function Get-Nvidia {
+    if (-not $WithNvml) { return @('', '') }
     $smi = (Get-Command nvidia-smi -ErrorAction SilentlyContinue).Source
     if (-not $smi) { $smi = "$env:ProgramFiles\NVIDIA Corporation\NVSMI\nvidia-smi.exe" }
     if (-not (Test-Path $smi)) { return @('', '') }
@@ -112,8 +121,9 @@ if ($Uninstall) {
 if ($Install) {
     if (-not (Test-Admin)) { Write-Host "Run as administrator." -ForegroundColor Red; exit 1 }
 
+    $nvml = if ($WithNvml) { ' -WithNvml' } else { '' }
     $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
-        -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$self`" -Minutes $Minutes"
+        -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$self`" -Minutes $Minutes$nvml"
 
     # No delay: the whole question is what the machine looks like as it comes up.
     $trigger = New-ScheduledTaskTrigger -AtStartup
