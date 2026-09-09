@@ -930,14 +930,32 @@ public partial class MainWindow : Window
         var wasRunning = _timer.IsEnabled;
         _timer.Stop();
 
-        // Stopping the timer keeps a new sample from starting, but sampling now
-        // happens on another thread and one may already be in flight. Holding
-        // the mailbox is what actually keeps a multi-zone write together.
-        using var hold = _mailbox?.Hold();
-
         try
         {
-            action();
+            var mailbox = _mailbox;
+
+            // The write goes to a thread-pool thread for the same reason the
+            // sensor read does: System.Management needs an MTA thread, and
+            // every call made from this one leaves a kernel handle behind. A
+            // colour-wheel drag was measured pushing the count to 1183 before a
+            // collection took it back.
+            //
+            // The hold is taken inside the lambda, on the thread that does the
+            // writing. Monitor is thread-affine: holding it here and writing
+            // there would block that thread against a lock this one owns, and
+            // this one is waiting for it. Stopping the timer keeps a new sample
+            // from starting; the hold is what keeps a multi-zone write together
+            // against one already in flight.
+            //
+            // This still blocks the interface thread, exactly as before. That
+            // is deliberate — it preserves the ordering every caller here
+            // assumes, and the throttling that keeps a drag from queueing
+            // hundreds of writes the hardware would lag behind. Only the
+            // apartment changes.
+            Task.Run(() =>
+            {
+                using (mailbox?.Hold()) action();
+            }).GetAwaiter().GetResult();
         }
         catch (EcMailboxUnavailableException)
         {
