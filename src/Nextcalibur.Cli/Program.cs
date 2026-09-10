@@ -130,7 +130,12 @@ internal static class Program
         Console.WriteLine($"Elevated                    : {(IsElevated() ? "yes" : "no")}");
 
         var stock = FindStockSoftware();
+        // Installed and running are different problems. Running means the two
+        // are competing for the mailbox now; installed means they will be, the
+        // next time somebody signs in.
+        var installed = VendorSoftware.FindInstallation();
         Console.WriteLine($"Vendor Control Center       : {(stock is null ? "not running" : $"RUNNING (pid {stock})")}");
+        Console.WriteLine($"  installed                 : {(installed is { } v ? v.Name : "no")}");
 
         if (stock is not null)
         {

@@ -127,6 +127,10 @@ public partial class MainWindow : Window
             Hide();
         }
 
+        // Said before anything is read, because it explains readings that are
+        // about to look unreliable.
+        RecommendRemovingVendorSoftwareOnce();
+
         // Before deciding the machine is unsupported, rule out the far more
         // likely explanation: this account has not been allowed to use the
         // interface yet.
@@ -178,6 +182,62 @@ public partial class MainWindow : Window
         Sample();
         RefreshClocks();
         if (IsVisible) _timer.Start();
+    }
+
+    /// <summary>
+    /// Says once that the vendor's Control Center is installed alongside this,
+    /// and leaves the decision where it belongs.
+    ///
+    /// The two drive the same firmware mailbox, which holds one command at a
+    /// time, so readings stall and lighting changes fail to stick while both are
+    /// about. That is worth saying. It is not worth refusing to run over, and it
+    /// is certainly not worth removing somebody else's software over - so this
+    /// recommends, records the answer, and never asks again.
+    ///
+    /// Checked whenever the window opens rather than only at install, because
+    /// the order is not fixed: somebody may install that software afterwards, or
+    /// put it back later.
+    /// </summary>
+    private void RecommendRemovingVendorSoftwareOnce()
+    {
+        if (_settings.AcceptedVendorSoftware) return;
+        if (VendorSoftware.FindInstallation() is not { } vendor) return;
+
+        var body =
+            $"{vendor.Name} is installed on this machine." +
+            Environment.NewLine + Environment.NewLine +
+            "Both it and Nextcalibur talk to the same interface in your laptop's firmware, " +
+            "and it can only handle one request at a time. With both installed, readings " +
+            "stall and lighting changes sometimes fail to apply - in either application." +
+            Environment.NewLine + Environment.NewLine +
+            "Removing it is recommended. Nextcalibur will not do that for you, and it works " +
+            "either way." +
+            Environment.NewLine + Environment.NewLine +
+            "Open Windows' list of installed apps now?" +
+            Environment.NewLine + Environment.NewLine +
+            "Choosing No keeps it, and this message will not come back.";
+
+        var answer = MessageBox.Show(this, body, "Nextcalibur - two applications, one interface",
+            MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+        if (answer == MessageBoxResult.Yes)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("ms-settings:appsfeatures") { UseShellExecute = true });
+            }
+            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+            {
+                // Nothing worth reporting: they know where their settings are.
+            }
+
+            // Not recorded as accepted. They may not go through with it, and
+            // being asked again next time is the right outcome if they do not.
+            return;
+        }
+
+        _settings.AcceptedVendorSoftware = true;
+        _settings.Save();
     }
 
     /// <summary>
