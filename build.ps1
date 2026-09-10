@@ -14,7 +14,7 @@ Set-Location $PSScriptRoot
 Write-Host "==> Building" -ForegroundColor Cyan
 dotnet build Nextcalibur.sln -c Release --nologo /p:Version=$Version
 
-Write-Host "==> Publishing (framework-dependent, win-x64)" -ForegroundColor Cyan
+Write-Host "==> Publishing (self-contained, win-x64)" -ForegroundColor Cyan
 Remove-Item publish -Recurse -Force -ErrorAction SilentlyContinue
 # -p:Version keeps the assembly version and the package version in step; they
 # drifted apart once already.
@@ -37,7 +37,6 @@ vpk pack `
     --mainExe Nextcalibur.exe `
     --packTitle "Nextcalibur Control Center" `
     --packAuthors "Efe Bedelcigil" `
-    --framework net8.0-x64-desktop `
     --icon src\Nextcalibur.App\Assets\app.ico `
     -o releases
 

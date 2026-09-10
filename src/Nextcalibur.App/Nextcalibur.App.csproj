@@ -9,10 +9,19 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
 
-    <!-- Framework-dependent keeps the download at a few megabytes instead of
-         seventy. The installer declares a dependency on the .NET 8 desktop
-         runtime and fetches it only if the machine does not already have it. -->
-    <SelfContained>false</SelfContained>
+    <!-- Self-contained, and it has to be.
+         Framework-dependent kept the download at a few megabytes, on the
+         understanding that the installer would fetch the .NET desktop runtime
+         when a machine lacked it. Watched on a clean Windows for the first time
+         on 11 September 2026, it does not: the prompt appears, the progress bar
+         never moves, and the Finish button is clickable anyway - so somebody is
+         told nothing is wrong and then cannot find the application they just
+         installed. The network was not the problem; the same runtime downloads
+         directly at 4.13 MB/s in the same sandbox.
+         Carrying the runtime removes the step that fails. Updates stay small:
+         the runtime files do not change between versions, so they cost nothing
+         in a delta. -->
+    <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

@@ -28,12 +28,17 @@
       <SandboxFolder>C:\Setup</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\tools</HostFolder>
+      <SandboxFolder>C:\Tools</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
   </MappedFolders>
 
   <!-- Networking stays on: the runtime bootstrap has to download something. -->
   <Networking>Enable</Networking>
 
   <LogonCommand>
-    <Command>cmd.exe /c start "" "C:\Setup"</Command>
+    <Command>cmd.exe /c start "" powershell.exe -NoExit -ExecutionPolicy Bypass -File C:\Tools\Sandbox-Check.ps1</Command>
   </LogonCommand>
 </Configuration>
