@@ -137,6 +137,12 @@ public partial class MainWindow : Window
         // device names, power page and storage readings.
         _mailboxSupported = EcMailbox.IsSupported();
 
+        // The Office, Gaming and High performance plans this used to select are
+        // the vendor's, created by its installer. On a machine that never had
+        // that software every mode falls back to Balanced and the three become
+        // one. Making our own costs nothing and needs no administrator.
+        SystemModeService.EnsurePlansExist();
+
         RefreshOverlay();
         LoadPowerModes();
         LoadDeviceNames();

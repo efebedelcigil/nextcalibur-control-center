@@ -94,7 +94,7 @@ public class MailboxAccessTests
         // cost an hour on hardware, so it is pinned here.
         Assert.DoesNotContain("{", MailboxAccess.BlockGuid);
         Assert.DoesNotContain("}", MailboxAccess.BlockGuid);
-        Assert.Equal(MailboxAccess.BlockGuid.ToLowerInvariant(), MailboxAccess.BlockGuid);
+        Assert.Equal(MailboxAccess.BlockGuid, MailboxAccess.BlockGuid.ToLowerInvariant());
         Assert.True(Guid.TryParse(MailboxAccess.BlockGuid, out _));
     }
 
@@ -115,5 +115,57 @@ public class MailboxAccessTests
         // Whatever the answer here, asking must not throw: it is called before
         // anything is attempted, precisely to avoid attempting it.
         _ = MailboxAccess.IsElevated();
+    }
+}
+
+/// <summary>
+/// What Nextcalibur leaves on a machine, and what it may take back without
+/// asking. The rule this pins was set after watching the vendor's uninstaller:
+/// thorough about its own files, and then one permission left on the machine
+/// for ever - which is what silently stopped every reading here weeks later.
+/// </summary>
+public class FootprintTests
+{
+    [Fact]
+    public void Every_trace_says_whether_undoing_it_needs_permission()
+    {
+        // The uninstall hook has thirty seconds. It cannot afford to discover
+        // halfway through that something needs elevation.
+        foreach (var trace in Footprint.Survey())
+        {
+            Assert.False(string.IsNullOrWhiteSpace(trace.Name));
+        }
+    }
+
+    [Fact]
+    public void The_power_repair_is_the_one_worth_keeping()
+    {
+        // It fixes Windows, not us. Undoing it on the way out would leave the
+        // machine worse than we found it, so it can never be removed silently.
+        var repair = Footprint.Survey().Single(t => t.Name.Contains("power-mode repair"));
+
+        Assert.True(repair.KeepingIsReasonable);
+        Assert.True(repair.NeedsElevation);
+    }
+
+    [Fact]
+    public void Nothing_that_only_serves_this_application_is_worth_keeping()
+    {
+        foreach (var trace in Footprint.Survey().Where(t => !t.KeepingIsReasonable))
+        {
+            Assert.DoesNotContain("repair", trace.Name);
+        }
+    }
+
+    [Fact]
+    public void The_user_scope_traces_need_no_permission()
+    {
+        // Settings and the startup entry live under the current user, so an
+        // uninstall can always clear them - no prompt, no question.
+        foreach (var name in new[] { "Your settings", "The start-with-Windows entry" })
+        {
+            var trace = Footprint.Survey().Single(t => t.Name == name);
+            Assert.False(trace.NeedsElevation);
+        }
     }
 }

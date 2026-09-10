@@ -1,4 +1,8 @@
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Hardware;
 using Nextcalibur.Core.Power;
 using Velopack;
@@ -24,6 +28,12 @@ public partial class App : Application
     /// </summary>
     public const string GrantAccessArgument = "--grant-sensor-access";
 
+    /// <summary>
+    /// Asks this process, elevated, to undo the two machine-wide changes.
+    /// Reached only from the uninstall hook, after the person has said yes.
+    /// </summary>
+    public const string CleanUpArgument = "--remove-system-changes";
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -37,10 +47,18 @@ public partial class App : Application
             return;
         }
 
+        if (args.Contains(CleanUpArgument))
+        {
+            Footprint.RemoveMachineTraces();
+            Environment.Exit(0);
+            return;
+        }
+
         // Velopack takes over the process during install, update and uninstall
         // hooks, so this must run before any UI is created.
         VelopackApp.Build()
             .OnFirstRun(_ => RepairPowerOverlayOnFirstRun())
+            .OnBeforeUninstallFastCallback(_ => CleanUpOnUninstall())
             .Run();
 
         // One copy at a time. Two would drive the same firmware mailbox and put
@@ -115,6 +133,92 @@ public partial class App : Application
         };
 
         listener.Start();
+    }
+
+    /// <summary>
+    /// Takes Nextcalibur's changes back off the machine as it is uninstalled.
+    ///
+    /// Written against what the vendor's own uninstaller does. That one is
+    /// thorough - files, driver, service, scheduled task, power plans, its
+    /// registry keys, all gone - and then leaves a single permission behind on
+    /// the machine for ever. Weeks later that leftover is what silently stopped
+    /// every reading here.
+    ///
+    /// So: leave nothing. But ask first about anything somebody might want to
+    /// keep, because the power-mode repair is a fix to Windows rather than a
+    /// part of this application, and quietly undoing it on the way out would
+    /// leave a machine worse than it was found.
+    ///
+    /// Velopack kills this callback after thirty seconds. Everything that needs
+    /// no permission is therefore done first and without asking, and the
+    /// question that remains has a safe default: no answer means keep, because
+    /// an unanswered dialogue must not undo a repair.
+    /// </summary>
+    private static void CleanUpOnUninstall()
+    {
+        Footprint.RemoveUserTraces();
+
+        // Everything still standing that is either not ours to assume about, or
+        // not ours to remove without a prompt from Windows.
+        var remaining = Footprint.Survey()
+            .Where(t => t.Present && (t.NeedsElevation || t.KeepingIsReasonable))
+            .ToList();
+        if (remaining.Count == 0) return;
+
+        var keepable = remaining.Where(t => t.KeepingIsReasonable).Select(t => t.Name).ToList();
+        var body =
+            "Nextcalibur has removed its own files and settings." +
+            Environment.NewLine + Environment.NewLine +
+            "These changes to Windows are still in place:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, remaining.Select(t => "    - " + t.Name)) +
+            Environment.NewLine + Environment.NewLine +
+            (keepable.Count > 0
+                ? $"You may want to keep {string.Join(" and ", keepable)}. The power repair fixes a " +
+                  "Windows fault and works whether or not Nextcalibur is installed, and the plans are " +
+                  "yours to keep using." + Environment.NewLine + Environment.NewLine
+                : string.Empty) +
+            "Remove them as well? Windows will ask you to confirm.";
+
+        var answer = MessageBox.Show(body, "Nextcalibur - anything else to remove?",
+            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+        if (answer != MessageBoxResult.Yes) return;
+
+        // Power plans need no privileges, so they go first and go regardless of
+        // whether the prompt below is accepted.
+        Footprint.RemoveOwnPowerPlans();
+
+        if (!remaining.Any(t => t.NeedsElevation)) return;
+
+        if (MailboxAccess.IsElevated())
+        {
+            Footprint.RemoveMachineTraces();
+            return;
+        }
+
+        try
+        {
+            var self = Environment.ProcessPath;
+            if (self is null) return;
+
+            using var elevated = Process.Start(new ProcessStartInfo
+            {
+                FileName = self,
+                Arguments = CleanUpArgument,
+                UseShellExecute = true,
+                Verb = "runas",
+            });
+
+            // Bounded, because the callback is killed at thirty seconds and a
+            // half-finished uninstall is worse than an unanswered prompt.
+            elevated?.WaitForExit(15000);
+        }
+        catch (Win32Exception)
+        {
+            // The prompt was dismissed. Nothing was undone, which is the safe
+            // outcome of the two.
+        }
     }
 
     /// <summary>
