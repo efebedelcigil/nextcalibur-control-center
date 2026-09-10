@@ -81,6 +81,36 @@ consulted, which is a failure that looks exactly like success.
 There was no "never ask for administrator" rule to break, either. That was
 written here as though the owner had set it; he had not.
 
+### What the application does about it now
+
+Not a footnote for the reader to act on - the application handles it.
+
+At startup it asks the question the old code never asked: is this a machine
+without the interface, or a machine this account may not use? The class
+definition comes from the binary MOF the firmware itself carries, so it is
+present wherever the interface is; the instances come through the security
+descriptor. **A class with no instances is a permission problem, not the wrong
+laptop.**
+
+- **Missing permission** - one dialogue explaining what is needed and why, then
+  Windows' own prompt. Granting relaunches the same executable with
+  `--grant-sensor-access`, elevated, for one registry write. Shipping a script
+  would mean depending on the execution policy of a machine we have just
+  established we know nothing about.
+- **Declined** - a banner saying permission is missing and that reopening will
+  ask again. Not "this laptop isn't supported", which is what it used to say and
+  reads as final.
+- **Genuinely unsupported** - that message, correctly, and the power pages keep
+  working.
+
+Asked only while access is missing. Once granted it never comes back, which is
+the difference between this and the vendor software prompting at every start.
+
+From the command line, `nextcalibur access` reports, `--grant` and `--revoke`
+change it. Run elevated it says so, because an elevated prompt reads the block
+whatever the descriptor says.
+
+
 ## The vendor's settings are never touched
 
 Nextcalibur reads and writes no key under `CASPER EXCALIBUR`. The only mention
