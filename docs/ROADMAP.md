@@ -141,18 +141,43 @@ Three things worth keeping:
 - **The vendor's own UI cannot survive its own UMA switch.** Four seconds after
   disabling the card it died inside `nvml.dll`, still polling it.
 
-### Still open: the thermal comparison
+### What each mode costs
 
-The mechanism is settled; what each mode *costs* is not. Hybrid is measured -
-**GPU 48 °C, GPU fan 3298 rpm**, CPU 45 °C / 3599 rpm, eight quiet minutes read
-through the embedded controller. Discrete and UMA are not.
+Measured on 10 September 2026, eight quiet minutes per mode, read through the
+embedded controller so nothing woke the card. Vendor Control Center closed,
+Wallpaper Engine closed, nothing calling NVML.
 
-An earlier message quoted "45 °C, 2986 rpm" for the GPU in Hybrid. That was
-wrong: 45 °C was the CPU, and 2986 appears nowhere in the data.
+| | Hybrid | Discrete | Difference |
+|---|---|---|---|
+| GPU | 48.0 °C | **61.0 °C** | +13 |
+| GPU fan | 3299 rpm | **3799 rpm** | +500 |
+| CPU | 45.7 °C | **63.2 °C** | +17.5 |
+| CPU fan | 3600 rpm | **4400 rpm** | +800 |
 
-Conditions, when it is run: Wallpaper Engine closed (it invalidated one round
-already), vendor Control Center closed, and nothing calling NVML - `nvidia-smi`
-wakes the card and destroys the reading. Use `nextcalibur watch 480`.
+Figures are the mean of the last sixty seconds of each run. Discrete never
+cooled: the GPU sat between 60 and 61 °C for the whole eight minutes, on an
+idle desktop. Hybrid started at 55 °C, fell to 48 °C and settled there.
+
+Two honest limits on this. The runs were on different evenings and room
+temperature was not controlled, so the absolute numbers carry an unknown
+offset - the 13 °C on the GPU is far larger than that offset plausibly is, but
+the 17.5 °C on the CPU cannot be laid at the mode's door on this evidence
+alone: the two chips share a heat pipe on this machine, so a hot GPU pulls the
+CPU up with it. And UMA is still unmeasured.
+
+Raw data: `tools/quiet-hybrid.txt`, `tools/quiet-discrete.txt`.
+
+This changed the application. The Display page used to call NVML on every load
+to report power draw - and an NVML call wakes the GPU, so in Hybrid the page
+woke the very card the mode exists to keep asleep, then reported the draw it
+had just caused. It now reads NVML only in Discrete, where the card is awake
+regardless, and otherwise says what the mailbox already knows: temperature and
+fan speed, which cost nothing and mean more to most people than watts.
+
+### Still open
+
+- **UMA, measured.** Reaching it means Hybrid first, and the round trip back to
+  Discrete costs two more PIN resets.
 
 ### Tooling still armed on the machine
 
