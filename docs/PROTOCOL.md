@@ -451,6 +451,13 @@ UserFan1..3_SYS    system-fan variants
 Nextcalibur uses its own settings location and does not read or write the
 stock software's keys.
 
+The fan entries are inert on this machine, and reading them as a feature would
+be a mistake. `FanControlStatus` is 0 - firmware automatic - and all three
+"profiles" hold byte-identical curves, which is a template nobody filled in
+rather than three curves somebody chose. The Control Center has no fan tab: the
+keys come from the base software this build was rebranded from, with the feature
+left out. Firmware runs the fans.
+
 ## 6. Safety rules
 
 The mailbox reaches the embedded controller. Rules for this project:
