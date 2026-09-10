@@ -87,6 +87,14 @@ public sealed class TrayPresence : IDisposable
         return item;
     }
 
+    /// <summary>
+    /// The overheat warning: whether it warns, and at what.
+    ///
+    /// "Never" switches the warning off without discarding the threshold, so
+    /// turning it back on returns the temperature that was chosen rather than
+    /// a default. The window offers the same switch; both write the same two
+    /// settings, so neither can contradict the other.
+    /// </summary>
     private Forms.ToolStripMenuItem OverheatWarningMenu()
     {
         var menu = new Forms.ToolStripMenuItem("Warn when the CPU reaches");
@@ -99,12 +107,15 @@ public sealed class TrayPresence : IDisposable
         {
             var choice = new Forms.ToolStripMenuItem(label)
             {
-                Checked = _settings.CpuWarningTemperatureC == celsius,
+                Checked = celsius == 0
+                    ? !_settings.OverheatWarningEnabled
+                    : _settings.OverheatWarningEnabled && _settings.CpuWarningTemperatureC == celsius,
             };
 
             choice.Click += (_, _) =>
             {
-                _settings.CpuWarningTemperatureC = celsius;
+                _settings.OverheatWarningEnabled = celsius != 0;
+                if (celsius != 0) _settings.CpuWarningTemperatureC = celsius;
                 _settings.Save();
                 Tick(menu, choice);
             };
