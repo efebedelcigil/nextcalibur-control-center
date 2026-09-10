@@ -275,8 +275,18 @@ internal static class Program
         }
 
         Console.WriteLine();
-        foreach (var action in service.Repair())
+        var outcome = service.Repair();
+        foreach (var action in outcome.Done)
             Console.WriteLine($"  {action}");
+
+        if (outcome.Blocked is { } blocked)
+        {
+            Console.WriteLine();
+            Warn(blocked);
+            // Exit non-zero: a script that runs this to make a machine safe
+            // should be able to tell that it did not finish.
+            return 5;
+        }
 
         Console.WriteLine();
         Console.WriteLine("Repaired.");

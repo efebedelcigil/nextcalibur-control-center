@@ -115,17 +115,30 @@ public partial class App : Application
             var service = new PowerOverlayService();
             if (!service.Diagnose().NeedsRepair) return;
 
-            var actions = service.Repair();
-            if (actions.Count == 0) return;
+            var outcome = service.Repair();
+            if (outcome.Empty) return;
+
+            // Half a repair is still a repair, and saying so is the difference
+            // between somebody knowing what state their machine is in and not.
+            var body = outcome.Done.Count > 0
+                ? "Nextcalibur found and repaired a Windows power configuration fault:" +
+                  Environment.NewLine + Environment.NewLine + string.Join(Environment.NewLine + Environment.NewLine, outcome.Done)
+                : "Nextcalibur found a Windows power configuration fault.";
+
+            if (outcome.Blocked is { } blocked)
+                body += Environment.NewLine + Environment.NewLine + blocked;
+            else
+                body += Environment.NewLine + Environment.NewLine +
+                        "Your CPU can now idle down properly. You can undo this at any time " +
+                        "from the Power Mode panel.";
 
             MessageBox.Show(
-                "Nextcalibur found and repaired a Windows power configuration fault:\n\n" +
-                string.Join("\n\n", actions) +
-                "\n\nYour CPU can now idle down properly. You can undo this at any time " +
-                "from the Power Mode panel.",
-                "Nextcalibur - power fault repaired",
+                body,
+                outcome.Blocked is null
+                    ? "Nextcalibur - power fault repaired"
+                    : "Nextcalibur - power fault partly repaired",
                 MessageBoxButton.OK,
-                MessageBoxImage.Information);
+                outcome.Blocked is null ? MessageBoxImage.Information : MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {

@@ -55,3 +55,54 @@ public class PowerOverlayTests
         Assert.All(all, o => Assert.False(string.IsNullOrWhiteSpace(o.Description)));
     }
 }
+
+/// <summary>
+/// The clean-machine case: a laptop that has been formatted and has never had
+/// the vendor software on it. Nothing here may assume a previous installation,
+/// and nothing may leave the machine in the state this project exists to fix.
+/// </summary>
+public class CleanMachineTests
+{
+    private static OverlayDiagnosis Unguarded => new(
+        PowerOverlays.None, MinProcessorStateOverride: null, ProvisionedMinProcessorState: 100);
+
+    private static OverlayDiagnosis Guarded => new(
+        PowerOverlays.None,
+        MinProcessorStateOverride: PowerOverlayService.SafeMinProcessorState,
+        ProvisionedMinProcessorState: 100);
+
+    [Fact]
+    public void Performance_is_refused_until_the_guard_exists()
+    {
+        // The mode activates the overlay that pins the CPU. Offering it before
+        // the guard is written would have the application create the fault it
+        // was written to repair - which is exactly the state a freshly
+        // installed machine is in.
+        Assert.False(PowerOverlayService.PerformanceModeIsSafe(Unguarded));
+        Assert.True(PowerOverlayService.PerformanceModeIsSafe(Guarded));
+    }
+
+    [Fact]
+    public void A_provisioned_hundred_is_not_a_guard()
+    {
+        // The OEM value is what pins the CPU in the first place. Only the
+        // override counts.
+        Assert.True(Unguarded.GuardMissing);
+    }
+
+    [Fact]
+    public void A_repair_that_did_half_the_work_reports_both_halves()
+    {
+        var outcome = new RepairOutcome(["cleared the overlay"], "the rest needs administrator");
+
+        Assert.False(outcome.Empty);
+        Assert.Single(outcome.Done);
+        Assert.NotNull(outcome.Blocked);
+    }
+
+    [Fact]
+    public void A_repair_with_nothing_to_do_is_empty()
+    {
+        Assert.True(new RepairOutcome([], null).Empty);
+    }
+}

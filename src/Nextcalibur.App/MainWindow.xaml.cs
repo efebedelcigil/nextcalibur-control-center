@@ -786,17 +786,19 @@ public partial class MainWindow : Window
     {
         try
         {
-            var actions = _power.Repair();
+            var outcome = _power.Repair();
             RefreshOverlay();
-            MessageBox.Show(this,
-                actions.Count == 0 ? "Nothing needed changing." : string.Join("\n\n", actions),
-                "Fixed", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            MessageBox.Show(this,
-                "Windows would not allow the change. Try running Nextcalibur as administrator.",
-                "Could not fix it", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            var body = outcome.Done.Count > 0
+                ? string.Join(Environment.NewLine + Environment.NewLine, outcome.Done)
+                : "Nothing needed changing.";
+            if (outcome.Blocked is { } blocked)
+                body += Environment.NewLine + Environment.NewLine + blocked;
+
+            MessageBox.Show(this, body,
+                outcome.Blocked is null ? "Fixed" : "Partly fixed",
+                MessageBoxButton.OK,
+                outcome.Blocked is null ? MessageBoxImage.Information : MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {

@@ -85,7 +85,9 @@ no: the vendor's curves are documented here, but a curve is only safe relative
 to how clean the cooling is, and that is not something a program can check.
 
 [docs/PROTOCOL.md](docs/PROTOCOL.md) documents the hardware interface, with the
-evidence behind each claim.
+evidence behind each claim, and [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md)
+audits what the application needs on a machine that has never had the vendor
+software on it - which is the point of replacing it rather than sitting beside it.
 
 There is also a command line, `nextcalibur`, built alongside: `sensors`,
 `watch`, `clocks`, `info`, `overlay`, and `led` for colour, effect and

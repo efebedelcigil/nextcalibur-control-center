@@ -99,9 +99,32 @@ public sealed class SystemModeService
         return null;
     }
 
-    /// <summary>Applies a mode and returns a sentence describing what changed.</summary>
+    /// <summary>
+    /// Applies a mode and returns a sentence describing what changed.
+    /// </summary>
+    /// <exception cref="UnsafeModeException">
+    /// Performance was asked for while the overlay guard is missing.
+    /// </exception>
     public string Apply(SystemMode mode)
     {
+        // Performance activates the Best-performance overlay, which carries a
+        // minimum processor state of 100% unless the guard caps it. Offering it
+        // without the guard would mean this application creating the fault it
+        // exists to repair - on a machine where the repair has not run, or where
+        // it ran without the rights to finish.
+        if (mode == SystemMode.Performance &&
+            !PowerOverlayService.PerformanceModeIsSafe(new PowerOverlayService().Diagnose()))
+        {
+            var gap = Environment.NewLine + Environment.NewLine;
+            throw new UnsafeModeException(
+                "Performance mode is not safe on this machine yet." + gap +
+                "It switches Windows to the Best-performance power mode, which on this " +
+                "machine pins the processor at full speed even when nothing is running - " +
+                "the fault Nextcalibur exists to repair." + gap +
+                "Run the repair from the Power Mode panel first. It needs administrator " +
+                "rights once, and after that this mode is safe to use.");
+        }
+
         var plan = ResolvePlan(mode)
             ?? throw new InvalidOperationException(
                 $"No power plan on this machine matches {mode}.");
@@ -142,3 +165,9 @@ public sealed class SystemModeService
             throw new InvalidOperationException($"powercfg refused the change (code {process.ExitCode}).");
     }
 }
+
+/// <summary>
+/// Raised when a mode would leave the machine in the state this project exists
+/// to fix.
+/// </summary>
+public sealed class UnsafeModeException(string message) : InvalidOperationException(message);
