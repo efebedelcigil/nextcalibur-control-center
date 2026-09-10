@@ -52,9 +52,19 @@ The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
 anyway*. On first run the app repairs the power-overlay fault described above and
 tells you what it changed.
 
-It never asks for administrator. The registry keys the repair writes are
-writable by a standard user, and the firmware interface needs no driver — unlike
-the vendor software, which installs a kernel driver and requires elevation.
+Nextcalibur installs **no kernel driver**, and after setup it runs as an
+ordinary user. It does need administrator twice, once each, and says so when it
+asks:
+
+- **To read the sensors at all.** The firmware data block every reading comes
+  from is administrators-only until access is granted — one registry value,
+  written once. Machines that have had the vendor software installed already
+  have it open, which is why this went unnoticed for weeks.
+- **To make the power-overlay repair permanent.** Clearing a stuck overlay works
+  unelevated; writing the guard that stops it coming back does not.
+
+Neither is asked for again, and `tools/Grant-MailboxAccess.ps1 -Revoke` puts the
+first one back.
 
 ## What it does
 
@@ -79,8 +89,9 @@ Graphics-mode switching and fan control are both left out on purpose, and
 [docs/ROADMAP.md](docs/ROADMAP.md) explains why. Not for want of looking: the
 graphics modes were traced on hardware through every transition, and the answer
 is that switching the display path needs an undocumented call into the vendor's
-kernel driver, while the third mode needs administrator — and this application
-installs no driver and asks for no elevation. Fan control is a different kind of
+kernel driver, which this application does not ship and will not install. The
+third mode, UMA, needs no driver — it is an ordinary device disable — and may yet
+be worth doing. Fan control is a different kind of
 no: the vendor's curves are documented here, but a curve is only safe relative
 to how clean the cooling is, and that is not something a program can check.
 

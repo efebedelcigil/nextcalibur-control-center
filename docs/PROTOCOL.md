@@ -32,8 +32,17 @@ the last command left behind — possibly minutes old, possibly all zeros.
 Events arrive separately on class `GMC_WMIEvent` (`EventDetail: uint8[]`), used
 for hotkeys and mode changes.
 
-**Reading the mailbox requires no elevation.** Writing it does require the
-process to be able to write the WMI instance.
+**The mailbox is administrators-only until access is granted.** This was stated
+here the other way round for weeks - "reading requires no elevation" - and it
+was measured, on a machine where the vendor's Control Center had already widened
+the block's security descriptor. Uninstall that software and an ordinary account
+cannot see the instance at all.
+
+The descriptor lives at
+`HKLM\SYSTEM\CurrentControlSet\Control\WMI\Security`, under the block's GUID
+written without braces and in lower case. Granting an account
+`0x12001f` there is enough; reads and writes then both work unelevated.
+`tools/Grant-MailboxAccess.ps1` does it and can undo it.
 
 ## 2. Command structure
 

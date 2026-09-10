@@ -42,10 +42,11 @@ public readonly record struct GpuConfiguration(
 /// wrongly, that no software could do this.
 ///
 /// Nextcalibur does not follow, because doing so needs an undocumented IOCTL
-/// into a driver this project neither ships nor installs, and administrator
-/// rights it has committed never to request. It also carries a cost the vendor
-/// never mentions: the change invalidates TPM-sealed credentials, so the Windows
-/// PIN has to be set up again and BitLocker can demand its recovery key.
+/// into a driver this project neither ships nor installs. Elevation is not the
+/// obstacle - that was written here for a while, on the strength of a rule
+/// nobody set - the driver is. It also carries a cost the vendor never mentions:
+/// the change invalidates TPM-sealed credentials, so the Windows PIN has to be
+/// set up again and BitLocker can demand its recovery key.
 ///
 /// See PROTOCOL.md for the evidence.
 /// </summary>
@@ -134,9 +135,9 @@ public sealed class GpuModeService
             "so the laptop runs hotter and the battery drains faster." +
             IdleCost(load, thermal) +
             "\n\nCasper's own Control Center can change this, through the kernel driver it " +
-            "installs. Nextcalibur will not: it would need that driver and administrator " +
-            "rights, and this application asks for neither. Your BIOS setup may also offer " +
-            "it, as a display or graphics mode setting." +
+            "installs. Nextcalibur will not: it would have to install that driver too, and " +
+            "it does not. Your BIOS setup may also offer it, as a display or graphics mode " +
+            "setting." +
             "\n\nIf you change it anywhere: find your BitLocker recovery key first. " +
             "Switching which chip drives the screen changes what the TPM measures at " +
             "startup, and the next boot can ask for that key â€” without it the drive does " +

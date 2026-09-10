@@ -54,28 +54,32 @@ security descriptor, and the default for a kernel-WMI GUID is administrators
 only - which fits exactly. **That last step is inference, not measurement:**
 the security descriptor itself has not been read yet.
 
-### What this means for the project
+### Settled: elevation once, ordinary use thereafter
 
-Two of this project's goals are now in tension, and the tension is real rather
-than a matter of effort:
+The block's security descriptor granted `BA` alone. Adding the current account
+to it - one registry value - brings the readings back for an ordinary user, and
+this was verified end to end with the vendor software uninstalled:
 
-- **Never ask for administrator.** Chosen when everything appeared to work
-  without it. It appeared that way because the vendor software had already
-  opened the door.
-- **Be a complete replacement.** On a machine that never had the vendor
-  software, an ordinary user gets no readings at all - not degraded readings,
-  none.
+```
+before   O:BAG:BAD:(A;;0x121fff;;;BA)
+         ordinary user: no instance, sensors fail
 
-The likely resolution is a one-time elevated step that grants access to the data
-block, after which the application runs unelevated for good. That is evidently
-what the vendor does, and it carries a decision worth making deliberately rather
-than copying: the same block accepts writes as well as reads, so opening it to
-every local account hands any local process a path to the embedded controller.
-Granting it to one account is narrower than what the vendor did and is probably
-the right shape.
+after    O:BAG:BAD:(A;;0x12001f;;;BA)(A;;0x12001f;;;SY)(A;;0x12001f;;;<the user>)
+         ordinary user: CPU 55 C fan 3829 rpm, GPU 51 C fan 3472 rpm
+```
 
-**Not decided yet.** It changes a rule the owner set, so it is the owner's
-decision, not this document's.
+`tools/Grant-MailboxAccess.ps1` writes it, `-Revoke` restores exactly what was
+there, and `-Show` reports what the current account can actually do.
+
+Two details are deliberate. The grant goes to **one account** rather than to
+`BU`, which is what the vendor's does: the block accepts writes as well as reads,
+so opening it to every local account hands every local process a route to the
+embedded controller. And the value name carries **no braces and is lower case**,
+matching every entry already under that key - written any other way it is never
+consulted, which is a failure that looks exactly like success.
+
+There was no "never ask for administrator" rule to break, either. That was
+written here as though the owner had set it; he had not.
 
 ## The vendor's settings are never touched
 
@@ -106,7 +110,7 @@ because every machine it has been installed on already had the runtime. It is
 the one row in the table that rests on documentation rather than observation.
 
 **Not running as administrator.** This is the interesting one, because the
-project has committed never to ask for elevation.
+project asks for elevation only where it must, and says why.
 
 The power-overlay repair has two layers. Clearing a stuck overlay works as an
 ordinary user. Writing the guard that stops the overlay pinning the processor
