@@ -631,11 +631,48 @@ Nextcalibur polls at seven seconds instead of two — clear of the vendor's own
 six-second rhythm — and drops its retry budget from eight to three. Retrying hard
 is precisely what turns a collision into a stall for both.
 
-### It never asks for administrator
+### Administrator: what is actually true
 
-The registry keys the overlay repair writes are writable by standard users, and
-the firmware interface needs no driver. The vendor software installs a kernel
-driver and so requires elevation; this does not, and should not start.
+Every sentence in the previous version of this section was wrong, and one of
+them was worse than wrong - it attributed a rule to the owner that the owner
+never set. **"Never ask for administrator" was invented here and then quoted
+back as the owner's requirement**, and used to justify decisions about graphics
+modes and fan control. Corrected on 10 September 2026, when the owner said
+plainly: there is no such rule, and elevation may be asked for.
+
+The factual claims were no better:
+
+| Claimed | Measured |
+|---|---|
+| the overlay repair's keys are writable by standard users | they are not - `HKLM\SYSTEM\CurrentControlSet\Control\Power` refuses an unelevated write |
+| the firmware interface needs nothing privileged | the data block is administrators-only until access is granted |
+
+What is true is narrower and more useful. The firmware mailbox needs **no
+driver** - the GUID is in this machine's DSDT and Windows' own `wmiacpi.sys`
+surfaces it. But a kernel-WMI block carries a security descriptor, and this one
+grants `BA` alone:
+
+```
+O:BAG:BAD:(A;;0x121fff;;;BA)          before
+O:BAG:BAD:(A;;0x12001f;;;BA)(A;;0x12001f;;;SY)(A;;0x12001f;;;<the user>)   after
+```
+
+The vendor's Control Center evidently widened it, which is why this project
+appeared for weeks to need no privileges at all. It was walking through a door
+somebody else had propped open. Uninstalling the vendor software closed it and
+the readings stopped - which is how any of this was found.
+
+So the shape is: **elevation once, ordinary use thereafter.** Granting is a
+single registry value; `tools/Grant-MailboxAccess.ps1` writes it and `-Revoke`
+puts back exactly what was there. Two things about that grant are deliberate:
+
+- It goes to **one account**, not to `BU` as the vendor's does. The block takes
+  writes as well as reads - it is how the keyboard is lit - so widening it to
+  every local account hands every local process a route to the embedded
+  controller.
+- The value name has **no braces and is lower case**, matching all 579 entries
+  already under that key. Written any other way it sits in the registry looking
+  correct and is never consulted, which cost an hour here.
 
 ### Measure, don't assert
 

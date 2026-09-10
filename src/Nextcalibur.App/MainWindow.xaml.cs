@@ -390,8 +390,8 @@ public partial class MainWindow : Window
     ///
     /// Nextcalibur does not switch it because of what that would take: an
     /// undocumented IOCTL into a driver this project does not ship and will not
-    /// install, and administrator rights it has committed never to request.
-    /// That is a decision, not a gap waiting to be filled.
+    /// install. Elevation is not what stops it - that was claimed here for a
+    /// while on the strength of a rule nobody set - the driver is.
     ///
     /// See PROTOCOL.md for the evidence, including the cost nobody mentions —
     /// the change invalidates TPM-sealed credentials, and the Windows PIN has to
@@ -423,8 +423,8 @@ public partial class MainWindow : Window
 
             Nextcalibur will not make this change. Casper's Control Center does it,
             through the kernel driver it installs, and your BIOS setup may offer it
-            too. Nextcalibur installs no driver and never asks for administrator, so
-            this is one thing it reports rather than touches.
+            too. Nextcalibur installs no kernel driver, so this is one thing it
+            reports rather than touches.
 
             MS Hybrid lets the card idle when nothing needs it. Discrete keeps it
             driving the screen, and drawing power, at all times.
