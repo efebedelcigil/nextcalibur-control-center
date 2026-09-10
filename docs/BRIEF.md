@@ -3,7 +3,7 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-Two jobs. **The first one is a plan, not a change** — write the plan, and stop.
+Three jobs. **The first one is a plan, not a change** — write the plan, and stop.
 
 ---
 
@@ -61,6 +61,32 @@ Start-menu shortcut · Add or Remove Programs · the title bar
 Report anything missing, stale or blurred, with where you saw it. The title-bar
 mark is vector; everything else comes from `Assets/app.ico`, which has frames at
 16, 20, 24, 32, 48, 64, 128 and 256 px.
+
+## 3. A switch for the overheat notification
+
+The owner wants the temperature warning turned on and off from the window
+itself, not only from the notification-area menu.
+
+The behaviour already exists and is settled; what is missing is the control.
+Two settings back it, and both are already there:
+
+| Setting | Meaning |
+|---|---|
+| `OverheatWarningEnabled` | whether it warns at all |
+| `CpuWarningTemperatureC` | how hot is too hot; default 90 |
+
+Bind the switch to `OverheatWarningEnabled` and call `Save()` on the settings
+object the window already holds. **Do not write a zero into
+`CpuWarningTemperatureC` to mean "off"** — that used to be how it worked, and
+the whole point of the change was to stop having two ways to say the same
+thing. The threshold has to survive being switched off and on again.
+
+The tray menu offers the same choice and writes the same two settings, so
+whatever you add has to read its state from the settings rather than keep its
+own, or the two will disagree the moment somebody uses the menu.
+
+Where it goes is your call. It belongs near the temperature readings rather
+than buried in a settings page, because it is about them.
 
 ---
 

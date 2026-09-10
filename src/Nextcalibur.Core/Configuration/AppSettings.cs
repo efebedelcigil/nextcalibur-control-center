@@ -16,8 +16,23 @@ public sealed class AppSettings
     /// <summary>Start hidden in the notification area.</summary>
     public bool StartMinimised { get; set; }
 
-    /// <summary>Warn when the CPU exceeds this temperature, in °C. Zero disables.</summary>
+    /// <summary>Show a Windows notification when the CPU gets too hot.</summary>
+    public bool OverheatWarningEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Warn when the CPU exceeds this temperature, in °C.
+    ///
+    /// Turning the warning off is <see cref="OverheatWarningEnabled"/>, not a
+    /// zero here. Two ways to express "off" drift apart: switch it off from one
+    /// place, back on from the other, and the machine is left unwatched while
+    /// the interface says otherwise. This value only ever means "how hot is too
+    /// hot", and it survives the warning being switched off and on again.
+    /// </summary>
     public int CpuWarningTemperatureC { get; set; } = 90;
+
+    /// <summary>True when a reading at or above the threshold should warn.</summary>
+    [JsonIgnore]
+    public bool WarnsAboutHeat => OverheatWarningEnabled && CpuWarningTemperatureC > 0;
 
     /// <summary>Dark, light, or follow Windows.</summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -32,13 +47,35 @@ public sealed class AppSettings
         try
         {
             if (File.Exists(Path))
-                return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(Path)) ?? new AppSettings();
+                return Migrate(JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(Path)));
         }
         catch
         {
             // A corrupt or unreadable settings file is not worth failing startup over.
         }
         return new AppSettings();
+    }
+
+    /// <summary>
+    /// Brings a settings file written by an older version up to date.
+    ///
+    /// Before <see cref="OverheatWarningEnabled"/> existed, a zero threshold was
+    /// how the warning was switched off. Reading that as "warn at 0 °C" would
+    /// turn a deliberate silence into a notification on every reading, so the
+    /// old meaning is honoured and the threshold restored to its default - which
+    /// is what the person gets back when they switch the warning on again.
+    /// </summary>
+    internal static AppSettings Migrate(AppSettings? loaded)
+    {
+        var settings = loaded ?? new AppSettings();
+
+        if (settings.CpuWarningTemperatureC <= 0)
+        {
+            settings.OverheatWarningEnabled = false;
+            settings.CpuWarningTemperatureC = new AppSettings().CpuWarningTemperatureC;
+        }
+
+        return settings;
     }
 
     public void Save()

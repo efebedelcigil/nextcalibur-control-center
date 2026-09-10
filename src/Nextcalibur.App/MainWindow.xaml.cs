@@ -699,7 +699,7 @@ public partial class MainWindow : Window
 
             // The overheat warning is the one thing worth a firmware read while
             // hidden — it is the reason the application stays resident at all.
-            if (_settings.CpuWarningTemperatureC <= 0 && !onScreen) return;
+            if (!_settings.WarnsAboutHeat && !onScreen) return;
 
             if (_thermal is null) return;
 
@@ -731,7 +731,7 @@ public partial class MainWindow : Window
             }
 
             var limit = _settings.CpuWarningTemperatureC;
-            if (limit > 0 && s.CpuTemperatureC >= limit)
+            if (_settings.WarnsAboutHeat && s.CpuTemperatureC >= limit)
             {
                 if (!_overheatNotified)
                 {

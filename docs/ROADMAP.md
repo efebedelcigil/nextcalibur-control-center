@@ -509,31 +509,42 @@ it should be.
 
 ## Decisions worth keeping
 
-### Fan control stays out, and the reason has changed
+### Fan control stays out, and the machine says why
 
-The original reason given here was wrong: it said the vendor software exposes
-no fan-curve writes and there was no traffic to observe. PROTOCOL.md documents
-its curves in the same repository - `FanControlStatus`, `FanControlSelect`,
-`UserFan1..3` as eight-point percentage curves. There is something to copy.
+Two earlier statements here were wrong in opposite directions. The first said
+the vendor exposes no fan-curve writes; it does, and PROTOCOL.md documents them.
+The second implied the curves are Casper's. They are not.
 
-The decision stands anyway, on the owner's judgement and a better argument.
-A fan curve is only safe relative to the state of the cooling it commands. The
-development machine's heatsink is dusty; a curve that holds temperature on a
-clean one may not hold it on this one, and no amount of reading registers at a
-desk will tell you which. The evidence would have to come from running the
-machine hot under a curve, which is the experiment whose failure mode is the
-hardware.
+Read off this machine:
 
-So if this is ever built, the shape is already decided: **reproduce what the
-vendor does, exactly** - its curve format, its indices, its firmware-automatic
-fallback - rather than invent a scheme of this project's own. Nextcalibur has
-no business having an opinion about fan speed that the machine's own maker
-does not.
+```
+FanControlStatus = 0        firmware automatic - the user curve is not in effect
+FanControlSelect = 0
+UserFan1 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
+UserFan2 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
+UserFan3 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
+```
 
-The infrastructure stays in place for that day. Fan **monitoring**, the
-overheat warning, the mailbox's `Hold()` for atomic sequences, and safety rule
-3 in PROTOCOL.md (a firmware-auto fallback restored on exit and on crash) all
-remain. What is deferred is writing, not knowing how.
+Three profiles holding byte-identical curves are not three profiles; they are
+one default written three times. A product whose quiet, normal and performance
+curves are the same shipped a template nobody filled in - these come from the
+base Tongfang/Uniwill software the vendor rebranded, and `FanControlStatus = 0`
+says the fans are being run by firmware, not by any of this.
+
+So the rule the owner set applies cleanly: **copy the vendor exactly where the
+vendor is in charge, and stay out entirely where it is not.** Fan speed is the
+second case. Nextcalibur reads the fans and says when they are losing, and
+writes nothing.
+
+There is a second reason, and it outlives this machine: a fan curve is only safe
+relative to the state of the cooling it commands. This heatsink is dusty. A
+curve that holds temperature on a clean machine may not hold it here, and the
+experiment that would settle it runs the hardware hot. That is not an experiment
+worth having a strong opinion about somebody else's laptop over.
+
+If it is ever built, the shape is decided: the vendor's format, its indices, its
+firmware-automatic fallback, restored on exit and on crash. The monitoring, the
+overheat warning and the mailbox's `Hold()` stay in place for that day.
 
 ### Graphics mode reports, it does not switch
 
