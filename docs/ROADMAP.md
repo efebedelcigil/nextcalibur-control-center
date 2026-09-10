@@ -74,6 +74,38 @@ listen at all. Whatever the Fn row does through that software stops working when
 it is replaced, and nobody has checked what that covers. Needs investigating
 before this can honestly be called a replacement.
 
+### Two applications on one mailbox: recommend, do not decide
+
+Set 11 September 2026. The vendor's Control Center and Nextcalibur drive the
+same firmware mailbox, which holds one command at a time, so having both is a
+standing source of stalled readings and lighting changes that do not stick.
+
+**Recommend removing it. Never remove it, and never refuse to run because of
+it.** If somebody says they will keep it, that is their machine and their call -
+record that they accepted it and stop asking.
+
+The check cannot be a one-off at install, because the order is not fixed:
+somebody may install the vendor software *after* Nextcalibur, or reinstall it
+later. So it is a standing condition, noticed whenever it changes.
+
+Detection has two levels and they mean different things:
+
+| | Meaning | Response |
+|---|---|---|
+| Installed | the two will collide sooner or later | recommend removing, once, unless already accepted |
+| Running | they are colliding now | the banner already says so |
+
+### Hotkeys are the last real gap
+
+The vendor listens on `GMC_WMIEvent` for the firmware's key events - the Fn row.
+Nextcalibur does not listen at all, so whatever those keys do through that
+software stops when it is replaced. Nobody has established what that covers.
+
+Being able to read the events is not the question; the mailbox is already open.
+The question is what the firmware sends, what the vendor does in response, and
+which of those are things Windows would have done anyway. Until that is known,
+"complete replacement" is a claim this project cannot make.
+
 ### Look before you change anything
 
 The owner set this alongside the uninstall rule, and it applies to every
