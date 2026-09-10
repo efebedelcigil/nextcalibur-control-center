@@ -539,8 +539,9 @@ UserFan3 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
 ```
 
 Three profiles holding byte-identical curves are not three profiles; they are a
-template written three times. These come from the base Tongfang/Uniwill software
-the vendor rebranded, with the feature left out of the build, and
+template written three times. They come from the base software this build was
+rebranded from - the installer is signed by Quanta Computer, not by Casper -
+with the feature left out of the build, and
 `FanControlStatus = 0` says firmware is running the fans.
 
 So the owner's rule decides it cleanly: **copy the vendor exactly where the
