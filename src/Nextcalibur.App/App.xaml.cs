@@ -1,4 +1,5 @@
 using System.Windows;
+using Nextcalibur.Core.Hardware;
 using Nextcalibur.Core.Power;
 using Velopack;
 
@@ -16,9 +17,26 @@ public partial class App : Application
 
     private static Mutex? _instanceLock;
 
+    /// <summary>
+    /// Asks this process, elevated, to grant the current account access to the
+    /// firmware mailbox. Not a mode anybody runs by hand: the window relaunches
+    /// itself with this when it finds it cannot read the machine.
+    /// </summary>
+    public const string GrantAccessArgument = "--grant-sensor-access";
+
     [STAThread]
     public static void Main(string[] args)
     {
+        // Before anything else, including Velopack: this is a short-lived
+        // elevated copy of the application doing one registry write and exiting.
+        // It must not run installer hooks, take the single-instance mutex, or
+        // put a second icon in the notification area.
+        if (args.Contains(GrantAccessArgument))
+        {
+            Environment.Exit(GrantSensorAccess());
+            return;
+        }
+
         // Velopack takes over the process during install, update and uninstall
         // hooks, so this must run before any UI is created.
         VelopackApp.Build()
@@ -97,6 +115,27 @@ public partial class App : Application
         };
 
         listener.Start();
+    }
+
+    /// <summary>
+    /// Grants access to the firmware mailbox. Runs in the elevated copy.
+    /// </summary>
+    /// <returns>Zero on success, non-zero for the caller to notice.</returns>
+    private static int GrantSensorAccess()
+    {
+        try
+        {
+            MailboxAccess.Grant();
+            return 0;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            return 2;
+        }
+        catch
+        {
+            return 3;
+        }
     }
 
     /// <summary>

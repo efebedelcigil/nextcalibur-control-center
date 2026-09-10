@@ -252,10 +252,18 @@ public sealed class EcMailbox : IDisposable
                 Thread.Sleep(delayMs);
             }
 
+            // Contention was the only explanation this ever offered, and for a
+            // machine without the vendor's software installed it is the wrong
+            // one: no reply comes back because the account is not allowed to
+            // use the data block, and telling somebody to close software they
+            // do not have sends them nowhere.
+            var reason = MailboxAccess.Check() == MailboxAvailability.AccessNotGranted
+                ? "This account is not allowed to use the firmware interface. " +
+                  "Run 'nextcalibur access --grant' from an elevated prompt, once."
+                : "Another application may be using the mailbox - close the vendor Control Center and retry.";
+
             throw new EcMailboxUnavailableException(
-                $"No valid response after {attempts} attempts. " +
-                "Another application may be using the mailbox - close the vendor Control Center and retry.",
-                last);
+                $"No valid response after {attempts} attempts. " + reason, last);
         }
     }
 

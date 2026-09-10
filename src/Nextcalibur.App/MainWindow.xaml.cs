@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -126,6 +127,11 @@ public partial class MainWindow : Window
             Hide();
         }
 
+        // Before deciding the machine is unsupported, rule out the far more
+        // likely explanation: this account has not been allowed to use the
+        // interface yet.
+        AskForMailboxAccessIfNeeded();
+
         // None of this needs the firmware interface, so it runs before the
         // check that can bail out — an unsupported machine still gets its
         // device names, power page and storage readings.
@@ -166,6 +172,65 @@ public partial class MainWindow : Window
         Sample();
         RefreshClocks();
         if (IsVisible) _timer.Start();
+    }
+
+    /// <summary>
+    /// Offers to grant this account access to the firmware mailbox, once.
+    ///
+    /// Every reading comes through one ACPI data block, and a kernel-WMI block
+    /// grants the administrators group alone until somebody widens it. The
+    /// vendor's software widens it at install time; on a machine that never had
+    /// it - or that has had it removed - an ordinary account sees nothing at
+    /// all, which used to surface as "readings have stalled" and a suggestion to
+    /// close software that is not running.
+    ///
+    /// Asked only while access is missing. Once granted, the application never
+    /// needs elevation again, which is the difference between this and the
+    /// vendor software prompting at every startup.
+    /// </summary>
+    private void AskForMailboxAccessIfNeeded()
+    {
+        if (MailboxAccess.Check() != MailboxAvailability.AccessNotGranted) return;
+
+        var answer = MessageBox.Show(this,
+            "Nextcalibur needs permission to read this machine's sensors." +
+            Environment.NewLine + Environment.NewLine +
+            "Temperatures, fan speeds and the keyboard lighting all come from one " +
+            "interface built into your laptop's firmware, and Windows keeps it closed " +
+            "to ordinary accounts until it is opened once." +
+            Environment.NewLine + Environment.NewLine +
+            "Windows will ask you to confirm. This happens once - afterwards " +
+            "Nextcalibur runs without any special privileges.",
+            "Nextcalibur - one-time permission",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Information);
+
+        if (answer != MessageBoxResult.OK) return;
+
+        try
+        {
+            var self = Environment.ProcessPath;
+            if (self is null) return;
+
+            // A second, short-lived copy of this same executable: it writes one
+            // registry value and exits. Shipping a script instead would mean
+            // depending on the execution policy of a machine we have just
+            // established we know nothing about.
+            using var elevated = Process.Start(new ProcessStartInfo
+            {
+                FileName = self,
+                Arguments = App.GrantAccessArgument,
+                UseShellExecute = true,
+                Verb = "runas",
+            });
+
+            elevated?.WaitForExit();
+        }
+        catch (Win32Exception)
+        {
+            // The user dismissed the prompt. Nothing was changed and nothing
+            // more needs saying: the banner already explains what is missing.
+        }
     }
 
     private void Exit()
@@ -1074,6 +1139,21 @@ public partial class MainWindow : Window
     {
         if (_mailboxFailed || !_mailboxSupported)
         {
+            // Two very different situations used to share one message. Telling
+            // somebody their laptop is unsupported when the real answer is
+            // "you declined a permission prompt a moment ago" is worse than
+            // saying nothing: it reads as final, and it is wrong.
+            if (MailboxAccess.Check() == MailboxAvailability.AccessNotGranted)
+            {
+                ShowBanner(
+                    "Sensors need permission",
+                    "This laptop has the interface Nextcalibur reads, but this account has not " +
+                    "been allowed to use it yet. Reopen Nextcalibur to be asked again - it takes " +
+                    "one confirmation, once.",
+                    (SolidColorBrush)FindResource("Warn"));
+                return;
+            }
+
             ShowBanner(
                 "This laptop isn't supported",
                 "Nextcalibur can't find the sensors and lighting on this machine, so those " +

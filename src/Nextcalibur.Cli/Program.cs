@@ -21,6 +21,7 @@ internal static class Program
                 "info" => Info(),
                 "led" => Led(args),
                 "clocks" => Clocks(),
+                "access" => Access(args),
                 _ => Help(),
             };
         }
@@ -36,6 +37,55 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Reports, grants or revokes this account's access to the firmware mailbox.
+    ///
+    /// Worth a command of its own because the failure it fixes does not look
+    /// like a permissions problem from the outside: every read simply returns
+    /// nothing, which for a long time was reported as the vendor software
+    /// holding the mailbox - software that on such a machine is not installed.
+    /// </summary>
+    private static int Access(string[] args)
+    {
+        var grant = args.Contains("--grant");
+        var revoke = args.Contains("--revoke");
+
+        if (grant || revoke)
+        {
+            if (!MailboxAccess.IsElevated())
+            {
+                Error("This needs administrator. Run the same command from an elevated prompt.");
+                return 3;
+            }
+
+            if (grant) MailboxAccess.Grant(); else MailboxAccess.Revoke();
+            Console.WriteLine(grant ? "Granted." : "Reverted.");
+            Console.WriteLine();
+
+            // An elevated process can reach the block whatever the descriptor
+            // says, so the report below describes this prompt rather than the
+            // account it was run for. Saying "readable" straight after revoking
+            // access is true and useless.
+            Console.WriteLine("Checking from an elevated prompt, which can read it either way.");
+            Console.WriteLine("Run 'nextcalibur access' without administrator to see the real answer.");
+            Console.WriteLine();
+        }
+
+        var state = MailboxAccess.Check();
+        Console.WriteLine(state switch
+        {
+            MailboxAvailability.Available =>
+                "The sensors are readable by this account.",
+            MailboxAvailability.AccessNotGranted =>
+                "This machine has the interface, but this account may not use it." +
+                Environment.NewLine + "Run 'nextcalibur access --grant' from an elevated prompt, once.",
+            _ =>
+                "This machine does not expose the firmware interface Nextcalibur reads.",
+        });
+
+        return state == MailboxAvailability.Available ? 0 : 4;
+    }
+
     private static int Help()
     {
         Console.WriteLine("""
@@ -45,6 +95,9 @@ internal static class Program
               nextcalibur sensors           Read temperatures and fan speeds once
               nextcalibur watch [seconds]   Stream sensor readings (default 30)
               nextcalibur clocks                 Show current CPU and GPU clock speeds
+              nextcalibur access                 Report whether the sensors are readable
+              nextcalibur access --grant         Allow this account to read them (admin)
+              nextcalibur access --revoke        Put that back (admin)
               nextcalibur led                    Show the stored lighting state
               nextcalibur led off                Turn the lighting off
               nextcalibur led colour <zone> <hex>  e.g. led colour left FF0000
