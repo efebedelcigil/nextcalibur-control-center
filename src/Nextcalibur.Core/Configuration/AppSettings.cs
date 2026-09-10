@@ -34,6 +34,17 @@ public sealed class AppSettings
     [JsonIgnore]
     public bool WarnsAboutHeat => OverheatWarningEnabled && CpuWarningTemperatureC > 0;
 
+    /// <summary>
+    /// The person has been told the vendor's Control Center is installed
+    /// alongside this, and has chosen to keep it.
+    ///
+    /// Recorded so the recommendation is made once rather than every time the
+    /// window opens. It is their machine: the two applications share one
+    /// firmware mailbox and will get in each other's way, and saying so once is
+    /// the whole of this project's business in the matter.
+    /// </summary>
+    public bool AcceptedVendorSoftware { get; set; }
+
     /// <summary>Dark, light, or follow Windows.</summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ThemePreference Theme { get; set; } = ThemePreference.System;
