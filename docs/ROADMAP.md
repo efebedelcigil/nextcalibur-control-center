@@ -74,6 +74,36 @@ listen at all. Whatever the Fn row does through that software stops working when
 it is replaced, and nobody has checked what that covers. Needs investigating
 before this can honestly be called a replacement.
 
+### Look before you change anything
+
+The owner set this alongside the uninstall rule, and it applies to every
+component that touches the machine: **check first, adopt what is already there,
+and write only what is actually missing.** Somebody who removes Nextcalibur,
+keeps the power plans, and installs it again should get their plans back, not a
+second set.
+
+| Component | Behaviour |
+|---|---|
+| Power-overlay repair | Only acts on what `Diagnose()` reports wrong; a machine with the guard already in place is untouched |
+| Power plans | A plan by our name is reused; a machine that already has the vendor's Office/Gaming/High performance keeps those rather than gaining duplicates |
+| Sensor permission | Adds one entry to the existing descriptor and reports "nothing was changed" when the account already has access |
+| Start with Windows | Compares the value before writing it |
+
+The permission one was not just missing a check - it was actively wrong. It
+wrote a descriptor of its own over whatever was there, so on a machine running
+the vendor's Control Center it would have removed **that software's** access.
+Complaining that the vendor leaves a permission behind and then trampling theirs
+is not a position worth holding. It now adds an entry and removes only its own.
+
+And a trap worth keeping written down, because it cost a working machine for two
+minutes: **an elevated process reaches the data block whatever the descriptor
+says**, and an elevated token carries the administrators group. So the first
+version of the check read the descriptor's built-in `BA` entry as "this account
+already has access", wrote nothing, reported success, and left the machine
+unreadable the moment the window ran normally. Entries that only apply while
+elevated - `BA` and `SY` - are now ignored when deciding whether an *ordinary*
+account can get in. Five tests pin it.
+
 ### 3. Our uninstall is not clean, and that is now a rule
 
 **Nextcalibur must leave nothing behind - but must ask before undoing anything

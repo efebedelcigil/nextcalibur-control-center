@@ -1,5 +1,8 @@
+using System.Security.AccessControl;
+using System.Security.Principal;
 using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Hardware;
+using Nextcalibur.Core.Power;
 using Xunit;
 
 namespace Nextcalibur.Core.Tests;
@@ -167,5 +170,131 @@ public class FootprintTests
             var trace = Footprint.Survey().Single(t => t.Name == name);
             Assert.False(trace.NeedsElevation);
         }
+    }
+}
+
+/// <summary>
+/// Check before you change: every component that writes to the machine has to
+/// look first, and leave alone anything already in the state it wanted.
+///
+/// The owner asked for this after the autopsy, and one of the components was
+/// getting it wrong in a way that mattered: the sensor permission was written
+/// over whatever was there, so on a machine running the vendor's software it
+/// would have removed that software's own access. Complaining about a vendor
+/// leaving a permission behind and then trampling theirs is not a position
+/// worth holding.
+/// </summary>
+public class IdempotenceTests
+{
+    [Fact]
+    public void The_startup_entry_reports_when_it_was_already_right()
+    {
+        var path = Environment.ProcessPath ?? "test.exe";
+        var wasEnabled = StartupRegistration.IsEnabled;
+
+        try
+        {
+            StartupRegistration.Set(true, path);
+
+            // Second time: same request, nothing to do.
+            Assert.False(StartupRegistration.Set(true, path));
+        }
+        finally
+        {
+            StartupRegistration.Set(wasEnabled, path);
+        }
+    }
+
+    [Fact]
+    public void Asking_for_a_different_path_is_not_the_same_request()
+    {
+        var wasEnabled = StartupRegistration.IsEnabled;
+
+        try
+        {
+            StartupRegistration.Set(true, @"C:\one.exe");
+            Assert.True(StartupRegistration.Set(true, @"C:\another.exe"));
+        }
+        finally
+        {
+            StartupRegistration.Set(wasEnabled, Environment.ProcessPath ?? "test.exe");
+        }
+    }
+
+    [Fact]
+    public void A_machine_that_already_has_access_is_left_alone()
+    {
+        // Grant returns false when it wrote nothing. On this machine access is
+        // already in place, so a grant must be a no-op - and must not need
+        // elevation to work that out.
+        if (MailboxAccess.Check() != MailboxAvailability.Available) return;
+
+        Assert.False(MailboxAccess.Grant());
+    }
+
+    [Fact]
+    public void Repairing_a_machine_with_nothing_wrong_changes_nothing()
+    {
+        var service = new PowerOverlayService();
+        if (service.Diagnose().NeedsRepair) return;
+
+        var outcome = service.Repair();
+
+        Assert.Empty(outcome.Done);
+        Assert.Null(outcome.Blocked);
+        Assert.True(outcome.Empty);
+    }
+}
+
+/// <summary>
+/// The bug this pins broke every reading on the development machine for a
+/// couple of minutes, and would have shipped: a grant that runs elevated
+/// deciding the account already had access, because an elevated token carries
+/// the administrators group and the descriptor's built-in entry looked like a
+/// match. It wrote nothing and reported success.
+/// </summary>
+public class MailboxAccessCoverageTests
+{
+    private static SecurityIdentifier Me =>
+        WindowsIdentity.GetCurrent().User ?? throw new InvalidOperationException("no account");
+
+    private static RawSecurityDescriptor Descriptor(string sddl) => new(sddl);
+
+    [Fact]
+    public void An_administrators_entry_does_not_count_as_access()
+    {
+        // True only while elevated, which is exactly when this question gets
+        // asked - so counting it is how the machine ends up unreadable.
+        Assert.False(MailboxAccess.HasAccess(
+            Descriptor("O:BAG:BAD:(A;;0x12001f;;;BA)(A;;0x12001f;;;SY)"), Me));
+    }
+
+    [Fact]
+    public void This_accounts_own_entry_counts()
+    {
+        Assert.True(MailboxAccess.HasAccess(
+            Descriptor($"O:BAG:BAD:(A;;0x12001f;;;BA)(A;;0x12001f;;;{Me.Value})"), Me));
+    }
+
+    [Fact]
+    public void The_vendors_grant_to_everyone_counts()
+    {
+        // Authenticated Users applies whether or not anybody is elevated, so a
+        // machine running the vendor's software needs nothing added.
+        Assert.True(MailboxAccess.HasAccess(Descriptor("O:BAG:BAD:(A;;0x121fff;;;AU)"), Me));
+    }
+
+    [Fact]
+    public void An_entry_that_grants_too_little_does_not_count()
+    {
+        // Read without write would light no keyboard.
+        Assert.False(MailboxAccess.HasAccess(
+            Descriptor($"O:BAG:BAD:(A;;0x00001;;;{Me.Value})"), Me));
+    }
+
+    [Fact]
+    public void An_empty_descriptor_grants_nothing()
+    {
+        Assert.False(MailboxAccess.HasAccess(Descriptor("O:BAG:BAD:"), Me));
     }
 }

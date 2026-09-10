@@ -112,14 +112,23 @@ public static class StartupRegistration
     /// Enables or disables launch at sign-in. Uses HKCU so no elevation is
     /// needed and the setting stays scoped to this user.
     /// </summary>
-    public static void Set(bool enabled, string executablePath)
+    /// <returns>False when the registry already said what we were about to say.</returns>
+    public static bool Set(bool enabled, string executablePath)
     {
+        var wanted = enabled ? $"\"{executablePath}\" --tray" : null;
+
+        using var read = Registry.CurrentUser.OpenSubKey(RunKey);
+        var current = read?.GetValue(ValueName) as string;
+        if (current == wanted) return false;
+
         using var key = Registry.CurrentUser.CreateSubKey(RunKey, writable: true)
             ?? throw new InvalidOperationException("Could not open the Run key.");
 
-        if (enabled)
-            key.SetValue(ValueName, $"\"{executablePath}\" --tray", RegistryValueKind.String);
+        if (wanted is not null)
+            key.SetValue(ValueName, wanted, RegistryValueKind.String);
         else
             key.DeleteValue(ValueName, throwOnMissingValue: false);
+
+        return true;
     }
 }

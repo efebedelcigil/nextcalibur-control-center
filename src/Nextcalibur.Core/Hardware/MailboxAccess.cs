@@ -58,6 +58,9 @@ public static class MailboxAccess
     /// </summary>
     private const string AccessMask = "0x12001f";
 
+    /// <summary>The same mask as a number, for comparing entries already present.</summary>
+    private const uint AccessMaskValue = 0x12001f;
+
     /// <summary>Whether the mailbox can be reached, and if not, why not.</summary>
     public static MailboxAvailability Check()
     {
@@ -95,56 +98,162 @@ public static class MailboxAccess
     }
 
     /// <summary>
-    /// Adds the current account to the block's security descriptor.
+    /// Adds the current account to the block's security descriptor, leaving
+    /// everything already in it alone.
     ///
-    /// Deliberately narrower than what the vendor software does, which grants
-    /// the whole built-in Users group. The block accepts writes as well as
+    /// **Adds an entry; does not write a descriptor.** An earlier version
+    /// replaced whatever was there with one of its own, which on a machine
+    /// running the vendor's Control Center would have taken away the access
+    /// that software grants and broken it - the exact discourtesy this project
+    /// complains about elsewhere.
+    ///
+    /// The entry it adds is deliberately narrower than the vendor's, which
+    /// grants every authenticated user. The block accepts writes as well as
     /// reads, so widening it that far hands every local process a route to the
     /// embedded controller. One account is enough for a laptop.
     /// </summary>
+    /// <returns>False when the account already had access and nothing was written.</returns>
     /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
-    public static void Grant()
+    public static bool Grant()
     {
-        var sid = WindowsIdentity.GetCurrent().User?.Value
+        // Cheapest check first, and the only one an ordinary account can make:
+        // if the block is already readable from here, the permission is there
+        // and nothing needs writing - which also means no elevation prompt.
+        //
+        // Only meaningful unelevated. An administrator can reach the block
+        // whatever the descriptor says, so "it works for me" from an elevated
+        // process proves nothing about the account's own permission; that case
+        // falls through and compares the entries properly below.
+        if (!IsElevated() && Check() == MailboxAvailability.Available) return false;
+
+        var sid = WindowsIdentity.GetCurrent().User
             ?? throw new InvalidOperationException("Could not determine the current account.");
 
         using var key = Registry.LocalMachine.OpenSubKey(SecurityKey, writable: true)
             ?? throw new InvalidOperationException($@"Missing HKLM\{SecurityKey}.");
 
-        // Keep whatever is there so Revoke can put it back rather than guess.
-        if (key.GetValue(BlockGuid) is byte[] existing && key.GetValue(BackupValue) is null)
+        var existing = key.GetValue(BlockGuid) as byte[];
+
+        // A descriptor with no entries of its own means Windows' default, which
+        // is administrators only. Start from that rather than from nothing, so
+        // an elevated process keeps working either way.
+        var descriptor = existing is not null
+            ? new RawSecurityDescriptor(existing, 0)
+            : new RawSecurityDescriptor($"O:BAG:BAD:(A;;{AccessMask};;;BA)(A;;{AccessMask};;;SY)");
+
+        if (HasAccess(descriptor, sid)) return false;
+
+        // Keep the original so Revoke has something to compare against rather
+        // than guess at. Only the first time: a second grant must not overwrite
+        // the record of what was there before the first.
+        if (existing is not null && key.GetValue(BackupValue) is null)
             key.SetValue(BackupValue, existing, RegistryValueKind.Binary);
 
-        var descriptor = new RawSecurityDescriptor(
-            $"O:BAG:BAD:(A;;{AccessMask};;;BA)(A;;{AccessMask};;;SY)(A;;{AccessMask};;;{sid})");
+        descriptor.DiscretionaryAcl ??= new RawAcl(GenericAcl.AclRevision, 1);
+        descriptor.DiscretionaryAcl.InsertAce(
+            descriptor.DiscretionaryAcl.Count,
+            new CommonAce(AceFlags.None, AceQualifier.AccessAllowed,
+                unchecked((int)AccessMaskValue), sid, isCallback: false, opaque: null));
 
-        var bytes = new byte[descriptor.BinaryLength];
-        descriptor.GetBinaryForm(bytes, 0);
-        key.SetValue(BlockGuid, bytes, RegistryValueKind.Binary);
+        Write(key, descriptor);
+        return true;
     }
 
     /// <summary>
-    /// Puts the descriptor back exactly as it was found.
+    /// Removes this account's entry and leaves everyone else's alone.
     ///
-    /// Not the same as deleting the value: this machine had a descriptor before,
-    /// granting administrators only, and deleting would leave none at all. Undo
-    /// should mean undo.
+    /// Not "restore the backup": on a machine where the vendor's software has
+    /// been installed since, restoring would delete its access as well. The
+    /// only thing this ever takes away is what it put there.
+    ///
+    /// When that leaves a descriptor holding nothing this machine had before,
+    /// the value goes entirely, so an uninstall leaves no trace - which is the
+    /// half the vendor's uninstaller does not do.
     /// </summary>
     /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
     public static void Revoke()
     {
+        var sid = WindowsIdentity.GetCurrent().User;
+
         using var key = Registry.LocalMachine.OpenSubKey(SecurityKey, writable: true)
             ?? throw new InvalidOperationException($@"Missing HKLM\{SecurityKey}.");
 
-        if (key.GetValue(BackupValue) is byte[] previous)
+        if (key.GetValue(BlockGuid) is not byte[] current || sid is null)
         {
-            key.SetValue(BlockGuid, previous, RegistryValueKind.Binary);
             key.DeleteValue(BackupValue, throwOnMissingValue: false);
+            return;
+        }
+
+        var descriptor = new RawSecurityDescriptor(current, 0);
+        var acl = descriptor.DiscretionaryAcl;
+        if (acl is not null)
+        {
+            for (var i = acl.Count - 1; i >= 0; i--)
+                if (acl[i] is CommonAce ace && ace.SecurityIdentifier == sid)
+                    acl.RemoveAce(i);
+        }
+
+        var backup = key.GetValue(BackupValue) as byte[];
+        if (backup is null && (acl is null || acl.Count == 0))
+        {
+            // Nothing was here before us and nothing is left: take the value
+            // away rather than leave an empty one behind.
+            key.DeleteValue(BlockGuid, throwOnMissingValue: false);
         }
         else
         {
-            key.DeleteValue(BlockGuid, throwOnMissingValue: false);
+            Write(key, descriptor);
         }
+
+        key.DeleteValue(BackupValue, throwOnMissingValue: false);
+    }
+
+    /// <summary>
+    /// True when this account already has what a grant would give it - as an
+    /// ordinary account, not as an administrator.
+    ///
+    /// The distinction is the whole point. This runs elevated, where the token
+    /// carries the administrators group, so counting group entries naively made
+    /// the descriptor's built-in `BA` entry look like the account was already
+    /// allowed. It reported "already allowed", wrote nothing, and left every
+    /// reading broken the moment the window ran without elevation - found by
+    /// revoking access and watching the re-grant refuse to do anything.
+    /// </summary>
+    internal static bool HasAccess(RawSecurityDescriptor descriptor, SecurityIdentifier sid)
+    {
+        var acl = descriptor.DiscretionaryAcl;
+        if (acl is null) return false;
+
+        var groups = WindowsIdentity.GetCurrent().Groups;
+
+        foreach (var entry in acl)
+        {
+            if (entry is not CommonAce ace || ace.AceType != AceType.AccessAllowed) continue;
+
+            // Entries that only apply while elevated say nothing about what the
+            // account can do the rest of the time.
+            if (OnlyHelpsWhenElevated(ace.SecurityIdentifier)) continue;
+
+            // Other group entries do count: the vendor grants Authenticated
+            // Users, and an account covered by that needs nothing of its own.
+            var covers = ace.SecurityIdentifier == sid
+                || (groups?.Contains(ace.SecurityIdentifier) ?? false);
+
+            if (covers && (uint)ace.AccessMask >= AccessMaskValue) return true;
+        }
+
+        return false;
+    }
+
+    private static bool OnlyHelpsWhenElevated(SecurityIdentifier sid) =>
+        sid.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid)
+        || sid.IsWellKnown(WellKnownSidType.LocalSystemSid);
+
+    private static void Write(RegistryKey key, RawSecurityDescriptor descriptor)
+    {
+        var bytes = new byte[descriptor.BinaryLength];
+        descriptor.GetBinaryForm(bytes, 0);
+        key.SetValue(BlockGuid, bytes, RegistryValueKind.Binary);
     }
 
     /// <summary>Where the pre-existing descriptor is parked during a grant.</summary>
