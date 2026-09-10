@@ -174,10 +174,14 @@ had just caused. It now reads NVML only in Discrete, where the card is awake
 regardless, and otherwise says what the mailbox already knows: temperature and
 fan speed, which cost nothing and mean more to most people than watts.
 
-### Still open
+### UMA was left unmeasured on purpose
 
-- **UMA, measured.** Reaching it means Hybrid first, and the round trip back to
-  Discrete costs two more PIN resets.
+The thermal table covers Discrete and Hybrid. UMA does not need a row: the
+measurement would confirm something the mechanism already settles - the card is
+switched off as a device, so it cannot be drawing power or making heat - and
+reaching it and coming back costs two more resets of the Windows PIN. The
+application's description of UMA rests on the mechanism, which is the stronger
+ground anyway.
 
 ### Tooling still armed on the machine
 
@@ -509,13 +513,16 @@ it should be.
 
 ## Decisions worth keeping
 
-### Fan control stays out, and the machine says why
+### Fan control stays out, and the fans are not the vendor's to control
 
-Two earlier statements here were wrong in opposite directions. The first said
-the vendor exposes no fan-curve writes; it does, and PROTOCOL.md documents them.
-The second implied the curves are Casper's. They are not.
+The original reason recorded here was that the vendor software exposes no
+fan-curve writes and there is nothing to observe. That was **right**, and a
+later revision wrongly called it wrong: finding `UserFan1..3` in the vendor's
+registry key looked like evidence of a feature. It is not. The owner confirmed
+what the readings already implied - **the Control Center has no fan tab at all;
+fans cannot be adjusted from it.**
 
-Read off this machine:
+What the machine holds:
 
 ```
 FanControlStatus = 0        firmware automatic - the user curve is not in effect
@@ -525,26 +532,28 @@ UserFan2 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
 UserFan3 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
 ```
 
-Three profiles holding byte-identical curves are not three profiles; they are
-one default written three times. A product whose quiet, normal and performance
-curves are the same shipped a template nobody filled in - these come from the
-base Tongfang/Uniwill software the vendor rebranded, and `FanControlStatus = 0`
-says the fans are being run by firmware, not by any of this.
+Three profiles holding byte-identical curves are not three profiles; they are a
+template written three times. These come from the base Tongfang/Uniwill software
+the vendor rebranded, with the feature left out of the build, and
+`FanControlStatus = 0` says firmware is running the fans.
 
-So the rule the owner set applies cleanly: **copy the vendor exactly where the
+So the owner's rule decides it cleanly: **copy the vendor exactly where the
 vendor is in charge, and stay out entirely where it is not.** Fan speed is the
 second case. Nextcalibur reads the fans and says when they are losing, and
 writes nothing.
 
-There is a second reason, and it outlives this machine: a fan curve is only safe
-relative to the state of the cooling it commands. This heatsink is dusty. A
-curve that holds temperature on a clean machine may not hold it here, and the
-experiment that would settle it runs the hardware hot. That is not an experiment
-worth having a strong opinion about somebody else's laptop over.
+A second reason outlives this machine: a fan curve is safe only relative to the
+state of the cooling it commands. This heatsink is dusty. A curve that holds
+temperature on a clean machine may not hold it here, and the experiment that
+would settle it runs the hardware hot.
 
 If it is ever built, the shape is decided: the vendor's format, its indices, its
 firmware-automatic fallback, restored on exit and on crash. The monitoring, the
 overheat warning and the mailbox's `Hold()` stay in place for that day.
+
+**The overheat switch is about the notification only.** It decides whether a
+Windows notification appears; it does not touch a fan, and there is no code path
+from it to one.
 
 ### Graphics mode reports, it does not switch
 
