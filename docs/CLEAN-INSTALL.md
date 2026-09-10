@@ -132,12 +132,27 @@ guarded for `DllNotFoundException`, the readings return null, and the interface
 leaves them blank rather than inventing a figure. Temperatures and fan speeds
 are unaffected - those come from the mailbox, not from NVIDIA.
 
-**No .NET 8 desktop runtime.** The application is published
-framework-dependent, and the installer is built with
-`--framework net8.0-x64-desktop`, which is Velopack's instruction to check for
-that runtime and install it first. **This path has never been watched working**,
-because every machine it has been installed on already had the runtime. It is
-the one row in the table that rests on documentation rather than observation.
+**No .NET 8 desktop runtime.** The package carries its own, and that is not a
+preference. Publishing framework-dependent rested on the installer fetching the
+runtime when a machine lacked one - documented behaviour, never watched. Watched
+on 11 September 2026 in a clean Windows sandbox: the prompt appeared, the
+progress bar never moved, five minutes passed, and the Finish button was
+clickable throughout. The installer reported success, installed nothing, and
+would have left somebody hunting for an application that was not there.
+
+Not the network: the same runtime downloaded directly from that same sandbox at
+4.13 MB/s, 56 MB in fourteen seconds.
+
+So the step was removed rather than repaired. Setup went from 7 MB to 65 MB and
+needs nothing from the internet. Updates are unaffected - a 0.5.0 to 0.5.1 delta
+is 0.1 MB, because the runtime files do not change between versions - and that
+number is measured, not assumed.
+
+Verified end to end afterwards, in a sandbox with no .NET at all: no prompt, the
+application installed to %LocalAppData%\Nextcalibur, the window opened, and the
+event log recorded nothing. The banner said "This laptop isn't supported", which
+in a virtual machine is the correct answer and the one the permission logic has
+to get right.
 
 **Not running as administrator.** This is the interesting one, because the
 project asks for elevation only where it must, and says why.
@@ -158,16 +173,19 @@ are now built in:
   itself and points at the repair, which needs administrator once.
 
 Running Nextcalibur as administrator a single time is enough to write the guard
-permanently. It never asks.
+permanently, and the repair says so when it cannot finish.
 
 ## What is still unproven
 
 | Claim | Status |
 |---|---|
-| Setup installs the .NET runtime when it is missing | documented, never observed |
-| The vendor's installer is what granted ordinary users access to the data block | strongly implied, security descriptor not yet read |
+| ~~Setup installs the .NET runtime when it is missing~~ | tested: it does not, so the package now carries its own |
+| The vendor's installer is what granted ordinary users access to the data block | the descriptor was read - administrators only, once the software was gone. That the vendor widened it is still inference: its version was never captured |
 | The updater finds, downloads and applies a release | never watched end to end |
 
-None of these is known to be broken. They are listed because "not known to be
-broken" and "seen working" are different things, and this file is about the
-difference.
+One of them turned out to be broken, which is the point of the list. "Documented"
+and "seen working" are different things, and the runtime bootstrap sat here as
+documented-but-unwatched until somebody insisted on a machine that had never had
+any of this installed. It failed silently, and told the user it had succeeded.
+
+The remaining rows are not known to be broken. That is not the same as working.

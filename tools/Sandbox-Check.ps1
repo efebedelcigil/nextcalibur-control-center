@@ -38,17 +38,27 @@ if (-not (Test-Path $setup)) { Write-Host "  $setup is missing - is the folder m
 "  $setup"
 "  watch for a prompt about the .NET runtime; allow it"
 $sw = [Diagnostics.Stopwatch]::StartNew()
-Start-Process $setup -Wait
+# Not -Wait. Velopack's Setup starts the application and stays alive alongside
+# it, so waiting on Setup means waiting for somebody to close the window, which
+# once turned a nine-second install into a reported 803 seconds.
+$proc = Start-Process $setup -PassThru
+while (-not $proc.HasExited -and $sw.Elapsed.TotalSeconds -lt 180) {
+    if (Get-Process -Name Nextcalibur -ErrorAction SilentlyContinue) { break }
+    Start-Sleep -Milliseconds 500
+}
 $sw.Stop()
-"  finished in $([int]$sw.Elapsed.TotalSeconds) seconds"
+"  application appeared after $([int]$sw.Elapsed.TotalSeconds) seconds"
 
 Section "After installing"
 $after = Get-Runtimes
 "  .NET desktop runtimes: " + $(if ($after) { $after -join ', ' } else { 'none' })
 $new = $after | Where-Object { $_ -notin $before }
-if ($new) { Write-Host "  Setup installed: $($new -join ', ')" -ForegroundColor Green }
-elseif (-not $before) { Write-Host "  nothing was installed and there was nothing before - the app cannot run" -ForegroundColor Red }
-else { "  nothing new was needed" }
+# The package carries its own runtime, so "none" here is the expected answer
+# rather than a failure. It was a failure only while the installer was expected
+# to fetch one - and that expectation is what turned out not to work.
+$new = $after | Where-Object { $_ -notin $before }
+if ($new) { Write-Host "  Setup installed a runtime: $($new -join ', ')" -ForegroundColor Yellow }
+else { "  no shared runtime, as expected - the package carries its own" }
 
 $installed = Get-ChildItem "$env:LOCALAPPDATA\Nextcalibur" -Recurse -Filter 'Nextcalibur.exe' -ErrorAction SilentlyContinue |
     Select-Object -First 1
