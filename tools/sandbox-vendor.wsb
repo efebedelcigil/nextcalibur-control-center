@@ -27,11 +27,16 @@
       <SandboxFolder>C:\Tools</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\notes\vendor-autopsy</HostFolder>
+      <SandboxFolder>C:\Out</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
   </MappedFolders>
 
   <Networking>Enable</Networking>
 
   <LogonCommand>
-    <Command>cmd.exe /c start "" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "&amp; C:\Tools\Sandbox-Vendor-Probe.ps1 -Label before"</Command>
+    <Command>cmd.exe /c start "" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "&amp; C:\Tools\Sandbox-Autopsy.ps1 -Label clean"</Command>
   </LogonCommand>
 </Configuration>

@@ -46,6 +46,71 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | Graphics mode switching | **reports only, by decision** — mechanism traced on hardware; see below |
 | Fan control | **out of scope** — the vendor has no fan control either; see below |
 
+## What the original does that we do not
+
+A file-by-file autopsy of the vendor's installer was taken on 11 September 2026
+in a disposable Windows: clean, installed, uninstalled, three full captures of
+files, registry, services, drivers, tasks, certificates and power plans. Raw
+data in `notes/` (kept out of this repository - it is an inventory of somebody
+else's product). What it shows about the gap:
+
+### 1. The power plans are theirs, and without them our modes collapse
+
+The installer creates **Office**, **Gaming** and **High performance** from `.pow`
+files it ships. `SystemModeService` looks those up **by name** and falls back to
+Balanced. So on a machine that never had the vendor software - which is the
+machine this project is for - all three modes land on the same plan and differ
+only by overlay. Nobody would notice it was broken; it would just feel like the
+modes do very little.
+
+`powercfg /duplicatescheme` works **without elevation**, verified on hardware, so
+this is fixable within the rules: create our own plans on first run rather than
+borrowing theirs.
+
+### 2. Hotkeys
+
+The vendor listens on `GMC_WMIEvent` for the firmware's key events. We do not
+listen at all. Whatever the Fn row does through that software stops working when
+it is replaced, and nobody has checked what that covers. Needs investigating
+before this can honestly be called a replacement.
+
+### 3. Our uninstall is not clean, and that is now a rule
+
+**Nextcalibur must leave nothing behind - but must ask before undoing anything
+the user may want to keep.** The owner set this after seeing what the vendor
+leaves; it is not a nice-to-have.
+
+Today an uninstall leaves four things:
+
+| Left behind | Scope | Ours to remove |
+|---|---|---|
+| `%AppData%\Nextcalibur\settings.json` | user | yes, silently |
+| The startup entry under `HKCU\...\Run` | user | yes, silently |
+| The WMI security grant we wrote | machine, needs admin | **ask** |
+| The power-overlay guard (`OverrideACSettingIndex`) | machine, needs admin | **ask** |
+
+The last two are the ones to ask about. The guard is a repair: removing it puts
+the machine back where the CPU can be pinned at full speed, and somebody may
+want to keep it after uninstalling us. The permission grant is the opposite -
+leaving it is exactly what we criticised the vendor for - but it is still the
+user's machine and their call. The same will apply to any power plans we create.
+
+Velopack's `OnBeforeUninstallFastCallback` runs this, with a **30-second limit**
+before the process is killed, so the question has to be one dialogue with a safe
+default: no answer means keep, because silently undoing a repair is worse than
+leaving a registry value behind.
+
+### 4. Small things, listed so they are not rediscovered
+
+- The vendor starts itself with a **scheduled task**; we use `HKCU\...\Run`.
+  Ours needs no administrator, which is the better trade for what it does.
+- It installs in Turkish. We are English-only until the language work lands.
+- `VGA.ini` and `Camera.ini` are device lists for graphics switching and the
+  camera - both out of scope by decision.
+- It carries `ProfileHelperModel.dll`, signed by **Intel Extreme Tuning
+  Utility**, and a `SetPwrPlan.exe` whose version resource claims "Microsoft"
+  while being signed by Quanta. Neither is something to copy.
+
 ## Next
 
 Taken from an audit of the repository rather than from memory, roughly in the
