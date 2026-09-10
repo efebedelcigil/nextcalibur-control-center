@@ -291,6 +291,62 @@ adapters and `ACPI\VEN_NVDA&DEV_0820`, the Optimus ACPI companion. On the
 development machine that second device does not exist, so only the adapter is
 touched. But that path is UMA, not the Discrete/Hybrid switch.
 
+#### Measured: the two buttons work by entirely different means
+
+Watched on hardware on 10 September 2026, with the registry, the vendor's own
+files, driver state, PnP state and the firmware variable store captured before
+each click, after each click, and after each reboot.
+
+**Discrete -> MS Hybrid leaves no trace in Windows at all.** All 1550 captured
+values were identical before and after the click. After the reboot only four
+differed, and none of them is a setting: two are NVIDIA driver counters, and
+the other two are the outcome itself - which adapter reports a resolution.
+
+The boot log settles where the change is applied:
+
+```
+21:15:28  boot  NVIDIA  drivesPanel=no   vendorProcs=0
+21:15:28  boot  Intel   drivesPanel=YES  vendorProcs=0
+```
+
+Twenty-three seconds into the boot, before a single vendor process is running,
+the panel is already on the integrated chip. Nothing in Windows applies this at
+logon; the machine comes up that way. The setting lives in firmware.
+
+**MS Hybrid -> UMA is not a firmware change at all.** It is the SetupDi device
+disable, and the trace timestamps it:
+
+```
+21:25:09.266  NVIDIA  OK     CM_PROB_NONE
+21:25:24.844  NVIDIA  Error  CM_PROB_DISABLED
+```
+
+`nvlddmkm` went from Running to Stopped as a consequence. No restart was
+offered and none was needed. A dump of all 90 runtime-visible firmware
+variables before and after differs in **zero** bytes, so nothing was written
+there. This also means UMA is the one mode reproducible without the vendor's
+driver - it is an ordinary device disable, though it still needs administrator.
+
+The vendor's own UI does not survive it: four seconds after disabling the card,
+`ControlCenter.exe` died with an access violation inside `nvml.dll`. It kept
+polling the GPU it had just switched off.
+
+```
+Faulting application: ControlCenter.exe 3.0.0.17
+Faulting module:      nvml.dll
+Exception code:       0xc0000005
+```
+
+A caution for reading the firmware dump: the AMI `Setup` variable, which
+normally holds every BIOS option, is not among the 90. Variables without
+`EFI_VARIABLE_RUNTIME_ACCESS` are invisible to the operating system, so
+"unchanged in the dump" means unchanged *where the OS can see* - the same trap
+as the managed-assembly search above. For UMA it is conclusive, because the
+device disable fully explains the result. For Discrete/Hybrid the dump can
+only ever be indirect evidence.
+
+Captured with `tools/Trace-ModeSwitch.ps1` and `tools/Dump-UefiVars.ps1`.
+
 #### The restart has a cost nobody mentions
 
 Changing the mode **invalidated the Windows Hello PIN**. It had to be set up

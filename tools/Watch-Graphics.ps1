@@ -4,7 +4,7 @@
 #   .\Watch-Graphics.ps1 -Minutes 15
 #
 # Samples every second, because the vendor software disables one device, sleeps
-# a second, then disables another — a slower sample would show the end state and
+# a second, then disables another â€” a slower sample would show the end state and
 # hide the sequence, and the sequence is the thing worth knowing.
 #
 # Writes each sample to a CSV as it goes rather than at the end, so the trace
@@ -13,7 +13,9 @@
 
 param(
     [int]$Minutes = 15,
-    [string]$OutFile = "$PSScriptRoot\graphics-trace.csv"
+    # Timestamped, because a run used to overwrite the previous trace and one
+    # afternoon of evidence went with it. Traces are cheap; losing them is not.
+    [string]$OutFile = "$PSScriptRoot\graphics-trace-$(Get-Date -Format yyyyMMdd-HHmmss).csv"
 )
 
 $ErrorActionPreference = 'Continue'
