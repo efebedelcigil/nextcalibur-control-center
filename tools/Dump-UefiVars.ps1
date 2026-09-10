@@ -154,10 +154,14 @@ try {
             $size = [Uefi]::GetFirmwareEnvironmentVariableExW($name, $guid, $data, $data.Length, [ref]$attrs)
             if ($size -gt 0) {
                 $hash = [BitConverter]::ToString($sha.ComputeHash($data[0..($size - 1)])).Replace('-', '').Substring(0, 16)
-                # Small values are shown as they are: a one-byte variable that
-                # flips between modes is the answer, and hiding it in a hash
+                # Small values are kept in full: a single byte that flips
+                # between modes is the answer, and hiding it behind a hash
                 # would mean another reboot to find out what it flipped to.
-                $preview = if ($size -le 16) { [BitConverter]::ToString($data[0..($size - 1)]) } else { '' }
+                # The bound is generous enough to cover EFI device paths, which
+                # is how the console's own record of the display chip is read -
+                # a hash said only that ConOut had changed length, and the
+                # bytes were gone by the time that turned out to matter.
+                $preview = if ($size -le 128) { [BitConverter]::ToString($data[0..($size - 1)]) } else { '' }
             } else {
                 $hash = 'unreadable'; $preview = ''
             }

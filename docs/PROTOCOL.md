@@ -347,6 +347,39 @@ only ever be indirect evidence.
 
 Captured with `tools/Trace-ModeSwitch.ps1` and `tools/Dump-UefiVars.ps1`.
 
+#### Where the Discrete/Hybrid setting shows up in firmware
+
+Going back the other way - Hybrid to Discrete - and dumping the firmware
+variables again turns up a fingerprint. One byte tracks the mode:
+
+```
+TpvSetup   Hybrid           00-03-00-00-40-E9-42-00-00-00-00
+           after the click  00-03-00-00-40-E9-42-00-00-00-00     unchanged
+           Discrete         00-02-00-00-40-E9-42-00-00-00-00
+```
+
+`{1C3483D5-1E7E-4450-9806-DEDE002C974B}\TpvSetup`, second byte, `0x03` in
+Hybrid and `0x02` in Discrete. UMA leaves it at the Hybrid value, which is
+right: UMA never touches firmware, it only switches the card off in Windows.
+
+Alongside it, `ConOut`, `ConOutDev`, `ErrOut` and `ErrOutDev` grow from 30 to
+36 bytes. Those are the EFI device paths for the firmware console, and six
+bytes is exactly one PCI device-path node: the integrated GPU sits directly on
+the root bus, the discrete one behind a bridge and so needs one node more. The
+display path is visible even in where the firmware prints its own output.
+
+**None of this changes when the button is pressed - only after the reboot.**
+So the click is not what writes it. The driver either writes somewhere the
+running OS cannot see, or leaves a request that firmware acts on at the next
+boot; from outside, those two look the same. What can be said with the evidence
+in hand is narrower and still useful: `TpvSetup` is a readable indicator of the
+current mode, but it has not been shown to be the switch itself.
+
+Nextcalibur does not read it either. Detecting which adapter reports a
+resolution answers the same question through ordinary WMI, with no elevation
+and no firmware access - and reading firmware needs administrator, which this
+application does not ask for.
+
 #### The restart has a cost nobody mentions
 
 Changing the mode **invalidated the Windows Hello PIN**. It had to be set up
