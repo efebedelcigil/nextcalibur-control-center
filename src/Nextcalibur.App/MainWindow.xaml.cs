@@ -58,6 +58,12 @@ public partial class MainWindow : Window
     /// </summary>
     private bool _sampling;
 
+    /// <summary>
+    /// The most recent mailbox reading, kept so the Display page can say what
+    /// the card is costing without paying for its own measurement.
+    /// </summary>
+    private ThermalSample? _lastThermal;
+
     private bool _overheatNotified;
     private bool _mailboxFailed;
 
@@ -345,11 +351,24 @@ public partial class MainWindow : Window
     private void LoadGpuMode()
     {
         var config = _gpu.Detect();
-        GpuModeDetail.Text = GpuModeService.Describe(config, _gpuClock.ReadLoad());
+        GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
 
         if (config.Mode is not { } mode) return;
         GpuButtonFor(mode).IsChecked = true;
     }
+
+    /// <summary>
+    /// Power draw, but only where asking for it is free.
+    ///
+    /// NVML wakes the GPU. In Discrete the card is already awake - it is
+    /// drawing the desktop - so the reading costs nothing and is worth having.
+    /// In Hybrid and UMA it would be this application waking the card the mode
+    /// exists to keep asleep, every time somebody opened the page, and then
+    /// reporting the draw it had just caused. Temperature and fan speed come
+    /// from the mailbox in every mode and wake nothing.
+    /// </summary>
+    private GpuLoad? IdleWatts(GpuConfiguration config) =>
+        config.Mode == GpuMode.Discrete ? _gpuClock.ReadLoad() : null;
 
     private RadioButton GpuButtonFor(GpuMode mode) => mode switch
     {
@@ -381,7 +400,7 @@ public partial class MainWindow : Window
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
         var config = _gpu.Detect();
-        GpuModeDetail.Text = GpuModeService.Describe(config, _gpuClock.ReadLoad());
+        GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
 
         if (config.Mode is not { } current) return;
         if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
@@ -614,6 +633,7 @@ public partial class MainWindow : Window
         }
 
         _consecutiveFailures = 0;
+        _lastThermal = s;
 
         CpuTemp.Text = $"{s.CpuTemperatureC} °C";
         GpuTemp.Text = $"{s.GpuTemperatureC} °C";
@@ -700,6 +720,7 @@ public partial class MainWindow : Window
                 return;
             }
 
+            _lastThermal = s;
             _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
 
             // Done after the read, so this tick's own leavings are included.

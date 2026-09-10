@@ -31,12 +31,12 @@ public readonly record struct GpuConfiguration(
 /// <summary>
 /// Reports the machine's graphics configuration.
 ///
-/// **Detection only — this class does not switch modes, and that is a decision
+/// **Detection only â€” this class does not switch modes, and that is a decision
 /// rather than a gap.**
 ///
 /// The vendor software does switch the display path: watched on hardware, its
 /// MS Hybrid button plus a restart moved the panel from the discrete card to the
-/// integrated one. It reaches firmware through the kernel driver it installs —
+/// integrated one. It reaches firmware through the kernel driver it installs â€”
 /// `DeviceIoControl` in its native library, not in its managed code, which is
 /// why an earlier search of the managed assembly found nothing and concluded,
 /// wrongly, that no software could do this.
@@ -113,21 +113,33 @@ public sealed class GpuModeService
     /// turns a general warning into a measurement of what the setting is
     /// costing right now, which is the difference between advice somebody
     /// ignores and advice they act on.
+    ///
+    /// Pass null in every other mode. Reading it costs an NVML call, and an
+    /// NVML call wakes the card - which in Hybrid means this application
+    /// waking the very GPU the mode exists to keep asleep, every time somebody
+    /// opens the page.
     /// </param>
-    public static string Describe(GpuConfiguration c, GpuLoad? load = null) => c.Mode switch
+    /// <param name="thermal">
+    /// The latest mailbox reading, which costs nothing extra: the window is
+    /// already taking it every second. Temperature and fan speed say more to
+    /// most people than watts do, and unlike watts they can be read in any
+    /// mode without touching the card.
+    /// </param>
+    public static string Describe(
+        GpuConfiguration c, GpuLoad? load = null, ThermalSample? thermal = null) => c.Mode switch
     {
         GpuMode.Discrete =>
             $"Your screen is driven by the {c.DiscreteName ?? "graphics card"} directly. " +
             "This gives the best performance in games, but the card never powers down, " +
             "so the laptop runs hotter and the battery drains faster." +
-            IdleCost(load) +
+            IdleCost(load, thermal) +
             "\n\nCasper's own Control Center can change this, through the kernel driver it " +
             "installs. Nextcalibur will not: it would need that driver and administrator " +
             "rights, and this application asks for neither. Your BIOS setup may also offer " +
             "it, as a display or graphics mode setting." +
             "\n\nIf you change it anywhere: find your BitLocker recovery key first. " +
             "Switching which chip drives the screen changes what the TPM measures at " +
-            "startup, and the next boot can ask for that key — without it the drive does " +
+            "startup, and the next boot can ask for that key â€” without it the drive does " +
             "not open. Expect it to reset your Windows PIN as well.",
 
         GpuMode.Hybrid =>
@@ -157,12 +169,29 @@ public sealed class GpuModeService
     ///
     /// The lower bound only rejects a nonsense reading.
     /// </summary>
-    private static string IdleCost(GpuLoad? load)
+    private static string IdleCost(GpuLoad? load, ThermalSample? thermal)
     {
-        if (load is not { } l || l.Watts < 1) return string.Empty;
+        var parts = new List<string>();
 
-        return $"\n\nRight now it is drawing {l.Watts:N1} W. In this mode the card draws your " +
-               "desktop as well, so it never reaches its low-power states — that is battery " +
+        // The lower bound only rejects a nonsense reading.
+        if (load is { } l && l.Watts >= 1) parts.Add($"drawing {l.Watts:N1} W");
+
+        // Measured on the development machine over eight quiet minutes in each
+        // mode, read through the mailbox so nothing woke the card: 61 C and
+        // 3799 rpm in Discrete against 48 C and 3299 rpm in Hybrid, and the
+        // Discrete figure never fell across the whole run. Those numbers are
+        // one machine's and are not repeated to the user; what is worth saying
+        // is what their own machine reads right now.
+        if (thermal is { } t && t.GpuTemperatureC > 0)
+        {
+            var fan = t.GpuFanRpm > 0 ? $" with its fan at {t.GpuFanRpm} rpm" : string.Empty;
+            parts.Add($"sitting at {t.GpuTemperatureC} °C{fan}");
+        }
+
+        if (parts.Count == 0) return string.Empty;
+
+        return $"\n\nRight now it is {string.Join(", ", parts)}. In this mode the card draws your " +
+               "desktop as well, so it never reaches its low-power states - that is battery " +
                "spent whether or not anything needs the card, and heat the fans have to move.";
     }
 }
