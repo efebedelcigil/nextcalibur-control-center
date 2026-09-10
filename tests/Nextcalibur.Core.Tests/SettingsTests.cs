@@ -1,4 +1,5 @@
 using Nextcalibur.Core.Configuration;
+using Nextcalibur.Core.Hardware;
 using Xunit;
 
 namespace Nextcalibur.Core.Tests;
@@ -74,5 +75,45 @@ public class SettingsTests
         var migrated = AppSettings.Migrate(null);
 
         Assert.True(migrated.WarnsAboutHeat);
+    }
+}
+
+/// <summary>
+/// The rule that decides whether somebody is told "your laptop isn't supported"
+/// or "this needs permission once". Getting it backwards is how a working
+/// machine gets written off.
+/// </summary>
+public class MailboxAccessTests
+{
+    [Fact]
+    public void The_block_guid_is_written_the_way_the_registry_expects()
+    {
+        // No braces, lower case. Every entry already under that key is written
+        // this way, and a value written any other way is never consulted - it
+        // sits in the registry looking correct while access stays refused. This
+        // cost an hour on hardware, so it is pinned here.
+        Assert.DoesNotContain("{", MailboxAccess.BlockGuid);
+        Assert.DoesNotContain("}", MailboxAccess.BlockGuid);
+        Assert.Equal(MailboxAccess.BlockGuid.ToLowerInvariant(), MailboxAccess.BlockGuid);
+        Assert.True(Guid.TryParse(MailboxAccess.BlockGuid, out _));
+    }
+
+    [Fact]
+    public void Checking_availability_never_throws()
+    {
+        // Runs on whatever machine the tests run on, including one with no such
+        // interface at all. A diagnostic that throws is worse than one that
+        // says "no".
+        var state = MailboxAccess.Check();
+
+        Assert.True(Enum.IsDefined(state));
+    }
+
+    [Fact]
+    public void Elevation_is_reported_not_assumed()
+    {
+        // Whatever the answer here, asking must not throw: it is called before
+        // anything is attempted, precisely to avoid attempting it.
+        _ = MailboxAccess.IsElevated();
     }
 }
