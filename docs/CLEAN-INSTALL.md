@@ -12,41 +12,70 @@ than reasoned about.
 
 | What it needs | Where that comes from | Needs vendor software? |
 |---|---|---|
-| The firmware mailbox - every temperature, fan speed and keyboard colour | `root\wmi` class `RW_GMWMI` | **no** |
+| The firmware mailbox - every temperature, fan speed and keyboard colour | `root\wmi` class `RW_GMWMI`, declared by the machine's ACPI tables | no driver - but **access needs granting once**, see below |
 | Power plans and the power-mode overlay | `powrprof.dll` and Windows' own registry | **no** |
 | Which chip drives the display | WMI `Win32_VideoController` | **no** |
 | GPU clock, power draw | `nvml.dll`, from the NVIDIA driver | no - degrades |
 | Theme, start-with-Windows, settings | `HKCU` and `%AppData%` | **no** |
 | The .NET 8 desktop runtime | installed by Setup.exe if absent | no - see below |
 
-## The mailbox is firmware, not software
+## The mailbox is firmware - but reaching it is not free
 
-Everything this application reads from the machine goes through one WMI class,
-so this is the dependency that decides the question. It resolves like this:
+**This section previously claimed the mailbox needs nothing the vendor
+installs. That was tested on 10 September 2026 by uninstalling the vendor
+software, and it is wrong.** What follows is what the test actually showed.
+
+The firmware half holds up. The data block's GUID is declared by the machine's
+own ACPI tables - found in the DSDT at offset 508487, in a `_WDG` block - and
+surfaced through the standard mapper:
 
 ```
-RW_GMWMI  instance  ACPI\PNP0C14\0X1_0
-                    provider = WMIProv          Windows' own ACPI-WMI provider
+RW_GMWMI  instance  ACPI\PNP0C14\0x1_0
           device    ACPI\PNP0C14\0X1
-                    service  = WmiAcpi          C:\Windows\system32\drivers\wmiacpi.sys
+                    service  = WmiAcpi        C:\Windows\system32\drivers\wmiacpi.sys
                     inf      = wmiacpi.inf
                     provider = Microsoft
 ```
 
-`PNP0C14` is the standard ACPI-WMI mapper. The class is declared by the
-firmware's own ACPI tables and surfaced by an in-box Microsoft driver. Nothing
-in that chain is installed by anybody's application.
+No vendor driver is involved: `ControlCenter64` and `ControlCenterC64` are not
+installed on this machine at all, and never were while any of this was measured.
 
-The strongest evidence is accidental. On the development machine the vendor's
-kernel drivers are **not installed at all**:
+**Access is the problem.** With the vendor software uninstalled:
 
-```
-ControlCenter64    not present
-ControlCenterC64   not present
-```
+| | Instance visible? | `nextcalibur sensors` |
+|---|---|---|
+| ordinary user | **no** | fails after 8 attempts |
+| administrator | yes - `ACPI\PNP0C14\0x1_0` | - |
 
-and the mailbox works anyway - eight unbroken minutes of readings with the
-vendor software closed. Whatever those drivers are for, this is not it.
+Before the uninstall the same query worked without elevation. So something the
+vendor installed was granting ordinary users access to that data block, and
+removing the software took it away. A WMI data block's access is governed by a
+security descriptor, and the default for a kernel-WMI GUID is administrators
+only - which fits exactly. **That last step is inference, not measurement:**
+the security descriptor itself has not been read yet.
+
+### What this means for the project
+
+Two of this project's goals are now in tension, and the tension is real rather
+than a matter of effort:
+
+- **Never ask for administrator.** Chosen when everything appeared to work
+  without it. It appeared that way because the vendor software had already
+  opened the door.
+- **Be a complete replacement.** On a machine that never had the vendor
+  software, an ordinary user gets no readings at all - not degraded readings,
+  none.
+
+The likely resolution is a one-time elevated step that grants access to the data
+block, after which the application runs unelevated for good. That is evidently
+what the vendor does, and it carries a decision worth making deliberately rather
+than copying: the same block accepts writes as well as reads, so opening it to
+every local account hands any local process a path to the embedded controller.
+Granting it to one account is narrower than what the vendor did and is probably
+the right shape.
+
+**Not decided yet.** It changes a rule the owner set, so it is the owner's
+decision, not this document's.
 
 ## The vendor's settings are never touched
 
@@ -102,7 +131,7 @@ permanently. It never asks.
 | Claim | Status |
 |---|---|
 | Setup installs the .NET runtime when it is missing | documented, never observed |
-| A machine formatted without vendor drivers exposes the same ACPI device | firmware-declared, so it must - but not tested on such a machine |
+| The vendor's installer is what granted ordinary users access to the data block | strongly implied, security descriptor not yet read |
 | The updater finds, downloads and applies a release | never watched end to end |
 
 None of these is known to be broken. They are listed because "not known to be
