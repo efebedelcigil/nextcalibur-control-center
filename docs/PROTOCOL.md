@@ -34,15 +34,38 @@ for hotkeys and mode changes.
 
 **The mailbox is administrators-only until access is granted.** This was stated
 here the other way round for weeks - "reading requires no elevation" - and it
-was measured, on a machine where the vendor's Control Center had already widened
-the block's security descriptor. Uninstall that software and an ordinary account
-cannot see the instance at all.
+was measured, on a machine where the vendor's Control Center had already opened
+the block up.
 
-The descriptor lives at
+The whole chain was then watched from scratch, in a disposable Windows that had
+never had either program installed:
+
+| | Descriptor on the block | Who may use it |
+|---|---|---|
+| clean Windows | **none** | administrators, by Windows' default |
+| vendor Control Center installed | `O:BAG:BAD:(A;;0x121fff;;;AU)` | **every authenticated user** |
+| vendor Control Center removed | `O:BAG:BAD:(A;;0x121fff;;;BA)` | administrators again |
+
+Exactly one entry appears under the security key when the vendor software is
+installed - 539 values become 540 - and uninstalling does not remove it. It
+rewrites it to administrators only and leaves it there. That last value is
+byte-for-byte what the development laptop was found holding after its own
+uninstall, which is what made every reading stop.
+
+So: the interface is the machine's, the permission is the vendor's doing, and an
+application that never installs that software has to ask for the permission
+itself. The descriptor lives at
 `HKLM\SYSTEM\CurrentControlSet\Control\WMI\Security`, under the block's GUID
-written without braces and in lower case. Granting an account
-`0x12001f` there is enough; reads and writes then both work unelevated.
-`tools/Grant-MailboxAccess.ps1` does it and can undo it.
+written **without braces and in lower case**. Granting an account `0x12001f`
+there is enough; reads and writes then both work unelevated.
+`tools/Grant-MailboxAccess.ps1` does it and can undo it, and Nextcalibur offers
+to do it at startup.
+
+The class definition is a separate matter and comes from the firmware, not from
+anybody's installer: installing the vendor software in that same sandbox did
+**not** create `RW_GMWMI`, and removing it from the laptop did not destroy it.
+That is what lets an application tell "this machine has no such interface" from
+"this account may not use it" - a class with no instances means the second.
 
 ## 2. Command structure
 

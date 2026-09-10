@@ -539,8 +539,9 @@ UserFan3 = 30,30,30,30,50,60,70,100;30,30,30,30,50,60,70,100
 ```
 
 Three profiles holding byte-identical curves are not three profiles; they are a
-template written three times. They come from the base software this build was
-rebranded from - the installer is signed by Quanta Computer, not by Casper -
+template written three times - and the installer is what writes it, watched in a
+sandbox: the same values appear on a machine that has never run the software.
+They come from the base software this build was rebranded from - the installer is signed by Quanta Computer, not by Casper -
 with the feature left out of the build, and
 `FanControlStatus = 0` says firmware is running the fans.
 
@@ -657,10 +658,15 @@ O:BAG:BAD:(A;;0x121fff;;;BA)          before
 O:BAG:BAD:(A;;0x12001f;;;BA)(A;;0x12001f;;;SY)(A;;0x12001f;;;<the user>)   after
 ```
 
-The vendor's Control Center evidently widened it, which is why this project
-appeared for weeks to need no privileges at all. It was walking through a door
-somebody else had propped open. Uninstalling the vendor software closed it and
-the readings stopped - which is how any of this was found.
+The vendor's Control Center widens it. That was inference for a day and is now
+measurement, taken in a disposable Windows that had never had either program on
+it: no descriptor at all before, `(A;;0x121fff;;;AU)` after installing - every
+authenticated user - and `(A;;0x121fff;;;BA)` after removing it, narrowed rather
+than deleted and left behind. The last of those is byte-for-byte what this
+laptop was found holding.
+
+So this project ran for weeks through a door somebody else had propped open, and
+found out when the vendor software was uninstalled and every reading stopped.
 
 So the shape is: **elevation once, ordinary use thereafter.** Granting is a
 single registry value; `tools/Grant-MailboxAccess.ps1` writes it and `-Revoke`

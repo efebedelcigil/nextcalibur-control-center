@@ -1,0 +1,37 @@
+﻿<Configuration>
+  <!--
+    A disposable Windows for watching what the vendor's Control Center installs
+    and what it leaves behind.
+
+    Nextcalibur's readings stopped when that software was uninstalled from the
+    development laptop. The explanation - that its installer widens the security
+    descriptor on the firmware data block, and its uninstaller narrows it again -
+    was inference: the descriptor was only ever read afterwards. A machine that
+    has never had either program on it can answer the question directly.
+
+    What this cannot show: anything about the hardware. There is no firmware
+    mailbox behind a virtual machine. It shows what the installer writes, which
+    is the half that was guessed at.
+
+    Nothing here is redistributed. The installer is read from the owner's own
+    desktop, read-only, and the sandbox is discarded afterwards.
+  -->
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\CONTRO~1</HostFolder>
+      <SandboxFolder>C:\Vendor</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\tools</HostFolder>
+      <SandboxFolder>C:\Tools</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+
+  <Networking>Enable</Networking>
+
+  <LogonCommand>
+    <Command>cmd.exe /c start "" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "&amp; C:\Tools\Sandbox-Vendor-Probe.ps1 -Label before"</Command>
+  </LogonCommand>
+</Configuration>
