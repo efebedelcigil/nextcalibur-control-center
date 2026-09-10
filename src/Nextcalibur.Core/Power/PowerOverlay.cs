@@ -86,6 +86,23 @@ public readonly record struct OverlayDiagnosis(
 }
 
 /// <summary>
+/// What a repair actually managed to do.
+/// </summary>
+/// <param name="Done">Changes that were made, in the order they were made.</param>
+/// <param name="Blocked">
+/// Why the rest could not be done, or null when nothing was blocked.
+///
+/// Separate from <paramref name="Done"/> because the repair has two layers and
+/// the second needs privileges the first does not. Reporting a half-finished
+/// repair as a failure tells somebody nothing changed when something did.
+/// </param>
+public readonly record struct RepairOutcome(IReadOnlyList<string> Done, string? Blocked)
+{
+    /// <summary>Nothing was attempted, or nothing needed attempting.</summary>
+    public bool Empty => Done.Count == 0 && Blocked is null;
+}
+
+/// <summary>
 /// Detects and repairs the stuck power-overlay fault.
 ///
 /// Windows applies a power-mode <em>overlay</em> on top of the active power
@@ -158,10 +175,11 @@ public sealed class PowerOverlayService
     /// if something re-activates it later the CPU can still idle down. Without
     /// layer 2 the fault simply returns.
     /// </summary>
-    public IReadOnlyList<string> Repair()
+    public RepairOutcome Repair()
     {
         var actions = new List<string>();
         var before = Diagnose();
+        string? blocked = null;
 
         if (before.OverlayIsStuck)
         {
@@ -171,19 +189,44 @@ public sealed class PowerOverlayService
 
         if (before.GuardMissing)
         {
-            // The provisioned value stays untouched; the override takes
-            // precedence over it, so this is reversible by deleting one value.
-            using var key = Registry.LocalMachine.CreateSubKey(MinProcessorStateKey, writable: true)
-                ?? throw new InvalidOperationException(
-                    "Could not open the overlay setting key for writing.");
-            key.SetValue(OverrideValue, SafeMinProcessorState, RegistryValueKind.DWord);
-            actions.Add(
-                $"Set the Best-performance overlay's minimum processor state to {SafeMinProcessorState}% " +
-                "so it can no longer pin the CPU if re-activated.");
+            try
+            {
+                // The provisioned value stays untouched; the override takes
+                // precedence over it, so this is reversible by deleting one value.
+                using var key = Registry.LocalMachine.CreateSubKey(MinProcessorStateKey, writable: true)
+                    ?? throw new InvalidOperationException(
+                        "Could not open the overlay setting key for writing.");
+                key.SetValue(OverrideValue, SafeMinProcessorState, RegistryValueKind.DWord);
+                actions.Add(
+                    $"Set the Best-performance overlay's minimum processor state to {SafeMinProcessorState}% " +
+                    "so it can no longer pin the CPU if re-activated.");
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
+            {
+                // This layer writes under HKLM and needs elevation; the first
+                // layer does not. Without it the machine is repaired now but
+                // not protected against the overlay being re-activated later,
+                // and that difference is what the caller has to be told.
+                blocked =
+                    "The lasting part of the fix needs administrator rights, so it was not applied. " +
+                    "Windows can pin the processor again if something re-activates the " +
+                    "Best-performance power mode. Running Nextcalibur as administrator once " +
+                    "is enough to make it permanent.";
+            }
         }
 
-        return actions;
+        return new RepairOutcome(actions, blocked);
     }
+
+    /// <summary>
+    /// Whether selecting the Performance mode is safe right now.
+    ///
+    /// That mode activates the same overlay this class exists to defuse. With
+    /// the guard in place the overlay is harmless; without it, choosing
+    /// Performance recreates the exact fault the project was started to fix -
+    /// the processor pinned at full speed while the machine sits idle.
+    /// </summary>
+    public static bool PerformanceModeIsSafe(OverlayDiagnosis diagnosis) => !diagnosis.GuardMissing;
 
     /// <summary>
     /// Undoes <see cref="Repair"/>'s second layer by removing our override. The
