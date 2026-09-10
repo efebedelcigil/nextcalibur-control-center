@@ -1,0 +1,39 @@
+<Configuration>
+  <!--
+    A pristine Windows for testing Nextcalibur the way a stranger gets it.
+
+    Windows Sandbox starts from a clean image every time: no .NET runtime, no
+    vendor software, no Nextcalibur, nothing this machine has accumulated. That
+    makes it the only cheap way to answer two questions the development machine
+    cannot:
+
+      1. Does Setup.exe install the .NET desktop runtime when it is absent?
+      2. What does the application do on hardware it does not understand?
+
+    The second matters because the repository is public. Somebody will install
+    this on a laptop that is not a Tongfang, find no firmware mailbox, and their
+    experience of the project is whatever happens next. A sandbox has no such
+    mailbox either, so it reproduces that case exactly.
+
+    What it cannot test: the mailbox itself. There is no real firmware behind a
+    virtual machine, so a passing sandbox run says nothing about sensors. That
+    still needs the real laptop.
+
+    Usage: enable the feature once, then double-click this file.
+      Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All
+  -->
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\releases</HostFolder>
+      <SandboxFolder>C:\Setup</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+
+  <!-- Networking stays on: the runtime bootstrap has to download something. -->
+  <Networking>Enable</Networking>
+
+  <LogonCommand>
+    <Command>cmd.exe /c start "" "C:\Setup"</Command>
+  </LogonCommand>
+</Configuration>
