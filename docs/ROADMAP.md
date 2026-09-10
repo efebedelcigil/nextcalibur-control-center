@@ -166,7 +166,8 @@ leaving a registry value behind.
 
 - The vendor starts itself with a **scheduled task**; we use `HKCU\...\Run`.
   Ours needs no administrator, which is the better trade for what it does.
-- It installs in Turkish. We are English-only until the language work lands.
+- It installs in Turkish. Nextcalibur is English only, by decision - the owner
+  dropped the bilingual plan on 11 September 2026.
 - `VGA.ini` and `Camera.ini` are device lists for graphics switching and the
   camera - both out of scope by decision.
 - It carries `ProfileHelperModel.dll`, signed by **Intel Extreme Tuning
@@ -178,33 +179,7 @@ leaving a registry value behind.
 Taken from an audit of the repository rather than from memory, roughly in the
 order that would matter to somebody who installed this.
 
-1. **Turkish and English, switched from the title bar**, taking effect at once —
-   the interface and everything it says, notifications included. **The design
-   agent plans this one**, and the plan comes before the work.
-
-   It is not only a markup job, and a plan that assumes it is will produce a
-   half-translated application. Most of the words a person sees are in the
-   markup, but a good number are not: the banner that explains the vendor
-   software is running, "Readings have stalled…", the overheat balloon, the tray
-   tooltip and its whole settings menu, the update notice, the power-repair
-   dialogue at first run, and every message box. Those live in
-   `MainWindow.xaml.cs`, `TrayPresence.cs`, `UpdateService.cs` and `App.xaml.cs`,
-   which the design agent does not touch.
-
-   So the first decision is the shared one: **where do strings live, and how
-   does a running window re-read them?** A `ResourceDictionary` per language
-   that swaps like the palettes already do would let markup bind with
-   `DynamicResource` and let the code behind look up by key — the theme swap is
-   the working precedent for changing everything on screen without a restart.
-   Once that is settled the two halves can proceed independently: markup and the
-   toggle on one side, the strings that come from code on the other.
-
-   Worth deciding in the plan, not during it: what the toggle looks like beside
-   the existing theme control; whether the choice is remembered in `AppSettings`
-   alongside `Theme`; what happens to text the machine supplies, which is not
-   ours to translate — processor names, Windows power-mode names.
-
-2. **The Display page, once the graphics-mode work concludes.** Also the design
+1. **The Display page, once the graphics-mode work concludes.** Also the design
    agent's, and it should wait for the answer rather than anticipate it — but
    some of it is already known and can be planned:
 
@@ -226,19 +201,19 @@ order that would matter to somebody who installed this.
      Nothing about them needs replacing — this is about states they cannot
      currently express: unavailable, needs-restart, and in-progress.
 
-3. **An icon audit.** Confirm there is an icon everywhere one belongs and that
+2. **An icon audit.** Confirm there is an icon everywhere one belongs and that
    they are the current mark: window and taskbar, Alt-Tab, notification area,
    the installer, the desktop and Start-menu shortcuts, Add or Remove Programs,
    and the title bar. Also the design agent's, and it wants checking on a
    running installed copy rather than in the markup.
 
-4. **Prove the update chain end to end.** 0.4.0 carries the metadata 0.3.0
+3. **Prove the update chain end to end.** 0.4.0 carries the metadata 0.3.0
    lacked, so an installed copy should now find, download and apply a release on
    its own. Nobody has watched it happen. The next release is the test: install
    the current version, publish the next, and confirm the notice appears and the
    update lands after a restart.
 
-5. **A switch for the overheat notification, in the window.** The settings and
+4. **A switch for the overheat notification, in the window.** The settings and
    the tray menu are done; the control in the window is the design agent's, and
    the brief spells out which two settings back it.
 

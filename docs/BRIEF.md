@@ -3,53 +3,11 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-Three jobs. **The first one is a plan, not a change** — write the plan, and stop.
+Two jobs.
 
 ---
 
-## 1. Turkish and English, switched from the title bar
-
-The user wants a control beside the theme toggle that switches the whole
-application between Turkish and English, taking effect at once, with no restart.
-Everything the application says, not only its labels.
-
-**Plan this before building it, and read this part carefully, because the
-obvious plan is wrong.** Most of the visible words are in `MainWindow.xaml`,
-but a good number are not, and those are in files you do not touch:
-
-| Where | What |
-|---|---|
-| `MainWindow.xaml.cs` | the vendor-software banner, the unsupported-machine banner, "Readings have stalled…", the lighting failure dialogue |
-| `TrayPresence.cs` | the tray tooltip and the whole settings menu — start with Windows, close behaviour, the overheat thresholds, the sampling intervals |
-| `UpdateService.cs` / wiring | the "a new version is ready" notice |
-| `App.xaml.cs` | the power-repair dialogue shown at first run |
-
-Translating only the markup produces an application that is half in each
-language, which is worse than either.
-
-So the plan's first job is the shared decision: **where do the strings live, and
-how does a window already on screen re-read them?** The palettes are the working
-precedent — `Palette.Dark.xaml` and `Palette.Light.xaml` swap in
-`ApplyTheme`, and everything bound with `DynamicResource` follows without a
-restart. A `Strings.tr.xaml` / `Strings.en.xaml` pair swapped the same way would
-let markup bind by key and let the code behind look them up by key too.
-
-Propose the mechanism, name the resource keys the markup needs, and say which
-strings you expect to come from the code side. Do not implement the code side —
-report the list and it will be written for you.
-
-Decide in the plan, not during it:
-
-- What the control looks like next to the theme toggle. Two letters, a globe, a
-  segmented pair — it has to sit in that title bar without crowding it.
-- Whether the choice is remembered in `AppSettings` beside `Theme`, and whether
-  a first run should follow the system language.
-- What happens to text the machine supplies and that is not ours to translate:
-  processor and graphics names, Windows' own power-mode names.
-- The Turkish is longer than the English almost everywhere. Which labels break,
-  and what gives — wrapping, a smaller size, a shorter wording.
-
-## 2. An icon audit
+## 1. An icon audit
 
 Confirm an icon is present, correct and current everywhere one belongs, on a
 **running installed copy** rather than in the markup:
@@ -62,7 +20,7 @@ Report anything missing, stale or blurred, with where you saw it. The title-bar
 mark is vector; everything else comes from `Assets/app.ico`, which has frames at
 16, 20, 24, 32, 48, 64, 128 and 256 px.
 
-## 3. A switch for the overheat notification
+## 2. A switch for the overheat notification
 
 The owner wants the temperature warning turned on and off from the window
 itself, not only from the notification-area menu.
