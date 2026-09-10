@@ -11,3 +11,8 @@ releases/
 
 tools/graphics-*.json
 tools/graphics-*.csv
+
+# Field notes and forensic captures. Kept out of the published repository on
+# purpose: they are a file-by-file inventory of somebody else's product, taken
+# from a machine we own, and useful to us rather than to the public.
+notes/
