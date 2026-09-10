@@ -37,8 +37,16 @@ RW_GMWMI  instance  ACPI\PNP0C14\0x1_0
                     provider = Microsoft
 ```
 
-No vendor driver is involved: `ControlCenter64` and `ControlCenterC64` are not
-installed on this machine at all, and never were while any of this was measured.
+No vendor driver is involved - though the first evidence given for that here was
+worthless. It said `ControlCenter64` and `ControlCenterC64` were not installed as
+services, which is true and proves nothing: the service the vendor registers is
+called **`ControlCenter`**, and it points at `ControlCenter64.sys`. Querying two
+names that never existed and reading the empty answer as absence is the same
+mistake as searching the wrong assembly for a firmware call.
+
+What actually settles it: on a laptop with no vendor software, no vendor driver
+and no vendor registry key, granting the account access to the data block
+brought every reading back. Nothing was loaded to make that work.
 
 **Access is the problem.** With the vendor software uninstalled:
 
@@ -53,6 +61,31 @@ removing the software took it away. A WMI data block's access is governed by a
 security descriptor, and the default for a kernel-WMI GUID is administrators
 only - which fits exactly. **That last step is inference, not measurement:**
 the security descriptor itself has not been read yet.
+
+### Watched from scratch, in a machine that had never had either program
+
+The account above was reconstructed after the fact, from a laptop where the
+vendor software had been installed for a year. Running the same thing forwards
+in a disposable Windows removes the guesswork:
+
+| | Descriptor on the data block |
+|---|---|
+| clean Windows, nothing installed | **none** - so administrators only |
+| after installing the vendor Control Center | `O:BAG:BAD:(A;;0x121fff;;;AU)` - every authenticated user |
+| after uninstalling it | `O:BAG:BAD:(A;;0x121fff;;;BA)` - administrators only, and left behind |
+
+One value appears under the security key on install (539 become 540) and
+uninstalling narrows rather than removes it. The final line is byte-for-byte
+what the laptop was found holding, which is what stopped every reading.
+
+The uninstall is otherwise thorough: files, the `ControlCenter` driver service,
+the scheduled task, the registry values and even the three power plans all go.
+On the laptop it left an empty `CASPER EXCALIBUR` key and nothing else.
+
+Worth noting what the install does **not** do: it does not create the `RW_GMWMI`
+class. That was absent before and after in the sandbox, and survived the
+uninstall on the laptop, which is how we know the class comes from the firmware
+and why "a class with no instances" is a safe reading of "permission missing".
 
 ### Settled: elevation once, ordinary use thereafter
 
@@ -180,7 +213,7 @@ permanently, and the repair says so when it cannot finish.
 | Claim | Status |
 |---|---|
 | ~~Setup installs the .NET runtime when it is missing~~ | tested: it does not, so the package now carries its own |
-| The vendor's installer is what granted ordinary users access to the data block | the descriptor was read - administrators only, once the software was gone. That the vendor widened it is still inference: its version was never captured |
+| ~~The vendor's installer is what granted ordinary users access to the data block~~ | **proven** in a sandbox that had never had it: no descriptor before, `AU` after installing, `BA` after removing |
 | The updater finds, downloads and applies a release | never watched end to end |
 
 One of them turned out to be broken, which is the point of the list. "Documented"
