@@ -58,8 +58,19 @@ internal static class Program
                 return 3;
             }
 
-            if (grant) MailboxAccess.Grant(); else MailboxAccess.Revoke();
-            Console.WriteLine(grant ? "Granted." : "Reverted.");
+            if (grant)
+            {
+                // Says so when there was nothing to do, rather than reporting a
+                // change it did not make.
+                Console.WriteLine(MailboxAccess.Grant()
+                    ? "Granted."
+                    : "Already allowed - nothing was changed.");
+            }
+            else
+            {
+                MailboxAccess.Revoke();
+                Console.WriteLine("Reverted.");
+            }
             Console.WriteLine();
 
             // An elevated process can reach the block whatever the descriptor
