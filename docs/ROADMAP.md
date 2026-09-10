@@ -43,8 +43,8 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 | One copy at a time | done — a second launch wakes the first |
 | Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
 | Handle leak | **fixed** — WMI from the interface thread; see below |
-| Graphics mode switching | **reports only, by decision** — see below |
-| Fan control | **deliberately out of scope** — see below |
+| Graphics mode switching | **reports only, by decision** — mechanism traced on hardware; see below |
+| Fan control | **out of scope** — the vendor has no fan control either; see below |
 
 ## Next
 
@@ -105,12 +105,15 @@ order that would matter to somebody who installed this.
    and the title bar. Also the design agent's, and it wants checking on a
    running installed copy rather than in the markup.
 
-4. **Finish the graphics-mode comparison.** What the buttons do is now known and
-   written up in [PROTOCOL.md](PROTOCOL.md) — the software really does switch the
-   display path, through its kernel driver. What is *not* yet measured is what
-   the switch is worth, because the Discrete readings were taken with Wallpaper
-   Engine and the vendor software running and the Hybrid ones were not. A fair
-   comparison needs the same quiet conditions on both sides.
+4. **Prove the update chain end to end.** 0.4.0 carries the metadata 0.3.0
+   lacked, so an installed copy should now find, download and apply a release on
+   its own. Nobody has watched it happen. The next release is the test: install
+   the current version, publish the next, and confirm the notice appears and the
+   update lands after a restart.
+
+5. **A switch for the overheat notification, in the window.** The settings and
+   the tray menu are done; the control in the window is the design agent's, and
+   the brief spells out which two settings back it.
 
 ## The graphics-mode question is answered
 
@@ -183,16 +186,19 @@ reaching it and coming back costs two more resets of the Windows PIN. The
 application's description of UMA rests on the mechanism, which is the stronger
 ground anyway.
 
-### Tooling still armed on the machine
+### The observation tooling has been removed
 
-| Task | What it does | Remove with |
-|---|---|---|
-| `Nextcalibur-GraphicsLogger` | logs which chip drives the panel for 12 minutes after every startup | `Log-Graphics.ps1 -Uninstall` |
-| `Nextcalibur-GpuRecovery` | re-enables the NVIDIA adapter, once and 60 minutes after each startup | `Arm-GpuRecovery.ps1 -Disarm` |
+Both scheduled tasks are gone from the machine, verified with an elevated query
+that now returns nothing:
 
-Both need administrator. They can go once the thermal round is done.
+| Task | What it did |
+|---|---|
+| `Nextcalibur-GraphicsLogger` | logged which chip drove the panel for 12 minutes after every startup |
+| `Nextcalibur-GpuRecovery` | re-enabled the NVIDIA adapter after each startup, in case a switch left no display |
 
----
+The scripts stay in `tools/` and reinstall with `-Install` and `-Arm`. What they
+collected stays too: `tools/graphics-boot-log.csv`, the traces, and the firmware
+dumps under `tools/trace/`.
 
 ### 0.4.0 is out
 
