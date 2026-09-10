@@ -76,10 +76,16 @@ Idle cost on the development machine: **0.029%** CPU with the window open,
 **0.002%** in the notification area.
 
 Graphics-mode switching and fan control are both left out on purpose, and
-[docs/ROADMAP.md](docs/ROADMAP.md) explains why — briefly, a wrong guess at
-either can leave a machine with no display or no cooling, and neither has been
-observed well enough to guess. [docs/PROTOCOL.md](docs/PROTOCOL.md) documents
-the hardware interface, with the evidence behind each claim.
+[docs/ROADMAP.md](docs/ROADMAP.md) explains why. Not for want of looking: the
+graphics modes were traced on hardware through every transition, and the answer
+is that switching the display path needs an undocumented call into the vendor's
+kernel driver, while the third mode needs administrator — and this application
+installs no driver and asks for no elevation. Fan control is a different kind of
+no: the vendor's curves are documented here, but a curve is only safe relative
+to how clean the cooling is, and that is not something a program can check.
+
+[docs/PROTOCOL.md](docs/PROTOCOL.md) documents the hardware interface, with the
+evidence behind each claim.
 
 There is also a command line, `nextcalibur`, built alongside: `sensors`,
 `watch`, `clocks`, `info`, `overlay`, and `led` for colour, effect and

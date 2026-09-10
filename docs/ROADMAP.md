@@ -509,21 +509,50 @@ it should be.
 
 ## Decisions worth keeping
 
-### Fan control is out of scope
+### Fan control stays out, and the reason has changed
 
-The vendor software exposes no fan-curve writes, so there is no traffic to
-observe and implementing it would mean guessing at embedded-controller writes.
-That is the one place in this interface where a wrong value has physical
-consequences. Fan **monitoring** and the overheat warning are in; fan **control**
-is not, and this is not an oversight to be corrected later without new evidence.
+The original reason given here was wrong: it said the vendor software exposes
+no fan-curve writes and there was no traffic to observe. PROTOCOL.md documents
+its curves in the same repository - `FanControlStatus`, `FanControlSelect`,
+`UserFan1..3` as eight-point percentage curves. There is something to copy.
+
+The decision stands anyway, on the owner's judgement and a better argument.
+A fan curve is only safe relative to the state of the cooling it commands. The
+development machine's heatsink is dusty; a curve that holds temperature on a
+clean one may not hold it on this one, and no amount of reading registers at a
+desk will tell you which. The evidence would have to come from running the
+machine hot under a curve, which is the experiment whose failure mode is the
+hardware.
+
+So if this is ever built, the shape is already decided: **reproduce what the
+vendor does, exactly** - its curve format, its indices, its firmware-automatic
+fallback - rather than invent a scheme of this project's own. Nextcalibur has
+no business having an opinion about fan speed that the machine's own maker
+does not.
+
+The infrastructure stays in place for that day. Fan **monitoring**, the
+overheat warning, the mailbox's `Hold()` for atomic sequences, and safety rule
+3 in PROTOCOL.md (a firmware-auto fallback restored on exit and on crash) all
+remain. What is deferred is writing, not knowing how.
 
 ### Graphics mode reports, it does not switch
 
-The vendor software does not touch a hardware MUX. It finds the discrete GPU by
-PCI hardware ID and disables the device through the SetupDi API. Which of its
-three buttons produces which device state has not been observed, and a wrong
-guess can leave a machine with no working display path. The page therefore
-explains the current setting and says plainly that switching is unavailable.
+Measured on hardware, not assumed - and an earlier version of this section was
+wrong in a way worth remembering. It said the vendor software "does not touch a
+hardware MUX" and switches only through SetupDi. Half right: SetupDi is how UMA
+works, and Discrete/Hybrid is a firmware change that leaves no trace in Windows
+at all.
+
+Nextcalibur reports the current mode and does not change it. That is a decision
+about means, not a limit on what is possible:
+
+- Discrete/Hybrid needs an undocumented IOCTL into a kernel driver this project
+  does not ship and will not install.
+- UMA needs no driver - it is an ordinary device disable - but it does need
+  administrator, which this application has committed never to request.
+- Both carry a cost the vendor never mentions: the firmware change invalidates
+  TPM-sealed credentials. The Windows PIN has to be set up again, and BitLocker
+  can ask for its recovery key. The page warns about this.
 
 ### No hardware model is ever written into the source
 
