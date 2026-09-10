@@ -112,64 +112,56 @@ order that would matter to somebody who installed this.
    Engine and the vendor software running and the Hybrid ones were not. A fair
    comparison needs the same quiet conditions on both sides.
 
-## Paused mid-experiment — read this before touching the machine
+## The graphics-mode question is answered
 
-**Delete this section when the graphics-mode comparison is finished.**
+Settled on hardware on 10 September 2026 by walking the machine through
+Discrete -> Hybrid -> UMA -> Hybrid -> Discrete and capturing the registry, the
+vendor's files, driver and device state, and the firmware variable store before
+each click, after each click, and after each reboot. Full evidence in
+PROTOCOL.md; the short version:
 
-The machine is in the middle of a three-mode measurement and is **currently in
-Discrete** — verified 2026-09-09 23:28: the RTX 4050 drives the panel at
-1920x1080, the Intel UHD drives nothing.
+| Transition | How it works | Restart | Resets the PIN |
+|---|---|---|---|
+| Discrete <-> Hybrid | firmware; nothing observable happens in Windows | yes | yes |
+| Hybrid <-> UMA | SetupDi device disable / enable | no | no |
 
-### What is already measured
+Discrete to UMA stays refused, and the reason is now plain rather than guessed:
+in Discrete the panel is on the card UMA switches off.
 
-Hybrid, eight minutes, machine quiet, read through the embedded controller so
-nothing woke the card:
+Three things worth keeping:
 
-| | Settled |
-|---|---|
-| GPU | **48 °C** |
-| GPU fan | **3298 rpm** |
-| CPU | 45 °C |
-| CPU fan | 3599 rpm |
+- **UMA is the one mode reproducible without the vendor's driver.** It is an
+  ordinary device disable. It still needs administrator, so it stays out of
+  Nextcalibur, but the reason is now a policy decision rather than a technical
+  wall.
+- **`TpvSetup` byte 1 tracks the mode in firmware** - `0x03` Hybrid, `0x02`
+  Discrete - and so do the `ConOut` device paths. Both change only after the
+  reboot, so neither has been shown to be the switch itself. Nextcalibur reads
+  the mode from WMI regardless: same answer, no elevation.
+- **The vendor's own UI cannot survive its own UMA switch.** Four seconds after
+  disabling the card it died inside `nvml.dll`, still polling it.
 
-A message during that session quoted "45 °C, 2986 rpm" for the GPU. That was
-wrong — 45 °C was the CPU and 2986 appears nowhere in the data. The table above
-is what `tools/quiet-hybrid.txt` actually contains.
+### Still open: the thermal comparison
 
-### What is left
+The mechanism is settled; what each mode *costs* is not. Hybrid is measured -
+**GPU 48 °C, GPU fan 3298 rpm**, CPU 45 °C / 3599 rpm, eight quiet minutes read
+through the embedded controller. Discrete and UMA are not.
 
-1. **Discrete, quiet, eight minutes.** The machine is already in Discrete; this
-   is the measurement that was about to run.
-2. Switch to **MS Hybrid**, restart, confirm.
-3. Switch to **UMA**, restart, measure. UMA is only offered from Hybrid — the
-   vendor refuses it from Discrete with *"Please switch to Hybrid mode first"*,
-   because in Discrete the panel is on the card being switched off.
+An earlier message quoted "45 °C, 2986 rpm" for the GPU in Hybrid. That was
+wrong: 45 °C was the CPU, and 2986 appears nowhere in the data.
 
-### Conditions the comparison depends on
+Conditions, when it is run: Wallpaper Engine closed (it invalidated one round
+already), vendor Control Center closed, and nothing calling NVML - `nvidia-smi`
+wakes the card and destroys the reading. Use `nextcalibur watch 480`.
 
-- **Wallpaper Engine stays closed.** It renders continuously and already
-  invalidated one round of readings.
-- **The vendor Control Center stays closed** while measuring. It was still
-  running at the last check and must be closed first.
-- **Nothing may call NVML.** `nvidia-smi` and `nvmlDeviceGetPowerUsage` wake the
-  card, so a power reading destroys the thing it measures. Temperature and fan
-  speed come from the mailbox instead: `nextcalibur watch 480`.
-
-### Tooling currently armed on the machine
+### Tooling still armed on the machine
 
 | Task | What it does | Remove with |
 |---|---|---|
-| `Nextcalibur-GraphicsLogger` | logs which chip drives the panel for 12 minutes after every startup; NVML off | `Log-Graphics.ps1 -Uninstall` |
+| `Nextcalibur-GraphicsLogger` | logs which chip drives the panel for 12 minutes after every startup | `Log-Graphics.ps1 -Uninstall` |
 | `Nextcalibur-GpuRecovery` | re-enables the NVIDIA adapter, once and 60 minutes after each startup | `Arm-GpuRecovery.ps1 -Disarm` |
 
-Both need administrator, and both should be removed when the experiment ends.
-
-### Costs of each switch, already accepted by the user
-
-Every mode change resets the Windows Hello PIN, because it changes what the TPM
-measures at boot. BitLocker is **off on this machine**, so no recovery key is
-involved here — but it would be on a machine where it is on, and the application
-warns about that.
+Both need administrator. They can go once the thermal round is done.
 
 ---
 
