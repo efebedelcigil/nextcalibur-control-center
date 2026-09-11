@@ -473,8 +473,9 @@ readable as well as writable - by construction `0xFA00 / 0x0203`, though that
 command itself was never caught in the buffer - and reads back what was
 written.
 
-**Written by Nextcalibur, 11 September 2026, Hybrid to Discrete.** Same
-bytes, machine came up Discrete - so the switch needs nothing from the vendor.
+**Written by Nextcalibur, 11 September 2026, Hybrid to Discrete and back.**
+Same bytes, machine came up Discrete, then Hybrid - so the switch needs
+nothing from the vendor.
 One thing the read side does *not* do: confirm a staged write. Read straight
 after writing `2` from Hybrid, and again two seconds later, the register still
 answers `1`; writing `0x0300 = 1` first (the vendor's startup traffic) changes
