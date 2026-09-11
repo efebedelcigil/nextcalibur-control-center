@@ -473,6 +473,15 @@ readable as well as writable - by construction `0xFA00 / 0x0203`, though that
 command itself was never caught in the buffer - and reads back what was
 written.
 
+**Written by Nextcalibur, 11 September 2026, Hybrid to Discrete.** Same
+bytes, machine came up Discrete - so the switch needs nothing from the vendor.
+One thing the read side does *not* do: confirm a staged write. Read straight
+after writing `2` from Hybrid, and again two seconds later, the register still
+answers `1`; writing `0x0300 = 1` first (the vendor's startup traffic) changes
+nothing. The read reports the mode the machine is running in, not the one it
+will boot into, and `TpvSetup` stays at its old value until the reboot too.
+The only verification is the next boot.
+
 UMA is not a value here at all: it is a SetupDi device disable, as measured
 earlier, and never touches firmware.
 

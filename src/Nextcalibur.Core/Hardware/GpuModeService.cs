@@ -156,9 +156,13 @@ public sealed class GpuModeService
             Thread.Sleep(60);
         }
 
-        // Read it back rather than trust the write. A restart on the strength
-        // of a write that did not land costs somebody their PIN for nothing.
-        return ReadFirmwareMode(mailbox).Mode == target;
+        // The register cannot confirm the write. Read back straight after, and
+        // two seconds after, it still answers the mode the machine is running
+        // in - measured 11 September 2026, Hybrid -> 2 written, read stays 1 -
+        // and the vendor's own capture shows the same residue before its
+        // restart. So the read reports the active mode, not the staged one,
+        // and the only verification there is happens at the next boot.
+        return true;
     }
 
     /// <summary>
