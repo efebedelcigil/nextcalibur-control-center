@@ -60,7 +60,12 @@ public static class Dialogs
         // The application's own look, when there is a window to draw it in.
         // Before the window exists, or while it is in the tray, Windows' box
         // is still the honest choice: a dialogue nobody can see is no dialogue.
-        if (owner is MainWindow { IsVisible: true } main && main.WindowState != WindowState.Minimized)
+        // "On screen" means rendered, not merely shown. A question raised
+        // from Loaded, before the first frame, would run its nested message
+        // loop inside a window Windows has not put on screen yet - a taskbar
+        // entry and nothing else, which is what a clean machine got from
+        // 0.5.1's first build. Until the first frame, Windows' box.
+        if (owner is MainWindow { IsVisible: true, HasRendered: true } main && main.WindowState != WindowState.Minimized)
             return main.ShowOverlayDialog(title, body, buttons, fallback);
 
         return owner is not null && owner.IsVisible
