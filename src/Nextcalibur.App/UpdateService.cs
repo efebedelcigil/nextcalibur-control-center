@@ -5,42 +5,39 @@ using Velopack.Sources;
 namespace Nextcalibur.App;
 
 /// <summary>
-/// Looks for new releases and stages them.
+/// Looks for new releases, and installs one when asked.
 ///
 /// Without this the application is a dead end: everybody who installs a version
 /// keeps it, with no way to learn there is a newer one. That matters more here
 /// than for most software, because this is meant to sit in the notification
-/// area and be forgotten — nobody is going to think to check.
+/// area and be forgotten - nobody is going to think to check.
 ///
-/// The behaviour is deliberately quiet. It checks, downloads, and says once
-/// that a version is waiting; it never interrupts, never restarts the
-/// application under the user, and never shows a progress bar for something
-/// nobody asked for. The update is written on the way out, when the user closes
-/// the application themselves.
+/// The shape, set by the owner on 12 September 2026 after the first update
+/// arrived: find quietly, then ask. A check costs one small request; finding
+/// a release costs nothing more until the person says yes. Yes means download
+/// with a progress bar in front of them, then restart into the new version.
+/// No means a button stays in the corner for later. Nothing is downloaded and
+/// nothing restarts without that yes.
 /// </summary>
 public sealed class UpdateService : IDisposable
 {
     private const string Repository = "https://github.com/efebedelcigil/nextcalibur-control-center";
 
     /// <summary>
-    /// How long after startup the first check waits.
-    ///
-    /// Startup is the one moment this application is allowed to be busy, and it
-    /// is also when the user is most likely to be looking at it. A network
-    /// round trip can wait a minute.
+    /// How long after startup the first check waits. Startup is when the
+    /// person is most likely looking; a network round trip can wait a minute.
     /// </summary>
     private static readonly TimeSpan FirstCheckDelay = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    /// How often to look afterwards. Releases here arrive every few days at
-    /// best; asking more often would be traffic spent on nothing.
+    /// How often to look afterwards. Releases are days apart at the fastest;
+    /// six hours finds one the same day without troubling GitHub.
     /// </summary>
     private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(6);
 
     private readonly UpdateManager? _manager;
     private readonly DispatcherTimer? _timer;
     private bool _busy;
-    private bool _announced;
     private bool _disposed;
 
     /// <summary>Whether the timer is allowed to check. Read on every tick, so a change takes effect at the next one.</summary>
@@ -48,6 +45,12 @@ public sealed class UpdateService : IDisposable
 
     /// <summary>True when this copy was installed and can update itself at all.</summary>
     public bool CanUpdate => _manager is not null;
+
+    /// <summary>The release found and not yet installed, if any.</summary>
+    public UpdateInfo? Available { get; private set; }
+
+    /// <summary>The version of <see cref="Available"/>, for the person.</summary>
+    public string? AvailableVersion => Available?.TargetFullRelease?.Version?.ToString();
 
     public UpdateService()
     {
@@ -69,41 +72,39 @@ public sealed class UpdateService : IDisposable
         _timer.Tick += async (_, _) =>
         {
             _timer.Interval = CheckInterval;
-            if (AutomaticChecksEnabled()) await CheckAsync();
+            if (AutomaticChecksEnabled()) await CheckAsync(report: false);
         };
     }
 
-    /// <summary>Raised once, when a version has been downloaded and is waiting.</summary>
-    public event EventHandler<string>? UpdateReady;
+    /// <summary>Raised once per release found, with its version. Nothing has been downloaded.</summary>
+    public event EventHandler<string>? UpdateFound;
 
-    /// <summary>True when a version is staged and will be written on the way out.</summary>
-    public bool IsReady => _manager?.UpdatePendingRestart is not null;
-
-    public void Start()
-    {
-        if (_manager is null) return;
-
-        // A previous run may already have staged one that was never applied,
-        // because the application was killed rather than closed.
-        if (_manager.UpdatePendingRestart is { } staged)
-            Announce(staged.Version?.ToString());
-
-        _timer?.Start();
-    }
-
-    /// <summary>Raised after a check the person asked for, with what it found.</summary>
+    /// <summary>Raised after a check the person asked for that found nothing, or failed, with what to tell them.</summary>
     public event EventHandler<string>? CheckedByHand;
+
+    public void Start() => _timer?.Start();
 
     /// <summary>A check now, because somebody clicked. Reports either way.</summary>
     public async Task CheckNowAsync()
     {
-        if (_manager is null) { CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself."); return; }
-        if (IsReady) { CheckedByHand?.Invoke(this, "An update is already downloaded. Exit from the tray menu to install it."); return; }
-        var found = await CheckAsync(report: true);
-        if (!found) CheckedByHand?.Invoke(this, "You have the latest version.");
+        if (_manager is null)
+        {
+            CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself.");
+            return;
+        }
+
+        if (Available is not null)
+        {
+            // Already found; the caller offers it again.
+            UpdateFound?.Invoke(this, AvailableVersion ?? "a new version");
+            return;
+        }
+
+        if (!await CheckAsync(report: true))
+            CheckedByHand?.Invoke(this, "You have the latest version.");
     }
 
-    private async Task<bool> CheckAsync(bool report = false)
+    private async Task<bool> CheckAsync(bool report)
     {
         if (_manager is null || _busy || _disposed) return false;
         _busy = true;
@@ -113,12 +114,15 @@ public sealed class UpdateService : IDisposable
             var available = await _manager.CheckForUpdatesAsync();
             if (available is null) return false;
 
-            await _manager.DownloadUpdatesAsync(available);
-            Announce(available.TargetFullRelease?.Version?.ToString());
+            var announce = Available is null;
+            Available = available;
+            if (announce) UpdateFound?.Invoke(this, AvailableVersion ?? "a new version");
             return true;
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
+            // No network, GitHub unreachable, a rate limit. Said only when
+            // somebody asked; a timer's failure is the next check's business.
             if (report) CheckedByHand?.Invoke(this, "Could not reach GitHub to check: " + ex.Message);
             return false;
         }
@@ -128,33 +132,19 @@ public sealed class UpdateService : IDisposable
         }
     }
 
-    private void Announce(string? version)
-    {
-        if (_announced || string.IsNullOrWhiteSpace(version)) return;
-        _announced = true;
-        UpdateReady?.Invoke(this, version);
-    }
-
     /// <summary>
-    /// Writes a staged update after this process exits.
-    ///
-    /// Called on the way out rather than when the download finishes: replacing
-    /// files under a running application means restarting it, and restarting it
-    /// under somebody who is using it is worse than waiting.
+    /// Downloads the found release, reporting progress 0-100, and restarts
+    /// the application into it. Returns only on failure; on success the
+    /// process is gone.
     /// </summary>
-    public void ApplyOnExit()
+    /// <exception cref="InvalidOperationException">Nothing has been found.</exception>
+    public async Task DownloadAndRestartAsync(IProgress<int> progress)
     {
-        if (_manager?.UpdatePendingRestart is not { } staged) return;
+        if (_manager is null || Available is not { } update)
+            throw new InvalidOperationException("There is no update to install.");
 
-        try
-        {
-            _manager.WaitExitThenApplyUpdates(staged, silent: true, restart: false);
-        }
-        catch (Exception ex) when (ex is not OutOfMemoryException)
-        {
-            // The application is closing. A failed update is the next run's
-            // problem, and it will find the same release waiting.
-        }
+        await _manager.DownloadUpdatesAsync(update, p => progress.Report(p));
+        _manager.ApplyUpdatesAndRestart(update);
     }
 
     public void Dispose()

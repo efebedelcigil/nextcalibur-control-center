@@ -20,11 +20,14 @@ public sealed class TrayPresence : IDisposable
     private readonly Forms.ToolStripMenuItem _startupItem;
     private bool _disposed;
 
+    /// <summary>Raised by the menu's "Check for updates now"; the window runs the check and makes the offer.</summary>
+    public event EventHandler? CheckForUpdatesRequested;
+
+    /// <summary>Raised when the person clicks a notification balloon; the window is already shown.</summary>
+    public event EventHandler? BalloonClicked;
+
     /// <summary>Raised when the tray changed the overheat setting, so the window's switch can follow.</summary>
     public event EventHandler? OverheatSettingChanged;
-
-    /// <summary>Set by the window; the menu's two update items act through it.</summary>
-    public UpdateService? Updates { get; set; }
 
     public TrayPresence(Window window, AppSettings settings)
     {
@@ -47,7 +50,7 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(ReadingIntervalMenu());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(AutoUpdateItem());
-        menu.Items.Add("Check for updates now", null, async (_, _) => { if (Updates is { } u) await u.CheckNowAsync(); });
+        menu.Items.Add("Check for updates now", null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Exit", null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
 
@@ -59,6 +62,7 @@ public sealed class TrayPresence : IDisposable
             ContextMenuStrip = menu,
         };
         _icon.DoubleClick += (_, _) => ShowWindow();
+        _icon.BalloonTipClicked += (_, _) => { ShowWindow(); BalloonClicked?.Invoke(this, EventArgs.Empty); };
     }
 
     /// <summary>Raised when the user chooses Exit.</summary>
