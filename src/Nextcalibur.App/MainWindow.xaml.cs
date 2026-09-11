@@ -186,6 +186,7 @@ public partial class MainWindow : Window
         _tray.OverheatSettingChanged += (_, _) => Dispatcher.BeginInvoke(() =>
             OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled);
         LoadOverheatThresholds();
+        VersionText.Text = RunningVersion();
         _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
         _tray.Updates = _updates;
         _updates.Start();
@@ -1010,6 +1011,17 @@ public partial class MainWindow : Window
         _settings.OverheatWarningEnabled = on;
         _settings.Save();
         _tray?.SyncOverheatMenu();
+    }
+
+    /// <summary>The version of this copy, as the package carries it - "0.5.1", without the commit hash.</summary>
+    private static string RunningVersion()
+    {
+        var info = typeof(MainWindow).Assembly
+            .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+            .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
+            .FirstOrDefault()?.InformationalVersion;
+        var version = info?.Split('+')[0] ?? typeof(MainWindow).Assembly.GetName().Version?.ToString(3) ?? "?";
+        return "v" + version;
     }
 
     private bool _thresholdsReady;
