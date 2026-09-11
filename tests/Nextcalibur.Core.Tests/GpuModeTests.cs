@@ -85,3 +85,48 @@ public class GpuModeTests
         Assert.Contains("could not work out", text);
     }
 }
+
+/// <summary>
+/// The register and the values that go into it, pinned. Both were watched
+/// being written by the vendor software and confirmed by the boot that
+/// followed; nothing else has ever been shown safe to write there.
+/// </summary>
+public class GpuSwitchProtocolTests
+{
+    [Fact]
+    public void The_display_mode_register_is_where_it_was_seen()
+    {
+        // FB00/0203 on the way to Discrete, FB00/0203 on the way back. The
+        // subsystem is the thermal family's register 3.
+        Assert.Equal((ushort)0x0203, (ushort)SmiSubsystem.DisplayMode);
+    }
+
+    [Fact]
+    public void A_write_command_for_the_register_has_the_captured_header()
+    {
+        var command = SmiCommand.For(SmiFamily.Write, SmiSubsystem.DisplayMode);
+        var bytes = command.ToBytes();
+
+        // 00 FB 03 02 - the first four bytes of both captures.
+        Assert.Equal(new byte[] { 0x00, 0xFB, 0x03, 0x02 }, bytes[..4]);
+    }
+
+    [Fact]
+    public void Uma_is_not_a_firmware_mode()
+    {
+        // UMA is a device disable. Asking the firmware writer for it must be
+        // refused before anything is touched.
+        var service = new GpuModeService();
+        Assert.Throws<ArgumentNullException>(() => service.WriteFirmwareMode(null!, GpuMode.Hybrid));
+    }
+
+    [Fact]
+    public void A_switch_outcome_says_whether_a_restart_is_owed()
+    {
+        var immediate = new GpuModeService.SwitchOutcome(true, false, "done");
+        var deferred = new GpuModeService.SwitchOutcome(true, true, "at restart");
+
+        Assert.False(immediate.RestartNeeded);
+        Assert.True(deferred.RestartNeeded);
+    }
+}

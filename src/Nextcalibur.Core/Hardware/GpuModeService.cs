@@ -29,41 +29,304 @@ public readonly record struct GpuConfiguration(
     bool IntegratedDrivesDisplay);
 
 /// <summary>
-/// Reports the machine's graphics configuration.
+/// Reports the machine's graphics configuration, and changes it.
 ///
-/// **Detection only â€” this class does not switch modes, and that is a decision
-/// rather than a gap.**
+/// Three modes, and they are not three values of one setting - which is the
+/// thing to understand before touching any of this:
 ///
-/// The vendor software does switch the display path: watched on hardware, its
-/// MS Hybrid button plus a restart moved the panel from the discrete card to the
-/// integrated one. It reaches firmware through the kernel driver it installs â€”
-/// `DeviceIoControl` in its native library, not in its managed code, which is
-/// why an earlier search of the managed assembly found nothing and concluded,
-/// wrongly, that no software could do this.
+/// - **Hybrid** and **Discrete** are firmware. One register in the ACPI-WMI
+///   mailbox, <c>0x0203</c>, holds 1 or 2, and the firmware applies it at the
+///   next boot. Watched being written by the vendor's software on 11 September
+///   2026, both directions, each confirmed by the boot that followed. No kernel
+///   driver is involved - the vendor ships one, and on this machine it never
+///   loads, so it cannot be.
+/// - **UMA** is Windows. The discrete adapter is disabled as a device through
+///   SetupDi, the driver stops, and nothing in firmware changes. Immediate,
+///   reversible, and needs administrator.
 ///
-/// Nextcalibur does not follow, because doing so needs an undocumented IOCTL
-/// into a driver this project neither ships nor installs. Elevation is not the
-/// obstacle - that was written here for a while, on the strength of a rule
-/// nobody set - the driver is. It also carries a cost the vendor never mentions:
-/// the change invalidates TPM-sealed credentials, so the Windows PIN has to be
-/// set up again and BitLocker can demand its recovery key.
+/// The two paths have one rule each. The card cannot be switched off while it
+/// is driving the screen, and firmware cannot be pointed at a card that is
+/// switched off - either way the next thing on the panel would be nothing.
 ///
-/// See PROTOCOL.md for the evidence.
+/// What the firmware switch costs, and the vendor's software never says: the
+/// change alters what the TPM measures at boot, so the Windows PIN has to be
+/// set up again and BitLocker can demand its recovery key. This class does not
+/// decide whether to pay that; it makes sure whoever does is told.
+///
+/// See PROTOCOL.md for the captures.
 /// </summary>
 public sealed class GpuModeService
 {
+    /// <summary>
+    /// The values the firmware's display-mode register takes. Both watched
+    /// being written by the vendor software and confirmed by the boot that
+    /// followed; nothing else is ever written there.
+    /// </summary>
+    private const uint FirmwareHybrid = 1;
+    private const uint FirmwareDiscrete = 2;
+
+    /// <summary>What the firmware's mode register said, with the bytes it said it in.</summary>
+    /// <param name="Mode">The stored mode, or null when the reply was not one of the two known values.</param>
+    /// <param name="Raw">The 32-byte reply, kept so an unexpected answer can be looked at rather than guessed about.</param>
+    public readonly record struct FirmwareModeReading(GpuMode? Mode, byte[] Raw);
+
+    /// <summary>
+    /// Reads the mode the firmware has stored - which is the mode the machine
+    /// will be in after the next restart, not necessarily the one it is in now.
+    ///
+    /// The vendor's Display Mode button does this read before showing its
+    /// dialogue. Its reply was only ever caught as a residue, after the
+    /// command had gone: a buffer with the header cleared and the mode in
+    /// <c>a2</c> and <c>a4</c> - 1 while the machine was in Hybrid, 2 while in
+    /// Discrete. That is different from the thermal block, which echoes its
+    /// header, so this accepts either shape and trusts <c>a2</c>.
+    /// </summary>
+    public static FirmwareModeReading ReadFirmwareMode(EcMailbox mailbox)
+    {
+        ArgumentNullException.ThrowIfNull(mailbox);
+
+        using (mailbox.Hold())
+        {
+            var command = SmiCommand.For(SmiFamily.Read, SmiSubsystem.DisplayMode);
+            mailbox.Write(command);
+
+            byte[] raw = mailbox.ReadRaw();
+            for (var attempt = 0; attempt < 8; attempt++)
+            {
+                Thread.Sleep(40);
+                raw = mailbox.ReadRaw();
+                var reply = SmiCommand.FromBytes(raw);
+
+                var headerEchoed = reply.A0 == command.A0 && reply.A1 == command.A1;
+                var headerCleared = reply.A0 == 0 && reply.A1 == 0;
+                if (!headerEchoed && !headerCleared) continue;
+
+                return new FirmwareModeReading(reply.A2 switch
+                {
+                    FirmwareHybrid => GpuMode.Hybrid,
+                    FirmwareDiscrete => GpuMode.Discrete,
+                    _ => null,
+                }, raw);
+            }
+
+            return new FirmwareModeReading(null, raw);
+        }
+    }
+
+    /// <summary>
+    /// Asks the firmware to drive the panel from the other chip after the
+    /// next restart, and confirms the request landed before saying so.
+    ///
+    /// Only <see cref="GpuMode.Hybrid"/> and <see cref="GpuMode.Discrete"/>
+    /// are firmware modes; UMA is a device disable and has its own path. And
+    /// only those two values are ever written: they are the two watched being
+    /// written by the vendor software and confirmed by the boot that followed.
+    /// Nothing else is known to be safe to put in this register.
+    ///
+    /// Refused outright while the machine is in UMA. The discrete adapter is
+    /// disabled there; writing Discrete into firmware would hand the panel to
+    /// a card Windows will not start, and the next boot would come up dark.
+    /// The vendor software refuses the same transition, and now we know why.
+    /// </summary>
+    /// <returns>True when the register read back the requested mode.</returns>
+    /// <exception cref="InvalidOperationException">The transition is not allowed from the current state.</exception>
+    public bool WriteFirmwareMode(EcMailbox mailbox, GpuMode target)
+    {
+        ArgumentNullException.ThrowIfNull(mailbox);
+
+        var value = target switch
+        {
+            GpuMode.Hybrid => FirmwareHybrid,
+            GpuMode.Discrete => FirmwareDiscrete,
+            _ => throw new ArgumentOutOfRangeException(nameof(target),
+                "UMA is not a firmware mode; use SetDiscreteAdapterEnabled."),
+        };
+
+        var current = Detect();
+        if (current.Mode == GpuMode.Uma || (current.DiscretePresent && !DiscreteAdapterEnabled()))
+            throw new InvalidOperationException(
+                "The graphics card is switched off (UMA). Turn it back on first - " +
+                "handing the screen to a card Windows will not start leaves the next boot dark.");
+
+        using (mailbox.Hold())
+        {
+            var command = SmiCommand.For(SmiFamily.Write, SmiSubsystem.DisplayMode);
+            command.A2 = value;
+            mailbox.Write(command);
+            Thread.Sleep(60);
+        }
+
+        // Read it back rather than trust the write. A restart on the strength
+        // of a write that did not land costs somebody their PIN for nothing.
+        return ReadFirmwareMode(mailbox).Mode == target;
+    }
+
+    /// <summary>
+    /// The PnP instance path of the discrete adapter, or null when there is none.
+    /// </summary>
+    public static string? DiscreteAdapterInstanceId()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT DeviceID, PNPDeviceID FROM Win32_VideoController");
+            foreach (ManagementObject gpu in searcher.Get())
+            {
+                using (gpu)
+                {
+                    if (gpu["PNPDeviceID"] is string id && id.Contains("VEN_10DE", StringComparison.OrdinalIgnoreCase))
+                        return id;
+                }
+            }
+        }
+        catch (ManagementException)
+        {
+        }
+        return null;
+    }
+
+    /// <summary>Whether the discrete adapter is enabled as a device (as opposed to present but switched off).</summary>
+    public static bool DiscreteAdapterEnabled()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT PNPDeviceID, ConfigManagerErrorCode FROM Win32_PnPEntity WHERE PNPClass = 'Display'");
+            foreach (ManagementObject device in searcher.Get())
+            {
+                using (device)
+                {
+                    if (device["PNPDeviceID"] is not string id || !id.Contains("VEN_10DE", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    // 22 is CM_PROB_DISABLED - what the vendor's UMA button leaves behind.
+                    return device["ConfigManagerErrorCode"] is not uint code || code != 22;
+                }
+            }
+        }
+        catch (ManagementException)
+        {
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Switches the discrete adapter off or on as a device. This is what UMA
+    /// is: measured on hardware, the vendor's UMA button disables the NVIDIA
+    /// adapter through SetupDi, the driver stops, and no restart is needed -
+    /// nothing in firmware changes.
+    ///
+    /// Done through <c>pnputil</c>, which is Windows' own tool for exactly this
+    /// and needs administrator. The prompt is Windows', once per switch.
+    ///
+    /// Refused while the discrete adapter is driving the panel: switching off
+    /// the card the screen is on takes the screen with it. That is the rule
+    /// behind the vendor's "please switch to Hybrid mode first".
+    /// </summary>
+    /// <returns>True when the device reports the requested state afterwards.</returns>
+    /// <exception cref="InvalidOperationException">The card is driving the display, or there is no card.</exception>
+    public bool SetDiscreteAdapterEnabled(bool enabled)
+    {
+        var current = Detect();
+        if (!enabled && current.DiscreteDrivesDisplay)
+            throw new InvalidOperationException(
+                "The graphics card is driving your screen right now. Switch to Hybrid first, " +
+                "restart, and then it can be turned off.");
+
+        var id = DiscreteAdapterInstanceId()
+            ?? throw new InvalidOperationException("No discrete graphics card was found.");
+
+        System.Diagnostics.Process? process;
+        try
+        {
+            process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "pnputil.exe",
+                Arguments = $"/{(enabled ? "enable" : "disable")}-device \"{id}\"",
+                UseShellExecute = true,
+                Verb = "runas",
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            });
+        }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+        {
+            // ERROR_CANCELLED: the elevation prompt was dismissed. Nothing has
+            // happened to the device, and that is worth saying in those words
+            // rather than as an exception about starting a process.
+            throw new OperationCanceledException("The permission prompt was declined. Nothing was changed.");
+        }
+        process?.WaitForExit(30000);
+
+        // The device state, not the exit code, is the truth: pnputil can report
+        // success and leave the device where it was if the driver refuses.
+        Thread.Sleep(1500);
+        return DiscreteAdapterEnabled() == enabled;
+    }
+
+    /// <summary>What a switch did, and what is left for the person to do.</summary>
+    /// <param name="Changed">Something was actually changed.</param>
+    /// <param name="RestartNeeded">The change takes effect at the next restart.</param>
+    /// <param name="Summary">One sentence for the person.</param>
+    public readonly record struct SwitchOutcome(bool Changed, bool RestartNeeded, string Summary);
+
+    /// <summary>
+    /// Moves the machine towards a mode, by whichever route that mode needs.
+    ///
+    /// The three modes are not three values of one setting. Two are firmware
+    /// modes and take effect at a restart; the third is a device disable that
+    /// takes effect at once. And the transitions are not all allowed - the
+    /// card cannot be switched off while it is driving the screen, and firmware
+    /// cannot be pointed at a card that is switched off. This is the one place
+    /// those rules live.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The transition is not allowed from here.</exception>
+    public SwitchOutcome Switch(EcMailbox mailbox, GpuMode target)
+    {
+        var current = Detect();
+        if (current.Mode == target)
+            return new SwitchOutcome(false, false, $"Already in {target}.");
+
+        switch (target)
+        {
+            case GpuMode.Uma:
+                if (!SetDiscreteAdapterEnabled(false))
+                    return new SwitchOutcome(false, false, "Windows did not switch the card off.");
+                return new SwitchOutcome(true, false,
+                    "The graphics card is switched off. No restart needed.");
+
+            case GpuMode.Hybrid when current.Mode == GpuMode.Uma:
+                // Firmware is already on Hybrid underneath UMA; all that is
+                // switched off is the device.
+                if (!SetDiscreteAdapterEnabled(true))
+                    return new SwitchOutcome(false, false, "Windows did not switch the card back on.");
+                return new SwitchOutcome(true, false,
+                    "The graphics card is back on. No restart needed.");
+
+            case GpuMode.Discrete when current.Mode == GpuMode.Uma:
+                throw new InvalidOperationException(
+                    "Switch to Hybrid first. The card has to be on before the screen can be handed to it.");
+
+            default:
+                if (!WriteFirmwareMode(mailbox, target))
+                    return new SwitchOutcome(false, false,
+                        "The firmware did not accept the change - nothing has been altered, and there is no reason to restart.");
+                return new SwitchOutcome(true, true,
+                    $"The firmware will switch to {target} at the next restart.");
+        }
+    }
+
     /// <summary>Reads the current configuration.</summary>
     public GpuConfiguration Detect()
     {
         string? discreteName = null;
         var discretePresent = false;
+        var discreteEnabled = true;
         var discreteDrives = false;
         var integratedDrives = false;
 
         try
         {
             using var searcher = new ManagementObjectSearcher(
-                "SELECT Name, AdapterCompatibility, CurrentHorizontalResolution, Status " +
+                "SELECT Name, AdapterCompatibility, CurrentHorizontalResolution, ConfigManagerErrorCode " +
                 "FROM Win32_VideoController");
 
             foreach (ManagementObject gpu in searcher.Get())
@@ -80,6 +343,14 @@ public sealed class GpuModeService
                         discretePresent = true;
                         discreteName = gpu["Name"] as string;
                         discreteDrives |= drivesDisplay;
+
+                        // A card that has been switched off is still listed here.
+                        // Code 22 is CM_PROB_DISABLED, and it is what UMA looks
+                        // like from Windows: present, off. Reading that as
+                        // Hybrid - which this once did - made "switch to Hybrid"
+                        // a no-op that left the card switched off.
+                        if (gpu["ConfigManagerErrorCode"] is uint code && code == 22)
+                            discreteEnabled = false;
                     }
                     else if (drivesDisplay)
                     {
@@ -93,16 +364,17 @@ public sealed class GpuModeService
             // An unreadable WMI answer is reported as "unknown", not as an error.
         }
 
-        var mode = (discretePresent, discreteDrives, integratedDrives) switch
+        var mode = (discretePresent, discreteEnabled, discreteDrives, integratedDrives) switch
         {
-            (false, _, true) => GpuMode.Uma,
-            (true, true, _) => GpuMode.Discrete,
-            (true, false, true) => GpuMode.Hybrid,
+            (false, _, _, true) => GpuMode.Uma,
+            (true, false, _, true) => GpuMode.Uma,
+            (true, true, true, _) => GpuMode.Discrete,
+            (true, true, false, true) => GpuMode.Hybrid,
             _ => (GpuMode?)null,
         };
 
         return new GpuConfiguration(
-            mode, discreteName, discretePresent, discreteDrives, integratedDrives);
+            mode, discreteName, discretePresent && discreteEnabled, discreteDrives, integratedDrives);
     }
 
     /// <summary>
@@ -134,14 +406,11 @@ public sealed class GpuModeService
             "This gives the best performance in games, but the card never powers down, " +
             "so the laptop runs hotter and the battery drains faster." +
             IdleCost(load, thermal) +
-            "\n\nCasper's own Control Center can change this, through the kernel driver it " +
-            "installs. Nextcalibur will not: it would have to install that driver too, and " +
-            "it does not. Your BIOS setup may also offer it, as a display or graphics mode " +
-            "setting." +
-            "\n\nIf you change it anywhere: find your BitLocker recovery key first. " +
+            "\n\nYou can change this below. Before you do: find your BitLocker recovery key. " +
             "Switching which chip drives the screen changes what the TPM measures at " +
-            "startup, and the next boot can ask for that key â€” without it the drive does " +
-            "not open. Expect it to reset your Windows PIN as well.",
+            "startup, and the next boot can ask for that key - without it the drive does " +
+            "not open. Your Windows PIN will need setting up again as well. Casper's own " +
+            "Control Center makes the same change without mentioning either.",
 
         GpuMode.Hybrid =>
             "Your screen is driven by the built-in graphics, and the graphics card wakes " +
