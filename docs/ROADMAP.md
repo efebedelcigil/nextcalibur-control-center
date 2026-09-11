@@ -210,43 +210,47 @@ Not on the firmware event channel, incidentally: unplugging produces no
 `GMC_WMIEvent` at all. Windows' own power notification is where this comes from,
 and it needs no permission.
 
-### One key does send an event: Fn+Space
+### Fn+Space, and a rudeness of ours it exposes
 
-Found by carrying on past the F row. The firmware is silent for every key in
-that row, and then Fn+Space produces this:
+The F row is silent, and then Fn+Space speaks. Four presses without the vendor
+software, eight more with it installed, and the first byte cycles cleanly:
 
 ```
-03:23:08.973   32 bytes   00-00-00 ... 00
-03:23:10.391   32 bytes   01-00-00 ... 00
-03:23:17.368   32 bytes   02-00-00 ... 00
-03:23:18.816   32 bytes   00-00-00 ... 00
+02  00  01  02  00  01  02  00
 ```
 
-Four presses, and the first byte cycles `0, 1, 2, 0`. That is a three-step
-level, and on these machines Fn+Space is the keyboard backlight key - so the
-firmware is reporting the level it has moved to and expecting software to apply
-it. Which is exactly why the vendor's Control Center subscribes to this class,
-and it is the one thing on the whole keyboard that needed it.
+A three-state cycle, and on this keyboard it is the backlight: off, dim, full.
+The behaviour is **identical with and without the vendor software**, so the
+firmware sends this on its own and does not need anybody's driver to be asked
+first. The backlight changes whether or not software is listening - confirmed by
+watching the keyboard - so there is no lost function to reimplement. This is
+simply why the vendor's Control Center subscribes to that class at all.
 
-Power source is not on this channel: unplugging and replugging produced nothing,
-so whatever the vendor does with `ModeBeforeDC` it learns some other way.
+**But it collides with how this project does brightness.** `LedController` pins
+the firmware's brightness field to its top step on every write and scales the
+RGB values instead, because three hardware steps are too coarse to be a useful
+control. Fn+Space moves that same field. So:
 
-**Confirmed on hardware: the backlight changes anyway.** The firmware applies
-the level itself, so the event is a courtesy rather than a request, and that key
-works with no software of any kind on the machine. Nothing to reimplement.
+1. Somebody presses Fn+Space and dims or extinguishes the keyboard.
+2. Nextcalibur writes anything at all - a colour, an effect, a zone - and the
+   brightness snaps back to full.
 
-What it does leave is a small honesty problem. Press Fn+Space while Nextcalibur
-sits in the notification area and the keyboard changes without this application
-knowing, so the lighting controls describe a state the keyboard is no longer in.
-Fixed by re-reading the hardware when the window becomes visible - hooked to
-visibility rather than to window state, because closing to the tray hides the
-window rather than minimising it, and the state never changes.
+Their key, undone by us, silently. That is the same discourtesy this project
+objects to elsewhere, and it needs deciding rather than leaving:
 
-**Not by subscribing to the event.** That class has no security descriptor and
-is therefore administrators-only, so listening would mean asking somebody for a
-second elevation on a second GUID
-(`74286d6e-429c-427a-b34b-b5d15d032b05`) - a poor trade for keeping a panel in
-step that nobody is looking at while it is wrong.
+- **Leave it.** The percentage in the window is the control, and the key is a
+  hardware override that lasts until the next write. Simple, and wrong in the
+  way described above.
+- **Read the level and respect it.** Fold the firmware's three steps into the
+  percentage when state is re-read, so the window shows what the key did and a
+  later write preserves it. Faithful, and more work: level 0 means the keyboard
+  is off whatever colour is set, which the interface has to say rather than
+  imply.
+
+The second is the right one. Not done yet.
+
+Not on this channel: unplugging the charger produces no event here at all, which
+is covered above.
 
 ### Look before you change anything
 
