@@ -377,6 +377,27 @@ here keys on a name. The mailbox and its answers are the identity.
 Nothing in the check writes. A machine is judged by what it says to reads it
 was always going to receive.
 
+### Dialogues are the application's, not Windows'
+
+Set by the owner on 11 September 2026. Twenty message boxes across the
+application, all of them the system default: the system's look, the system's
+"blink" sound, and some without an owner window, so the rest of the application
+stayed clickable underneath. Three things, in order of what the owner asked for:
+
+1. **No sound.** The beep comes from the icon parameter; a box with no system
+   icon makes none.
+2. **Nothing else clickable while one is up.** Every box is owned by the main
+   window, which makes it modal to that window. The ones raised before the
+   window exists - the first-run repair, the uninstall question - are modal by
+   being the only thing on screen.
+3. **The application's own look.** That is markup and style, so it goes to the
+   design agent - but every box now goes through one place, `Dialogs`, so the
+   swap is one implementation rather than twenty edits.
+
+What cannot be restyled: Windows' own elevation prompt. It is the operating
+system's and looks the way it looks. It also no longer appears for card
+switches; the one time it does is the first-run permission, once.
+
 ### Look before you change anything
 
 The owner set this alongside the uninstall rule, and it applies to every
