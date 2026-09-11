@@ -262,3 +262,14 @@ If it still looks soft, say so and the owner will hand-tune a 48 px master.
   chevron-down-into-bar - your call), tooltip "Hide to tray". Keep the three
   the same size and spacing. The tray menu's "Close button keeps it running"
   item is gone; nothing else in the menu changes.
+
+## 13. Dialogue buttons: the affirmative blue, the negative red (12 September)
+
+In the in-window dialogue (`ModalDialogOverlay`): `DialogButtonPrimary` is
+always the affirmative - Yes / OK - and gets the accent blue; 
+`DialogButtonSecondary` is always the negative - No / Cancel - and gets red
+(`Warn`, or a dedicated danger brush if the theme has one), both with
+readable text on them in **both** themes. Two named styles, applied in the
+markup; the code-behind only sets `Content` and visibility, so the colours
+must not depend on the text. Hover/pressed states in the same family. Same
+in light and dark.
