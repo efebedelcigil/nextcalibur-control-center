@@ -1006,6 +1006,12 @@ public partial class MainWindow : Window
     /// A release was found. Say so through the tray and light the corner
     /// button; the offer itself waits for a click, because a question that
     /// pops up on its own is the thing the person asked not to have.
+    ///
+    /// Said once per process. A "no" is remembered for the rest of the
+    /// session - the six-hourly checks find the same release and say
+    /// nothing more - and forgotten at the next start, where the first
+    /// check says it again, once. The owner's rule, 12 September 2026: remind
+    /// at startup, never nag in between.
     /// </summary>
     private void OnUpdateFound(string version)
     {
@@ -1033,7 +1039,10 @@ public partial class MainWindow : Window
                 "application will restart itself; your settings stay as they are." +
                 Environment.NewLine + Environment.NewLine + "Update now?",
                 defaultNo: false))
+        {
+            // Declined: the corner button stays, nothing else will ask.
             return;
+        }
 
         _updating = true;
         try

@@ -627,6 +627,16 @@ leaving a registry value behind.
        handle and CPU measurements) plus `DEVPKEY_Device_PowerData` for the
        card. Result goes in "What things cost".
 
+0-. **An "Update now" button on the notification itself.** Set 12
+    September 2026. The tray balloon is a Windows Forms balloon and cannot
+    carry a button; clicking the balloon is the button today. A button
+    needs a Windows toast (`Microsoft.Toolkit.Uwp.Notifications` for an
+    unpackaged application), which registers a COM activator and an
+    application identity on the machine - two more things the uninstall has
+    to take back, and a different look from the balloon. Worth doing with
+    the installer work, when the application's identity on the machine is
+    being decided anyway.
+
 0. **A proper installer, set 11 September 2026.** The owner wants what Inno
    Setup gives: a wizard that asks where to install, shows what it is doing,
    and looks like a product rather than a progress bar. Velopack stays for

@@ -49,8 +49,8 @@ public sealed class UpdateService : IDisposable
     /// <summary>The release found and not yet installed, if any.</summary>
     public UpdateInfo? Available { get; private set; }
 
-    /// <summary>The version of <see cref="Available"/>, for the person.</summary>
-    public string? AvailableVersion => Available?.TargetFullRelease?.Version?.ToString();
+    /// <summary>The version of <see cref="Available"/>, for the person: "v0.5.2".</summary>
+    public string? AvailableVersion => Available?.TargetFullRelease?.Version is { } v ? "v" + v : null;
 
     public UpdateService()
     {
