@@ -782,7 +782,9 @@ window. The "not supported - remove?" question is raised from Loaded, and
 as an in-window dialogue its nested message loop ran before Windows had put
 the window on screen. In-window dialogues now wait for the first frame;
 before it, Windows' box. Second build: question, then window, banner, every
-page locked. Passed.
+page locked. Third build, after the readings panel moved out of the pages:
+its switch, sliders and reset lock too, values `--`. Passed 02:34, and
+published.
 
 ### 0.5.0 is out
 
