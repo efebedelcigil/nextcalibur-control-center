@@ -20,6 +20,20 @@ public sealed class AppSettings
     public bool OverheatWarningEnabled { get; set; } = true;
 
     /// <summary>
+    /// Drop to Office when the charger comes out and put the previous mode
+    /// back when it returns. On by default because the vendor does it.
+    /// </summary>
+    public bool QuietOnBattery { get; set; } = true;
+
+    /// <summary>
+    /// The mode the person last chose, put back at the next start. Windows
+    /// comes up on Balanced after a restart whatever plan was active before,
+    /// so without this a chosen mode lasted one session.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Nextcalibur.Core.Power.SystemMode? LastSystemMode { get; set; }
+
+    /// <summary>
     /// Warn when the CPU exceeds this temperature, in °C.
     ///
     /// Turning the warning off is <see cref="OverheatWarningEnabled"/>, not a

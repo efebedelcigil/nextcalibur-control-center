@@ -296,8 +296,18 @@ installed but not yet loaded, since the machine had not been restarted - and the
 behaviour worked anyway. Nothing privileged is involved, and the power plan can
 already be changed from here without elevation.
 
-**To build:** notice the power source changing, switch to the quiet mode, and
-put the previous one back on return. Two things to get right, both learned
+**Built, 11 September 2026.** `BatteryModePolicy` holds the rules,
+`SystemEvents.PowerModeChanged` is the notice (no poll, no permission), the
+tray's "Office mode on battery" turns it off. Tested Gaming and Performance
+both ways. Two things found on the way: Windows keeps one overlay for AC and
+one for battery, so the instant after unplugging, detection sees no mode at
+all - the application uses the mode it last knew, not a fresh read. And
+Windows comes up on Balanced after a restart whatever was active, so the
+chosen mode is saved (`LastSystemMode`) and put back at start: as it was on
+the charger, Office on battery with theirs restored when the charger returns.
+
+**The original note:** notice the power source changing, switch to the quiet
+mode, and put the previous one back on return. Two things to get right, both learned
 tonight: remember the mode the *person* chose rather than the one we switched to,
 and do nothing at all if they changed mode by hand while on battery - that was
 their decision, not ours to undo.

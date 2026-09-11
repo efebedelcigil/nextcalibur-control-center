@@ -466,8 +466,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Row 0: System Mode Tabs (Office, Gaming, Performance) -->
-                        <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
                             <!-- 1. Office Mode -->
                             <RadioButton x:Name="ModeOffice" Style="{DynamicResource SystemModeTab}"
                                          Tag="Office" GroupName="Mode" Checked="OnSystemModeChanged">
@@ -509,10 +508,6 @@
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </RadioButton>
-                        </StackPanel>
-                        <!-- Shown only when Windows is on none of the three modes. -->
-                        <TextBlock x:Name="SystemModeNote" Style="{DynamicResource StatusTextStyle}"
-                                   Visibility="Collapsed" Margin="4,6,0,0" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <!-- Row 1: Left Center Fan Gauges + Right Stats Panels -->
