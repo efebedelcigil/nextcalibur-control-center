@@ -426,6 +426,43 @@ resolution answers the same question through ordinary WMI, with no elevation
 and no firmware access - and reading firmware needs administrator, which this
 application does not ask for.
 
+#### Found: the switch is one mailbox write
+
+Captured 11 September 2026 at 05:56, with the mailbox polled at ~260 reads a
+second while the vendor's Discrete button was pressed and the restart accepted.
+The last thing written before the machine went down:
+
+```
+05:56:12.393   a0=0xFB00  a1=0x0203  a2=2
+               00 FB 03 02 02 00 00 00 00 00 00 00 00 00 00 00 ...
+```
+
+Write family, subsystem `0x02`, register `0x03`, value `2`. The machine came
+back in Discrete.
+
+Two independent measurements agree on the number. The firmware variable
+`TpvSetup` reads `0x02` in Discrete and `0x03` in Hybrid (see the firmware dump
+above), so the value written here is the value the firmware stores:
+
+| Value | Mode |
+|---|---|
+| `2` | Discrete |
+| `3` | Hybrid - inferred from `TpvSetup`, not yet captured as a write |
+
+UMA is not a value here at all: it is a SetupDi device disable, as measured
+earlier, and never touches firmware.
+
+The button itself writes nothing. Twenty seconds before the write above, the
+click left only the residue of a read - `00 00 00 00 01 00 00 00 ... 01` - so
+the button reads the current mode and shows its dialogue, and the write happens
+on Yes, immediately before the restart. Twice now a click answered with No has
+left the mode unchanged, which is consistent.
+
+**So the driver was never involved**, which is what the previous section
+suspected once the driver turned out not to load. The whole switch is one
+command in a family this document already describes, through an interface this
+project already has permission to write. Nextcalibur can do it.
+
 #### The restart has a cost nobody mentions
 
 Changing the mode **invalidated the Windows Hello PIN**. It had to be set up
