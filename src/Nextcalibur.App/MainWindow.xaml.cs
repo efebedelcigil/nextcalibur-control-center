@@ -449,6 +449,25 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
+    /// Takes the backlight step off a thermal sample. The event says when the
+    /// key moves; this says where it is, including before this ran at all.
+    /// Same slider update as the event path, so the page agrees with the keys.
+    /// </summary>
+    private void CarryTheBacklightLevel(ThermalSample s)
+    {
+        if (_led is not { } led) return;
+        if (BacklightKeyWatcher.Parse((byte)s.BacklightLevel) is not { } level) return;
+        if (led.HardwareLevel == level) return;
+
+        led.HardwareLevel = level;
+        var wasReady = _ledUiReady;
+        _ledUiReady = false;
+        BrightnessSlider.Value = led.EffectiveBrightnessPercent;
+        BrightnessValue.Text = $"{led.EffectiveBrightnessPercent}%";
+        _ledUiReady = wasReady;
+    }
+
+    /// <summary>
     /// Subscribes to the firmware's Fn+Space event. Without it every lighting
     /// write said "full brightness" and undid the key; with it the write
     /// carries the level the key chose. Quietly absent when the event class
@@ -1234,6 +1253,7 @@ public partial class MainWindow : Window
 
         _consecutiveFailures = 0;
         _lastThermal = s;
+        CarryTheBacklightLevel(s);
 
         CpuTemp.Text = $"{s.CpuTemperatureC} °C";
         GpuTemp.Text = $"{s.GpuTemperatureC} °C";

@@ -6,12 +6,20 @@ namespace Nextcalibur.Core.Hardware;
 /// <param name="CpuFanRpm">CPU fan speed, RPM.</param>
 /// <param name="GpuFanRpm">GPU fan speed, RPM.</param>
 /// <param name="Timestamp">When the sample was taken.</param>
+/// <param name="BacklightLevel">
+/// The keyboard backlight step the firmware is at: 0 off, 1 dim, 2 full.
+/// Rides along in <c>a6</c> of the thermal block - found 11 September 2026
+/// by sweeping the registers while Fn+Space was pressed. The one place the
+/// key's effect can be read, so lighting writes can carry it from the first
+/// sample rather than assume full until the key is next heard.
+/// </param>
 public readonly record struct ThermalSample(
     int CpuTemperatureC,
     int GpuTemperatureC,
     int CpuFanRpm,
     int GpuFanRpm,
-    DateTimeOffset Timestamp);
+    DateTimeOffset Timestamp,
+    int BacklightLevel = 2);
 
 /// <summary>
 /// Reads temperatures and fan speeds through the firmware mailbox
@@ -46,7 +54,8 @@ public sealed class ThermalReader(EcMailbox mailbox)
             GpuTemperatureC: (int)response.A3,
             CpuFanRpm: (int)response.A4,
             GpuFanRpm: (int)response.A5,
-            Timestamp: DateTimeOffset.Now);
+            Timestamp: DateTimeOffset.Now,
+            BacklightLevel: (int)response.A6);
     }
 
     /// <summary>Attempts a sample, returning false rather than throwing.</summary>

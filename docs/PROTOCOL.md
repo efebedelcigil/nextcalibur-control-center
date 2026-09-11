@@ -254,8 +254,8 @@ Every register `0x0200`-`0x0207` and `0x0300`-`0x0302`, read once, Hybrid,
 on the charger, idle:
 
 ```
-0200  a2=62 a3=57 a4=4400 a5=3809 a6=2      thermal block; a6 not decoded
-0201  header 010D, a2=49                    another temperature, unknown sensor
+0200  a2=62 a3=57 a4=4400 a5=3809 a6=2      thermal block; a6 = keyboard backlight step
+0201  header 010D, a2=49                    a temperature that ignores CPU load (49 at 97 °C CPU)
 0202  header 0114, a3=1 a4=1 a6=1           flags, meaning unknown
 0203  a2=1 a4=1                             display mode (documented above)
 0204  zeros
@@ -266,6 +266,13 @@ on the charger, idle:
 0301  zeros
 0302  zeros
 ```
+
+Then the same sweep under conditions: 30 s of full CPU load (only `0x0200`
+moved - `0x0201` stayed at 49, so it is not the CPU or GPU), on battery
+(nothing but temperatures moved - none of the flags is the power source),
+and with Fn+Space pressed: **`0x0200 a6` went 2, 0, 1** - it is the keyboard
+backlight step, the value the key cycles. So the level *can* be read after
+all, and `ThermalSample.BacklightLevel` now carries it on every sample.
 
 `0x0300` reads back `1` today, two restarts after the only write this project
 ever made to it (a probe, same value the vendor writes), so it is either
