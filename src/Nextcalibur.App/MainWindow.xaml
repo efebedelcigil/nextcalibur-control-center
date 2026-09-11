@@ -25,6 +25,9 @@
         <StreamGeometry x:Key="KeyboardHitRegionMiddle" po:Freeze="True">M 160,0 L 320,0 L 320,18 L 310,18 L 310,41 L 298,41 L 298,65 L 307,65 L 307,89 L 295,89 L 295,112 L 312,112 L 312,140 L 105,140 L 105,112 L 152,112 L 152,89 L 140,89 L 140,65 L 156,65 L 156,41 L 144,41 L 144,18 L 160,18 Z</StreamGeometry>
         <StreamGeometry x:Key="KeyboardHitRegionRight" po:Freeze="True">M 320,0 L 457,0 L 457,140 L 312,140 L 312,112 L 295,112 L 295,89 L 307,89 L 307,65 L 298,65 L 298,41 L 310,41 L 310,18 L 320,18 Z</StreamGeometry>
 
+        <!-- Window Caption Icon: Hide to Tray (Chevron down into bar) -->
+        <StreamGeometry x:Key="IconMinimiseToTray" po:Freeze="True">M 1,2 L 5,6 L 9,2 M 0,9 H 10</StreamGeometry>
+
         <!-- Keyboard Zone Elevation & Lighting Styles (Zero-Shader, Vector-Preserved, Whole Keycaps) -->
         <Style x:Key="ZoneStyleA" TargetType="RadioButton">
             <Setter Property="Focusable" Value="False" />
@@ -393,7 +396,7 @@
                     <Image Source="/Assets/logo-96.png" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,10,0"
                            UseLayoutRounding="True"
                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
+                    <TextBlock Text="NEXTCALIBUR CONTROL CENTER"
                                Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
 
@@ -436,10 +439,12 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Right: Caption Buttons (Minimise & Close) -->
+                <!-- Right: Caption Buttons (Minimise, Hide to Tray, Close) -->
                 <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Top">
                     <Button Style="{DynamicResource CaptionButton}" Click="OnMinimiseClick"
                             Tag="{DynamicResource IconMinimise}" ToolTip="Minimise" />
+                    <Button Style="{DynamicResource CaptionButton}" Click="OnMinimiseToTrayClick"
+                            Tag="{DynamicResource IconMinimiseToTray}" ToolTip="Hide to tray" />
                     <Button Style="{DynamicResource CloseButton}" Click="OnCloseClick"
                             Tag="{DynamicResource IconClose}" ToolTip="Close" />
                 </StackPanel>
