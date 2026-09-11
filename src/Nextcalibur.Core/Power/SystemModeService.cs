@@ -58,13 +58,22 @@ public sealed class SystemModeService
 
             // Built-in plans store an indirect string ("@powrprof.dll,-15,Balanced");
             // the readable part is what follows the last comma.
-            if (friendly.StartsWith('@'))
+            var builtIn = friendly.StartsWith('@');
+            if (builtIn)
             {
                 var comma = friendly.LastIndexOf(',');
                 if (comma < 0 || comma == friendly.Length - 1) continue;
                 friendly = friendly[(comma + 1)..].Trim();
             }
 
+            // Two plans can share a name: the vendor's "High performance" and
+            // Windows' own. The vendor's is the one the mode was tuned
+            // against, and the only one power-mode overlays take effect on -
+            // measured 11 September 2026: on Windows' High performance plan
+            // the overlay sets without error and reads back Balanced, which
+            // made Performance mode look like no mode at all. A built-in plan
+            // never displaces a custom one of the same name.
+            if (builtIn && plans.ContainsKey(friendly)) continue;
             plans[friendly] = guid;
         }
 

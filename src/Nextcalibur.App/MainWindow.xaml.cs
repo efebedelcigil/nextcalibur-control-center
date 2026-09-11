@@ -65,6 +65,9 @@ public partial class MainWindow : Window
     private EcMailbox? _mailbox;
     private ThermalReader? _thermal;
     private LedController? _led;
+
+    /// <summary>Hears Fn+Space so the next lighting write keeps the level it set.</summary>
+    private BacklightKeyWatcher? _backlightKey;
     private TrayPresence? _tray;
 
     private int _consecutiveFailures;
@@ -226,6 +229,7 @@ public partial class MainWindow : Window
             _mailbox = new EcMailbox();
             _thermal = new ThermalReader(_mailbox);
             _led = new LedController(_mailbox);
+            ListenForTheBacklightKey();
         }
         catch (EcMailboxUnavailableException)
         {
@@ -385,14 +389,27 @@ public partial class MainWindow : Window
     /// </summary>
     private void AskForMailboxAccessIfNeeded()
     {
-        if (MailboxAccess.Check() != MailboxAvailability.AccessNotGranted) return;
+        var access = MailboxAccess.Check();
+        if (access == MailboxAvailability.NotSupported) return;
+
+        // Two permissions, one prompt. On a fresh machine neither is there. On
+        // one that already had the sensors - a copy from before Fn+Space was
+        // heard - only the second is missing, and the wording says so.
+        var needsSensors = access == MailboxAvailability.AccessNotGranted;
+        var needsKey = !needsSensors && !MailboxAccess.CanHearEvents();
+        if (!needsSensors && !needsKey) return;
 
         var proceed = Dialogs.Confirm("Nextcalibur - one-time permission",
-            "Nextcalibur needs permission to read this machine's sensors." +
-            Environment.NewLine + Environment.NewLine +
-            "Temperatures, fan speeds and the keyboard lighting all come from one " +
-            "interface built into your laptop's firmware, and Windows keeps it closed " +
-            "to ordinary accounts until it is opened once." +
+            (needsSensors
+                ? "Nextcalibur needs permission to read this machine's sensors." +
+                  Environment.NewLine + Environment.NewLine +
+                  "Temperatures, fan speeds and the keyboard lighting all come from one " +
+                  "interface built into your laptop's firmware, and Windows keeps it closed " +
+                  "to ordinary accounts until it is opened once."
+                : "Nextcalibur needs permission to hear the keyboard's backlight key." +
+                  Environment.NewLine + Environment.NewLine +
+                  "Fn+Space changes the backlight in firmware. Without this, the next " +
+                  "lighting change from here would put the backlight back to full.") +
             Environment.NewLine + Environment.NewLine +
             "Windows will ask you to confirm. This happens once - afterwards " +
             "Nextcalibur runs without any special privileges.");
@@ -429,6 +446,42 @@ public partial class MainWindow : Window
     {
         _exiting = true;
         Close();
+    }
+
+    /// <summary>
+    /// Subscribes to the firmware's Fn+Space event. Without it every lighting
+    /// write said "full brightness" and undid the key; with it the write
+    /// carries the level the key chose. Quietly absent when the event class
+    /// is not readable - the permission dialogue is where that is fixed.
+    /// </summary>
+    private void ListenForTheBacklightKey()
+    {
+        if (_led is null) return;
+
+        try
+        {
+            _backlightKey = new BacklightKeyWatcher();
+            _backlightKey.LevelChanged += level =>
+            {
+                if (_led is not { } led) return;
+                led.HardwareLevel = level;
+
+                // The slider shows what the keyboard shows. Set without
+                // writing: the firmware has already done this one.
+                Dispatcher.BeginInvoke(() =>
+                {
+                    var wasReady = _ledUiReady;
+                    _ledUiReady = false;
+                    BrightnessSlider.Value = led.EffectiveBrightnessPercent;
+                    BrightnessValue.Text = $"{led.EffectiveBrightnessPercent}%";
+                    _ledUiReady = wasReady;
+                });
+            };
+        }
+        catch (Exception ex) when (ex is System.Management.ManagementException or UnauthorizedAccessException)
+        {
+            _backlightKey = null;
+        }
     }
 
     private void OnStateChanged(object? sender, EventArgs e)
@@ -483,6 +536,7 @@ public partial class MainWindow : Window
             _timer.Stop();
             Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
             _tray?.Dispose();
+            _backlightKey?.Dispose();
             _mailbox?.Dispose();
             _cpuClock.Dispose();
             _gpuClock.Dispose();
@@ -1404,8 +1458,8 @@ public partial class MainWindow : Window
 
         LedPower.IsChecked = _led.State.Enabled;
         EffectFor(_led.State.Effect).IsChecked = true;
-        BrightnessSlider.Value = _led.State.BrightnessPercent;
-        BrightnessValue.Text = $"{_led.State.BrightnessPercent}%";
+        BrightnessSlider.Value = _led.EffectiveBrightnessPercent;
+        BrightnessValue.Text = $"{_led.EffectiveBrightnessPercent}%";
         ProfileFor(_led.State.ActiveProfile).IsChecked = true;
 
         RefreshPreview();

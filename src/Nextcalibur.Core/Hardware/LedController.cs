@@ -74,6 +74,29 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     /// <summary>The lighting state as last written by this application.</summary>
     public LedState State { get; } = state ?? LedState.Load();
 
+    /// <summary>
+    /// The firmware's own brightness step, as last heard from the keyboard.
+    ///
+    /// Fn+Space cycles this in firmware - full, off, dim - and nothing reads
+    /// it back. Every write carries the field, so a write that always said
+    /// "full" undid the key silently. The event watcher keeps this current;
+    /// writes carry it; only <see cref="SetBrightness"/>, where the person has
+    /// said what they want, puts it back to full.
+    /// </summary>
+    public LedBrightness HardwareLevel { get; set; } = LedBrightness.Full;
+
+    /// <summary>
+    /// What the keyboard is actually showing, as one number: the chosen
+    /// percentage scaled by the firmware's step. Fn+Space at 100% reads
+    /// 100, 0, 50; at 70% it reads 70, 0, 35. This is what the slider shows.
+    /// </summary>
+    public int EffectiveBrightnessPercent => HardwareLevel switch
+    {
+        LedBrightness.Off => 0,
+        LedBrightness.Half => State.BrightnessPercent / 2,
+        _ => State.BrightnessPercent,
+    };
+
     /// <summary>Sets one zone's colour, preserving the current effect and brightness.</summary>
     public void SetColour(LedZone zone, byte r, byte g, byte b)
     {
@@ -105,6 +128,7 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     {
         var clamped = Math.Clamp(percent, 0, 100);
         State.BrightnessPercent = (int)Math.Round(clamped / (double)BrightnessStep) * BrightnessStep;
+        HardwareLevel = LedBrightness.Full;
         ReapplyAllZones();
         State.Save();
     }
@@ -168,10 +192,10 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     {
         var effect = effectOverride ?? State.Effect;
 
-        // The hardware brightness field stays at its top step; the useful range
-        // comes from scaling the colour. Mixing both would make one control
-        // silently limit the other.
-        var mode = (byte)(((byte)effect << 4) | (byte)LedBrightness.Full);
+        // The useful range comes from scaling the colour; the hardware field
+        // is left where the keyboard's own key put it, so a colour change does
+        // not undo Fn+Space.
+        var mode = (byte)(((byte)effect << 4) | (byte)HardwareLevel);
 
         var command = SmiCommand.For(SmiFamily.Write, SmiSubsystem.Led);
         command.A2 = (uint)zone;
