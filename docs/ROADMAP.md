@@ -131,6 +131,44 @@ The honest limit: some platforms only start emitting these events after a
 vendor driver enables them through ACPI, and no such driver is installed here.
 That question stays open and does not matter - the keys already work.
 
+### A real gap: the vendor switches mode when the charger comes out
+
+Measured 11 September 2026, with a control run first because a change seen only
+once proves nothing about who caused it.
+
+**Without the vendor software**, unplugging changes nothing but the battery flag.
+The plan stays where it was and Windows leaves the overlay alone.
+
+**With it installed and running:**
+
+```
+03:30:32  unplugged   Gaming  ->  Office              by itself
+03:30:39  plugged in  Office
+03:30:40              Office  ->  Gaming              put back
+03:30:42  (mode changed to High performance by hand)
+03:30:46  unplugged   High performance -> Office      by itself
+03:30:50  plugged in  Office -> High performance      put back
+```
+
+So it drops to the quiet plan on battery and restores whatever was selected when
+the charger returns. That is what `ModeBeforeDC` in its registry is for, and it
+is a feature Nextcalibur does not have.
+
+Worth noting how little it needs: its kernel driver was `Stopped` throughout -
+installed but not yet loaded, since the machine had not been restarted - and the
+behaviour worked anyway. Nothing privileged is involved, and the power plan can
+already be changed from here without elevation.
+
+**To build:** notice the power source changing, switch to the quiet mode, and
+put the previous one back on return. Two things to get right, both learned
+tonight: remember the mode the *person* chose rather than the one we switched to,
+and do nothing at all if they changed mode by hand while on battery - that was
+their decision, not ours to undo.
+
+Not on the firmware event channel, incidentally: unplugging produces no
+`GMC_WMIEvent` at all. Windows' own power notification is where this comes from,
+and it needs no permission.
+
 ### One key does send an event: Fn+Space
 
 Found by carrying on past the F row. The firmware is silent for every key in
