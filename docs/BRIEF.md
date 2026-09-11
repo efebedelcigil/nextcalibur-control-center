@@ -3,7 +3,7 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-Four jobs.
+Five jobs.
 
 ---
 
@@ -76,6 +76,33 @@ it needs the existing behaviour to be legible.
 as readings. The code-behind now blanks them before anything loads, but the
 markup should not carry them at all: use `--` the way `CpuTemp` and `GpuTemp`
 already do. Nothing on screen is invented, including at design time.
+
+## 5. The dialogues, in the application's own look
+
+Every box the application raises now goes through one class,
+`src/Nextcalibur.App/Dialogs.cs`, with four calls: `Tell`, `Warn`, `Ask`,
+`Confirm`. Today they are still the system message box - silent now, and owned
+by the main window so it is modal - but the owner wants them to look like the
+application rather than like Windows.
+
+That is one implementation to replace. The contract is the four static methods
+and their return values; nothing else in the code-behind knows what a box looks
+like. Requirements that must survive the swap:
+
+- **Modal to the main window.** Nothing else in the window responds while a box
+  is up. An overlay inside the window that dims and blocks the rest is the
+  natural shape and reads as part of the application.
+- **Silent.** No system sounds.
+- **A safe default.** `Ask` has a `defaultNo` parameter; Escape and closing the
+  box must return that default, because an unanswered question must not do the
+  thing.
+- **Works before the window exists.** Two boxes are raised with no owner - the
+  first-run repair and the uninstall question. Fall back to something that
+  stands alone.
+
+Not in scope: Windows' own elevation prompt. It is the operating system's,
+looks the way it looks, and appears once - at the first-run permission - and
+never again.
 
 ## What the last round settled, so it does not get undone
 

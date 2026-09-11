@@ -190,10 +190,7 @@ public partial class App : Application
                 : string.Empty) +
             "Remove them as well? Windows will ask you to confirm.";
 
-        var answer = MessageBox.Show(body, "Nextcalibur - anything else to remove?",
-            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-
-        if (answer != MessageBoxResult.Yes) return;
+        if (!Dialogs.Ask("Nextcalibur - anything else to remove?", body, defaultNo: true)) return;
 
         // Power plans need no privileges, so they go first and go regardless of
         // whether the prompt below is accepted.
@@ -292,23 +289,19 @@ public partial class App : Application
                         "Your CPU can now idle down properly. You can undo this at any time " +
                         "from the Power Mode panel.";
 
-            MessageBox.Show(
-                body,
+            Dialogs.Tell(
                 outcome.Blocked is null
                     ? "Nextcalibur - power fault repaired"
                     : "Nextcalibur - power fault partly repaired",
-                MessageBoxButton.OK,
-                outcome.Blocked is null ? MessageBoxImage.Information : MessageBoxImage.Warning);
+                body);
         }
         catch (Exception ex)
         {
             // Never let a failed repair block startup.
-            MessageBox.Show(
-                "Nextcalibur could not repair the Windows power overlay automatically:\n\n" +
-                ex.Message + "\n\nYou can retry from the Power Mode panel.",
-                "Nextcalibur",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            Dialogs.Warn("Nextcalibur",
+                "Nextcalibur could not repair the Windows power overlay automatically:" +
+                Environment.NewLine + Environment.NewLine + ex.Message +
+                Environment.NewLine + Environment.NewLine + "You can retry from the Power Mode panel.");
         }
     }
 }

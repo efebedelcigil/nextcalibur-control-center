@@ -193,7 +193,7 @@ public sealed class TrayPresence : IDisposable
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Nextcalibur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn("Nextcalibur", ex.Message);
             _startupItem.CheckedChanged -= OnStartupToggled;
             _startupItem.Checked = StartupRegistration.IsEnabled;
             _startupItem.CheckedChanged += OnStartupToggled;

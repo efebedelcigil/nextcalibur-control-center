@@ -102,6 +102,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        // Every dialogue the application raises is owned by this window from
+        // here on, which is what makes it modal: nothing else in the window
+        // responds until it is answered.
+        Dialogs.Owner = this;
+
         ApplyPollInterval();
         Loaded += OnLoaded;
         StateChanged += OnStateChanged;
@@ -282,17 +288,16 @@ public partial class MainWindow : Window
 
     private void OfferRemovalOnUnsupportedMachine()
     {
-        var answer = MessageBox.Show(this,
+        var remove = Dialogs.Ask("Nextcalibur - not supported here",
             "This laptop does not have the firmware interface Nextcalibur was built for." +
             Environment.NewLine + Environment.NewLine +
             "Nothing has been changed on your machine, and to keep it that way, nothing in this " +
             "window will respond. There is no reason to keep it installed." +
             Environment.NewLine + Environment.NewLine +
             "Open Windows' list of installed apps so you can remove it?",
-            "Nextcalibur - not supported here",
-            MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+            defaultNo: false);
 
-        if (answer != MessageBoxResult.Yes) return;
+        if (!remove) return;
 
         try
         {
@@ -322,10 +327,9 @@ public partial class MainWindow : Window
             Environment.NewLine + Environment.NewLine +
             "Choosing No keeps it, and this message will not come back.";
 
-        var answer = MessageBox.Show(this, body, "Nextcalibur - two applications, one interface",
-            MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+        var open = Dialogs.Ask("Nextcalibur - two applications, one interface", body, defaultNo: false);
 
-        if (answer == MessageBoxResult.Yes)
+        if (open)
         {
             try
             {
@@ -363,7 +367,7 @@ public partial class MainWindow : Window
     {
         if (MailboxAccess.Check() != MailboxAvailability.AccessNotGranted) return;
 
-        var answer = MessageBox.Show(this,
+        var proceed = Dialogs.Confirm("Nextcalibur - one-time permission",
             "Nextcalibur needs permission to read this machine's sensors." +
             Environment.NewLine + Environment.NewLine +
             "Temperatures, fan speeds and the keyboard lighting all come from one " +
@@ -371,12 +375,9 @@ public partial class MainWindow : Window
             "to ordinary accounts until it is opened once." +
             Environment.NewLine + Environment.NewLine +
             "Windows will ask you to confirm. This happens once - afterwards " +
-            "Nextcalibur runs without any special privileges.",
-            "Nextcalibur - one-time permission",
-            MessageBoxButton.OKCancel,
-            MessageBoxImage.Information);
+            "Nextcalibur runs without any special privileges.");
 
-        if (answer != MessageBoxResult.OK) return;
+        if (!proceed) return;
 
         try
         {
@@ -606,8 +607,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Could not change mode",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn("Could not change mode", ex.Message);
             LoadSystemMode();
         }
     }
@@ -725,12 +725,11 @@ public partial class MainWindow : Window
 
         if (_mailbox is null || !_support.AllowsWrites)
         {
-            MessageBox.Show(this,
+            Dialogs.Warn("Graphics mode",
                 _support.AllowsWrites
                     ? "The firmware interface is not available, so the mode cannot be changed from here."
                     : "This laptop has not shown it speaks the protocol Nextcalibur was built against, " +
-                      "so nothing that writes to it is offered. Readings only.",
-                "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+                      "so nothing that writes to it is offered. Readings only.");
             GpuButtonFor(current).IsChecked = true;
             return;
         }
@@ -757,7 +756,7 @@ public partial class MainWindow : Window
 
             if (!outcome.Changed)
             {
-                MessageBox.Show(this, outcome.Summary, "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Dialogs.Warn("Graphics mode", outcome.Summary);
                 LoadGpuMode();
                 return;
             }
@@ -773,7 +772,7 @@ public partial class MainWindow : Window
                 // Immediate changes deserve a word too. The first version said
                 // nothing after switching the card off, and the only sign that
                 // anything had happened was Windows' own elevation prompt.
-                MessageBox.Show(this, outcome.Summary, "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
+                Dialogs.Tell("Graphics mode", outcome.Summary);
             }
 
             LoadGpuMode();
@@ -787,12 +786,12 @@ public partial class MainWindow : Window
         {
             // A transition the rules refuse: the card is driving the screen, or
             // it is switched off. Said as it is, and the selection put back.
-            MessageBox.Show(this, ex.Message, "Not from here", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn("Not from here", ex.Message);
             GpuButtonFor(current).IsChecked = true;
         }
         catch (Exception ex) when (ex is EcMailboxUnavailableException or Win32Exception)
         {
-            MessageBox.Show(this, ex.Message, "Could not change the mode", MessageBoxButton.OK, MessageBoxImage.Error);
+            Dialogs.Warn("Could not change the mode", ex.Message);
             GpuButtonFor(current).IsChecked = true;
         }
         finally
@@ -810,7 +809,7 @@ public partial class MainWindow : Window
     /// </summary>
     private bool ConfirmFirmwareSwitch(GpuMode target)
     {
-        var answer = MessageBox.Show(this,
+        var answer = Dialogs.Ask("Graphics mode",
             $"Switch to {target}?" +
             Environment.NewLine + Environment.NewLine +
             "This changes which chip drives your screen, and takes effect at the next restart." +
@@ -826,18 +825,17 @@ public partial class MainWindow : Window
             "Both happen because the change alters what the TPM measures when the machine starts." +
             Environment.NewLine + Environment.NewLine +
             "Go ahead?",
-            "Graphics mode", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+            defaultNo: true);
 
-        return answer == MessageBoxResult.Yes;
+        return answer;
     }
 
     private void OfferRestart(string summary)
     {
-        var answer = MessageBox.Show(this,
-            summary + Environment.NewLine + Environment.NewLine + "Restart now?",
-            "Graphics mode", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+        var restart = Dialogs.Ask("Graphics mode",
+            summary + Environment.NewLine + Environment.NewLine + "Restart now?", defaultNo: true);
 
-        if (answer != MessageBoxResult.Yes) return;
+        if (!restart) return;
 
         try
         {
@@ -849,8 +847,7 @@ public partial class MainWindow : Window
         }
         catch (Win32Exception)
         {
-            MessageBox.Show(this, "Could not start the restart. Restart the machine yourself to apply the change.",
-                "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn("Graphics mode", "Could not start the restart. Restart the machine yourself to apply the change.");
         }
     }
 
@@ -899,8 +896,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Could not change mode",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn("Could not change mode", ex.Message);
             LoadPowerModes();
         }
     }
@@ -1254,15 +1250,11 @@ public partial class MainWindow : Window
             if (outcome.Blocked is { } blocked)
                 body += Environment.NewLine + Environment.NewLine + blocked;
 
-            MessageBox.Show(this, body,
-                outcome.Blocked is null ? "Fixed" : "Partly fixed",
-                MessageBoxButton.OK,
-                outcome.Blocked is null ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            Dialogs.Tell(outcome.Blocked is null ? "Fixed" : "Partly fixed", body);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Could not fix it",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            Dialogs.Warn("Could not fix it", ex.Message);
         }
     }
 
@@ -1496,10 +1488,9 @@ public partial class MainWindow : Window
         {
             // The message deliberately names the likely cause rather than
             // repeating the exception, which talks about mailboxes and retries.
-            MessageBox.Show(this,
+            Dialogs.Warn("Lighting",
                 "The keyboard lighting did not respond. If Casper's Control Center is open, " +
-                "close it and try again.",
-                "Lighting", MessageBoxButton.OK, MessageBoxImage.Warning);
+                "close it and try again.");
         }
         finally
         {
