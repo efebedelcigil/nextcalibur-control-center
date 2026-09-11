@@ -35,8 +35,6 @@ public readonly record struct Trace(
 /// </summary>
 public static class Footprint
 {
-    private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    private const string RunValue = "Nextcalibur";
 
     /// <summary>What is currently on this machine because of Nextcalibur.</summary>
     public static IReadOnlyList<Trace> Survey()
@@ -44,7 +42,7 @@ public static class Footprint
         var traces = new List<Trace>
         {
             new("Your settings", SettingsExist(), NeedsElevation: false, KeepingIsReasonable: false),
-            new("The start-with-Windows entry", StartupRegistration.IsEnabled, NeedsElevation: false, KeepingIsReasonable: false),
+            new("The start-with-Windows task", StartupRegistration.IsEnabled, NeedsElevation: false, KeepingIsReasonable: false),
             new("Permission to read the sensors",
                 MailboxAccess.Check() == MailboxAvailability.Available,
                 NeedsElevation: true,
@@ -91,10 +89,10 @@ public static class Footprint
 
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-            key?.DeleteValue(RunValue, throwOnMissingValue: false);
+            // The logon task, and the Run entry earlier versions wrote.
+            StartupRegistration.Set(false, string.Empty);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        catch (InvalidOperationException)
         {
         }
     }
