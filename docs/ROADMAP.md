@@ -419,6 +419,22 @@ turned off. The first-run hook sets it once; it never re-asserts it after that,
 so the person's choice sticks. A place for the toggle inside the window is
 Antigravity's (BRIEF §6).
 
+**A wrong turn, taken back the same night.** The Run entry looked skipped
+at sign-in, so it was replaced by a logon task; the task then failed with
+"file not found" on a file that plainly existed. The real cause was the
+tooling, not Windows: the assistant's shell runs inside the desktop app's
+sandbox, which gives its process tree - and every application it launches -
+a private view of `HKCU` and the user's profile folders. The Run entry, the
+"installed" 0.5.0 under `%LOCALAPPDATA%`, the uninstall key reading 0.5.0
+and the settings file with `LastSystemMode` all lived in that view; the
+real session had none of them (uninstall key 0.3.0, no `Nextcalibur`
+folder, an old settings file). Explorer never saw the entry, so it never
+ran it. The logon-task commit is reverted; the Run entry stands, untested
+for real until the person installs 0.5.0 themselves. Rule from this:
+**anything that must reach the real session - installs, settings, HKCU -
+is done by the person, not from the assistant's shell**, and a claim about
+what the machine has is checked from a process the person started.
+
 ### The System page said nothing when Windows was on none of the modes
 
 Seen 11 September after a fresh boot: Balanced plan with the Better-performance
@@ -609,7 +625,10 @@ order that would matter to somebody who installed this.
    0.5.0: the installed copy checked a minute after start, downloaded the
    delta (58 MB - the one-time cost of going self-contained; from here deltas
    are small), rebuilt the full package from it, announced through the tray,
-   and applied on exit. Reopened as 0.5.0, uninstall entry 0.5.0. Two notes:
+   and applied on exit. Reopened as 0.5.0, uninstall entry 0.5.0 - **all of
+   it inside the assistant's sandboxed view of the profile** (see "Start
+   with Windows" below), so the chain works but the person's real session
+   still has no 0.5.0; they install it themselves. Two notes:
    the binary's informational version names the commit at *build* time, so
    build after the release commit next time, not before; and there is no
    Start-menu or desktop shortcut on the development machine - Velopack's
