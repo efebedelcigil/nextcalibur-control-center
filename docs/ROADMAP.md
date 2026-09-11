@@ -131,9 +131,38 @@ The honest limit: some platforms only start emitting these events after a
 vendor driver enables them through ACPI, and no such driver is installed here.
 That question stays open and does not matter - the keys already work.
 
-Still unknown, and worth a minute when somebody has one: whether this keyboard
-has a **backlight key**, and whether it does anything without the vendor
-software. That one is ours - the lighting is a feature of this application.
+### One key does send an event: Fn+Space
+
+Found by carrying on past the F row. The firmware is silent for every key in
+that row, and then Fn+Space produces this:
+
+```
+03:23:08.973   32 bytes   00-00-00 ... 00
+03:23:10.391   32 bytes   01-00-00 ... 00
+03:23:17.368   32 bytes   02-00-00 ... 00
+03:23:18.816   32 bytes   00-00-00 ... 00
+```
+
+Four presses, and the first byte cycles `0, 1, 2, 0`. That is a three-step
+level, and on these machines Fn+Space is the keyboard backlight key - so the
+firmware is reporting the level it has moved to and expecting software to apply
+it. Which is exactly why the vendor's Control Center subscribes to this class,
+and it is the one thing on the whole keyboard that needed it.
+
+Power source is not on this channel: unplugging and replugging produced nothing,
+so whatever the vendor does with `ModeBeforeDC` it learns some other way.
+
+**Open until confirmed:** whether the backlight visibly changes when that key is
+pressed with no vendor software installed. If it does, the firmware is applying
+the level itself and the event is a courtesy. If it does not, that key is dead
+right now, and the lighting is this application's own feature - so making it
+work again is ours to do.
+
+Worth knowing before building it: this event class has **no security descriptor**
+and is administrators-only. Subscribing would mean granting one more GUID
+alongside the data block - `74286d6e-429c-427a-b34b-b5d15d032b05` - which is a
+second permission to ask somebody for, and worth doing only for a key that is
+genuinely broken.
 
 ### Look before you change anything
 
