@@ -315,3 +315,21 @@ is not readable without a kernel driver (roadmap).
 - Remove `GpuDrawText` (the "Graphics card: ..." line from §14). The
   readings panel is on this page now and says the same thing beside the
   GPU row. The code-behind no longer references it.
+
+## 17. Updating, the way the owner wants it (12 September)
+
+The flow is in the code-behind now: a release is found quietly, the tray
+balloon says so, clicking it (or the corner button, or the tray's "Check for
+updates now") brings the window up with the question "Update to 0.5.2?";
+yes downloads with a progress bar in the window's own dialogue and restarts
+the application; no leaves the button. Two pieces of markup:
+
+- `UpdateNowButton` - a `Button`, `Click="OnUpdateNowClick"`, in the rail
+  directly above `VersionText`, same width as the rail allows, small; the
+  code-behind sets its `Content` ("Update to 0.5.2") and shows it only when
+  a release is waiting - start it `Visibility="Collapsed"`. Accent-coloured
+  is right: it is the one thing in the rail that asks to be clicked.
+- `DialogProgress` - a `ProgressBar`, `Minimum="0" Maximum="100"`, inside
+  `ModalDialogOverlay`'s card between `DialogBodyText` and the buttons,
+  `Visibility="Collapsed"`, in the accent colour, about 6 px tall. The
+  code-behind shows it and hides the buttons while a download runs.

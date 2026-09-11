@@ -176,9 +176,15 @@ public partial class MainWindow : Window
 
         // Said once, through the tray, because that is where this application
         // lives when it has something to say and no window on screen.
-        _updates.UpdateReady += (_, version) => _tray?.ShowMessage(
-            $"Nextcalibur {version} is ready",
-            "It will be installed the next time you close the application from the tray menu.");
+        _updates.UpdateFound += (_, version) => OnUpdateFound(version);
+        _tray.BalloonClicked += (_, _) => { if (_updates.Available is not null) OfferUpdate(); };
+        _tray.CheckForUpdatesRequested += async (_, _) =>
+        {
+            _checkingByHand = true;
+            try { await _updates.CheckNowAsync(); }
+            finally { _checkingByHand = false; }
+            if (_updates.Available is not null) OfferUpdate();
+        };
         _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
 
         // The window's switch and the tray's menu are two faces of one setting.
@@ -190,7 +196,6 @@ public partial class MainWindow : Window
         LoadOverheatThresholds();
         VersionText.Text = RunningVersion();
         _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
-        _tray.Updates = _updates;
         _updates.Start();
 
         if (_settings.StartMinimised &&
@@ -688,7 +693,6 @@ public partial class MainWindow : Window
 
             // Last, and after everything else is released: this hands a staged
             // release to an installer that waits for this process to go away.
-            _updates.ApplyOnExit();
             _updates.Dispose();
         }
     }
@@ -996,6 +1000,88 @@ public partial class MainWindow : Window
         GpuButtonFor(mode).IsChecked = true;
     }
 
+    // ------------------------------------------------------------- updates
+
+    /// <summary>
+    /// A release was found. Say so through the tray and light the corner
+    /// button; the offer itself waits for a click, because a question that
+    /// pops up on its own is the thing the person asked not to have.
+    /// </summary>
+    private void OnUpdateFound(string version)
+    {
+        UpdateNowButton.Visibility = Visibility.Visible;
+        UpdateNowButton.Content = $"Update to {version}";
+        if (!_checkingByHand)
+            _tray?.ShowMessage($"Nextcalibur {version} is available", "Click here to update.");
+    }
+
+    /// <summary>Set while a check the person asked for runs, so the offer comes as a dialogue rather than a balloon.</summary>
+    private bool _checkingByHand;
+
+    private void OnUpdateNowClick(object sender, RoutedEventArgs e) => OfferUpdate();
+
+    private bool _updating;
+
+    /// <summary>The question, then the work: download in front of them, restart into the new version.</summary>
+    private async void OfferUpdate()
+    {
+        if (_updating || _updates.Available is null) return;
+
+        var version = _updates.AvailableVersion ?? "a new version";
+        if (!Dialogs.Ask($"Update to {version}?",
+                $"Nextcalibur {version} is ready to download from GitHub. It will be installed and the " +
+                "application will restart itself; your settings stay as they are." +
+                Environment.NewLine + Environment.NewLine + "Update now?",
+                defaultNo: false))
+            return;
+
+        _updating = true;
+        try
+        {
+            ShowProgress($"Updating to {version}", "Downloading...");
+            var progress = new Progress<int>(p =>
+            {
+                DialogProgress.Value = p;
+                DialogBodyText.Text = p < 100 ? $"Downloading... {p}%" : "Installing and restarting...";
+            });
+            _exiting = true;
+            _settings.Save();
+            await _updates.DownloadAndRestartAsync(progress);
+            // Only reached if the restart did not happen.
+            _exiting = false;
+            HideProgress();
+            Dialogs.Warn("Nextcalibur - updates", "The update was downloaded but the application could not restart into it. Close and reopen Nextcalibur to finish.");
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            _exiting = false;
+            HideProgress();
+            Dialogs.Warn("Nextcalibur - updates", "The update could not be installed: " + ex.Message);
+        }
+        finally
+        {
+            _updating = false;
+        }
+    }
+
+    /// <summary>The overlay as a progress panel: title, a line, a bar, no buttons. Not modal - nothing waits on it.</summary>
+    private void ShowProgress(string title, string body)
+    {
+        DialogTitleText.Text = title;
+        DialogBodyText.Text = body;
+        DialogButtonPrimary.Visibility = DialogButtonSecondary.Visibility = Visibility.Collapsed;
+        DialogProgress.Value = 0;
+        DialogProgress.Visibility = Visibility.Visible;
+        ModalDialogOverlay.Visibility = Visibility.Visible;
+    }
+
+    private void HideProgress()
+    {
+        DialogProgress.Visibility = Visibility.Collapsed;
+        DialogButtonPrimary.Visibility = Visibility.Visible;
+        ModalDialogOverlay.Visibility = Visibility.Collapsed;
+    }
+
     /// <summary>True once the first frame has been drawn; the in-window dialogue is safe from then on.</summary>
     public bool HasRendered { get; private set; }
 
@@ -1020,6 +1106,8 @@ public partial class MainWindow : Window
         DialogButtonPrimary.Content = primaryText;
         DialogButtonSecondary.Content = secondaryText;
         DialogButtonSecondary.Visibility = secondary is null ? Visibility.Collapsed : Visibility.Visible;
+        DialogButtonPrimary.Visibility = Visibility.Visible;
+        DialogProgress.Visibility = Visibility.Collapsed;
 
         var result = fallback;
         var frame = new DispatcherFrame();
