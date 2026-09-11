@@ -48,6 +48,17 @@
     <SolidColorBrush x:Key="ModeTabInactiveBackground" Color="#F0F2F6" />
     <SolidColorBrush x:Key="ModeTabBorder" Color="#D4D8E2" />
 
+    <!-- Dialogue Action Button Brushes (Primary Blue & Secondary Danger Red) -->
+    <SolidColorBrush x:Key="DialogPrimaryBackground" Color="#0E869B" />
+    <SolidColorBrush x:Key="DialogPrimaryForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="DialogPrimaryHover" Color="#119BB3" />
+    <SolidColorBrush x:Key="DialogPrimaryPressed" Color="#0A6F80" />
+
+    <SolidColorBrush x:Key="DialogSecondaryBackground" Color="#C92A2A" />
+    <SolidColorBrush x:Key="DialogSecondaryForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="DialogSecondaryHover" Color="#DC3535" />
+    <SolidColorBrush x:Key="DialogSecondaryPressed" Color="#A61E1E" />
+
     <!-- Circuit Trace Artwork Palette -->
     <SolidColorBrush x:Key="CircuitDarkCopper" Color="#C87D55" />
     <SolidColorBrush x:Key="CircuitMidCopper" Color="#B26134" />

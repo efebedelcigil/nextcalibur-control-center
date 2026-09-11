@@ -1378,9 +1378,13 @@
                         <TextBlock x:Name="DialogBodyText" Style="{DynamicResource StatusTextStyle}"
                                    FontSize="13" LineHeight="19" TextWrapping="Wrap" Margin="0,0,0,20" />
                         <StackPanel x:Name="DialogActions" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button x:Name="DialogButtonSecondary" Margin="0,0,10,0" Padding="16,6"
+                            <Button x:Name="DialogButtonSecondary"
+                                    Style="{DynamicResource DialogSecondaryButton}"
+                                    Margin="0,0,10,0" Padding="16,6"
                                     Content="Cancel" Visibility="Collapsed" />
-                            <Button x:Name="DialogButtonPrimary" Padding="16,6"
+                            <Button x:Name="DialogButtonPrimary"
+                                    Style="{DynamicResource DialogPrimaryButton}"
+                                    Padding="16,6"
                                     Content="OK" />
                         </StackPanel>
                     </StackPanel>

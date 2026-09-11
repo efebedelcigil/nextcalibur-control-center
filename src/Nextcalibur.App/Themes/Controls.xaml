@@ -358,6 +358,86 @@
         </Setter>
     </Style>
 
+    <!-- Dialogue Action Buttons: Primary Affirmative (Blue) and Secondary Negative (Red) -->
+    <Style x:Key="DialogPrimaryButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource DialogPrimaryBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource DialogPrimaryForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DialogPrimaryBackground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="16,6" />
+        <Setter Property="MinWidth" Value="72" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource DialogPrimaryHover}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource DialogPrimaryHover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource DialogPrimaryPressed}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource DialogPrimaryPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DialogSecondaryButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource DialogSecondaryBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource DialogSecondaryForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DialogSecondaryBackground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="16,6" />
+        <Setter Property="MinWidth" Value="72" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource DialogSecondaryHover}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource DialogSecondaryHover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource DialogSecondaryPressed}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource DialogSecondaryPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DialogButtonPrimary" TargetType="Button" BasedOn="{StaticResource DialogPrimaryButton}" />
+    <Style x:Key="DialogButtonSecondary" TargetType="Button" BasedOn="{StaticResource DialogSecondaryButton}" />
+
     <!-- Custom Slider Template (for BrightnessSlider) -->
     <Style TargetType="Slider">
         <Setter Property="Template">
