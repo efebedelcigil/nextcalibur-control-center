@@ -371,6 +371,13 @@ public partial class MainWindow : Window
                     nav.IsEnabled = false;
                 foreach (var page in new[] { PageSystem, PagePower, PageDisplay, PageLighting })
                     page.IsEnabled = false;
+                // The readings panel sits outside the pages since 0.5.1, so
+                // its controls need locking on their own - and its numbers
+                // are settings for a warning that will never fire here.
+                foreach (var control in new UIElement[] { OverheatWarningToggle, CpuWarnSlider, GpuWarnSlider, CpuWarnValue, GpuWarnValue, OverheatResetButton })
+                    control.IsEnabled = false;
+                OverheatWarningToggle.IsChecked = false;
+                CpuWarnValue.Text = GpuWarnValue.Text = "--";
                 ShowBanner(
                     "This laptop isn't supported",
                     "Nextcalibur was built for a specific firmware interface and this machine does not have it. " +
