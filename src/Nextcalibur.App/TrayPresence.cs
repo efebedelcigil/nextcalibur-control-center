@@ -42,7 +42,6 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add("Open Nextcalibur", null, (_, _) => ShowWindow());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_startupItem);
-        menu.Items.Add(CloseBehaviourItem());
         menu.Items.Add(QuietOnBatteryItem());
         menu.Items.Add(OverheatWarningMenu());
         menu.Items.Add(ReadingIntervalMenu());
@@ -80,31 +79,6 @@ public sealed class TrayPresence : IDisposable
     // warning threshold at the next slow tick, and the sampling interval when
     // that tick next reconsiders it — a few seconds at worst.
 
-    private Forms.ToolStripMenuItem CloseBehaviourItem()
-    {
-        var item = new Forms.ToolStripMenuItem("Close button keeps it running")
-        {
-            CheckOnClick = true,
-            Checked = _settings.MinimiseToTray,
-        };
-
-        item.CheckedChanged += (_, _) =>
-        {
-            _settings.MinimiseToTray = item.Checked;
-            _settings.Save();
-        };
-
-        return item;
-    }
-
-    /// <summary>
-    /// The overheat warning: whether it warns, and at what.
-    ///
-    /// "Never" switches the warning off without discarding the threshold, so
-    /// turning it back on returns the temperature that was chosen rather than
-    /// a default. The window offers the same switch; both write the same two
-    /// settings, so neither can contradict the other.
-    /// </summary>
     private Forms.ToolStripMenuItem AutoUpdateItem()
     {
         var item = new Forms.ToolStripMenuItem("Check for updates automatically")

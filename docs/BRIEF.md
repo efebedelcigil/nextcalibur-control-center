@@ -249,3 +249,16 @@ If it still looks soft, say so and the owner will hand-tune a 48 px master.
 - Bottom-left of the rail, under the navigation items: a `TextBlock
   x:Name="VersionText"`, small and muted (`StatusTextStyle`, 10-11 px),
   empty in the markup - the code-behind writes `v0.5.1`.
+
+## 12. Title bar: a third button, and one double space (12 September)
+
+- `MainWindow.xaml:396`, the header text: `"NEXTCALIBUR  CONTROL CENTER"` has
+  two spaces after NEXTCALIBUR. Make it one.
+- The close button now **exits** (the code-behind asks "Exit Nextcalibur?"
+  first, in the window's own dialogue). Hiding to the tray is a button of its
+  own: add a third caption button between minimise and close,
+  `Click="OnMinimiseToTrayClick"`, `Style="{DynamicResource CaptionButton}"`,
+  with a glyph that reads as "to the tray" (an arrow into a tray, or a small
+  chevron-down-into-bar - your call), tooltip "Hide to tray". Keep the three
+  the same size and spacing. The tray menu's "Close button keeps it running"
+  item is gone; nothing else in the menu changes.
