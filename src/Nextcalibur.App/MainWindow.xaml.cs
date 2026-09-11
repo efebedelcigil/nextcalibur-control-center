@@ -112,10 +112,34 @@ public partial class MainWindow : Window
         Closing += OnClosing;
     }
 
+    /// <summary>
+    /// Blanks every figure the markup starts with, before any reading arrives.
+    ///
+    /// The markup carries numbers so the page has a shape at design time -
+    /// 46.8% of memory, 733 of 1396 GB - and on a machine where the readings
+    /// never come, those numbers stay on screen looking like readings. They
+    /// were noticed on an unsupported machine, where the page is locked and
+    /// nothing should be shown at all. The rule this project keeps is that
+    /// nothing on screen is invented; a dash is the honest value until the
+    /// real one is known.
+    /// </summary>
+    private void ClearInventedValues()
+    {
+        RamGauge.Value = 0;
+        RamPercent.Text = "--";
+        RamDetail.Text = "--";
+        SsdGauge.Value = 0;
+        SsdPercent.Text = "--";
+        SsdDetail.Text = "--";
+        CpuFan.Text = "-- rpm";
+        GpuFan.Text = "-- rpm";
+    }
+
     // ---------------------------------------------------------------- startup
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        ClearInventedValues();
         LoadTheme();
 
         _tray = new TrayPresence(this, _settings);
