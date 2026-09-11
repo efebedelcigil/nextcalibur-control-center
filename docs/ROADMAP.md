@@ -306,6 +306,16 @@ Windows comes up on Balanced after a restart whatever was active, so the
 chosen mode is saved (`LastSystemMode`) and put back at start: as it was on
 the charger, Office on battery with theirs restored when the charger returns.
 
+**Found while chasing "it drops to Balanced", 11 September, later.** It did
+not drop; it never took. Two plans on this machine are called "High
+performance" - the vendor's and Windows' own - and the enumeration let the
+built-in one win the name. Power-mode overlays do not take effect on Windows'
+High performance plan: the set succeeds and reads back Balanced (probed on all
+four plans; the vendor's two and Balanced take it, the built-in does not). So
+Performance mode selected the wrong plan, its overlay evaporated, and at the
+next start detection saw "High performance plan, Balanced" - no mode. A
+built-in plan no longer displaces a custom one of the same name.
+
 **The original note:** notice the power source changing, switch to the quiet
 mode, and put the previous one back on return. Two things to get right, both learned
 tonight: remember the mode the *person* chose rather than the one we switched to,

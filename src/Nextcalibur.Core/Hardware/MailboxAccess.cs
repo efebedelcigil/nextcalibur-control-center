@@ -49,6 +49,14 @@ public static class MailboxAccess
     /// </summary>
     public const string BlockGuid = "644c5791-b7b0-4123-a90b-e93876e0daad";
 
+    /// <summary>
+    /// The firmware's event class, <c>GMC_WMIEvent</c>. Administrators only by
+    /// default like the block, and the only way to hear Fn+Space: the key
+    /// changes the backlight level in firmware, nothing reads that level back,
+    /// so the event is what keeps this application from stamping on it.
+    /// </summary>
+    public const string EventGuid = "74286d6e-429c-427a-b34b-b5d15d032b05";
+
     private const string SecurityKey = @"SYSTEM\CurrentControlSet\Control\WMI\Security";
 
     /// <summary>
@@ -124,15 +132,49 @@ public static class MailboxAccess
         // whatever the descriptor says, so "it works for me" from an elevated
         // process proves nothing about the account's own permission; that case
         // falls through and compares the entries properly below.
-        if (!IsElevated() && Check() == MailboxAvailability.Available) return false;
+        if (!IsElevated() && Check() == MailboxAvailability.Available && CanHearEvents()) return false;
 
+        // Both, not either: the event grant is worthless without the block and
+        // the block alone leaves Fn+Space unheard.
+        var block = Grant(BlockGuid);
+        var events = Grant(EventGuid);
+        return block || events;
+    }
+
+    /// <summary>
+    /// Whether this account may subscribe to the firmware's event class.
+    /// Answered by trying, since there is no cheaper honest way.
+    /// </summary>
+    public static bool CanHearEvents()
+    {
+        try
+        {
+            using var watcher = new System.Management.ManagementEventWatcher(
+                new System.Management.ManagementScope(@"root\WMI"),
+                new System.Management.EventQuery("SELECT * FROM GMC_WMIEvent"));
+            watcher.Start();
+            watcher.Stop();
+            return true;
+        }
+        catch (System.Management.ManagementException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    private static bool Grant(string guid)
+    {
         var sid = WindowsIdentity.GetCurrent().User
             ?? throw new InvalidOperationException("Could not determine the current account.");
 
         using var key = Registry.LocalMachine.OpenSubKey(SecurityKey, writable: true)
             ?? throw new InvalidOperationException($@"Missing HKLM\{SecurityKey}.");
 
-        var existing = key.GetValue(BlockGuid) as byte[];
+        var existing = key.GetValue(guid) as byte[];
 
         // A descriptor with no entries of its own means Windows' default, which
         // is administrators only. Start from that rather than from nothing, so
@@ -146,8 +188,8 @@ public static class MailboxAccess
         // Keep the original so Revoke has something to compare against rather
         // than guess at. Only the first time: a second grant must not overwrite
         // the record of what was there before the first.
-        if (existing is not null && key.GetValue(BackupValue) is null)
-            key.SetValue(BackupValue, existing, RegistryValueKind.Binary);
+        if (existing is not null && key.GetValue(BackupValue(guid)) is null)
+            key.SetValue(BackupValue(guid), existing, RegistryValueKind.Binary);
 
         descriptor.DiscretionaryAcl ??= new RawAcl(GenericAcl.AclRevision, 1);
         descriptor.DiscretionaryAcl.InsertAce(
@@ -155,7 +197,7 @@ public static class MailboxAccess
             new CommonAce(AceFlags.None, AceQualifier.AccessAllowed,
                 unchecked((int)AccessMaskValue), sid, isCallback: false, opaque: null));
 
-        Write(key, descriptor);
+        Write(key, guid, descriptor);
         return true;
     }
 
@@ -173,14 +215,20 @@ public static class MailboxAccess
     /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
     public static void Revoke()
     {
+        Revoke(BlockGuid);
+        Revoke(EventGuid);
+    }
+
+    private static void Revoke(string guid)
+    {
         var sid = WindowsIdentity.GetCurrent().User;
 
         using var key = Registry.LocalMachine.OpenSubKey(SecurityKey, writable: true)
             ?? throw new InvalidOperationException($@"Missing HKLM\{SecurityKey}.");
 
-        if (key.GetValue(BlockGuid) is not byte[] current || sid is null)
+        if (key.GetValue(guid) is not byte[] current || sid is null)
         {
-            key.DeleteValue(BackupValue, throwOnMissingValue: false);
+            key.DeleteValue(BackupValue(guid), throwOnMissingValue: false);
             return;
         }
 
@@ -193,19 +241,19 @@ public static class MailboxAccess
                     acl.RemoveAce(i);
         }
 
-        var backup = key.GetValue(BackupValue) as byte[];
+        var backup = key.GetValue(BackupValue(guid)) as byte[];
         if (backup is null && (acl is null || acl.Count == 0))
         {
             // Nothing was here before us and nothing is left: take the value
             // away rather than leave an empty one behind.
-            key.DeleteValue(BlockGuid, throwOnMissingValue: false);
+            key.DeleteValue(guid, throwOnMissingValue: false);
         }
         else
         {
-            Write(key, descriptor);
+            Write(key, guid, descriptor);
         }
 
-        key.DeleteValue(BackupValue, throwOnMissingValue: false);
+        key.DeleteValue(BackupValue(guid), throwOnMissingValue: false);
     }
 
     /// <summary>
@@ -249,15 +297,15 @@ public static class MailboxAccess
         sid.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid)
         || sid.IsWellKnown(WellKnownSidType.LocalSystemSid);
 
-    private static void Write(RegistryKey key, RawSecurityDescriptor descriptor)
+    private static void Write(RegistryKey key, string guid, RawSecurityDescriptor descriptor)
     {
         var bytes = new byte[descriptor.BinaryLength];
         descriptor.GetBinaryForm(bytes, 0);
-        key.SetValue(BlockGuid, bytes, RegistryValueKind.Binary);
+        key.SetValue(guid, bytes, RegistryValueKind.Binary);
     }
 
     /// <summary>Where the pre-existing descriptor is parked during a grant.</summary>
-    private const string BackupValue = BlockGuid + "-nextcalibur-previous";
+    private static string BackupValue(string guid) => guid + "-nextcalibur-previous";
 
     /// <summary>True when this process could grant access without another prompt.</summary>
     public static bool IsElevated()
