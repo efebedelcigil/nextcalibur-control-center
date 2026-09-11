@@ -593,8 +593,39 @@ leaving a registry value behind.
 
 000. **Every drive, not just the Windows one.** Set 12 September 2026: the
      owner's laptop has two SSDs and the Memory & Disk panel shows only
-     `C:`. Show each fixed drive with its own gauge (letter, used/total),
-     read the same cheap way; the markup grows a row per drive.
+     `C:`. One drive: the panel as it is, RAM above, SSD below. Two or
+     more: every fixed drive, each with its gauge and used/total - and the
+     owner's condition is that it looks designed, not squeezed: no
+     overflow, nothing cramped, in the theme. The reading is the same cheap
+     `DriveInfo` call per drive; the layout is the design agent's, given a
+     list of drives from the code-behind.
+
+0000. **Restart the way Windows does, so "cancel" means cancel.** Set 12
+      September 2026. A firmware mode switch ends in a restart, and today
+      that is `shutdown /r /t 0`: immediate, no questions, and the mode
+      register was already written. Windows' own restart first asks every
+      application whether it may end the session; one that says no gets
+      the person the "these apps are preventing restart - restart anyway /
+      cancel" screen. The owner wants that screen, and wants cancel to mean
+      the mode does not change. The mechanism: ask for the restart with
+      `ExitWindowsEx(EWX_REBOOT)` *without* `EWX_FORCE` (needs
+      `SeShutdownPrivilege` enabled on our token, which any user has), and
+      write the mode register not before the restart but on
+      `WM_ENDSESSION` with `wParam` true - the message Windows sends only
+      once the session is really ending, after any "restart anyway". A
+      cancelled restart sends `WM_ENDSESSION` false instead: nothing was
+      written, the card stays where it was, the page says so. The write is
+      one mailbox call and takes 60 ms; the session-end grace is seconds.
+      Hooked through `HwndSource.AddHook` on the main window.
+
+00000. **Nothing added may cost anything.** A standing check, written down
+       12 September after the GPU clock was found waking the card every two
+       seconds for weeks: every reading and every timer added since 0.5.0
+       is to be audited once against the two rules - no polling where a
+       notification exists, and nothing that wakes a device the mode is
+       keeping asleep. The tools are the ones already in `tools/` (the
+       handle and CPU measurements) plus `DEVPKEY_Device_PowerData` for the
+       card. Result goes in "What things cost".
 
 0. **A proper installer, set 11 September 2026.** The owner wants what Inno
    Setup gives: a wizard that asks where to install, shows what it is doing,

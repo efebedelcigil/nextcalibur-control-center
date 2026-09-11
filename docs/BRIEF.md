@@ -306,3 +306,12 @@ is not readable without a kernel driver (roadmap).
   header keeps the title and the subtitle line.
 - The GPU row's clock field now reads e.g. `2,22 GHz · 17.5 W` or `asleep`;
   give it the width.
+
+## 16. Display page: rename, and drop the draw line (12 September)
+
+- The navigation item and page title read "Display"; make them
+  "Display Mode" - the page is about which chip drives the screen, nothing
+  else.
+- Remove `GpuDrawText` (the "Graphics card: ..." line from §14). The
+  readings panel is on this page now and says the same thing beside the
+  GPU row. The code-behind no longer references it.
