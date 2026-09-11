@@ -165,7 +165,7 @@ public class FootprintTests
     {
         // Settings and the startup entry live under the current user, so an
         // uninstall can always clear them - no prompt, no question.
-        foreach (var name in new[] { "Your settings", "The start-with-Windows task" })
+        foreach (var name in new[] { "Your settings", "The start-with-Windows entry" })
         {
             var trace = Footprint.Survey().Single(t => t.Name == name);
             Assert.False(trace.NeedsElevation);
@@ -186,25 +186,47 @@ public class FootprintTests
 /// </summary>
 public class IdempotenceTests
 {
+    /// <summary>
+    /// These write the real Run key, so they put back exactly what was there -
+    /// the raw value, not a reconstruction. An earlier version "restored" it
+    /// with the test host's own path and left the machine starting testhost.exe
+    /// at sign-in.
+    /// </summary>
+    private static IDisposable PreserveRunEntry()
+    {
+        const string key = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        using var read = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(key);
+        var original = read?.GetValue("Nextcalibur") as string;
+        return new Restore(() =>
+        {
+            using var write = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(key, writable: true);
+            if (original is null) write?.DeleteValue("Nextcalibur", throwOnMissingValue: false);
+            else write?.SetValue("Nextcalibur", original, Microsoft.Win32.RegistryValueKind.String);
+        });
+    }
+
+    private sealed class Restore(Action undo) : IDisposable { public void Dispose() => undo(); }
+
     [Fact]
     public void The_startup_entry_reports_when_it_was_already_right()
     {
-        // On a machine that already starts Nextcalibur at sign-in there is a
-        // real task pointing at the real executable, and "restoring" it would
-        // mean re-creating it pointing at the test host. Not worth it: the
-        // test says what it can only where nothing is registered.
-        if (StartupRegistration.IsEnabled) return;
+        using var _ = PreserveRunEntry();
+        var path = @"C:
+extcalibur-test.exe";
 
-        var path = Environment.ProcessPath ?? "test.exe";
-        try
-        {
-            StartupRegistration.Set(true, path);
-            Assert.False(StartupRegistration.Set(true, path));
-        }
-        finally
-        {
-            StartupRegistration.Set(false, path);
-        }
+        StartupRegistration.Set(true, path);
+
+        // Second time: same request, nothing to do.
+        Assert.False(StartupRegistration.Set(true, path));
+    }
+
+    [Fact]
+    public void Asking_for_a_different_path_is_not_the_same_request()
+    {
+        using var _ = PreserveRunEntry();
+
+        StartupRegistration.Set(true, @"C:\one.exe");
+        Assert.True(StartupRegistration.Set(true, @"C:nother.exe"));
     }
 
     [Fact]
