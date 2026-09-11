@@ -228,9 +228,32 @@ observed values are ever written to the register. And the register is read
 back before any restart is suggested, so a write that did not land is reported
 rather than followed by a pointless reboot.
 
-Test order, cheapest first: UMA and back (no restart, no PIN); then a
-Discrete/Hybrid round trip through our own code, which costs two PIN resets and
-is done when the owner chooses.
+**Built and tested, 11 September 2026, 06:52.** UMA and back through
+Nextcalibur's own code, verified with timestamps: `CM_PROB_DISABLED` and
+`nvlddmkm` Stopped six seconds after the request, OK and Running six seconds
+after the return. The firmware register reads back correctly (1, in Hybrid) with
+the reply shaped exactly as captured.
+
+Two defects the test found, both fixed, both worth remembering:
+
+- **A disabled card read as Hybrid.** A switched-off adapter is still listed by
+  Windows, so Detect saw "present, not driving" and called it Hybrid. "Switch to
+  Hybrid" from UMA was then a no-op, and the card stayed off. Code 22,
+  `CM_PROB_DISABLED`, now means UMA.
+- **The process died inside nvml.dll on the way back** - the exact crash the
+  vendor's Control Center has four seconds after its UMA button, which this
+  project had noted with some satisfaction the day before. NVML's device handle
+  names a device that has just been recreated; using it is an access violation
+  .NET cannot catch. The handle is dropped before and after every switch, and
+  the slow timer drops it when anything else switches the card.
+
+Still owed: a Discrete/Hybrid round trip through our own code rather than the
+vendor's. The write and the read-back are verified; the boot that follows is
+not. Two PIN resets, when the owner chooses.
+
+Known and not chased: `Watch-Graphics.ps1` missed both device switches while
+they were happening, though direct queries in the same seconds saw them. Its
+change detection or its CIM session is stale somewhere.
 
 The earlier check that "no vendor driver is involved" asked about
 `ControlCenter64` and `ControlCenterC64`, which are file names; the service is

@@ -3,7 +3,7 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-Two jobs.
+Three jobs.
 
 ---
 
@@ -47,6 +47,26 @@ Where it goes is your call. It belongs near the temperature readings rather
 than buried in a settings page, because it is about them.
 
 ---
+
+## 3. The Display page now switches, and needs to show it
+
+Until now the three mode cards were a report. As of 11 September they act:
+Hybrid and Discrete write the firmware and take effect at the next restart; UMA
+switches the card off at once, and Hybrid from UMA switches it back on. The
+code-behind handles the dialogues, the elevation prompt, and a ten-second lock
+on the cards after a switch. What the markup does not yet show:
+
+| State | What the page should make visible |
+|---|---|
+| A firmware switch is pending a restart | the card that is *selected* is not the card the machine is *in*, and it will be after a restart. Today the selection snaps back to the current mode, which reads as "it didn't take". |
+| The cards are locked after a switch | ten seconds of disabled cards with no explanation. A short line - "settling" - is enough. |
+| UMA is not available from Discrete | the card is driving the panel; the rule is explained in a dialogue when clicked, but the card could say so before. |
+| Discrete is not available from UMA | same, the other way. |
+
+The code-behind exposes what it knows: `GpuModeService.Detect()` for the current
+mode, `GpuModeService.ReadFirmwareMode(mailbox)` for the stored one, and the
+two differ exactly when a restart is pending. Nothing here needs new behaviour;
+it needs the existing behaviour to be legible.
 
 ## What the last round settled, so it does not get undone
 
