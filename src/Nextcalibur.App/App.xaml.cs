@@ -67,7 +67,7 @@ public partial class App : Application
         // Velopack takes over the process during install, update and uninstall
         // hooks, so this must run before any UI is created.
         VelopackApp.Build()
-            .OnFirstRun(_ => { StartWithWindowsOnFirstRun(); RepairPowerOverlayOnFirstRun(); })
+            .OnFirstRun(_ => FirstRun())
             .OnBeforeUninstallFastCallback(_ => CleanUpOnUninstall())
             .Run();
 
@@ -254,6 +254,20 @@ public partial class App : Application
         {
             return 3;
         }
+    }
+
+    /// <summary>
+    /// The two things done once after install - and neither on a machine
+    /// without the firmware mailbox. Seen in the sandbox, 11 September 2026:
+    /// a laptop this application does not understand was handed a power
+    /// repair and a Run entry before the window had a chance to lock itself.
+    /// "Nothing to click" has to include the installer's own first minute.
+    /// </summary>
+    private static void FirstRun()
+    {
+        if (MailboxAccess.Check() == MailboxAvailability.NotSupported) return;
+        StartWithWindowsOnFirstRun();
+        RepairPowerOverlayOnFirstRun();
     }
 
     /// <summary>

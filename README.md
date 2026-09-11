@@ -42,11 +42,12 @@ Nextcalibur detects and repairs this at install time, and keeps it from coming b
 ## Download
 
 **[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
-— `Nextcalibur-win-Setup.exe`, about 6 MB.
+— `Nextcalibur-win-Setup.exe`, about 65 MB.
 
-It needs the **.NET 8 desktop runtime**, and installs it for you if the machine
-does not already have it — which means the first install wants an internet
-connection. The alternative was a seventy-megabyte download for everyone.
+It carries the **.NET 8 desktop runtime** inside, so nothing is downloaded
+during install. An earlier release tried to fetch the runtime instead and
+stalled silently on a clean machine; sixty megabytes was the price of an
+installer that finishes.
 
 The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
 anyway*. On first run the app repairs the power-overlay fault described above and
@@ -56,15 +57,17 @@ Nextcalibur installs **no kernel driver**, and after setup it runs as an
 ordinary user. It does need administrator twice, once each, and says so when it
 asks:
 
-- **To read the sensors at all.** The firmware data block every reading comes
-  from is administrators-only until access is granted — one registry value,
-  written once. Machines that have had the vendor software installed already
-  have it open, which is why this went unnoticed for weeks.
+- **To read the sensors and hear the keyboard's backlight key.** The firmware
+  data block every reading comes from, and the event class Fn+Space reports
+  on, are administrators-only until access is granted — two registry values,
+  written once, in one prompt. On the same prompt it registers the scheduled
+  task that lets the graphics card be switched off and on later without
+  another one.
 - **To make the power-overlay repair permanent.** Clearing a stuck overlay works
   unelevated; writing the guard that stops it coming back does not.
 
-Neither is asked for again, and `tools/Grant-MailboxAccess.ps1 -Revoke` puts the
-first one back.
+Neither is asked for again. Uninstalling removes all of it, and asks first about
+the two things you might want to keep.
 
 ## What it does
 
@@ -106,11 +109,21 @@ brightness.
 
 ## Hardware
 
-Developed against:
+Developed and tested on exactly one machine. Every claim in this repository
+was measured there, and nowhere else:
 
-- Casper Excalibur G870 — Tongfang **JS970** barebone
-- Intel Core i7-12650H, NVIDIA RTX 4050 Laptop
-- ACPI-WMI interface `RW_GMWMI` on `ACPI\PNP0C14`
+| | |
+|---|---|
+| Laptop | Casper Excalibur G870 (vendor package `G870.12XX`) — Tongfang **JS970** barebone |
+| CPU | 12th Gen Intel Core i7-12650H |
+| GPU | NVIDIA GeForce RTX 4050 Laptop GPU + Intel UHD Graphics (hybrid) |
+| Firmware | AMI BIOS `QQ141`, 27 June 2024; SMBIOS left unfilled by the vendor (`Type1MTM` / `Type2ProjectName`) |
+| Windows | Windows 11 Pro, Insider Dev channel, build 10.0.29661 |
+| Interface | ACPI-WMI `RW_GMWMI` on `ACPI\PNP0C14`, through the in-box `wmiacpi.sys` |
+
+The model name is read at runtime, never written into the source; the table
+above is documentation of where the testing happened, so you can judge how far
+your machine is from it.
 
 Other Tongfang/Uniwill machines exposing `RW_GMWMI` may work. Machines using the
 older Uniwill `ABBC0F6x` WMI GUIDs or direct EC port I/O are **not** supported —
