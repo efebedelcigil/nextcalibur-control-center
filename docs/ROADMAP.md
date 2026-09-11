@@ -558,6 +558,22 @@ leaving a registry value behind.
 
 ## Next
 
+0. **A proper installer, set 11 September 2026.** The owner wants what Inno
+   Setup gives: a wizard that asks where to install, shows what it is doing,
+   and looks like a product rather than a progress bar. Velopack stays for
+   what it is good at - the update chain, proven today - so the shape is
+   *Inno as the face, Velopack as the engine*. The pieces are already there:
+   Velopack's Setup takes `--installto <DIR>` and `--silent`, so an Inno
+   script can ask for the directory, then run Setup silently into it, and
+   its uninstall entry can hand over to Velopack's `Update.exe --uninstall`.
+   To settle before building: whether a Velopack copy outside
+   `%LOCALAPPDATA%` still updates itself without elevation (it will, if the
+   chosen directory is writable by the user; a Program Files choice needs an
+   answer), that the two do not leave two Add/Remove entries, and that the
+   start-menu shortcut appears - it does not here today. Inno Setup is free
+   and its licence permits this; the script goes in `installer/`.
+
+
 Taken from an audit of the repository rather than from memory, roughly in the
 order that would matter to somebody who installed this.
 
