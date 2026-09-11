@@ -67,6 +67,21 @@ modes do very little.
 this is fixable within the rules: create our own plans on first run rather than
 borrowing theirs.
 
+**Closed 11 September 2026, later.** Three rules now, all tested by renaming
+the vendor's plan away and back with the application running:
+
+- The vendor's plan is used when it exists; ours (`Nextcalibur <mode>`, a copy
+  of Balanced told apart by overlay) only when it does not, and theirs takes
+  over again if it comes back.
+- Windows' own hidden plans are never candidates. Its "High performance" has
+  the vendor's name and power-mode overlays do not take on it - the set
+  succeeds and reads back Balanced - which is what "Performance shows no mode"
+  turned out to be.
+- The plan can vanish while running - the vendor's uninstaller takes it - so
+  every `Apply` makes the plan first if it is missing, and the slow timer
+  re-applies the current mode when its plan has gone. Seen working: rename
+  away, ten seconds, `Nextcalibur Performance` created and selected.
+
 ### 2. Hotkeys
 
 The vendor listens on `GMC_WMIEvent` for the firmware's key events. We do not
