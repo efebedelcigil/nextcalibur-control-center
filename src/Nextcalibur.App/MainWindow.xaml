@@ -461,15 +461,14 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- Rail Wordmark -->
-                        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,14,0,14">
-                            <TextBlock Text="NEXT" Foreground="{DynamicResource Accent}"
-                                       FontSize="15" FontWeight="Bold" FontFamily="Segoe UI"
-                                       HorizontalAlignment="Center" />
-                            <TextBlock Text="CALIBUR" Foreground="{DynamicResource Ink}"
-                                       FontSize="15" FontWeight="Bold" FontFamily="Segoe UI"
-                                       HorizontalAlignment="Center" />
-                        </StackPanel>
+                        <!-- Rail Wordmark (Master: logo-text.png, Downsample: logo-text-300.png, 2.18:1) -->
+                        <Image Grid.Row="0" Source="/Assets/logo-text-300.png"
+                               Width="72" Height="33"
+                               Margin="0,14,0,14"
+                               HorizontalAlignment="Center"
+                               Stretch="Uniform"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
 
                         <!-- Navigation Items Stack -->
                         <StackPanel Grid.Row="1" VerticalAlignment="Top">
@@ -514,6 +513,14 @@
                                       StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
                             </RadioButton>
                         </StackPanel>
+
+                        <!-- Rail Version Label (Code-behind writes running version) -->
+                        <TextBlock x:Name="VersionText" Grid.Row="1"
+                                   Style="{DynamicResource StatusTextStyle}"
+                                   FontSize="10.5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,0,12" />
                     </Grid>
                 </Border>
 
