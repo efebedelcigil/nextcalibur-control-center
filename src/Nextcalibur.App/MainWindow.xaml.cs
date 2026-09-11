@@ -839,7 +839,10 @@ public partial class MainWindow : Window
 
         try
         {
-            Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 5 /c \"Nextcalibur: applying the graphics mode change.\"")
+            // /t 0: any longer delay makes Windows raise its own "your session
+            // will end" notice on top of the question just answered. The person
+            // has said yes twice by now; the third notice was noise.
+            Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 0 /d p:2:4 /c \"Nextcalibur: applying the graphics mode change.\"")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
