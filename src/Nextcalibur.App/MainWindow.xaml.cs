@@ -131,6 +131,7 @@ public partial class MainWindow : Window
 
         ApplyPollInterval();
         Loaded += OnLoaded;
+        ContentRendered += (_, _) => HasRendered = true;
         StateChanged += OnStateChanged;
 
         // Not StateChanged: closing to the tray hides the window rather than
@@ -986,6 +987,9 @@ public partial class MainWindow : Window
         if (config.Mode is not { } mode) return;
         GpuButtonFor(mode).IsChecked = true;
     }
+
+    /// <summary>True once the first frame has been drawn; the in-window dialogue is safe from then on.</summary>
+    public bool HasRendered { get; private set; }
 
     /// <summary>
     /// A dialogue drawn inside the window. Modal the old-fashioned way: a
