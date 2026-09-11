@@ -137,6 +137,7 @@ public partial class MainWindow : Window
         // minimising it, so the state never changes and the handler never runs.
         IsVisibleChanged += (_, e) => { if (e.NewValue is true) RefreshLightingFromHardware(); };
         Closing += OnClosing;
+        Application.Current.SessionEnding += (_, _) => _sessionEnding = true;
     }
 
     /// <summary>
@@ -532,8 +533,14 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>Exit from the tray menu: the same question, then the same close.</summary>
     private void Exit()
     {
+        if (!Dialogs.Ask("Exit Nextcalibur?",
+                "This closes Nextcalibur completely: no temperature warning, no mode switch " +
+                "when the charger moves, until it is started again.",
+                defaultNo: true))
+            return;
         _exiting = true;
         Close();
     }
@@ -638,9 +645,29 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// Close means exit, after a question; the tray has its own button now.
+    /// The question is skipped when Windows is the one closing us - a sign-out
+    /// or shutdown must not hang on a dialogue - and when the answer was
+    /// already given from the tray menu.
+    /// </summary>
     private void OnClosing(object? sender, CancelEventArgs e)
     {
-        if (_exiting || !_settings.MinimiseToTray || _tray is null)
+        if (!_exiting && !_sessionEnding)
+        {
+            if (!Dialogs.Ask("Exit Nextcalibur?",
+                    "This closes Nextcalibur completely: no temperature warning, no mode switch " +
+                    "when the charger moves, until it is started again." +
+                    Environment.NewLine + Environment.NewLine +
+                    "To keep it running out of the way, use the tray button instead.",
+                    defaultNo: true))
+            {
+                e.Cancel = true;
+                return;
+            }
+            _exiting = true;
+        }
+
         {
             _timer.Stop();
             Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
@@ -655,12 +682,22 @@ public partial class MainWindow : Window
             // release to an installer that waits for this process to go away.
             _updates.ApplyOnExit();
             _updates.Dispose();
-            return;
         }
+    }
 
-        // Closing keeps the app alive in the notification area, which is the
-        // only way the temperature warning is of any use.
-        e.Cancel = true;
+    /// <summary>Set when Windows is ending the session, so closing asks nothing.</summary>
+    private bool _sessionEnding;
+
+    /// <summary>
+    /// The tray button: the window goes away, the application stays. This is
+    /// what the close button used to do, and the only way the temperature
+    /// warning and the charger rule are of any use with no window on screen.
+    /// </summary>
+    private void OnMinimiseToTrayClick(object sender, RoutedEventArgs e) => HideToTray();
+
+    private void HideToTray()
+    {
+        if (_tray is null) { WindowState = WindowState.Minimized; return; }
         Hide();
         _timer.Stop();
         TrimWorkingSet();
