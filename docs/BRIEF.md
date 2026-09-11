@@ -226,3 +226,13 @@ anything else refused and the old value put back); the markup is yours:
   The code-behind puts both thresholds back to their defaults on click.
 
 Nothing else changes; the sliders and the toggle stay as they are.
+
+## 10. The title-bar mark is blurry (12 September)
+
+`app.ico` in an `Image` lets WPF pick a small frame and stretch it. Two
+clean downsamples of `logo.png` are in `Assets/` now, made with Lanczos and
+included as resources: `logo-48.png` and `logo-96.png`. Use `logo-96.png`
+as the `Source` at `Width="24" Height="24"` (four pixels of source per
+device pixel up to 400 % scaling), `RenderOptions.BitmapScalingMode="HighQuality"`,
+and `UseLayoutRounding="True"` on the image so it lands on whole pixels.
+If it still looks soft, say so and the owner will hand-tune a 48 px master.
