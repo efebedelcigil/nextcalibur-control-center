@@ -435,6 +435,12 @@ for real until the person installs 0.5.0 themselves. Rule from this:
 is done by the person, not from the assistant's shell**, and a claim about
 what the machine has is checked from a process the person started.
 
+**Then tested for real, 22:37.** The person installed 0.5.0 from Setup
+themselves, turned on Start with Windows from the tray, chose Gaming, and
+signed out and in: Explorer at 22:37:50, Nextcalibur in the tray at 22:38:00
+with no window, plan Gaming, overlay Better performance, firmware profile
+Gaming. The Run entry works; the mode survives a sign-in.
+
 ### The System page said nothing when Windows was on none of the modes
 
 Seen 11 September after a fresh boot: Balanced plan with the Better-performance
