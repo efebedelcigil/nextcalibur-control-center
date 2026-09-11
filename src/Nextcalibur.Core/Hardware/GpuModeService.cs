@@ -232,34 +232,71 @@ public sealed class GpuModeService
                 "The graphics card is driving your screen right now. Switch to Hybrid first, " +
                 "restart, and then it can be turned off.");
 
-        var id = DiscreteAdapterInstanceId()
-            ?? throw new InvalidOperationException("No discrete graphics card was found.");
+        if (DiscreteAdapterInstanceId() is null)
+            throw new InvalidOperationException("No discrete graphics card was found.");
 
-        System.Diagnostics.Process? process;
-        try
+        // Without a prompt when the tasks are registered - which the one
+        // elevation at first run does - and with Windows' prompt otherwise.
+        if (CardSwitchTasks.Registered())
         {
-            process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            if (!CardSwitchTasks.Run(enabled))
+                throw new InvalidOperationException("The card-switch task would not start.");
+        }
+        else
+        {
+            try
             {
-                FileName = "pnputil.exe",
-                Arguments = $"/{(enabled ? "enable" : "disable")}-device \"{id}\"",
-                UseShellExecute = true,
-                Verb = "runas",
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-            });
+                using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "pnputil.exe",
+                    Arguments = PnputilArguments(enabled),
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                });
+                process?.WaitForExit(30000);
+            }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+            {
+                // ERROR_CANCELLED: the elevation prompt was dismissed. Nothing
+                // has happened to the device, and that is worth saying in those
+                // words rather than as an exception about starting a process.
+                throw new OperationCanceledException("The permission prompt was declined. Nothing was changed.");
+            }
         }
-        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
-        {
-            // ERROR_CANCELLED: the elevation prompt was dismissed. Nothing has
-            // happened to the device, and that is worth saying in those words
-            // rather than as an exception about starting a process.
-            throw new OperationCanceledException("The permission prompt was declined. Nothing was changed.");
-        }
-        process?.WaitForExit(30000);
 
-        // The device state, not the exit code, is the truth: pnputil can report
-        // success and leave the device where it was if the driver refuses.
-        Thread.Sleep(1500);
-        return DiscreteAdapterEnabled() == enabled;
+        // The device state, not any exit code, is the truth: pnputil can report
+        // success and leave the device where it was if the driver refuses, and
+        // a scheduled task returns before its work is done. Poll for it.
+        for (var waited = 0; waited < 12000; waited += 500)
+        {
+            Thread.Sleep(500);
+            if (DiscreteAdapterEnabled() == enabled) return true;
+        }
+        return false;
+    }
+
+    private static string PnputilArguments(bool enabled) =>
+        $"/{(enabled ? "enable" : "disable")}-device \"{DiscreteAdapterInstanceId()}\"";
+
+    /// <summary>
+    /// Runs pnputil directly. Only meaningful from an elevated process, which
+    /// is what the scheduled task provides.
+    /// </summary>
+    public static bool RunPnputil(bool enabled)
+    {
+        if (DiscreteAdapterInstanceId() is null) return false;
+
+        using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "pnputil.exe",
+            Arguments = PnputilArguments(enabled),
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        });
+        if (process is null) return false;
+        process.WaitForExit(30000);
+        return process.ExitCode == 0;
     }
 
     /// <summary>What a switch did, and what is left for the person to do.</summary>

@@ -976,6 +976,12 @@
                         </StackPanel>
 
                         <!-- Bottom Explanation -->
+                        <!-- Shown only while the cards are locked after a switch: a countdown,
+                             so ten seconds of disabled cards read as "settling" rather than
+                             "broken". Placed by the code-behind; the design pass may restyle it. -->
+                        <TextBlock x:Name="GpuSettling" Grid.Row="2" Style="{DynamicResource StatusTextStyle}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0"
+                                   FontWeight="SemiBold" Visibility="Collapsed" />
                         <TextBlock x:Name="GpuModeDetail" Grid.Row="2" Style="{DynamicResource StatusTextStyle}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    TextWrapping="Wrap" TextAlignment="Center" MaxWidth="680" LineHeight="20" />

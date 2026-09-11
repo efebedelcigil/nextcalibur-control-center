@@ -49,6 +49,10 @@ public static class Footprint
                 MailboxAccess.Check() == MailboxAvailability.Available,
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
+            new("The tasks that switch the graphics card without a prompt",
+                CardSwitchTasks.Registered(),
+                NeedsElevation: true,
+                KeepingIsReasonable: false),
             new("The power plans it created",
                 SystemModeService.EnumeratePlans().Keys.Any(n => n.StartsWith("Nextcalibur ", StringComparison.Ordinal)),
                 NeedsElevation: false,
@@ -118,6 +122,8 @@ public static class Footprint
     {
         try { MailboxAccess.Revoke(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+
+        CardSwitchTasks.Unregister();
 
         try { new PowerOverlayService().RemoveGuard(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }

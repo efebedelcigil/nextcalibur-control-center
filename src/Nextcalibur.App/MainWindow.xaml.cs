@@ -576,23 +576,42 @@ public partial class MainWindow : Window
 
     private DispatcherTimer? _gpuCooldown;
 
-    /// <summary>Locks the mode buttons and unlocks them when the machine has settled.</summary>
+    /// <summary>
+    /// Locks the mode buttons and unlocks them when the machine has settled,
+    /// counting down on screen so the lock reads as deliberate rather than as
+    /// the page having stopped working.
+    /// </summary>
     private void LockGpuButtonsWhileSettling()
     {
         foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
             button.IsEnabled = false;
 
+        var remaining = (int)GpuSwitchCooldown.TotalSeconds;
+        GpuSettling.Text = SettlingText(remaining);
+        GpuSettling.Visibility = Visibility.Visible;
+
         _gpuCooldown?.Stop();
-        _gpuCooldown = new DispatcherTimer { Interval = GpuSwitchCooldown };
+        _gpuCooldown = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _gpuCooldown.Tick += (_, _) =>
         {
+            remaining--;
+            if (remaining > 0)
+            {
+                GpuSettling.Text = SettlingText(remaining);
+                return;
+            }
+
             _gpuCooldown!.Stop();
+            GpuSettling.Visibility = Visibility.Collapsed;
             foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
                 button.IsEnabled = true;
             LoadGpuMode();
         };
         _gpuCooldown.Start();
     }
+
+    private static string SettlingText(int seconds) =>
+        $"Letting the change settle - the modes unlock in {seconds} second{(seconds == 1 ? "" : "s")}.";
 
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
