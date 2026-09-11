@@ -131,6 +131,47 @@ The honest limit: some platforms only start emitting these events after a
 vendor driver enables them through ACPI, and no such driver is installed here.
 That question stays open and does not matter - the keys already work.
 
+### Investigate: the vendor's kernel driver does not load on this machine
+
+Found 11 September 2026 while trying to start it by hand:
+
+```
+sc start ControlCenter  ->  StartService FAILED 577
+```
+
+577 is `ERROR_INVALID_IMAGE_HASH`. Memory Integrity is on and enforcing here
+(`SecurityServicesRunning: 2`), and the driver's signing certificate **expired on
+5 July 2026** - its Authenticode status still reads Valid through the timestamp,
+but HVCI holds drivers to a stricter standard and refuses this one.
+
+So on this machine the driver is installed, set to start automatically, and
+`Stopped`. The vendor software works anyway: the charger behaviour above was
+measured with the driver in exactly that state.
+
+**Which puts a claim in PROTOCOL.md in doubt.** That file says the graphics-mode
+switch reaches firmware "through the kernel driver it installs", on the strength
+of `DeviceIoControl` appearing in the native library rather than the managed
+code. If the driver cannot load, the switch that was watched working cannot have
+gone through it - and the obvious remaining route is the same ACPI-WMI mailbox
+this project already uses.
+
+That is a question, not a conclusion, and it is worth answering because of what
+follows from it: **if the switch goes through the mailbox, Nextcalibur can do it
+too** - no driver to ship, no driver to install.
+
+What would settle it:
+
+1. Whether the driver has *ever* loaded here. The earlier check asked about
+   `ControlCenter64` and `ControlCenterC64`, which are the file names; the
+   service is called `ControlCenter`, so that check proved nothing either way.
+   Restart with the vendor software installed and look.
+2. If it stays `Stopped` after a restart and the Display Mode buttons still work,
+   the driver is not what performs the switch.
+3. What the driver is for at all, then. Possibly nothing this machine needs -
+   the same software ships to many models.
+
+Until that is done, treat the PROTOCOL.md sentence as unproven rather than true.
+
 ### A real gap: the vendor switches mode when the charger comes out
 
 Measured 11 September 2026, with a control run first because a change seen only
