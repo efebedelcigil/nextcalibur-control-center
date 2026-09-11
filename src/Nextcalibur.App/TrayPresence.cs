@@ -20,6 +20,9 @@ public sealed class TrayPresence : IDisposable
     private readonly Forms.ToolStripMenuItem _startupItem;
     private bool _disposed;
 
+    /// <summary>Raised when the tray changed the overheat setting, so the window's switch can follow.</summary>
+    public event EventHandler? OverheatSettingChanged;
+
     /// <summary>Set by the window; the menu's two update items act through it.</summary>
     public UpdateService? Updates { get; set; }
 
@@ -136,35 +139,37 @@ public sealed class TrayPresence : IDisposable
         return item;
     }
 
+    private Forms.ToolStripMenuItem? _overheatItem;
+
+    /// <summary>Re-reads the overheat setting into the menu, for when the window changed it.</summary>
+    public void SyncOverheatMenu()
+    {
+        if (_overheatItem is null) return;
+        _overheatItem.CheckedChanged -= OnOverheatToggled;
+        _overheatItem.Checked = _settings.OverheatWarningEnabled;
+        _overheatItem.CheckedChanged += OnOverheatToggled;
+    }
+
+    /// <summary>
+    /// On or off only. The two thresholds - one per chip - are sliders on the
+    /// System page, where the temperatures they apply to are on screen.
+    /// </summary>
     private Forms.ToolStripMenuItem OverheatWarningMenu()
     {
-        var menu = new Forms.ToolStripMenuItem("Warn when the CPU reaches");
-        var choices = new (string Label, int Celsius)[]
+        _overheatItem = new Forms.ToolStripMenuItem("Warn when the CPU or GPU runs hot")
         {
-            ("Never", 0), ("80 °C", 80), ("85 °C", 85), ("90 °C", 90), ("95 °C", 95),
+            CheckOnClick = true,
+            Checked = _settings.OverheatWarningEnabled,
         };
+        _overheatItem.CheckedChanged += OnOverheatToggled;
+        return _overheatItem;
+    }
 
-        foreach (var (label, celsius) in choices)
-        {
-            var choice = new Forms.ToolStripMenuItem(label)
-            {
-                Checked = celsius == 0
-                    ? !_settings.OverheatWarningEnabled
-                    : _settings.OverheatWarningEnabled && _settings.CpuWarningTemperatureC == celsius,
-            };
-
-            choice.Click += (_, _) =>
-            {
-                _settings.OverheatWarningEnabled = celsius != 0;
-                if (celsius != 0) _settings.CpuWarningTemperatureC = celsius;
-                _settings.Save();
-                Tick(menu, choice);
-            };
-
-            menu.DropDownItems.Add(choice);
-        }
-
-        return menu;
+    private void OnOverheatToggled(object? sender, EventArgs e)
+    {
+        _settings.OverheatWarningEnabled = _overheatItem!.Checked;
+        _settings.Save();
+        OverheatSettingChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private Forms.ToolStripMenuItem ReadingIntervalMenu()

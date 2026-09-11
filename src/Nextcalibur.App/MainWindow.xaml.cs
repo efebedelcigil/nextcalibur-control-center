@@ -178,6 +178,13 @@ public partial class MainWindow : Window
             $"Nextcalibur {version} is ready",
             "It will be installed the next time you close the application from the tray menu.");
         _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
+
+        // The window's switch and the tray's menu are two faces of one setting.
+        OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled;
+        OverheatWarningToggle.Checked += (_, _) => SetOverheatWarning(true);
+        OverheatWarningToggle.Unchecked += (_, _) => SetOverheatWarning(false);
+        _tray.OverheatSettingChanged += (_, _) => Dispatcher.BeginInvoke(() =>
+            OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled);
         _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
         _tray.Updates = _updates;
         _updates.Start();
@@ -922,9 +929,89 @@ public partial class MainWindow : Window
         var config = _gpu.Detect();
         GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
 
+        // The transitions the firmware refuses, said on the card rather than
+        // on click: UMA is a switched-off card and Discrete hands it the
+        // panel, so neither is reached from the other without Hybrid between.
+        ModeUmaNote.Visibility = config.Mode == GpuMode.Discrete ? Visibility.Visible : Visibility.Collapsed;
+        ModeDiscreteNote.Visibility = config.Mode == GpuMode.Uma ? Visibility.Visible : Visibility.Collapsed;
+        ModeHybridNote.Visibility = Visibility.Collapsed;
+
+        // A firmware write that has not been restarted into yet. The register
+        // reads the running mode, so "pending" is the mode the person chose
+        // and confirmed this session, not something read back.
+        GpuRestartPending.Text = _gpuPendingRestart is { } pending
+            ? $"Restart to switch to {pending}. Until then the machine runs as shown."
+            : string.Empty;
+        GpuRestartPending.Visibility = _gpuPendingRestart is null ? Visibility.Collapsed : Visibility.Visible;
+
         if (config.Mode is not { } mode) return;
         GpuButtonFor(mode).IsChecked = true;
     }
+
+    /// <summary>
+    /// A dialogue drawn inside the window. Modal the old-fashioned way: a
+    /// nested dispatcher frame runs until a button is pressed, so the caller
+    /// gets an answer back synchronously, as it did from MessageBox. The
+    /// overlay covers the whole window and takes every click; Escape gives
+    /// the fallback, which every caller has chosen as the safe answer.
+    /// </summary>
+    public MessageBoxResult ShowOverlayDialog(string title, string body, MessageBoxButton buttons, MessageBoxResult fallback)
+    {
+        var (primary, secondary, primaryText, secondaryText) = buttons switch
+        {
+            MessageBoxButton.YesNo => (MessageBoxResult.Yes, MessageBoxResult.No, "Yes", "No"),
+            MessageBoxButton.OKCancel => (MessageBoxResult.OK, MessageBoxResult.Cancel, "OK", "Cancel"),
+            _ => (MessageBoxResult.OK, (MessageBoxResult?)null, "OK", string.Empty),
+        };
+
+        DialogTitleText.Text = title;
+        DialogBodyText.Text = body;
+        DialogButtonPrimary.Content = primaryText;
+        DialogButtonSecondary.Content = secondaryText;
+        DialogButtonSecondary.Visibility = secondary is null ? Visibility.Collapsed : Visibility.Visible;
+
+        var result = fallback;
+        var frame = new DispatcherFrame();
+
+        void Primary(object s, RoutedEventArgs e) { result = primary; frame.Continue = false; }
+        void Secondary(object s, RoutedEventArgs e) { result = secondary ?? fallback; frame.Continue = false; }
+        void Key(object s, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape) { result = fallback; frame.Continue = false; e.Handled = true; }
+            else if (e.Key == System.Windows.Input.Key.Enter) { result = fallback == primary || secondary is null ? primary : fallback; frame.Continue = false; e.Handled = true; }
+        }
+
+        DialogButtonPrimary.Click += Primary;
+        DialogButtonSecondary.Click += Secondary;
+        ModalDialogOverlay.PreviewKeyDown += Key;
+        ModalDialogOverlay.Visibility = Visibility.Visible;
+        (fallback == primary || secondary is null ? DialogButtonPrimary : DialogButtonSecondary).Focus();
+
+        try
+        {
+            Dispatcher.PushFrame(frame);
+        }
+        finally
+        {
+            DialogButtonPrimary.Click -= Primary;
+            DialogButtonSecondary.Click -= Secondary;
+            ModalDialogOverlay.PreviewKeyDown -= Key;
+            ModalDialogOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        return result;
+    }
+
+    private void SetOverheatWarning(bool on)
+    {
+        if (_settings.OverheatWarningEnabled == on) return;
+        _settings.OverheatWarningEnabled = on;
+        _settings.Save();
+        _tray?.SyncOverheatMenu();
+    }
+
+    /// <summary>The mode written to firmware this session and not yet restarted into.</summary>
+    private GpuMode? _gpuPendingRestart;
 
     /// <summary>
     /// Power draw, but only where asking for it is free.
@@ -946,26 +1033,6 @@ public partial class MainWindow : Window
         _ => ModeDiscrete,
     };
 
-    /// <summary>
-    /// Reports the current setting and puts the selection back.
-    ///
-    /// The vendor software genuinely does switch the display path — watched on
-    /// hardware: MS Hybrid plus a restart moved the panel from the discrete card
-    /// to the integrated one. An earlier reading of this concluded the opposite
-    /// and was wrong; the search had covered the managed code, where no firmware
-    /// API appears, and missed that DeviceIoControl lives in the native library
-    /// and reaches the kernel driver the vendor installs. A driver needs no such
-    /// API.
-    ///
-    /// Nextcalibur does not switch it because of what that would take: an
-    /// undocumented IOCTL into a driver this project does not ship and will not
-    /// install. Elevation is not what stops it - that was claimed here for a
-    /// while on the strength of a rule nobody set - the driver is.
-    ///
-    /// See PROTOCOL.md for the evidence, including the cost nobody mentions —
-    /// the change invalidates TPM-sealed credentials, and the Windows PIN has to
-    /// be set up again afterwards.
-    /// </summary>
     /// <summary>
     /// How long the mode buttons stay locked after a switch.
     ///
@@ -1068,6 +1135,7 @@ public partial class MainWindow : Window
 
             if (outcome.RestartNeeded)
             {
+                _gpuPendingRestart = target;
                 OfferRestart(outcome.Summary);
             }
             else
@@ -1530,18 +1598,22 @@ public partial class MainWindow : Window
                 ReclaimWhileIdle();
             }
 
-            var limit = _settings.CpuWarningTemperatureC;
-            if (_settings.WarnsAboutHeat && s.CpuTemperatureC >= limit)
+            // Each chip against its own threshold, one balloon at a time.
+            var cpuLimit = _settings.CpuWarningTemperatureC;
+            var gpuLimit = _settings.GpuWarningTemperatureC;
+            var hot = s.CpuTemperatureC >= cpuLimit ? $"CPU at {s.CpuTemperatureC} °C"
+                    : s.GpuTemperatureC >= gpuLimit ? $"GPU at {s.GpuTemperatureC} °C"
+                    : null;
+            if (_settings.WarnsAboutHeat && hot is not null)
             {
                 if (!_overheatNotified)
                 {
                     _overheatNotified = true;
-                    _tray?.ShowMessage(
-                        $"CPU at {s.CpuTemperatureC} °C",
+                    _tray?.ShowMessage(hot,
                         "Sustained temperatures this high usually mean the heatsink needs cleaning.");
                 }
             }
-            else if (s.CpuTemperatureC < limit - 8)
+            else if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
             {
                 // Re-arm only after a clear drop, so the balloon cannot flap.
                 _overheatNotified = false;

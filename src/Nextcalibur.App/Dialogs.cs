@@ -5,11 +5,10 @@ namespace Nextcalibur.App;
 /// <summary>
 /// Every dialogue the application raises, through one door.
 ///
-/// Three things the owner asked for, in the order they asked: no sound, nothing
-/// else clickable while one is up, and the application's own look rather than
-/// Windows'. The first two are here. The third is markup and belongs to the
-/// design pass - which is why this exists as one place rather than twenty
-/// call sites: swapping the implementation is a change to this file alone.
+/// Three things the owner asked for: no sound, nothing else clickable while
+/// one is up, and the application's own look rather than Windows'. All three
+/// are here now: with the window on screen the box is drawn inside it, over
+/// a shade that takes every click; otherwise it is Windows' box, silent.
 ///
 /// The sound is the icon. <see cref="MessageBoxImage"/> values other than
 /// <c>None</c> play the system's alert sounds; none of these pass one. The
@@ -57,6 +56,12 @@ public static class Dialogs
         var owner = Owner;
         if (owner is not null && !owner.Dispatcher.CheckAccess())
             return owner.Dispatcher.Invoke(() => Show(title, body, buttons, fallback));
+
+        // The application's own look, when there is a window to draw it in.
+        // Before the window exists, or while it is in the tray, Windows' box
+        // is still the honest choice: a dialogue nobody can see is no dialogue.
+        if (owner is MainWindow { IsVisible: true } main && main.WindowState != WindowState.Minimized)
+            return main.ShowOverlayDialog(title, body, buttons, fallback);
 
         return owner is not null && owner.IsVisible
             ? MessageBox.Show(owner, body, title, buttons, MessageBoxImage.None, fallback)

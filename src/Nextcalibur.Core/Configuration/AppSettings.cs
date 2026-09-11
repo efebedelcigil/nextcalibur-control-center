@@ -61,7 +61,18 @@ public sealed class AppSettings
     /// </summary>
     public int CpuWarningTemperatureC { get; set; } = 90;
 
-    /// <summary>True when a reading at or above the threshold should warn.</summary>
+    /// <summary>
+    /// The GPU's own threshold, °C. Lower by default: the card's driver
+    /// throttles it in the high eighties, so ninety on the GPU is a heatsink
+    /// that has already lost.
+    /// </summary>
+    public int GpuWarningTemperatureC { get; set; } = 85;
+
+    /// <summary>The range either threshold may be set to.</summary>
+    public const int MinWarningTemperatureC = 60;
+    public const int MaxWarningTemperatureC = 105;
+
+    /// <summary>True when a reading at or above a threshold should warn.</summary>
     [JsonIgnore]
     public bool WarnsAboutHeat => OverheatWarningEnabled && CpuWarningTemperatureC > 0;
 
@@ -116,6 +127,9 @@ public sealed class AppSettings
             settings.OverheatWarningEnabled = false;
             settings.CpuWarningTemperatureC = new AppSettings().CpuWarningTemperatureC;
         }
+
+        settings.CpuWarningTemperatureC = Math.Clamp(settings.CpuWarningTemperatureC, MinWarningTemperatureC, MaxWarningTemperatureC);
+        settings.GpuWarningTemperatureC = Math.Clamp(settings.GpuWarningTemperatureC, MinWarningTemperatureC, MaxWarningTemperatureC);
 
         return settings;
     }
