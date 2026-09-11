@@ -26,6 +26,13 @@ public sealed class AppSettings
     public bool QuietOnBattery { get; set; } = true;
 
     /// <summary>
+    /// Look for a new release on GitHub: once a minute after start, then every
+    /// six hours - one small request each time, nothing between. Off means no
+    /// request at all; the tray still offers a check by hand.
+    /// </summary>
+    public bool AutoCheckForUpdates { get; set; } = true;
+
+    /// <summary>
     /// The mode the person last chose, put back at the next start. Windows
     /// comes up on Balanced after a restart whatever plan was active before,
     /// so without this a chosen mode lasted one session.

@@ -20,6 +20,9 @@ public sealed class TrayPresence : IDisposable
     private readonly Forms.ToolStripMenuItem _startupItem;
     private bool _disposed;
 
+    /// <summary>Set by the window; the menu's two update items act through it.</summary>
+    public UpdateService? Updates { get; set; }
+
     public TrayPresence(Window window, AppSettings settings)
     {
         _window = window;
@@ -40,6 +43,9 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(QuietOnBatteryItem());
         menu.Items.Add(OverheatWarningMenu());
         menu.Items.Add(ReadingIntervalMenu());
+        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add(AutoUpdateItem());
+        menu.Items.Add("Check for updates now", null, async (_, _) => { if (Updates is { } u) await u.CheckNowAsync(); });
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Exit", null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
 
@@ -96,6 +102,23 @@ public sealed class TrayPresence : IDisposable
     /// a default. The window offers the same switch; both write the same two
     /// settings, so neither can contradict the other.
     /// </summary>
+    private Forms.ToolStripMenuItem AutoUpdateItem()
+    {
+        var item = new Forms.ToolStripMenuItem("Check for updates automatically")
+        {
+            CheckOnClick = true,
+            Checked = _settings.AutoCheckForUpdates,
+        };
+
+        item.CheckedChanged += (_, _) =>
+        {
+            _settings.AutoCheckForUpdates = item.Checked;
+            _settings.Save();
+        };
+
+        return item;
+    }
+
     private Forms.ToolStripMenuItem QuietOnBatteryItem()
     {
         var item = new Forms.ToolStripMenuItem("Office mode on battery")
