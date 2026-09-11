@@ -287,3 +287,22 @@ Place it on the Display page where the cost of the current mode is read -
 above the three cards or in the status area under them, your call. It is one
 TextBlock and the code sets the whole string. No CPU line: its package power
 is not readable without a kernel driver (roadmap).
+
+## 15. The right-hand panels on every page but Lighting; the thresholds move into CPU & GPU (12 September)
+
+- The two panels on the right of the System page - "CPU & GPU" and
+  "Memory & Disk" - should be on **every page except Lighting**: System,
+  Power Mode and Display keep them in the same place, same size, so the
+  eye always finds the readings there. Lighting keeps its full width. One
+  set of named elements (`CpuClock`, `GpuClock`, `CpuTemp`... whatever they
+  are today), moved out of `PageSystem` to a level above the page switch,
+  hidden only while Lighting is selected - do not duplicate them, the
+  code-behind writes each name once.
+- "CPU & GPU" has room. Move the overheat switch and the two threshold
+  sliders (`OverheatWarningToggle`, `CpuWarnSlider`/`CpuWarnValue`,
+  `GpuWarnSlider`/`GpuWarnValue`, `OverheatResetButton`) from the
+  Hardware Monitoring header into that panel, under the two bars - each
+  slider on the row of its chip reads naturally. Names unchanged; the
+  header keeps the title and the subtitle line.
+- The GPU row's clock field now reads e.g. `2,22 GHz · 17.5 W` or `asleep`;
+  give it the width.

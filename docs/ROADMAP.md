@@ -591,6 +591,11 @@ leaving a registry value behind.
     saying which are still worth running. Done as one deliberate pass with
     the audit written down, not piecemeal - and not before 0.5.1 is out.
 
+000. **Every drive, not just the Windows one.** Set 12 September 2026: the
+     owner's laptop has two SSDs and the Memory & Disk panel shows only
+     `C:`. Show each fixed drive with its own gauge (letter, used/total),
+     read the same cheap way; the markup grows a row per drive.
+
 0. **A proper installer, set 11 September 2026.** The owner wants what Inno
    Setup gives: a wizard that asks where to install, shows what it is doing,
    and looks like a product rather than a progress bar. Velopack stays for
