@@ -236,3 +236,16 @@ as the `Source` at `Width="24" Height="24"` (four pixels of source per
 device pixel up to 400 % scaling), `RenderOptions.BitmapScalingMode="HighQuality"`,
 and `UseLayoutRounding="True"` on the image so it lands on whole pixels.
 If it still looks soft, say so and the owner will hand-tune a 48 px master.
+
+## 11. The rail wordmark is now an image, and the version goes bottom-left (12 September)
+
+- The owner drew the wordmark: `Assets/logo-text.png` is the master
+  (1474 x 676, keep it, do not reference it), `Assets/logo-text-300.png` is a
+  Lanczos downsample at 300 px wide (3x for the 100 px rail) and is the
+  resource to use. Replace the two `TextBlock`s ("NEXT" / "CALIBUR") in the
+  rail with an `Image Source="/Assets/logo-text-300.png"`, width to the rail
+  minus margins, `RenderOptions.BitmapScalingMode="HighQuality"`,
+  `UseLayoutRounding="True"`. Height follows the aspect ratio (2.18:1).
+- Bottom-left of the rail, under the navigation items: a `TextBlock
+  x:Name="VersionText"`, small and muted (`StatusTextStyle`, 10-11 px),
+  empty in the markup - the code-behind writes `v0.5.1`.

@@ -580,6 +580,17 @@ leaving a registry value behind.
 
 ## Next
 
+00. **Tidy the codebase, set 12 September 2026.** Two jobs before 1.0.
+    First, nothing in the repository that does not belong in a product:
+    leftovers from abandoned directions, old test material, one-off
+    scripts that measured something once and are now history (`tools/`
+    has a dozen), captures that only ever mattered for a single night.
+    Second, a place for everything: images in one folder (today the icon
+    and the logo masters sit beside the resources; the docs folder held a
+    logo until it was moved), documents in one, tools in one with a README
+    saying which are still worth running. Done as one deliberate pass with
+    the audit written down, not piecemeal - and not before 0.5.1 is out.
+
 0. **A proper installer, set 11 September 2026.** The owner wants what Inno
    Setup gives: a wizard that asks where to install, shows what it is doing,
    and looks like a product rather than a progress bar. Velopack stays for
