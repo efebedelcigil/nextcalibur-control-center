@@ -531,12 +531,16 @@
 
                 <!-- Page Content Area -->
                 <Grid Grid.Column="1" Margin="16,14,16,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
                     <!-- ================= PAGE: SYSTEM ================= -->
-                    <Grid x:Name="PageSystem" Visibility="Visible">
+                    <Grid x:Name="PageSystem" Grid.Column="0" Visibility="Visible">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" /> <!-- Top System Mode Tabs -->
-                            <RowDefinition Height="*" />    <!-- Main Content & Right Telemetry Panels -->
+                            <RowDefinition Height="*" />    <!-- Dual Fan Gauges & Telemetry -->
                         </Grid.RowDefinitions>
 
                         <!-- Row 0: System Mode Tabs (Office, Gaming, Performance) & Live System Mode Note -->
@@ -590,362 +594,136 @@
                                        Margin="2,8,0,0" Visibility="Collapsed" />
                         </StackPanel>
 
-                        <!-- Row 1: Left Center Fan Gauges + Right Stats Panels -->
+                        <!-- Row 1: Left/Center: Dual Fan Gauges, Temperatures & Hardware Monitoring Header -->
                         <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="280" />
-                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                            <!-- Left/Center: Dual Fan Gauges, Temperatures & Status Subtitle -->
-                            <Grid Grid.Column="0" Margin="0,0,16,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
+                            <!-- Status Subtitle (Keeps title and subtitle line as requested in §15) -->
+                            <StackPanel Grid.Row="0" VerticalAlignment="Center" Margin="0,0,0,10">
+                                <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Ink}" />
+                                <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
+                                           Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
 
-                                <!-- Status Subtitle & Overheat Warning Switch + Dual Threshold Sliders -->
-                                <Grid Grid.Row="0" Margin="0,0,0,10">
+                            <!-- Overheat / Warning Banner -->
+                            <Border x:Name="Banner" Grid.Row="1" Style="{DynamicResource Card}"
+                                    Margin="0,0,0,10" Visibility="Collapsed" BorderBrush="{DynamicResource Warn}">
+                                <StackPanel>
+                                    <TextBlock x:Name="BannerTitle" Foreground="{DynamicResource Warn}"
+                                               FontWeight="Bold" FontSize="13" />
+                                    <TextBlock x:Name="BannerBody" Style="{DynamicResource StatusTextStyle}"
+                                               Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Fan Speed Gauges Card -->
+                            <Border Grid.Row="2" Style="{DynamicResource Card}" VerticalAlignment="Stretch">
+                                <Grid VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,14,0">
-                                        <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource Ink}" />
-                                        <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
-                                                   Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0"
-                                                   TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <!-- Master Warning Toggle -->
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
-                                            <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
-                                                       VerticalAlignment="Center" Margin="0,0,8,0" />
-                                            <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
-                                                          VerticalAlignment="Center"
-                                                          ToolTip="Warn when temperatures exceed safety threshold" />
-                                        </StackPanel>
 
-                                        <!-- Divider -->
-                                        <Border Width="1" Height="28" Background="{DynamicResource Line}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <!-- CPU Fan & Temp Column -->
+                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                        <c:FanGauge x:Name="CpuFanGauge" Width="146" Height="146"
+                                                    Value="{Binding Text, ElementName=CpuFan, Converter={StaticResource RpmToDoubleConverter}}"
+                                                    BladeBrush="{DynamicResource Accent}"
+                                                    ArcBrush="{DynamicResource Accent}"
+                                                    TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                    HubBrush="{DynamicResource PanelBackground}"
+                                                    HubBorderBrush="{DynamicResource Line}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock x:Name="CpuFan" Text="--"
+                                                           Style="{DynamicResource Value}" FontSize="17"
+                                                           Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
+                                                <TextBlock Text="CPU FAN" Style="{DynamicResource Label}" FontSize="10"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </c:FanGauge>
 
-                                        <!-- Dual Threshold Sliders (CPU & GPU) -->
-                                        <StackPanel VerticalAlignment="Center" Width="124"
-                                                    IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}">
-                                            <StackPanel.Style>
-                                                <Style TargetType="StackPanel">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Opacity" Value="0.4" />
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </StackPanel.Style>
-
-                                            <!-- CPU Threshold Row -->
-                                            <Grid Margin="0,0,0,2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="24" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="42" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
-                                                <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
-                                                        TickFrequency="1" IsSnapToTickEnabled="True"
-                                                        VerticalAlignment="Center" Margin="3,0" />
-                                                <TextBox x:Name="CpuWarnValue" Grid.Column="2"
-                                                         Style="{StaticResource WarnValueTextBoxStyle}" />
-                                            </Grid>
-
-                                            <!-- GPU Threshold Row -->
-                                            <Grid Margin="0,2,0,0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="24" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="42" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
-                                                <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
-                                                        TickFrequency="1" IsSnapToTickEnabled="True"
-                                                        VerticalAlignment="Center" Margin="3,0" />
-                                                <TextBox x:Name="GpuWarnValue" Grid.Column="2"
-                                                         Style="{StaticResource WarnValueTextBoxStyle}" />
-                                            </Grid>
-                                        </StackPanel>
-
-                                        <!-- Reset to Default Button -->
-                                        <Button x:Name="OverheatResetButton" Content="Reset"
-                                                Style="{StaticResource WarnResetButtonStyle}"
-                                                IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}"
-                                                VerticalAlignment="Center" Margin="8,0,0,0"
-                                                ToolTip="Reset thresholds to default" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <!-- Overheat / Warning Banner -->
-                                <Border x:Name="Banner" Grid.Row="1" Style="{DynamicResource Card}"
-                                        Margin="0,0,0,10" Visibility="Collapsed" BorderBrush="{DynamicResource Warn}">
-                                    <StackPanel>
-                                        <TextBlock x:Name="BannerTitle" Foreground="{DynamicResource Warn}"
-                                                   FontWeight="Bold" FontSize="13" />
-                                        <TextBlock x:Name="BannerBody" Style="{DynamicResource StatusTextStyle}"
-                                                   Margin="0,3,0,0" TextWrapping="Wrap" />
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Fan Speed Gauges Card -->
-                                <Border Grid.Row="2" Style="{DynamicResource Card}" VerticalAlignment="Stretch">
-                                    <Grid VerticalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- CPU Fan & Temp Column -->
-                                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                            <c:FanGauge x:Name="CpuFanGauge" Width="146" Height="146"
-                                                        Value="{Binding Text, ElementName=CpuFan, Converter={StaticResource RpmToDoubleConverter}}"
-                                                        BladeBrush="{DynamicResource Accent}"
-                                                        ArcBrush="{DynamicResource Accent}"
-                                                        TrackBrush="{DynamicResource GaugeTrackBrush}"
-                                                        HubBrush="{DynamicResource PanelBackground}"
-                                                        HubBorderBrush="{DynamicResource Line}">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <TextBlock x:Name="CpuFan" Text="--"
-                                                               Style="{DynamicResource Value}" FontSize="17"
-                                                               Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
-                                                    <TextBlock Text="CPU FAN" Style="{DynamicResource Label}" FontSize="10"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0" />
-                                                </StackPanel>
-                                            </c:FanGauge>
-
-                                            <Border Background="{DynamicResource PanelBackground}"
-                                                    BorderBrush="{DynamicResource Line}" BorderThickness="1"
-                                                    CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
-                                                <StackPanel HorizontalAlignment="Center">
-                                                    <TextBlock Text="CPU TEMPERATURE" Style="{DynamicResource Label}"
-                                                               HorizontalAlignment="Center" />
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
-                                                        <TextBlock x:Name="CpuTemp" Text="-- °C"
-                                                                   Style="{DynamicResource Value}" FontSize="22"
-                                                                   HorizontalAlignment="Center" />
-                                                        <TextBlock x:Name="CpuClock" Style="{DynamicResource Label}"
-                                                                   Foreground="{DynamicResource Accent}" FontWeight="SemiBold" FontSize="12"
-                                                                   VerticalAlignment="Bottom" Margin="8,0,0,3" />
-                                                    </StackPanel>
-                                                    <TextBlock x:Name="CpuName" Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Muted}" FontSize="10.5"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0"
-                                                               TextTrimming="CharacterEllipsis" MaxWidth="160"
-                                                               ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-
-                                        <!-- Vertical Divider -->
-                                        <Border Grid.Column="1" Width="1" Background="{DynamicResource Line}" Margin="10,20" />
-
-                                        <!-- GPU Fan & Temp Column -->
-                                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <c:FanGauge x:Name="GpuFanGauge" Width="146" Height="146"
-                                                        Value="{Binding Text, ElementName=GpuFan, Converter={StaticResource RpmToDoubleConverter}}"
-                                                        BladeBrush="{DynamicResource Accent}"
-                                                        ArcBrush="{DynamicResource Accent}"
-                                                        TrackBrush="{DynamicResource GaugeTrackBrush}"
-                                                        HubBrush="{DynamicResource PanelBackground}"
-                                                        HubBorderBrush="{DynamicResource Line}">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <TextBlock x:Name="GpuFan" Text="--"
-                                                               Style="{DynamicResource Value}" FontSize="17"
-                                                               Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
-                                                    <TextBlock Text="GPU FAN" Style="{DynamicResource Label}" FontSize="10"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0" />
-                                                </StackPanel>
-                                            </c:FanGauge>
-
-                                            <Border Background="{DynamicResource PanelBackground}"
-                                                    BorderBrush="{DynamicResource Line}" BorderThickness="1"
-                                                    CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
-                                                <StackPanel HorizontalAlignment="Center">
-                                                    <TextBlock Text="GPU TEMPERATURE" Style="{DynamicResource Label}"
-                                                               HorizontalAlignment="Center" />
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
-                                                        <TextBlock x:Name="GpuTemp" Text="-- °C"
-                                                                   Style="{DynamicResource Value}" FontSize="22"
-                                                                   HorizontalAlignment="Center" />
-                                                        <TextBlock x:Name="GpuClock" Style="{DynamicResource Label}"
-                                                                   Foreground="{DynamicResource Accent}" FontWeight="SemiBold" FontSize="12"
-                                                                   VerticalAlignment="Bottom" Margin="8,0,0,3" />
-                                                    </StackPanel>
-                                                    <TextBlock x:Name="GpuName" Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Muted}" FontSize="10.5"
-                                                               HorizontalAlignment="Center" Margin="0,2,0,0"
-                                                               TextTrimming="CharacterEllipsis" MaxWidth="160"
-                                                               ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </Grid>
-
-                            <!-- Right Column: CPU & GPU Segmented Telemetry + Memory & Disk Conditions -->
-                            <Grid Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="12" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
-                                <!-- Panel 1: CPU & GPU Thermal Telemetry -->
-                                <Grid Grid.Row="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="24" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Chamfered Header Tab -->
-                                    <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
-                                            BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
-                                            HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
-                                            CornerRadius="4,12,0,0">
-                                        <TextBlock Text="CPU &amp; GPU" Style="{DynamicResource PanelHeaderTextStyle}" />
-                                    </Border>
-
-                                    <!-- Panel Card -->
-                                    <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <!-- CPU Indicator & Bar -->
-                                            <Grid>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
-                                                    <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                                    <TextBlock Text="{Binding Text, ElementName=CpuClock}" Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Accent}" FontWeight="SemiBold" Margin="0,0,8,0" />
+                                        <Border Background="{DynamicResource PanelBackground}"
+                                                BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                                                CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="CPU TEMPERATURE" Style="{DynamicResource Label}"
+                                                           HorizontalAlignment="Center" />
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
                                                     <TextBlock Text="{Binding Text, ElementName=CpuTemp}"
-                                                               Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
+                                                               Foreground="{Binding Foreground, ElementName=CpuTemp}"
+                                                               Style="{DynamicResource Value}" FontSize="22"
+                                                               HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Text, ElementName=CpuClock}" Style="{DynamicResource Label}"
+                                                               Foreground="{DynamicResource Accent}" FontWeight="SemiBold" FontSize="12"
+                                                               VerticalAlignment="Bottom" Margin="8,0,0,3" />
                                                 </StackPanel>
-                                            </Grid>
-                                            <c:SegmentedBar Value="{Binding Text, ElementName=CpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
-                                                            LitBrush="{DynamicResource Accent}"
-                                                            UnlitBrush="{DynamicResource GaugeTrackBrush}"
-                                                            Height="8" Margin="0,6,0,14" />
+                                                <TextBlock x:Name="CpuName" Style="{DynamicResource Label}"
+                                                           Foreground="{DynamicResource Muted}" FontSize="10.5"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0"
+                                                           TextTrimming="CharacterEllipsis" MaxWidth="160"
+                                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
 
-                                            <!-- GPU Indicator & Bar -->
-                                            <Grid>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
-                                                    <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                                    <TextBlock Text="{Binding Text, ElementName=GpuClock}" Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Accent}" FontWeight="SemiBold" Margin="0,0,8,0" />
+                                    <!-- Vertical Divider -->
+                                    <Border Grid.Column="1" Width="1" Background="{DynamicResource Line}" Margin="10,20" />
+
+                                    <!-- GPU Fan & Temp Column -->
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <c:FanGauge x:Name="GpuFanGauge" Width="146" Height="146"
+                                                    Value="{Binding Text, ElementName=GpuFan, Converter={StaticResource RpmToDoubleConverter}}"
+                                                    BladeBrush="{DynamicResource Accent}"
+                                                    ArcBrush="{DynamicResource Accent}"
+                                                    TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                    HubBrush="{DynamicResource PanelBackground}"
+                                                    HubBorderBrush="{DynamicResource Line}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock x:Name="GpuFan" Text="--"
+                                                           Style="{DynamicResource Value}" FontSize="17"
+                                                           Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
+                                                <TextBlock Text="GPU FAN" Style="{DynamicResource Label}" FontSize="10"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </c:FanGauge>
+
+                                        <Border Background="{DynamicResource PanelBackground}"
+                                                BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                                                CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="GPU TEMPERATURE" Style="{DynamicResource Label}"
+                                                           HorizontalAlignment="Center" />
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
                                                     <TextBlock Text="{Binding Text, ElementName=GpuTemp}"
-                                                               Style="{DynamicResource Label}"
-                                                               Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
+                                                               Foreground="{Binding Foreground, ElementName=GpuTemp}"
+                                                               Style="{DynamicResource Value}" FontSize="22"
+                                                               HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Text, ElementName=GpuClock}" Style="{DynamicResource Label}"
+                                                               Foreground="{DynamicResource Accent}" FontWeight="SemiBold" FontSize="12"
+                                                               VerticalAlignment="Bottom" Margin="8,0,0,3" />
                                                 </StackPanel>
-                                            </Grid>
-                                            <c:SegmentedBar Value="{Binding Text, ElementName=GpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
-                                                            LitBrush="{DynamicResource Accent}"
-                                                            UnlitBrush="{DynamicResource GaugeTrackBrush}"
-                                                            Height="8" Margin="0,6,0,0" />
-                                        </StackPanel>
-                                    </Border>
+                                                <TextBlock x:Name="GpuName" Style="{DynamicResource Label}"
+                                                           Foreground="{DynamicResource Muted}" FontSize="10.5"
+                                                           HorizontalAlignment="Center" Margin="0,2,0,0"
+                                                           TextTrimming="CharacterEllipsis" MaxWidth="160"
+                                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
-
-                                <!-- Panel 2: Memory & Disk Conditions (Matching Reference Images with Stacked Donut Rows) -->
-                                <Grid Grid.Row="2">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="24" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Chamfered Header Tab -->
-                                    <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
-                                            BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
-                                            HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
-                                            CornerRadius="4,12,0,0">
-                                        <TextBlock Text="Memory &amp; Disk" Style="{DynamicResource PanelHeaderTextStyle}" />
-                                    </Border>
-
-                                    <!-- Donut Gauges Card with Stacked RAM & SSD Rows -->
-                                    <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6" Padding="14,10">
-                                        <StackPanel>
-                                            <!-- Row 1: RAM Condition (Yellow-Amber Arc, Bullet, Percentage, Capacity) -->
-                                            <Grid Margin="0,2,0,6">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="68" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Left: Donut Gauge with Yellow-Amber Arc -->
-                                                <c:DonutGauge x:Name="RamGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
-                                                              ArcBrush="#FFA000"
-                                                              TrackBrush="{DynamicResource GaugeTrackBrush}"
-                                                              BracketBrush="{DynamicResource Line}"
-                                                              HubBrush="{DynamicResource CardBackground}"
-                                                              StrokeThickness="7" HorizontalAlignment="Left" />
-
-                                                <!-- Right: Metric Bullet, Percentage & Secondary Capacity -->
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Ellipse Width="6" Height="6" Fill="#FF7700" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                        <TextBlock Text="RAM" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
-                                                                   FontWeight="Bold" FontSize="11" />
-                                                    </StackPanel>
-                                                    <TextBlock x:Name="RamPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
-                                                               Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
-                                                    <TextBlock x:Name="RamDetail" Text="--" Style="{DynamicResource Label}"
-                                                               FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
-                                                </StackPanel>
-                                            </Grid>
-
-                                            <!-- Subtle Row Divider -->
-                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,4,0,8" />
-
-                                            <!-- Row 2: SSD Condition (Cyan-Blue Arc, Bullet, Percentage, Capacity) -->
-                                            <Grid Margin="0,0,0,2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="68" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Left: Donut Gauge with Cyan-Blue Arc -->
-                                                <c:DonutGauge x:Name="SsdGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
-                                                              ArcBrush="#0088FF"
-                                                              TrackBrush="{DynamicResource GaugeTrackBrush}"
-                                                              BracketBrush="{DynamicResource Line}"
-                                                              HubBrush="{DynamicResource CardBackground}"
-                                                              StrokeThickness="7" HorizontalAlignment="Left" />
-
-                                                <!-- Right: Metric Bullet, Percentage & Secondary Capacity -->
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Ellipse Width="6" Height="6" Fill="#0088FF" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                        <TextBlock Text="SSD" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
-                                                                   FontWeight="Bold" FontSize="11" />
-                                                    </StackPanel>
-                                                    <TextBlock x:Name="SsdPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
-                                                               Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
-                                                    <TextBlock x:Name="SsdDetail" Text="--" Style="{DynamicResource Label}"
-                                                               FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Grid>
+                            </Border>
                         </Grid>
                     </Grid>
 
                     <!-- ================= PAGE: POWER ================= -->
-                    <Grid x:Name="PagePower" Visibility="Collapsed">
+                    <Grid x:Name="PagePower" Grid.Column="0" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" /> <!-- Header -->
                             <RowDefinition Height="Auto" /> <!-- 4 Power Mode Option Cards -->
@@ -957,7 +735,7 @@
                                    Foreground="{DynamicResource Ink}" Margin="0,0,0,16" />
 
                         <!-- Four Windows Power Overlay Cards in a Row (None checked by default) -->
-                        <Grid Grid.Row="1" Margin="0,0,0,20">
+                        <Grid Grid.Row="1" Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -969,18 +747,18 @@
                             <RadioButton x:Name="PowerModeEfficiency" Grid.Column="0"
                                          Style="{DynamicResource PowerModeCard}"
                                          Tag="Efficiency" GroupName="PowerMode" Checked="OnPowerModeChanged"
-                                         Margin="0,0,6,0">
+                                         Margin="0,0,4,0">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconPowerSaver}" Width="52" Height="52" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconPowerSaver}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Power Saver" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="Power Saver" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                               HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeEfficiencyText"
-                                               Style="{DynamicResource StatusTextStyle}" FontSize="11.5"
-                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"
-                                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11"
+                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="15"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" />
                                 </StackPanel>
                             </RadioButton>
 
@@ -988,18 +766,18 @@
                             <RadioButton x:Name="PowerModeBalanced" Grid.Column="1"
                                          Style="{DynamicResource PowerModeCard}"
                                          Tag="Balanced" GroupName="PowerMode" Checked="OnPowerModeChanged"
-                                         Margin="3,0,3,0">
+                                         Margin="2,0,2,0">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconPowerBalanced}" Width="52" Height="52" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconPowerBalanced}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Balanced" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="Balanced" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                               HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBalancedText"
-                                               Style="{DynamicResource StatusTextStyle}" FontSize="11.5"
-                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"
-                                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11"
+                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="15"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" />
                                 </StackPanel>
                             </RadioButton>
 
@@ -1007,18 +785,18 @@
                             <RadioButton x:Name="PowerModeBetter" Grid.Column="2"
                                          Style="{DynamicResource PowerModeCard}"
                                          Tag="Better" GroupName="PowerMode" Checked="OnPowerModeChanged"
-                                         Margin="3,0,3,0">
+                                         Margin="2,0,2,0">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconPowerPerformance}" Width="52" Height="52" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconPowerPerformance}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="High Performance" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="Performance" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                               HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBetterText"
-                                               Style="{DynamicResource StatusTextStyle}" FontSize="11.5"
-                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"
-                                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11"
+                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="15"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" />
                                 </StackPanel>
                             </RadioButton>
 
@@ -1026,25 +804,25 @@
                             <RadioButton x:Name="PowerModeBest" Grid.Column="3"
                                          Style="{DynamicResource PowerModeCard}"
                                          Tag="Best" GroupName="PowerMode" Checked="OnPowerModeChanged"
-                                         Margin="6,0,0,0">
+                                         Margin="4,0,0,0">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconPowerBest}" Width="52" Height="52" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconPowerBest}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Ultimate" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="Ultimate" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                               HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBestText"
-                                               Style="{DynamicResource StatusTextStyle}" FontSize="11.5"
-                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"
-                                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11"
+                                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="15"
+                                               HorizontalAlignment="Center" Margin="0,8,0,0" />
                                 </StackPanel>
                             </RadioButton>
                         </Grid>
 
                         <!-- Diagnosis and Repair Strip -->
                         <Border Grid.Row="2" Style="{DynamicResource Card}">
-                            <Grid VerticalAlignment="Center" Margin="24">
+                            <Grid VerticalAlignment="Center" Margin="20,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -1053,10 +831,10 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="CURRENT MODE" Style="{DynamicResource Label}" />
                                     <TextBlock x:Name="OverlayState" Foreground="{DynamicResource Good}"
-                                               FontSize="20" FontWeight="SemiBold" Margin="0,6,0,0"
+                                               FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0"
                                                Text="Checking..." />
                                     <TextBlock x:Name="OverlayDetail" Style="{DynamicResource StatusTextStyle}"
-                                               Margin="0,10,32,0" TextWrapping="Wrap" LineHeight="18" />
+                                               Margin="0,6,16,0" TextWrapping="Wrap" LineHeight="17" />
                                 </StackPanel>
 
                                 <Button x:Name="FixButton" Grid.Column="1" Content="Repair"
@@ -1067,7 +845,7 @@
                     </Grid>
 
                     <!-- ================= PAGE: DISPLAY ================= -->
-                    <Grid x:Name="PageDisplay" Visibility="Collapsed">
+                    <Grid x:Name="PageDisplay" Grid.Column="0" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -1076,21 +854,22 @@
 
                         <!-- Header -->
                         <TextBlock Grid.Row="0" Text="Display Mode" FontSize="19" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource Ink}" Margin="0,0,0,24" />
+                                   Foreground="{DynamicResource Ink}" Margin="0,0,0,20" />
 
                         <!-- Three GPU Mode Option Cards in a Row (None checked by default) -->
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                             <!-- 1. Discrete GPU -->
                             <RadioButton x:Name="ModeDiscrete" Style="{DynamicResource GpuOptionCard}"
+                                         Width="184" Height="220" Margin="5,0"
                                          Tag="Discrete" GroupName="Gpu" Checked="OnGpuModeChanged">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Path Data="{DynamicResource IconGpuDiscrete}" Width="68" Height="68" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconGpuDiscrete}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Discrete GPU" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="Discrete GPU" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
-                                    <TextBlock Text="Dedicated graphics only"
+                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                    <TextBlock Text="Dedicated graphics only" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                     <TextBlock x:Name="ModeDiscreteNote" Text="Not directly reachable from UMA"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
@@ -1100,15 +879,16 @@
 
                             <!-- 2. MS Hybrid -->
                             <RadioButton x:Name="ModeHybrid" Style="{DynamicResource GpuOptionCard}"
+                                         Width="184" Height="220" Margin="5,0"
                                          Tag="Hybrid" GroupName="Gpu" Checked="OnGpuModeChanged">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Path Data="{DynamicResource IconGpuHybrid}" Width="68" Height="68" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconGpuHybrid}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="MS Hybrid" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="MS Hybrid" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
-                                    <TextBlock Text="Dynamic graphics switching"
+                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                    <TextBlock Text="Dynamic graphics switching" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                     <TextBlock x:Name="ModeHybridNote"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
@@ -1118,15 +898,16 @@
 
                             <!-- 3. UMA Mode -->
                             <RadioButton x:Name="ModeUma" Style="{DynamicResource GpuOptionCard}"
+                                         Width="184" Height="220" Margin="5,0"
                                          Tag="Uma" GroupName="Gpu" Checked="OnGpuModeChanged">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Path Data="{DynamicResource IconGpuUma}" Width="68" Height="68" Stretch="Uniform"
+                                    <Path Data="{DynamicResource IconGpuUma}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="UMA Mode" FontSize="15" FontWeight="Bold"
+                                    <TextBlock Text="UMA Mode" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               HorizontalAlignment="Center" Margin="0,16,0,0" />
-                                    <TextBlock Text="Integrated graphics only"
+                                               HorizontalAlignment="Center" Margin="0,14,0,0" />
+                                    <TextBlock Text="Integrated graphics only" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                     <TextBlock x:Name="ModeUmaNote" Text="Not directly reachable from Discrete"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
@@ -1157,12 +938,12 @@
                             <!-- Full-width explanation -->
                             <TextBlock x:Name="GpuModeDetail" Style="{DynamicResource StatusTextStyle}"
                                        HorizontalAlignment="Center"
-                                       TextWrapping="Wrap" TextAlignment="Center" MaxWidth="680" LineHeight="20" />
+                                       TextWrapping="Wrap" TextAlignment="Center" MaxWidth="560" LineHeight="19" />
                         </StackPanel>
                     </Grid>
 
                     <!-- ================= PAGE: LIGHTING ================= -->
-                    <Grid x:Name="PageLighting" Visibility="Collapsed">
+                    <Grid x:Name="PageLighting" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="316" />
@@ -1370,6 +1151,237 @@
                         </Border>
                     </Grid>
 
+                    <!-- Right Column: CPU & GPU Segmented Telemetry + Memory & Disk Conditions (System, Power, Display; hidden on Lighting) -->
+                    <Grid Grid.Column="1" Width="280" Margin="16,0,0,0">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked, ElementName=NavLighting}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Panel 1: CPU & GPU Thermal Telemetry -->
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Chamfered Header Tab -->
+                            <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
+                                    BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
+                                    HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
+                                    CornerRadius="4,12,0,0">
+                                <TextBlock Text="CPU &amp; GPU" Style="{DynamicResource PanelHeaderTextStyle}" />
+                            </Border>
+
+                            <!-- Panel Card -->
+                            <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6" Padding="14,12">
+                                <StackPanel VerticalAlignment="Center">
+                                    <!-- CPU Indicator & Bar -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
+                                            <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
+                                        </StackPanel>
+                                        <TextBlock x:Name="CpuClock" Grid.Column="1" Style="{DynamicResource Label}"
+                                                   Foreground="{DynamicResource Accent}" FontWeight="SemiBold"
+                                                   TextAlignment="Right" HorizontalAlignment="Right"
+                                                   Margin="6,0,8,0" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock x:Name="CpuTemp" Grid.Column="2" Text="-- °C"
+                                                   Style="{DynamicResource Label}"
+                                                   Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
+                                    </Grid>
+                                    <c:SegmentedBar Value="{Binding Text, ElementName=CpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
+                                                    LitBrush="{DynamicResource Accent}"
+                                                    UnlitBrush="{DynamicResource GaugeTrackBrush}"
+                                                    Height="8" Margin="0,5,0,10" />
+
+                                    <!-- GPU Indicator & Bar -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
+                                            <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
+                                        </StackPanel>
+                                        <TextBlock x:Name="GpuClock" Grid.Column="1" Style="{DynamicResource Label}"
+                                                   Foreground="{DynamicResource Accent}" FontWeight="SemiBold"
+                                                   TextAlignment="Right" HorizontalAlignment="Right"
+                                                   Margin="6,0,8,0" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock x:Name="GpuTemp" Grid.Column="2" Text="-- °C"
+                                                   Style="{DynamicResource Label}"
+                                                   Foreground="{DynamicResource Ink}" FontWeight="SemiBold" />
+                                    </Grid>
+                                    <c:SegmentedBar Value="{Binding Text, ElementName=GpuTemp, Converter={StaticResource TemperatureToDoubleConverter}}"
+                                                    LitBrush="{DynamicResource Accent}"
+                                                    UnlitBrush="{DynamicResource GaugeTrackBrush}"
+                                                    Height="8" Margin="0,5,0,0" />
+
+                                    <!-- Subtle Divider -->
+                                    <Border Height="1" Background="{DynamicResource Line}" Margin="0,10,0,8" />
+
+                                    <!-- Overheat Warning Master Toggle & Reset -->
+                                    <Grid Margin="0,0,0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
+                                                          VerticalAlignment="Center"
+                                                          ToolTip="Warn when temperatures exceed safety threshold" />
+                                        </StackPanel>
+                                        <Button x:Name="OverheatResetButton" Grid.Column="1" Content="Reset"
+                                                Style="{StaticResource WarnResetButtonStyle}"
+                                                IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}"
+                                                VerticalAlignment="Center"
+                                                ToolTip="Reset thresholds to default" />
+                                    </Grid>
+
+                                    <!-- Dual Threshold Sliders (CPU & GPU) -->
+                                    <StackPanel IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Opacity" Value="0.4" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+
+                                        <!-- CPU Threshold Row -->
+                                        <Grid Margin="0,0,0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="44" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                            <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
+                                                    TickFrequency="1" IsSnapToTickEnabled="True"
+                                                    VerticalAlignment="Center" Margin="4,0" />
+                                            <TextBox x:Name="CpuWarnValue" Grid.Column="2"
+                                                     Style="{StaticResource WarnValueTextBoxStyle}" />
+                                        </Grid>
+
+                                        <!-- GPU Threshold Row -->
+                                        <Grid Margin="0,1,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="44" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                            <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
+                                                    TickFrequency="1" IsSnapToTickEnabled="True"
+                                                    VerticalAlignment="Center" Margin="4,0" />
+                                            <TextBox x:Name="GpuWarnValue" Grid.Column="2"
+                                                     Style="{StaticResource WarnValueTextBoxStyle}" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Panel 2: Memory & Disk Conditions (Donut Gauges Card with Stacked RAM & SSD Rows) -->
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Chamfered Header Tab -->
+                            <Border Grid.Row="0" Background="{DynamicResource HeaderTabBackground}"
+                                    BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
+                                    HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
+                                    CornerRadius="4,12,0,0">
+                                <TextBlock Text="Memory &amp; Disk" Style="{DynamicResource PanelHeaderTextStyle}" />
+                            </Border>
+
+                            <!-- Donut Gauges Card with Stacked RAM & SSD Rows -->
+                            <Border Grid.Row="1" Style="{DynamicResource Card}" CornerRadius="0,6,6,6" Padding="14,10">
+                                <StackPanel>
+                                    <!-- Row 1: RAM Condition -->
+                                    <Grid Margin="0,2,0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="68" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <c:DonutGauge x:Name="RamGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
+                                                      ArcBrush="#FFA000"
+                                                      TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                      BracketBrush="{DynamicResource Line}"
+                                                      HubBrush="{DynamicResource CardBackground}"
+                                                      StrokeThickness="7" HorizontalAlignment="Left" />
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="6" Height="6" Fill="#FF7700" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <TextBlock Text="RAM" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
+                                                           FontWeight="Bold" FontSize="11" />
+                                            </StackPanel>
+                                            <TextBlock x:Name="RamPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
+                                                       Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
+                                            <TextBlock x:Name="RamDetail" Text="--" Style="{DynamicResource Label}"
+                                                       FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Subtle Row Divider -->
+                                    <Border Height="1" Background="{DynamicResource Line}" Margin="0,4,0,8" />
+
+                                    <!-- Row 2: SSD Condition -->
+                                    <Grid Margin="0,0,0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="68" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <c:DonutGauge x:Name="SsdGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
+                                                      ArcBrush="#0088FF"
+                                                      TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                      BracketBrush="{DynamicResource Line}"
+                                                      HubBrush="{DynamicResource CardBackground}"
+                                                      StrokeThickness="7" HorizontalAlignment="Left" />
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="6" Height="6" Fill="#0088FF" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <TextBlock Text="SSD" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
+                                                           FontWeight="Bold" FontSize="11" />
+                                            </StackPanel>
+                                            <TextBlock x:Name="SsdPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
+                                                       Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
+                                            <TextBlock x:Name="SsdDetail" Text="--" Style="{DynamicResource Label}"
+                                                       FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
             <!-- In-Window Modal Dialog Overlay -->
