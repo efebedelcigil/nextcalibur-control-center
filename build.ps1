@@ -5,7 +5,7 @@
 #
 # Requires: .NET 8 SDK, and the Velopack CLI (dotnet tool install -g vpk)
 
-param([string]$Version = "0.4.0")
+param([string]$Version = "0.5.0")
 
 $ErrorActionPreference = 'Stop'
 $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
@@ -40,5 +40,6 @@ vpk pack `
     --icon src\Nextcalibur.App\Assets\app.ico `
     -o releases
 
+if ($LASTEXITCODE -ne 0) { Write-Host "==> vpk failed (is a sandbox holding releases\ open?)" -ForegroundColor Red; exit 1 }
 Write-Host "==> Done" -ForegroundColor Green
 Get-ChildItem releases | Select-Object Name, @{n='MB';e={[math]::Round($_.Length/1MB,1)}}

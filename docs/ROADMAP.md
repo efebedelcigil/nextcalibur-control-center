@@ -457,6 +457,13 @@ here keys on a name. The mailbox and its answers are the identity.
 Nothing in the check writes. A machine is judged by what it says to reads it
 was always going to receive.
 
+**Sandbox, 0.5.0 candidate, 11 September 2026:** banner, every page locked,
+the uninstall offer - all as specified. One thing slipped past: the
+first-run hook runs before the window exists, so the sandbox was still
+offered the power-overlay repair (with its UAC prompt) and given a Run entry.
+Both now check for the mailbox first and do nothing without it. Re-run in a
+fresh sandbox: banner and locks only, no repair, no prompt. Passed.
+
 ### Dialogues are the application's, not Windows'
 
 Set by the owner on 11 September 2026. Twenty message boxes across the
