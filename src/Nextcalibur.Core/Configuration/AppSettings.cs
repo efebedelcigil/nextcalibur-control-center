@@ -41,6 +41,16 @@ public sealed class AppSettings
     public Nextcalibur.Core.Power.SystemMode? LastSystemMode { get; set; }
 
     /// <summary>
+    /// Settings this version does not know, kept and written back untouched.
+    /// Seen 11 September 2026: 0.4.0 ran once between two 0.5.0 sessions,
+    /// loaded a file with <c>LastSystemMode</c> in it, and saved it without -
+    /// the chosen mode was gone. From this version on, an older copy that
+    /// happens to run cannot lose what a newer one wrote.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? Unknown { get; set; }
+
+    /// <summary>
     /// Warn when the CPU exceeds this temperature, in °C.
     ///
     /// Turning the warning off is <see cref="OverheatWarningEnabled"/>, not a
