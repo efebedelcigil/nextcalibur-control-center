@@ -745,6 +745,13 @@ Notes in [releases/0.5.1.md](releases/0.5.1.md). The one that tests the
 update chain in the person's real session: 0.5.0 was installed by hand,
 this one has to arrive on its own.
 
+Sandbox, 12 September: the first build showed a taskbar entry and no
+window. The "not supported - remove?" question is raised from Loaded, and
+as an in-window dialogue its nested message loop ran before Windows had put
+the window on screen. In-window dialogues now wait for the first frame;
+before it, Windows' box. Second build: question, then window, banner, every
+page locked. Passed.
+
 ### 0.5.0 is out
 
 Published 11 September 2026 and installed here through the update chain.
