@@ -185,11 +185,26 @@ reads the mode and shows its dialogue. **The write that actually switches must
 happen on Yes**, immediately before the restart, and that has not been captured
 because capturing it costs a PIN reset.
 
-That is the remaining experiment, and it is the one that decides whether
-Nextcalibur can switch graphics modes itself: capture running, press the
-button, answer Yes, read the log after the restart. The log is written line by
-line, so it survives the reboot. One PIN reset to learn the command; a second
-to come back.
+**Captured, 05:56.** One PIN reset later, the last line before the restart:
+
+```
+0xFB00 / 0x0203 / a2=2      write, subsystem 2, register 3, value 2  ->  Discrete
+```
+
+Cross-checked against the firmware variable `TpvSetup`, which holds `0x02` in
+Discrete and `0x03` in Hybrid: the mailbox value is the stored value. So the
+switch is **one write, through the mailbox this project already uses, with a
+permission it already holds**. No driver, no IOCTL, nothing to ship.
+
+**Nextcalibur can switch graphics modes.** Whether it should is a separate
+decision, and the costs are already written up on the Display page: the change
+invalidates TPM-sealed credentials, the Windows PIN has to be set up again, and
+BitLocker can demand its recovery key. Those do not go away because the command
+turned out to be simple.
+
+Left to confirm before building it: the Hybrid value as an actual write rather
+than an inference - capture the switch back, which is the second PIN reset
+already budgeted.
 
 The earlier check that "no vendor driver is involved" asked about
 `ControlCenter64` and `ControlCenterC64`, which are file names; the service is
