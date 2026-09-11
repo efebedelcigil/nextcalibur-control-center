@@ -68,6 +68,9 @@ public partial class MainWindow : Window
     private bool _overheatNotified;
     private bool _mailboxFailed;
 
+    /// <summary>What this machine has been judged able to use. See <see cref="HardwareSupport"/>.</summary>
+    private SupportVerdict _support;
+
     /// <summary>
     /// Whether the firmware interface was found at startup.
     ///
@@ -140,9 +143,13 @@ public partial class MainWindow : Window
         // interface yet.
         AskForMailboxAccessIfNeeded();
 
-        // None of this needs the firmware interface, so it runs before the
-        // check that can bail out — an unsupported machine still gets its
-        // device names, power page and storage readings.
+        // The gate. Everything below is allowed or not by what the machine has
+        // just said about itself, and an unsupported one is locked before a
+        // single control is wired.
+        _support = HardwareSupport.Check();
+        ApplySupportVerdict();
+        if (_support.Level == SupportLevel.Unsupported) return;
+
         _mailboxSupported = EcMailbox.IsSupported();
 
         // The Office, Gaming and High performance plans this used to select are
@@ -202,6 +209,76 @@ public partial class MainWindow : Window
     /// the order is not fixed: somebody may install that software afterwards, or
     /// put it back later.
     /// </summary>
+    /// <summary>
+    /// Locks the window to what the machine has been judged able to use.
+    ///
+    /// Unsupported means nothing: every page's navigation off, a banner that
+    /// says so, and an offer to remove the application. Read-only means the
+    /// two pages that write - lighting and the graphics switch - are off and
+    /// the rest stays. Supported changes nothing.
+    ///
+    /// The owner's rule, set once the graphics switch went in: the repository
+    /// is public, this writes to firmware, and a laptop it was not built
+    /// against must be given nothing to click. The power page would work
+    /// anywhere - it is Windows, not firmware - and is locked anyway, because
+    /// a rule with no exceptions is easier to trust.
+    /// </summary>
+    private void ApplySupportVerdict()
+    {
+        switch (_support.Level)
+        {
+            case SupportLevel.Supported:
+                return;
+
+            case SupportLevel.ReadOnly:
+                NavLighting.IsEnabled = false;
+                foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
+                    button.IsEnabled = false;
+                ShowBanner(
+                    "Readings only on this laptop",
+                    "The firmware interface is there, but it did not answer the way the machine this was " +
+                    "built against does, so nothing that writes to it is offered: " + string.Join(" ", _support.Reasons),
+                    (SolidColorBrush)FindResource("Warn"));
+                return;
+
+            case SupportLevel.Unsupported:
+                foreach (var nav in new[] { NavSystem, NavPower, NavDisplay, NavLighting })
+                    nav.IsEnabled = false;
+                foreach (var page in new[] { PageSystem, PagePower, PageDisplay, PageLighting })
+                    page.IsEnabled = false;
+                ShowBanner(
+                    "This laptop isn't supported",
+                    "Nextcalibur was built for a specific firmware interface and this machine does not have it. " +
+                    "Nothing has been changed, and nothing here will do anything. " + string.Join(" ", _support.Reasons),
+                    (SolidColorBrush)FindResource("Bad"));
+                OfferRemovalOnUnsupportedMachine();
+                return;
+        }
+    }
+
+    private void OfferRemovalOnUnsupportedMachine()
+    {
+        var answer = MessageBox.Show(this,
+            "This laptop does not have the firmware interface Nextcalibur was built for." +
+            Environment.NewLine + Environment.NewLine +
+            "Nothing has been changed on your machine, and to keep it that way, nothing in this " +
+            "window will respond. There is no reason to keep it installed." +
+            Environment.NewLine + Environment.NewLine +
+            "Open Windows' list of installed apps so you can remove it?",
+            "Nextcalibur - not supported here",
+            MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+        if (answer != MessageBoxResult.Yes) return;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo("ms-settings:appsfeatures") { UseShellExecute = true });
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+        {
+        }
+    }
+
     private void RecommendRemovingVendorSoftwareOnce()
     {
         if (_settings.AcceptedVendorSoftware) return;
@@ -622,9 +699,13 @@ public partial class MainWindow : Window
         if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
         if (button.Tag is not string tag || !Enum.TryParse<GpuMode>(tag, out var target)) return;
 
-        if (_mailbox is null)
+        if (_mailbox is null || !_support.AllowsWrites)
         {
-            MessageBox.Show(this, "The firmware interface is not available, so the mode cannot be changed from here.",
+            MessageBox.Show(this,
+                _support.AllowsWrites
+                    ? "The firmware interface is not available, so the mode cannot be changed from here."
+                    : "This laptop has not shown it speaks the protocol Nextcalibur was built against, " +
+                      "so nothing that writes to it is offered. Readings only.",
                 "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
             GpuButtonFor(current).IsChecked = true;
             return;
