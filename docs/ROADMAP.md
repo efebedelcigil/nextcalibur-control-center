@@ -308,6 +308,9 @@ leaving a registry value behind.
 
 ### 4. Small things, listed so they are not rediscovered
 
+- Control Center 3.0.0.34 has a **macro key** feature the earlier version did
+  not. Out of scope by the owner's decision, 11 September 2026: not a thing
+  this project adds.
 - The vendor starts itself with a **scheduled task**; we use `HKCU\...\Run`.
   Ours needs no administrator, which is the better trade for what it does.
 - It installs in Turkish. Nextcalibur is English only, by decision - the owner
