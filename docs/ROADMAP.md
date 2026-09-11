@@ -348,6 +348,35 @@ The second is the right one. Not done yet.
 Not on this channel: unplugging the charger produces no event here at all, which
 is covered above.
 
+### Unsupported machines get nothing to click
+
+Set by the owner on 11 September 2026, after the graphics switch went in. This
+application now writes to firmware and switches devices off. On the laptop it
+was built against that is measured and safe. On a laptop it was not built
+against it is a way to break somebody's machine, and the repository is public.
+
+So there is a check, and it gates everything:
+
+| Verdict | Meaning | What the person can do |
+|---|---|---|
+| Supported | the firmware mailbox is there, answers a thermal read with plausible numbers, and the mode register reads 1 or 2 | everything |
+| Read-only | the mailbox is there but its answers do not look like this protocol | see readings; nothing that writes |
+| Unsupported | no mailbox class at all | **nothing** - every control locked, a banner saying so, and an offer to remove the application |
+
+The check runs at first run and at every start, because a machine does not
+become supported by having the application installed on it. A verdict short of
+Supported disables the lighting page, the graphics switch, and the command-line
+verbs that write. Unsupported disables the power page too: those features are
+Windows-generic and would work, but the rule is simpler to trust when it has no
+exceptions, and it can be loosened later if there is a reason.
+
+What the check cannot do is identify the model. SMBIOS on this machine reads
+`Type1MTM` and `Type2ProjectName` - the vendor never filled it in - so nothing
+here keys on a name. The mailbox and its answers are the identity.
+
+Nothing in the check writes. A machine is judged by what it says to reads it
+was always going to receive.
+
 ### Look before you change anything
 
 The owner set this alongside the uninstall rule, and it applies to every
