@@ -364,6 +364,21 @@ The second is the right one. Not done yet, and on inspection not quick either:
 Deferred on 11 September 2026 in favour of the Discrete round; the design
 above is what to build.
 
+### Start with Windows, from install
+
+Set 11 September 2026. The vendor registers a logon task at install; a control
+centre that is not running cannot warn about heat. So the first run writes the
+`Run` entry (`--tray`), and the tray menu's "Start with Windows" is where it is
+turned off. The first-run hook sets it once; it never re-asserts it after that,
+so the person's choice sticks. A place for the toggle inside the window is
+Antigravity's (BRIEF §6).
+
+### The System page said nothing when Windows was on none of the modes
+
+Seen 11 September after a fresh boot: Balanced plan with the Better-performance
+overlay is none of Office/Gaming/Performance, so no tab was checked and nothing
+explained why. Now a line under the tabs names the plan and overlay. Done.
+
 Not on this channel: unplugging the charger produces no event here at all, which
 is covered above.
 

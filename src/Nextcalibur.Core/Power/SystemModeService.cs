@@ -189,6 +189,19 @@ public sealed class SystemModeService
     }
 
     /// <summary>
+    /// What Windows is actually running, in words, for when
+    /// <see cref="DetectCurrent"/> finds none of the three modes. A machine
+    /// straight from setup sits on Balanced with whatever overlay Windows
+    /// chose, and a blank row of tabs says nothing about that.
+    /// </summary>
+    public static string DescribeCurrent()
+    {
+        var active = GetActivePlan();
+        var plan = EnumeratePlans().FirstOrDefault(p => p.Value == active).Key ?? "an unnamed plan";
+        return $"{plan} plan, {PowerOverlays.Describe(PowerOverlayService.GetActiveOverlay())}";
+    }
+
+    /// <summary>
     /// Applies a mode and returns a sentence describing what changed.
     /// </summary>
     /// <exception cref="UnsafeModeException">

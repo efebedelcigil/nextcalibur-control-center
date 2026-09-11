@@ -170,3 +170,14 @@ and report. **Report and stop — do not revert either.** A protected file was o
 edited to fix a real bug and then reverted when that was pointed out; the revert
 also discarded an unrelated repair someone else had made to the same file, and
 the broken version was committed before anyone noticed.
+
+## 6. Two small things on the System page (11 September)
+
+- `SystemModeNote` (under the three mode tabs, collapsed by default) now says
+  what Windows is on when none of Office/Gaming/Performance is active - e.g.
+  "No mode is active. Windows is on the Balanced plan, Better performance.
+  Pick one above." It is a plain `StatusTextStyle` TextBlock wrapped in a
+  vertical StackPanel with the tabs; place it where it reads best.
+- "Start with Windows" is on from install (first run), as the vendor's is. It
+  lives in the tray menu only. If a settings area ever exists, it belongs
+  there too; it is `StartupRegistration.IsEnabled` / `Set(bool, exe)`.
