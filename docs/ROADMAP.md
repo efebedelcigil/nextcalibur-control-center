@@ -131,46 +131,44 @@ The honest limit: some platforms only start emitting these events after a
 vendor driver enables them through ACPI, and no such driver is installed here.
 That question stays open and does not matter - the keys already work.
 
-### Investigate: the vendor's kernel driver does not load on this machine
+### Settled: the vendor's kernel driver never loads here
 
-Found 11 September 2026 while trying to start it by hand:
+Found 11 September 2026 and confirmed across a restart. Windows refuses the
+driver at every boot:
 
 ```
-sc start ControlCenter  ->  StartService FAILED 577
+03:40:58  System        7000  ControlCenter service failed to start
+03:40:58  CodeIntegrity 3004  unable to verify the image integrity of
+                              ControlCenter64.sys - file hash could not be
+                              found on the system
 ```
 
-577 is `ERROR_INVALID_IMAGE_HASH`. Memory Integrity is on and enforcing here
-(`SecurityServicesRunning: 2`), and the driver's signing certificate **expired on
-5 July 2026** - its Authenticode status still reads Valid through the timestamp,
-but HVCI holds drivers to a stricter standard and refuses this one.
+Memory Integrity is enforcing on this machine, and the driver's signing
+certificate expired on 5 July 2026. `sc start` by hand gives 577,
+`ERROR_INVALID_IMAGE_HASH`. The service is registered, set to start
+automatically, and has never run.
 
-So on this machine the driver is installed, set to start automatically, and
-`Stopped`. The vendor software works anyway: the charger behaviour above was
-measured with the driver in exactly that state.
+The vendor software works regardless. The charger behaviour below was measured
+with the driver in this state, and the Display Mode switch watched on 10
+September - Discrete to Hybrid and back, panel moving between chips - happened
+on this same machine with the same policy in force. **So the switch does not go
+through the driver.** PROTOCOL.md said it did, on the strength of
+`DeviceIoControl` appearing in the native library; that inference is retracted
+there.
 
-**Which puts a claim in PROTOCOL.md in doubt.** That file says the graphics-mode
-switch reaches firmware "through the kernel driver it installs", on the strength
-of `DeviceIoControl` appearing in the native library rather than the managed
-code. If the driver cannot load, the switch that was watched working cannot have
-gone through it - and the obvious remaining route is the same ACPI-WMI mailbox
-this project already uses.
+What is left, then, is the question that matters: **how does it switch?** With
+no driver there is no port I/O and no private IOCTL. The obvious remaining route
+is the ACPI-WMI mailbox this project already reads and writes - a command in the
+`0xFB00` family the protocol document has never seen. If that is it, Nextcalibur
+can do it too, with nothing to ship and nothing to install.
 
-That is a question, not a conclusion, and it is worth answering because of what
-follows from it: **if the switch goes through the mailbox, Nextcalibur can do it
-too** - no driver to ship, no driver to install.
+Next: watch the mailbox while the button is pressed. The earlier round captured
+the registry and the firmware variable store around a click and saw nothing,
+because neither is where a mailbox write lands. `RW_GMWMI`'s buffer is.
 
-What would settle it:
-
-1. Whether the driver has *ever* loaded here. The earlier check asked about
-   `ControlCenter64` and `ControlCenterC64`, which are the file names; the
-   service is called `ControlCenter`, so that check proved nothing either way.
-   Restart with the vendor software installed and look.
-2. If it stays `Stopped` after a restart and the Display Mode buttons still work,
-   the driver is not what performs the switch.
-3. What the driver is for at all, then. Possibly nothing this machine needs -
-   the same software ships to many models.
-
-Until that is done, treat the PROTOCOL.md sentence as unproven rather than true.
+The earlier check that "no vendor driver is involved" asked about
+`ControlCenter64` and `ControlCenterC64`, which are file names; the service is
+`ControlCenter`. That check proved nothing. This one does.
 
 ### A real gap: the vendor switches mode when the charger comes out
 

@@ -303,13 +303,19 @@ nothing it does surfaces as a string in the managed assembly.
 
 **A negative result only covers where you looked.**
 
-**And the correction may be wrong too.** On 11 September 2026 the driver turned
-out not to load on this machine at all: `sc start ControlCenter` returns 577,
-`ERROR_INVALID_IMAGE_HASH`, because Memory Integrity is enforcing and the
-driver's signing certificate expired in July 2026. If it never loads, the switch
-that was watched working did not go through it, and the route is more likely the
-same ACPI-WMI mailbox this project already uses - which would mean Nextcalibur
-could perform the switch itself. Unresolved; see ROADMAP.md.
+**And the correction was wrong too.** The paragraph above says the switch goes
+through `ControlCenter64.sys`. On 11 September 2026 that driver turned out never
+to load on this machine: Code Integrity rejects it at every boot (event 3004,
+"file hash could not be found"), Memory Integrity is enforcing, and the signing
+certificate expired in July 2026. The switch watched on 10 September happened
+with the driver in exactly that state. Whatever performs it, it is not the
+driver - and with no driver there is no port I/O and no private IOCTL, which
+leaves the ACPI-WMI mailbox this document is about. Unresolved; the next step is
+to watch the mailbox during a click. See ROADMAP.md.
+
+The lesson is the same one as above, one level up: `DeviceIoControl` in a
+library is evidence that the library *can* talk to a driver, not that the thing
+you watched happen went that way.
 
 #### What the buttons do
 
