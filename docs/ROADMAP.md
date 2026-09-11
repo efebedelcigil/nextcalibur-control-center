@@ -728,6 +728,12 @@ The scripts stay in `tools/` and reinstall with `-Install` and `-Arm`. What they
 collected stays too: `tools/graphics-boot-log.csv`, the traces, and the firmware
 dumps under `tools/trace/`.
 
+### 0.5.1
+
+Notes in [releases/0.5.1.md](releases/0.5.1.md). The one that tests the
+update chain in the person's real session: 0.5.0 was installed by hand,
+this one has to arrive on its own.
+
 ### 0.5.0 is out
 
 Published 11 September 2026 and installed here through the update chain.
