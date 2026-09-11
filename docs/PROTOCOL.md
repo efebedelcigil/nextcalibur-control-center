@@ -248,6 +248,33 @@ returns zero in `a3`–`a5` for every device index, so there is no way to read
 back the current colour, effect or brightness. Software must track the state it
 last wrote.
 
+### A sweep of the registers nobody uses (read only, 11 September 2026)
+
+Every register `0x0200`-`0x0207` and `0x0300`-`0x0302`, read once, Hybrid,
+on the charger, idle:
+
+```
+0200  a2=62 a3=57 a4=4400 a5=3809 a6=2      thermal block; a6 not decoded
+0201  header 010D, a2=49                    another temperature, unknown sensor
+0202  header 0114, a3=1 a4=1 a6=1           flags, meaning unknown
+0203  a2=1 a4=1                             display mode (documented above)
+0204  zeros
+0205  a2=1
+0206  zeros                                 the vendor reads this at startup
+0207  zeros
+0300  a2=1                                  the vendor writes 1 here at startup
+0301  zeros
+0302  zeros
+```
+
+`0x0300` reads back `1` today, two restarts after the only write this project
+ever made to it (a probe, same value the vendor writes), so it is either
+persistent or defaults to `1`; either way nothing observable changed when it
+was written. `0x0206` answers zero. Neither is needed by anything this
+application does, and neither will be written: the vendor's startup writes it
+because the vendor's startup writes it, and a register whose meaning is not
+known is not one to set on somebody else's machine.
+
 ## 5. Other interfaces (no mailbox involved)
 
 ### GPU sensors
