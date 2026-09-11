@@ -3,7 +3,7 @@
 Read [ROADMAP.md](ROADMAP.md) for where the project stands and
 [CONTRACT.md](CONTRACT.md) for the names your markup must provide.
 
-Three jobs.
+Four jobs.
 
 ---
 
@@ -67,6 +67,15 @@ The code-behind exposes what it knows: `GpuModeService.Detect()` for the current
 mode, `GpuModeService.ReadFirmwareMode(mailbox)` for the stored one, and the
 two differ exactly when a restart is pending. Nothing here needs new behaviour;
 it needs the existing behaviour to be legible.
+
+## 4. The markup's placeholder numbers
+
+`RamGauge`, `RamPercent`, `RamDetail`, `SsdGauge`, `SsdPercent`, `SsdDetail`,
+`CpuFan` and `GpuFan` start with real-looking numbers - 46.8%, 733 of 1396 GB,
+0 rpm. On a machine where readings never arrive those stayed on screen and read
+as readings. The code-behind now blanks them before anything loads, but the
+markup should not carry them at all: use `--` the way `CpuTemp` and `GpuTemp`
+already do. Nothing on screen is invented, including at design time.
 
 ## What the last round settled, so it does not get undone
 
