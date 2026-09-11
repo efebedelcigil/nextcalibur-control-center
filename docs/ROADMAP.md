@@ -1029,6 +1029,14 @@ overheat warning and the mailbox's `Hold()` stay in place for that day.
 Windows notification appears; it does not touch a fan, and there is no code path
 from it to one.
 
+**One exception, 11 September 2026, and it is the vendor's own.** Register
+`0x0300` is the firmware's fan and thermal profile, written by the vendor
+with every mode: Performance 0, Gaming 1, Office 2. Found by sweeping the
+registers while each mode was chosen there. So `ApplyMode` writes it too -
+copying exactly what the vendor does, which is the rule - and the support
+check reads it as one more sign of the right machine. No curve, no manual
+speed: that is still nothing the vendor offers.
+
 ### Graphics mode: reported only until 11 September 2026, switched after
 
 Measured on hardware, not assumed - and an earlier version of this section was

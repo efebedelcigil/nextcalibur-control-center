@@ -274,7 +274,23 @@ and with Fn+Space pressed: **`0x0200 a6` went 2, 0, 1** - it is the keyboard
 backlight step, the value the key cycles. So the level *can* be read after
 all, and `ThermalSample.BacklightLevel` now carries it on every sample.
 
-`0x0300` reads back `1` today, two restarts after the only write this project
+**`0x0300` is the mode's other half.** With the vendor's software installed
+again and each mode chosen in it, the register followed: Performance `0`,
+Gaming `1`, Office `2` - and the fans stepped up on `0` (5390/5183 rpm
+against ~5100/4400 a minute earlier at the same temperature). It is the
+embedded controller's fan and thermal profile; the vendor's "1 at startup" was
+it announcing the saved mode (Gaming). Written by Nextcalibur since, read back
+`2`, `1`, `0` in turn, fans stepping up on `0` the same way. So a system mode
+here is now the plan, the overlay and this register, as it is there.
+
+Nothing else moved anything: lighting changes (colour, profile, off), the
+Display Mode button answered No, the charger, Fn+Space, CPU load. `0x0206`
+answered zero throughout; the vendor reads it once at startup and never
+writes it, which reads like a capability query on a machine without the
+capability. `0x0202`, `0x0205` and the temperature at `0x0201` (49 through
+everything, including 97 °C on the CPU) stayed put and remain unnamed.
+
+An earlier paragraph here said `0x0300` "reads back `1`", two restarts after the only write this project
 ever made to it (a probe, same value the vendor writes), so it is either
 persistent or defaults to `1`; either way nothing observable changed when it
 was written. `0x0206` answers zero. Neither is needed by anything this
