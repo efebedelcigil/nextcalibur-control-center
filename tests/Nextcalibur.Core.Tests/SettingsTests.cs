@@ -186,39 +186,47 @@ public class FootprintTests
 /// </summary>
 public class IdempotenceTests
 {
+    /// <summary>
+    /// These write the real Run key, so they put back exactly what was there -
+    /// the raw value, not a reconstruction. An earlier version "restored" it
+    /// with the test host's own path and left the machine starting testhost.exe
+    /// at sign-in.
+    /// </summary>
+    private static IDisposable PreserveRunEntry()
+    {
+        const string key = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        using var read = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(key);
+        var original = read?.GetValue("Nextcalibur") as string;
+        return new Restore(() =>
+        {
+            using var write = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(key, writable: true);
+            if (original is null) write?.DeleteValue("Nextcalibur", throwOnMissingValue: false);
+            else write?.SetValue("Nextcalibur", original, Microsoft.Win32.RegistryValueKind.String);
+        });
+    }
+
+    private sealed class Restore(Action undo) : IDisposable { public void Dispose() => undo(); }
+
     [Fact]
     public void The_startup_entry_reports_when_it_was_already_right()
     {
-        var path = Environment.ProcessPath ?? "test.exe";
-        var wasEnabled = StartupRegistration.IsEnabled;
+        using var _ = PreserveRunEntry();
+        var path = @"C:
+extcalibur-test.exe";
 
-        try
-        {
-            StartupRegistration.Set(true, path);
+        StartupRegistration.Set(true, path);
 
-            // Second time: same request, nothing to do.
-            Assert.False(StartupRegistration.Set(true, path));
-        }
-        finally
-        {
-            StartupRegistration.Set(wasEnabled, path);
-        }
+        // Second time: same request, nothing to do.
+        Assert.False(StartupRegistration.Set(true, path));
     }
 
     [Fact]
     public void Asking_for_a_different_path_is_not_the_same_request()
     {
-        var wasEnabled = StartupRegistration.IsEnabled;
+        using var _ = PreserveRunEntry();
 
-        try
-        {
-            StartupRegistration.Set(true, @"C:\one.exe");
-            Assert.True(StartupRegistration.Set(true, @"C:\another.exe"));
-        }
-        finally
-        {
-            StartupRegistration.Set(wasEnabled, Environment.ProcessPath ?? "test.exe");
-        }
+        StartupRegistration.Set(true, @"C:\one.exe");
+        Assert.True(StartupRegistration.Set(true, @"C:nother.exe"));
     }
 
     [Fact]
