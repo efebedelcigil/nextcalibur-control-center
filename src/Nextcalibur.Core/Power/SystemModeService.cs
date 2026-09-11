@@ -42,7 +42,14 @@ public sealed class SystemModeService
     };
 
     /// <summary>Every power plan on the machine, as friendly name to GUID.</summary>
-    public static IReadOnlyDictionary<string, Guid> EnumeratePlans()
+    /// <param name="includeBuiltIn">
+    /// Whether Windows' own hidden plans count. They do not for choosing:
+    /// Windows' "High performance" shares its name with the vendor's, and
+    /// power-mode overlays do not take effect on it - measured 11 September
+    /// 2026, the set succeeds and reads back Balanced. Balanced itself is
+    /// always included; it is the one built-in plan this code selects.
+    /// </param>
+    public static IReadOnlyDictionary<string, Guid> EnumeratePlans(bool includeBuiltIn = false)
     {
         var plans = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
 
@@ -66,14 +73,7 @@ public sealed class SystemModeService
                 friendly = friendly[(comma + 1)..].Trim();
             }
 
-            // Two plans can share a name: the vendor's "High performance" and
-            // Windows' own. The vendor's is the one the mode was tuned
-            // against, and the only one power-mode overlays take effect on -
-            // measured 11 September 2026: on Windows' High performance plan
-            // the overlay sets without error and reads back Balanced, which
-            // made Performance mode look like no mode at all. A built-in plan
-            // never displaces a custom one of the same name.
-            if (builtIn && plans.ContainsKey(friendly)) continue;
+            if (builtIn && friendly != "Balanced" && (!includeBuiltIn || plans.ContainsKey(friendly))) continue;
             plans[friendly] = guid;
         }
 
@@ -83,19 +83,34 @@ public sealed class SystemModeService
     /// <summary>The name Nextcalibur gives a plan it creates itself.</summary>
     private static string OwnPlanName(SystemMode mode) => $"Nextcalibur {mode}";
 
+    /// <summary>
+    /// Whether this mode has a plan of its own - ours or the vendor's. The
+    /// Balanced fallback does not count: it is what every mode collapses to
+    /// when the real plans are gone, and the point of asking is to notice that.
+    /// </summary>
+    public static bool HasPlanFor(SystemMode mode)
+    {
+        var plans = EnumeratePlans();
+        return plans.ContainsKey(OwnPlanName(mode))
+            || PreferredPlanNames[mode].Any(n => n != "Balanced" && plans.ContainsKey(n));
+    }
+
     private static Guid? ResolvePlan(SystemMode mode)
     {
         var plans = EnumeratePlans();
 
-        // Our own first: on a machine where they exist, they are what the modes
-        // were tuned against.
+        // The vendor's first: theirs are tuned per mode, ours are copies of
+        // Balanced told apart by overlay. Ours exist for when theirs are gone,
+        // and step aside again if theirs come back.
+        foreach (var candidate in PreferredPlanNames[mode])
+        {
+            if (candidate == "Balanced") break;
+            if (plans.TryGetValue(candidate, out var vendor)) return vendor;
+        }
+
         if (plans.TryGetValue(OwnPlanName(mode), out var own)) return own;
 
-        foreach (var candidate in PreferredPlanNames[mode])
-            if (plans.TryGetValue(candidate, out var guid))
-                return guid;
-
-        return null;
+        return plans.TryGetValue("Balanced", out var balanced) ? balanced : null;
     }
 
     /// <summary>
@@ -206,7 +221,7 @@ public sealed class SystemModeService
     public static string DescribeCurrent()
     {
         var active = GetActivePlan();
-        var plan = EnumeratePlans().FirstOrDefault(p => p.Value == active).Key ?? "an unnamed plan";
+        var plan = EnumeratePlans(includeBuiltIn: true).FirstOrDefault(p => p.Value == active).Key ?? "an unnamed plan";
         return $"{plan} plan, {PowerOverlays.Describe(PowerOverlayService.GetActiveOverlay())}";
     }
 
@@ -236,9 +251,14 @@ public sealed class SystemModeService
                 "rights once, and after that this mode is safe to use.");
         }
 
+        // The plan can have gone since start: the vendor's uninstaller takes
+        // its three with it, and a mode whose plan it borrowed would be left
+        // with nothing to select. Make ours the moment that happens, rather
+        // than at the next start.
+        if (!HasPlanFor(mode)) EnsurePlansExist();
         var plan = ResolvePlan(mode)
             ?? throw new InvalidOperationException(
-                $"No power plan on this machine matches {mode}.");
+                $"No power plan on this machine matches {mode}, and one could not be created.");
 
         SetActivePlan(plan);
         PowerOverlayService.SetActiveOverlay(Overlays[mode]);
