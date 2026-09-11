@@ -1645,8 +1645,15 @@ public partial class MainWindow : Window
     private void RefreshClocks()
     {
         CpuClock.Text = _cpuClock.ReadGhz() is { } cpu ? $"{cpu:N2} GHz" : string.Empty;
+        // Clock and draw together, beside the temperature the panel already
+        // shows: the card's whole state on one line, in every mode.
         GpuClock.Text = !CardIsAwakeNow() ? "asleep"
-            : _gpuClock.ReadGhz() is { } gpu ? $"{gpu:N2} GHz" : string.Empty;
+            : (_gpuClock.ReadGhz(), _gpuClock.ReadLoad()) switch
+            {
+                ({ } ghz, { } load) => $"{ghz:N2} GHz · {load.Watts:0.0} W",
+                ({ } ghz, null) => $"{ghz:N2} GHz",
+                _ => string.Empty,
+            };
     }
 
     /// <summary>
