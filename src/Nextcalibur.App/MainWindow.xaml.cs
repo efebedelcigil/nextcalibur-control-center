@@ -967,6 +967,7 @@ public partial class MainWindow : Window
     private void LoadGpuMode()
     {
         var config = _gpu.Detect();
+        _currentGpuMode = config.Mode;
         GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
         RefreshCardDraw(config);
 
@@ -1169,8 +1170,9 @@ public partial class MainWindow : Window
     /// Measured 12 September 2026: the record follows the card's runtime
     /// sleep within seconds, and reading it leaves the card where it was.
     /// </summary>
-    private static bool CardIsAwake(GpuConfiguration config)
+    private bool CardIsAwake(GpuConfiguration config)
     {
+        _currentGpuMode = config.Mode;
         if (config.Mode == GpuMode.Discrete) return true;
         if (config.Mode == GpuMode.Uma || !config.DiscretePresent) return false;
         var id = GpuModeService.DiscreteAdapterInstanceId();
@@ -1613,10 +1615,38 @@ public partial class MainWindow : Window
     /// unreadable — no NVIDIA card, an unavailable counter — and then the
     /// reading is left blank rather than filled with a guess.
     /// </summary>
+    /// <summary>The discrete adapter's instance id, looked up once; null when there is none.</summary>
+    private string? _discreteId;
+    private bool _discreteIdLooked;
+
+    /// <summary>
+    /// Whether the card is awake right now, from the PnP manager's record -
+    /// cheap enough for every tick, and it wakes nothing. Discrete is always
+    /// awake; UMA never; Hybrid is whatever the record says.
+    /// </summary>
+    private bool CardIsAwakeNow()
+    {
+        if (_currentGpuMode == GpuMode.Discrete) return true;
+        if (_currentGpuMode == GpuMode.Uma) return false;
+        if (!_discreteIdLooked) { _discreteId = GpuModeService.DiscreteAdapterInstanceId(); _discreteIdLooked = true; }
+        return _discreteId is not null && DevicePowerState.MostRecent(_discreteId) == DevicePowerState.D0;
+    }
+
+    /// <summary>The mode as last detected, so the two-second tick need not ask WMI again.</summary>
+    private GpuMode? _currentGpuMode;
+
+    /// <summary>
+    /// The clocks. The CPU's costs nothing. The GPU's comes from NVML, which
+    /// wakes the card - and this ran every two seconds in every mode until
+    /// 12 September 2026, which is why the card never slept while the window
+    /// was open. Now it is asked only when the card is awake already; asleep,
+    /// the field says so.
+    /// </summary>
     private void RefreshClocks()
     {
         CpuClock.Text = _cpuClock.ReadGhz() is { } cpu ? $"{cpu:N2} GHz" : string.Empty;
-        GpuClock.Text = _gpuClock.ReadGhz() is { } gpu ? $"{gpu:N2} GHz" : string.Empty;
+        GpuClock.Text = !CardIsAwakeNow() ? "asleep"
+            : _gpuClock.ReadGhz() is { } gpu ? $"{gpu:N2} GHz" : string.Empty;
     }
 
     /// <summary>
