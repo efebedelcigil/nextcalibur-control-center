@@ -332,10 +332,27 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>Whether the recommendation has been put this session; once is enough.</summary>
+    private bool _vendorRecommended;
+
     private void RecommendRemovingVendorSoftwareOnce()
     {
+        if (_vendorRecommended) return;
+
+        if (VendorSoftware.FindInstallation() is not { } vendor)
+        {
+            // Gone. "Keep it" was an answer about the copy that was here; a
+            // copy installed later is a new question.
+            if (_settings.AcceptedVendorSoftware)
+            {
+                _settings.AcceptedVendorSoftware = false;
+                _settings.Save();
+            }
+            return;
+        }
+
         if (_settings.AcceptedVendorSoftware) return;
-        if (VendorSoftware.FindInstallation() is not { } vendor) return;
+        _vendorRecommended = true;
 
         var body =
             $"{vendor.Name} is installed on this machine." +
@@ -705,7 +722,7 @@ public partial class MainWindow : Window
 
         try
         {
-            _modes.Apply(target);
+            ApplyMode(target);
             LoadSystemMode();
             RefreshOverlay();
         }
@@ -713,6 +730,28 @@ public partial class MainWindow : Window
         {
             // Performance without the guard, or a plan gone missing: the tabs
             // show what is, and the person picks again.
+        }
+    }
+
+    /// <summary>
+    /// A mode is the Windows plan and the firmware profile together. The plan
+    /// first: it needs no hardware and is the part that can fail loudly. The
+    /// profile is best effort - a mailbox that will not take it leaves the
+    /// fans on whatever curve they had, which is the state the machine was
+    /// in a moment ago.
+    /// </summary>
+    private void ApplyMode(SystemMode mode)
+    {
+        _modes.Apply(mode);
+
+        if (_mailbox is null || !_support.AllowsWrites) return;
+        try
+        {
+            ThermalProfile.Write(_mailbox, mode);
+        }
+        catch (EcMailboxUnavailableException)
+        {
+            // Said above: the plan is applied, the fans keep their curve.
         }
     }
 
@@ -758,7 +797,7 @@ public partial class MainWindow : Window
 
         try
         {
-            _modes.Apply(mode);
+            ApplyMode(mode);
             _currentMode = mode;
             _battery.UserChose(mode, _onBattery);
             _settings.LastSystemMode = mode;
@@ -799,7 +838,7 @@ public partial class MainWindow : Window
                 }
 
                 var next = onBattery ? _battery.OnUnplugged(_currentMode) : _battery.OnPluggedIn(_currentMode);
-                if (next is { } mode) _modes.Apply(mode);
+                if (next is { } mode) ApplyMode(mode);
 
                 LoadSystemMode();
                 RefreshOverlay();
@@ -1328,7 +1367,7 @@ public partial class MainWindow : Window
 
         try
         {
-            _modes.Apply(mode);
+            ApplyMode(mode);
             LoadSystemMode();
             RefreshOverlay();
         }
@@ -1384,6 +1423,12 @@ public partial class MainWindow : Window
             // uninstaller takes its plans with it; the mode this borrowed one
             // for must not stay gone until the next start.
             KeepTheModesPlanAlive();
+
+            // Same registry, other direction: the vendor can be installed
+            // while this is running, and the recommendation is meant for the
+            // moment it appears, not the next start.
+            if (_support.Level != SupportLevel.Unsupported)
+                RecommendRemovingVendorSoftwareOnce();
 
             // The overheat warning is the one thing worth a firmware read while
             // hidden — it is the reason the application stays resident at all.

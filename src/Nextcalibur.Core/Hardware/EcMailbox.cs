@@ -27,6 +27,13 @@ public enum SmiSubsystem : ushort
     /// See PROTOCOL.md.
     /// </summary>
     DisplayMode = 0x0203,
+
+    /// <summary>
+    /// The firmware's fan and thermal profile, the half of a system mode
+    /// that is not the Windows power plan. 0 Performance, 1 Gaming, 2 Office;
+    /// see <see cref="ThermalProfile"/>.
+    /// </summary>
+    Profile = 0x0300,
 }
 
 /// <summary>

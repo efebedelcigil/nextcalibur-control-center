@@ -90,6 +90,16 @@ public static class HardwareSupport
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
             reasons.Add($"Display-mode register reads {mode.Mode}.");
+
+            // The other register a mode writes. Same argument: a machine whose
+            // profile register holds a value never seen is not this machine.
+            var profile = ThermalProfile.Read(mailbox);
+            if (profile is null)
+            {
+                reasons.Add("The thermal-profile register did not read as 0, 1 or 2.");
+                return new SupportVerdict(SupportLevel.ReadOnly, reasons);
+            }
+            reasons.Add($"Thermal-profile register reads {profile}.");
         }
         catch (EcMailboxUnavailableException ex)
         {
