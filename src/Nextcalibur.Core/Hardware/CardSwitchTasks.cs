@@ -110,7 +110,7 @@ public static class CardSwitchTasks
         }
     }
 
-    internal static int Schtasks(string arguments)
+    private static int Schtasks(string arguments)
     {
         try
         {
