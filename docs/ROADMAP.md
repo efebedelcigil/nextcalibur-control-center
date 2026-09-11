@@ -247,6 +247,15 @@ Two defects the test found, both fixed, both worth remembering:
   .NET cannot catch. The handle is dropped before and after every switch, and
   the slow timer drops it when anything else switches the card.
 
+**One prompt, not one per switch.** The vendor never asks for administrator
+when switching the card; its daemon starts at logon from a scheduled task with
+the highest privileges, so it is elevated all day. Nextcalibur will not run
+elevated, but the same mechanism fits a narrower job: two scheduled tasks -
+card off, card on - registered once, with no trigger, highest privileges,
+started on demand. The one elevation the application already asks for, to open
+the sensors, registers them; after that the card switches without a prompt.
+Both tasks are part of the footprint and go at uninstall.
+
 Still owed: a Discrete/Hybrid round trip through our own code rather than the
 vendor's. The write and the read-back are verified; the boot that follows is
 not. Two PIN resets, when the owner chooses.
