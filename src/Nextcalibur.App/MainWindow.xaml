@@ -306,33 +306,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Vector Nextcalibur LogoMark + Wordmark -->
+                <!-- Left: Official Nextcalibur LogoMark + Wordmark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Viewbox Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,10,0">
-                        <Canvas Width="32" Height="32">
-                            <!-- Outer Shield Silhouette (Inverted Triangle) -->
-                            <Path Stroke="{DynamicResource Ink}" StrokeThickness="1.8" StrokeLineJoin="Miter"
-                                  StrokeStartLineCap="Square" StrokeEndLineCap="Square"
-                                  Data="M 11,5 L 3,5 L 16,29 L 29,5 L 21,5" />
-                            <Path Stroke="{DynamicResource Muted}" StrokeThickness="1.0"
-                                  Data="M 12,8 L 6,8 L 16,26 L 26,8 L 20,8" />
-
-                            <!-- Central Excalibur Sword (Downwards) -->
-                            <!-- Pommel & Hilt -->
-                            <Path Fill="{DynamicResource Accent}" Data="M 16,2 L 17.5,4 L 16,6 L 14.5,4 Z" />
-                            <Path Stroke="{DynamicResource Accent}" StrokeThickness="1.5" Data="M 16,5 L 16,8" />
-                            <!-- Crossguard -->
-                            <Path Fill="{DynamicResource Accent}" Data="M 11,8.5 Q 16,10 21,8.5 L 20.5,10 Q 16,11 11.5,10 Z" />
-                            <!-- Blade -->
-                            <Path Fill="{DynamicResource Accent}" Data="M 14.8,10.5 L 15.2,24 L 16,26 L 16.8,24 L 17.2,10.5 Z" />
-                            <Path Stroke="#FFFFFF" StrokeThickness="0.6" Opacity="0.8" Data="M 16,11 L 16,24" />
-
-                            <!-- 'N' Monogram -->
-                            <Path Stroke="{DynamicResource Accent}" StrokeThickness="2.2" StrokeLineJoin="Round"
-                                  StrokeStartLineCap="Square" StrokeEndLineCap="Square"
-                                  Data="M 10,11 L 10,21 L 22,11 L 22,21" />
-                        </Canvas>
-                    </Viewbox>
+                    <Image Source="/Assets/app.ico" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,10,0"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
                                Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
@@ -539,15 +516,16 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,14,0">
                                         <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
                                                    Foreground="{DynamicResource Ink}" />
                                         <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
-                                                   Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0" />
+                                                   Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0"
+                                                   TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                         <!-- Master Warning Toggle -->
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
                                             <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
                                                        VerticalAlignment="Center" Margin="0,0,8,0" />
                                             <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
@@ -556,10 +534,10 @@
                                         </StackPanel>
 
                                         <!-- Divider -->
-                                        <Border Width="1" Height="30" Background="{DynamicResource Line}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                        <Border Width="1" Height="28" Background="{DynamicResource Line}" VerticalAlignment="Center" Margin="0,0,8,0" />
 
                                         <!-- Dual Threshold Sliders (CPU & GPU) -->
-                                        <StackPanel VerticalAlignment="Center" Width="190"
+                                        <StackPanel VerticalAlignment="Center" Width="116"
                                                     IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}">
                                             <StackPanel.Style>
                                                 <Style TargetType="StackPanel">
@@ -572,32 +550,32 @@
                                             </StackPanel.Style>
 
                                             <!-- CPU Threshold Row -->
-                                            <Grid Margin="0,0,0,3">
+                                            <Grid Margin="0,0,0,2">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="26" />
+                                                    <ColumnDefinition Width="24" />
                                                     <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="42" />
+                                                    <ColumnDefinition Width="34" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                                 <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                         TickFrequency="1" IsSnapToTickEnabled="True"
-                                                        VerticalAlignment="Center" Margin="6,0" />
+                                                        VerticalAlignment="Center" Margin="3,0" />
                                                 <TextBlock x:Name="CpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
                                                            FontSize="12" Foreground="{DynamicResource Ink}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center" />
                                             </Grid>
 
                                             <!-- GPU Threshold Row -->
-                                            <Grid Margin="0,3,0,0">
+                                            <Grid Margin="0,2,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="26" />
+                                                    <ColumnDefinition Width="24" />
                                                     <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="42" />
+                                                    <ColumnDefinition Width="34" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                                 <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                         TickFrequency="1" IsSnapToTickEnabled="True"
-                                                        VerticalAlignment="Center" Margin="6,0" />
+                                                        VerticalAlignment="Center" Margin="3,0" />
                                                 <TextBlock x:Name="GpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
                                                            FontSize="12" Foreground="{DynamicResource Ink}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center" />
