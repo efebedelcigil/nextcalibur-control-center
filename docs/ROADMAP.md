@@ -343,7 +343,26 @@ objects to elsewhere, and it needs deciding rather than leaving:
   is off whatever colour is set, which the interface has to say rather than
   imply.
 
-The second is the right one. Not done yet.
+The second is the right one. Not done yet, and on inspection not quick either:
+
+- There is nothing to read. LED reads on `0x0100` echo the header and return
+  zero for every payload field (that is why `LedController` tracks its own
+  state to begin with). The firmware never says where Fn+Space left the level.
+- The only source is the event itself: `GMC_WMIEvent`, byte 0 = 0/1/2, which
+  is exactly `LedBrightness.Off/Half/Full`. That class is administrators-only
+  with no descriptor of its own, so it needs a second grant on
+  `74286d6e-429c-427a-b34b-b5d15d032b05` in the same elevated step that grants
+  the mailbox, plus a `ManagementEventWatcher` on `root\WMI` for the life of
+  the process and a `LedController.HardwareLevel` that `Send()` uses instead of
+  `Full`. `SetBrightness` from the window is the one place that may still force
+  `Full`, because there the person has said what they want.
+- Narrower than it first looked: the application writes to the keyboard only
+  on an explicit click (colour, effect, brightness, on/off, profile, reload).
+  Nothing is re-sent at startup or on wake. So the undo happens only when
+  somebody presses Fn+Space and then changes lighting in the window.
+
+Deferred on 11 September 2026 in favour of the Discrete round; the design
+above is what to build.
 
 Not on this channel: unplugging the charger produces no event here at all, which
 is covered above.
