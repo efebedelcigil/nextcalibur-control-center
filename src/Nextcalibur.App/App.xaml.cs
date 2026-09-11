@@ -54,6 +54,16 @@ public partial class App : Application
             return;
         }
 
+        // Run by the scheduled task, already elevated: switch the card and go.
+        // No window, no mutex, no tray icon - this copy lives for a second.
+        var cardIndex = Array.IndexOf(args, CardSwitchTasks.Argument);
+        if (cardIndex >= 0 && cardIndex + 1 < args.Length)
+        {
+            var enable = string.Equals(args[cardIndex + 1], "on", StringComparison.OrdinalIgnoreCase);
+            Environment.Exit(GpuModeService.RunPnputil(enable) ? 0 : 1);
+            return;
+        }
+
         // Velopack takes over the process during install, update and uninstall
         // hooks, so this must run before any UI is created.
         VelopackApp.Build()
@@ -230,6 +240,13 @@ public partial class App : Application
         try
         {
             MailboxAccess.Grant();
+
+            // The one elevation this application ever asks for, so everything
+            // that needs elevation is done now. The card-switch tasks are what
+            // let UMA and back happen later without a prompt each time.
+            if (Environment.ProcessPath is { } self)
+                CardSwitchTasks.Register(self);
+
             return 0;
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
