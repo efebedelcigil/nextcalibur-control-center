@@ -533,24 +533,76 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Status Subtitle & Overheat Warning Switch -->
+                                <!-- Status Subtitle & Overheat Warning Switch + Dual Threshold Sliders -->
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                         <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
                                                    Foreground="{DynamicResource Ink}" />
                                         <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
                                                    Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" />
-                                        <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
-                                                      VerticalAlignment="Center"
-                                                      ToolTip="Warn when temperatures exceed safety threshold" />
+                                        <!-- Master Warning Toggle -->
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
+                                            <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
+                                                          VerticalAlignment="Center"
+                                                          ToolTip="Warn when temperatures exceed safety threshold" />
+                                        </StackPanel>
+
+                                        <!-- Divider -->
+                                        <Border Width="1" Height="30" Background="{DynamicResource Line}" VerticalAlignment="Center" Margin="0,0,14,0" />
+
+                                        <!-- Dual Threshold Sliders (CPU & GPU) -->
+                                        <StackPanel VerticalAlignment="Center" Width="190"
+                                                    IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Opacity" Value="0.4" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+
+                                            <!-- CPU Threshold Row -->
+                                            <Grid Margin="0,0,0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="26" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="42" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                                <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
+                                                        TickFrequency="1" IsSnapToTickEnabled="True"
+                                                        VerticalAlignment="Center" Margin="6,0" />
+                                                <TextBlock x:Name="CpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
+                                                           FontSize="12" Foreground="{DynamicResource Ink}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <!-- GPU Threshold Row -->
+                                            <Grid Margin="0,3,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="26" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="42" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                                <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
+                                                        TickFrequency="1" IsSnapToTickEnabled="True"
+                                                        VerticalAlignment="Center" Margin="6,0" />
+                                                <TextBlock x:Name="GpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
+                                                           FontSize="12" Foreground="{DynamicResource Ink}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
 

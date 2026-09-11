@@ -185,6 +185,7 @@ public partial class MainWindow : Window
         OverheatWarningToggle.Unchecked += (_, _) => SetOverheatWarning(false);
         _tray.OverheatSettingChanged += (_, _) => Dispatcher.BeginInvoke(() =>
             OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled);
+        LoadOverheatThresholds();
         _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
         _tray.Updates = _updates;
         _updates.Start();
@@ -1004,10 +1005,39 @@ public partial class MainWindow : Window
 
     private void SetOverheatWarning(bool on)
     {
+        CpuWarnSlider.IsEnabled = GpuWarnSlider.IsEnabled = on;
         if (_settings.OverheatWarningEnabled == on) return;
         _settings.OverheatWarningEnabled = on;
         _settings.Save();
         _tray?.SyncOverheatMenu();
+    }
+
+    private bool _thresholdsReady;
+
+    /// <summary>One slider per chip; the number beside each is the setting.</summary>
+    private void LoadOverheatThresholds()
+    {
+        _thresholdsReady = false;
+        CpuWarnSlider.Value = _settings.CpuWarningTemperatureC;
+        GpuWarnSlider.Value = _settings.GpuWarningTemperatureC;
+        CpuWarnValue.Text = $"{_settings.CpuWarningTemperatureC} °C";
+        GpuWarnValue.Text = $"{_settings.GpuWarningTemperatureC} °C";
+        CpuWarnSlider.IsEnabled = GpuWarnSlider.IsEnabled = _settings.OverheatWarningEnabled;
+        _thresholdsReady = true;
+
+        CpuWarnSlider.ValueChanged += (_, e) => OnThresholdMoved(e.NewValue, CpuWarnValue, v => _settings.CpuWarningTemperatureC = v);
+        GpuWarnSlider.ValueChanged += (_, e) => OnThresholdMoved(e.NewValue, GpuWarnValue, v => _settings.GpuWarningTemperatureC = v);
+    }
+
+    private void OnThresholdMoved(double value, TextBlock readout, Action<int> store)
+    {
+        var celsius = (int)Math.Round(value);
+        readout.Text = $"{celsius} °C";
+        if (!_thresholdsReady) return;
+        store(celsius);
+        _settings.Save();
+        // A new limit is a new question: let the next hot reading warn again.
+        _overheatNotified = false;
     }
 
     /// <summary>The mode written to firmware this session and not yet restarted into.</summary>
