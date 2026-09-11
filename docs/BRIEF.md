@@ -181,3 +181,9 @@ the broken version was committed before anyone noticed.
 - "Start with Windows" is on from install (first run), as the vendor's is. It
   lives in the tray menu only. If a settings area ever exists, it belongs
   there too; it is `StartupRegistration.IsEnabled` / `Set(bool, exe)`.
+
+## 7. The light-theme icon is a plain circle (11 September)
+
+The theme switch's light-mode glyph is a bare disc. Give it the sun's rays -
+short strokes around the rim, same stroke weight as the other icons - so it
+reads as "light" next to the moon rather than as a dot. Markup only.
