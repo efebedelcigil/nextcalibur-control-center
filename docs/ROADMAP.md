@@ -162,9 +162,34 @@ is the ACPI-WMI mailbox this project already reads and writes - a command in the
 `0xFB00` family the protocol document has never seen. If that is it, Nextcalibur
 can do it too, with nothing to ship and nothing to install.
 
-Next: watch the mailbox while the button is pressed. The earlier round captured
-the registry and the firmware variable store around a click and saw nothing,
-because neither is where a mailbox write lands. `RW_GMWMI`'s buffer is.
+**Watched the mailbox during a click (11 September, 03:45).** Two things came
+out, neither of them the switch itself.
+
+The vendor application's **startup** sends traffic this protocol had never seen:
+
+```
+0xFB00 / 0x0300 / a2=1      write, subsystem 3, value 1   (twice at start, again later)
+0xFA00 / 0x0206             read, thermal block, register 6
+```
+
+Subsystem 3 is new - only `0x01` (lighting) and `0x02` (thermal) were known.
+What "3 = 1" means is not established. A plausible reading is "control software
+present", the kind of flag firmware uses to decide whether to hand a key over
+to software or handle it itself; that would fit the Fn+Space finding above and
+is worth testing rather than assuming.
+
+The **click** on Discrete, answered with No, produced no distinctive write at all
+- only a residue of `00 00 00 00 01 00 00 00 ... 01 00 00 00`, which looks like
+the response to a read whose command fell between two polls. So the button
+reads the mode and shows its dialogue. **The write that actually switches must
+happen on Yes**, immediately before the restart, and that has not been captured
+because capturing it costs a PIN reset.
+
+That is the remaining experiment, and it is the one that decides whether
+Nextcalibur can switch graphics modes itself: capture running, press the
+button, answer Yes, read the log after the restart. The log is written line by
+line, so it survives the reboot. One PIN reset to learn the command; a second
+to come back.
 
 The earlier check that "no vendor driver is involved" asked about
 `ControlCenter64` and `ControlCenterC64`, which are file names; the service is
