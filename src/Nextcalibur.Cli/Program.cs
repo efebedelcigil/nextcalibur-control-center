@@ -9,10 +9,26 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        // Degree signs and the like: the console's default code page mangles them.
+        try { Console.OutputEncoding = System.Text.Encoding.UTF8; } catch (IOException) { }
+
         var command = args.Length > 0 ? args[0].ToLowerInvariant() : "help";
 
         try
         {
+            // The same gate the window applies: nothing that writes to firmware
+            // is offered to a machine that has not shown it speaks this protocol.
+            var writes = (command == "led" && args.Length > 1) || (command == "gpu" && args.Length > 1);
+            if (writes)
+            {
+                var verdict = HardwareSupport.Check();
+                if (!verdict.AllowsWrites)
+                {
+                    Error("Not on this laptop. " + string.Join(" ", verdict.Reasons));
+                    return 7;
+                }
+            }
+
             return command switch
             {
                 "sensors" => Sensors(args),
@@ -177,6 +193,10 @@ internal static class Program
     {
         var supported = EcMailbox.IsSupported();
         Console.WriteLine($"Firmware mailbox (RW_GMWMI) : {(supported ? "present" : "NOT FOUND")}");
+
+        var verdict = HardwareSupport.Check();
+        Console.WriteLine($"Support verdict             : {verdict.Level}");
+        foreach (var reason in verdict.Reasons) Console.WriteLine($"  - {reason}");
         Console.WriteLine($"Elevated                    : {(IsElevated() ? "yes" : "no")}");
 
         var stock = FindStockSoftware();

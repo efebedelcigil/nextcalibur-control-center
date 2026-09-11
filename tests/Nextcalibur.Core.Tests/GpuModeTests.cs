@@ -130,3 +130,61 @@ public class GpuSwitchProtocolTests
         Assert.True(deferred.RestartNeeded);
     }
 }
+
+/// <summary>
+/// The gate that keeps this application from writing to a laptop it was not
+/// built against. The judgement is pure so it can be tested against numbers;
+/// the hardware half is exercised by every run of the suite on the reference
+/// machine.
+/// </summary>
+public class HardwareSupportTests
+{
+    private static ThermalSample Sample(int cpu, int gpu, int cpuFan, int gpuFan) =>
+        new(cpu, gpu, cpuFan, gpuFan, DateTimeOffset.UnixEpoch);
+
+    [Fact]
+    public void A_reading_like_the_reference_machine_passes()
+    {
+        Assert.True(HardwareSupport.Judge(Sample(55, 51, 3611, 3281)));
+    }
+
+    [Fact]
+    public void All_zeros_is_not_this_protocol()
+    {
+        // What a mailbox that exists but means something else tends to say.
+        var reasons = new List<string>();
+        Assert.False(HardwareSupport.Judge(Sample(0, 0, 0, 0), reasons));
+        Assert.Contains(reasons, r => r.Contains("zero"));
+    }
+
+    [Fact]
+    public void Temperatures_no_laptop_reports_are_rejected()
+    {
+        Assert.False(HardwareSupport.Judge(Sample(200, 51, 3000, 3000)));
+        Assert.False(HardwareSupport.Judge(Sample(55, 130, 3000, 3000)));
+    }
+
+    [Fact]
+    public void Fan_speeds_no_laptop_fan_does_are_rejected()
+    {
+        Assert.False(HardwareSupport.Judge(Sample(55, 51, 40000, 3000)));
+    }
+
+    [Fact]
+    public void A_cold_idle_machine_still_passes()
+    {
+        // Fans off and a cool room are normal, not evidence of the wrong laptop.
+        Assert.True(HardwareSupport.Judge(Sample(31, 28, 0, 0)));
+    }
+
+    [Fact]
+    public void The_verdict_on_this_machine_is_supported()
+    {
+        // This runs on the reference machine. Anywhere else it documents what
+        // the gate says about that machine, which is the point of it.
+        var verdict = HardwareSupport.Check();
+        Assert.NotEmpty(verdict.Reasons);
+        Assert.True(verdict.AllowsReads == (verdict.Level != SupportLevel.Unsupported));
+        Assert.True(verdict.AllowsWrites == (verdict.Level == SupportLevel.Supported));
+    }
+}
