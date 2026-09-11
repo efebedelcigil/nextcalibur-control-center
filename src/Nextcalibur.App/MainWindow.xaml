@@ -364,7 +364,9 @@
                         <RadioButton x:Name="ThemeLight" Style="{DynamicResource ThemeToggleButtonStyle}"
                                      GroupName="Theme" Tag="Light" Checked="OnThemeChanged" ToolTip="Light theme">
                             <Path Data="{DynamicResource IconThemeLight}" Width="12" Height="12" Stretch="Uniform"
-                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                         </RadioButton>
                         <RadioButton x:Name="ThemeSystem" Style="{DynamicResource ThemeToggleButtonStyle}"
                                      GroupName="Theme" Tag="System" Checked="OnThemeChanged" ToolTip="Follow Windows theme">
@@ -465,49 +467,55 @@
                             <RowDefinition Height="*" />    <!-- Main Content & Right Telemetry Panels -->
                         </Grid.RowDefinitions>
 
-                        <!-- Row 0: System Mode Tabs (Office, Gaming, Performance) -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
-                            <!-- 1. Office Mode -->
-                            <RadioButton x:Name="ModeOffice" Style="{DynamicResource SystemModeTab}"
-                                         Tag="Office" GroupName="Mode" Checked="OnSystemModeChanged">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconModeOffice}" Width="20" Height="20" Stretch="Uniform"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          VerticalAlignment="Center" Margin="0,0,10,0" />
-                                    <TextBlock Text="Office" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </RadioButton>
+                        <!-- Row 0: System Mode Tabs (Office, Gaming, Performance) & Live System Mode Note -->
+                        <StackPanel Grid.Row="0" Margin="0,0,0,14">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- 1. Office Mode -->
+                                <RadioButton x:Name="ModeOffice" Style="{DynamicResource SystemModeTab}"
+                                             Tag="Office" GroupName="Mode" Checked="OnSystemModeChanged">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Path Data="{DynamicResource IconModeOffice}" Width="20" Height="20" Stretch="Uniform"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                              StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
+                                              VerticalAlignment="Center" Margin="0,0,10,0" />
+                                        <TextBlock Text="Office" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </RadioButton>
 
-                            <!-- 2. Gaming Mode -->
-                            <RadioButton x:Name="ModeGaming" Style="{DynamicResource SystemModeTab}"
-                                         Tag="Gaming" GroupName="Mode" Checked="OnSystemModeChanged">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconModeGaming}" Width="20" Height="20" Stretch="Uniform"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          VerticalAlignment="Center" Margin="0,0,10,0" />
-                                    <TextBlock Text="Gaming" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </RadioButton>
+                                <!-- 2. Gaming Mode -->
+                                <RadioButton x:Name="ModeGaming" Style="{DynamicResource SystemModeTab}"
+                                             Tag="Gaming" GroupName="Mode" Checked="OnSystemModeChanged">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Path Data="{DynamicResource IconModeGaming}" Width="20" Height="20" Stretch="Uniform"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                              StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
+                                              VerticalAlignment="Center" Margin="0,0,10,0" />
+                                        <TextBlock Text="Gaming" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </RadioButton>
 
-                            <!-- 3. High Performance Mode -->
-                            <RadioButton x:Name="ModePerformance" Style="{DynamicResource SystemModeTab}"
-                                         Tag="Performance" GroupName="Mode" Checked="OnSystemModeChanged">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{DynamicResource IconModePerformance}" Width="20" Height="20" Stretch="Uniform"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                          StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                          VerticalAlignment="Center" Margin="0,0,10,0" />
-                                    <TextBlock Text="Performance" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </RadioButton>
+                                <!-- 3. High Performance Mode -->
+                                <RadioButton x:Name="ModePerformance" Style="{DynamicResource SystemModeTab}"
+                                             Tag="Performance" GroupName="Mode" Checked="OnSystemModeChanged">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Path Data="{DynamicResource IconModePerformance}" Width="20" Height="20" Stretch="Uniform"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                              StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
+                                              VerticalAlignment="Center" Margin="0,0,10,0" />
+                                        <TextBlock Text="Performance" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </RadioButton>
+                            </StackPanel>
+
+                            <!-- SystemModeNote: collapsed by default, shown when no mode is active -->
+                            <TextBlock x:Name="SystemModeNote" Style="{DynamicResource StatusTextStyle}"
+                                       Margin="2,8,0,0" Visibility="Collapsed" />
                         </StackPanel>
 
                         <!-- Row 1: Left Center Fan Gauges + Right Stats Panels -->
@@ -525,13 +533,26 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Status Subtitle -->
-                                <StackPanel Grid.Row="0" Margin="0,0,0,10">
-                                    <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource Ink}" />
-                                    <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
-                                               Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0" />
-                                </StackPanel>
+                                <!-- Status Subtitle & Overheat Warning Switch -->
+                                <Grid Grid.Row="0" Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource Ink}" />
+                                        <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
+                                                   Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
+                                                      VerticalAlignment="Center"
+                                                      ToolTip="Warn when temperatures exceed safety threshold" />
+                                    </StackPanel>
+                                </Grid>
 
                                 <!-- Overheat / Warning Banner -->
                                 <Border x:Name="Banner" Grid.Row="1" Style="{DynamicResource Card}"
@@ -563,7 +584,7 @@
                                                         HubBrush="{DynamicResource PanelBackground}"
                                                         HubBorderBrush="{DynamicResource Line}">
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <TextBlock x:Name="CpuFan" Text="0 rpm"
+                                                    <TextBlock x:Name="CpuFan" Text="--"
                                                                Style="{DynamicResource Value}" FontSize="17"
                                                                Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
                                                     <TextBlock Text="CPU FAN" Style="{DynamicResource Label}" FontSize="10"
@@ -607,7 +628,7 @@
                                                         HubBrush="{DynamicResource PanelBackground}"
                                                         HubBorderBrush="{DynamicResource Line}">
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <TextBlock x:Name="GpuFan" Text="0 rpm"
+                                                    <TextBlock x:Name="GpuFan" Text="--"
                                                                Style="{DynamicResource Value}" FontSize="17"
                                                                Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
                                                     <TextBlock Text="GPU FAN" Style="{DynamicResource Label}" FontSize="10"
@@ -734,7 +755,7 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <!-- Left: Donut Gauge with Yellow-Amber Arc -->
-                                                <c:DonutGauge x:Name="RamGauge" Grid.Column="0" Value="46.8" Maximum="100" Width="64" Height="64"
+                                                <c:DonutGauge x:Name="RamGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
                                                               ArcBrush="#FFA000"
                                                               TrackBrush="{DynamicResource GaugeTrackBrush}"
                                                               BracketBrush="{DynamicResource Line}"
@@ -748,9 +769,9 @@
                                                         <TextBlock Text="RAM" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
                                                                    FontWeight="Bold" FontSize="11" />
                                                     </StackPanel>
-                                                    <TextBlock x:Name="RamPercent" Text="46,8%" Style="{DynamicResource Value}" FontSize="22"
+                                                    <TextBlock x:Name="RamPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
                                                                Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
-                                                    <TextBlock x:Name="RamDetail" Text="14,9/31,7GB" Style="{DynamicResource Label}"
+                                                    <TextBlock x:Name="RamDetail" Text="--" Style="{DynamicResource Label}"
                                                                FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
                                                 </StackPanel>
                                             </Grid>
@@ -766,7 +787,7 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <!-- Left: Donut Gauge with Cyan-Blue Arc -->
-                                                <c:DonutGauge x:Name="SsdGauge" Grid.Column="0" Value="52.5" Maximum="100" Width="64" Height="64"
+                                                <c:DonutGauge x:Name="SsdGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
                                                               ArcBrush="#0088FF"
                                                               TrackBrush="{DynamicResource GaugeTrackBrush}"
                                                               BracketBrush="{DynamicResource Line}"
@@ -780,9 +801,9 @@
                                                         <TextBlock Text="SSD" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
                                                                    FontWeight="Bold" FontSize="11" />
                                                     </StackPanel>
-                                                    <TextBlock x:Name="SsdPercent" Text="52,5%" Style="{DynamicResource Value}" FontSize="22"
+                                                    <TextBlock x:Name="SsdPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
                                                                Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
-                                                    <TextBlock x:Name="SsdDetail" Text="733,0/1396,0G" Style="{DynamicResource Label}"
+                                                    <TextBlock x:Name="SsdDetail" Text="--" Style="{DynamicResource Label}"
                                                                FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
                                                 </StackPanel>
                                             </Grid>
@@ -941,6 +962,9 @@
                                                HorizontalAlignment="Center" Margin="0,16,0,0" />
                                     <TextBlock Text="Dedicated graphics only"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                    <TextBlock x:Name="ModeDiscreteNote" Text="Not directly reachable from UMA"
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
+                                               HorizontalAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed" />
                                 </StackPanel>
                             </RadioButton>
 
@@ -956,6 +980,9 @@
                                                HorizontalAlignment="Center" Margin="0,16,0,0" />
                                     <TextBlock Text="Dynamic graphics switching"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                    <TextBlock x:Name="ModeHybridNote"
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
+                                               HorizontalAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed" />
                                 </StackPanel>
                             </RadioButton>
 
@@ -971,20 +998,31 @@
                                                HorizontalAlignment="Center" Margin="0,16,0,0" />
                                     <TextBlock Text="Integrated graphics only"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                    <TextBlock x:Name="ModeUmaNote" Text="Not directly reachable from Discrete"
+                                               Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
+                                               HorizontalAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed" />
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>
 
-                        <!-- Bottom Explanation -->
-                        <!-- Shown only while the cards are locked after a switch: a countdown,
-                             so ten seconds of disabled cards read as "settling" rather than
-                             "broken". Placed by the code-behind; the design pass may restyle it. -->
-                        <TextBlock x:Name="GpuSettling" Grid.Row="2" Style="{DynamicResource StatusTextStyle}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0"
-                                   FontWeight="SemiBold" Visibility="Collapsed" />
-                        <TextBlock x:Name="GpuModeDetail" Grid.Row="2" Style="{DynamicResource StatusTextStyle}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   TextWrapping="Wrap" TextAlignment="Center" MaxWidth="680" LineHeight="20" />
+                        <!-- Bottom Explanation & Status Area -->
+                        <StackPanel Grid.Row="2" VerticalAlignment="Top" Margin="0,10,0,0">
+                            <!-- Restart pending notification (differing detected vs stored firmware mode) -->
+                            <TextBlock x:Name="GpuRestartPending" Style="{DynamicResource StatusTextStyle}"
+                                       Foreground="{DynamicResource Warn}" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" Margin="0,0,0,8" Visibility="Collapsed" />
+
+                            <!-- Shown only while the cards are locked after a switch: a countdown,
+                                 so ten seconds of disabled cards read as 'settling' rather than 'broken'. -->
+                            <TextBlock x:Name="GpuSettling" Style="{DynamicResource StatusTextStyle}"
+                                       HorizontalAlignment="Center" Margin="0,0,0,8"
+                                       FontWeight="SemiBold" Visibility="Collapsed" />
+
+                            <!-- Full-width explanation -->
+                            <TextBlock x:Name="GpuModeDetail" Style="{DynamicResource StatusTextStyle}"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap" TextAlignment="Center" MaxWidth="680" LineHeight="20" />
+                        </StackPanel>
                     </Grid>
 
                     <!-- ================= PAGE: LIGHTING ================= -->
@@ -1197,6 +1235,26 @@
                     </Grid>
 
                 </Grid>
+            </Grid>
+            <!-- In-Window Modal Dialog Overlay -->
+            <Grid x:Name="ModalDialogOverlay" Grid.RowSpan="2" Background="#99000000"
+                  Visibility="Collapsed" Panel.ZIndex="1000">
+                <Border Style="{DynamicResource Card}" MaxWidth="500" HorizontalAlignment="Center"
+                        VerticalAlignment="Center" Padding="24,20" CornerRadius="8"
+                        BorderBrush="{DynamicResource Line}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock x:Name="DialogTitleText" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Ink}" Margin="0,0,0,10" />
+                        <TextBlock x:Name="DialogBodyText" Style="{DynamicResource StatusTextStyle}"
+                                   FontSize="13" LineHeight="19" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <StackPanel x:Name="DialogActions" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="DialogButtonSecondary" Margin="0,0,10,0" Padding="16,6"
+                                    Content="Cancel" Visibility="Collapsed" />
+                            <Button x:Name="DialogButtonPrimary" Padding="16,6"
+                                    Content="OK" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Grid>
     </Border>

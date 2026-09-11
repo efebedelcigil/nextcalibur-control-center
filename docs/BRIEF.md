@@ -187,3 +187,25 @@ the broken version was committed before anyone noticed.
 The theme switch's light-mode glyph is a bare disc. Give it the sun's rays -
 short strokes around the rim, same stroke weight as the other icons - so it
 reads as "light" next to the moon rather than as a dot. Markup only.
+
+## 8. Two overheat thresholds, as sliders (11 September, evening)
+
+The warning now has a threshold per chip: `AppSettings.CpuWarningTemperatureC`
+(default 90) and `GpuWarningTemperatureC` (default 85), both within
+`AppSettings.MinWarningTemperatureC`..`MaxWarningTemperatureC` (60..105).
+The tray keeps only the on/off switch; the numbers belong on the System page,
+next to the `OverheatWarningToggle` you placed, where the live temperatures
+are on screen.
+
+Markup to add, names exact - the code-behind binds to them and shows the
+value beside each:
+
+- `CpuWarnSlider` — `Slider`, `Minimum="60" Maximum="105"`, integer steps
+  (`IsSnapToTickEnabled="True" TickFrequency="1"`), same look as
+  `BrightnessSlider`.
+- `CpuWarnValue` — `TextBlock` showing e.g. `90 °C`.
+- `GpuWarnSlider`, `GpuWarnValue` — the same for the GPU.
+
+Both rows should read as disabled when the toggle is off (the code-behind
+sets `IsEnabled`); a short label per row: "CPU" and "GPU". No numbers in the
+markup itself — the code-behind fills them from settings.
