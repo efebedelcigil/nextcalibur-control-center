@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -16,6 +16,24 @@ public partial class MainWindow : Window
 {
     private readonly PowerOverlayService _power = new();
     private readonly SystemModeService _modes = new();
+
+    /// <summary>What to do with the mode when the charger comes and goes.</summary>
+    private readonly BatteryModePolicy _battery = new();
+
+    /// <summary>
+    /// The last power source seen. Windows raises one notification for the
+    /// charger and for every battery-level change alike, so a transition has
+    /// to be found by comparing.
+    /// </summary>
+    private bool _onBattery = PowerSource.OnBattery();
+
+    /// <summary>
+    /// The mode as last known here. Kept rather than re-detected at the
+    /// moment the charger moves, because Windows keeps one overlay for AC and
+    /// another for battery: the instant after unplugging, the effective
+    /// overlay is already the battery one and detection sees no mode at all.
+    /// </summary>
+    private SystemMode? _currentMode;
     private readonly GpuModeService _gpu = new();
     private readonly ThemeService _theme = new();
     private readonly CpuClockReader _cpuClock = new();
@@ -36,7 +54,7 @@ public partial class MainWindow : Window
     private static readonly TimeSpan HiddenSlowInterval = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// How many hidden ticks pass between idle reclamations — ten of them, so
+    /// How many hidden ticks pass between idle reclamations â€” ten of them, so
     /// once every five minutes. See <see cref="ReclaimWhileIdle"/>.
     /// </summary>
     private const int HiddenTicksPerReclaim = 10;
@@ -55,7 +73,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// True while a firmware read is in flight. The read now happens off the
     /// user-interface thread, so a slow one must not have a second started on
-    /// top of it — the mailbox holds one command at a time.
+    /// top of it â€” the mailbox holds one command at a time.
     /// </summary>
     private bool _sampling;
 
@@ -75,7 +93,7 @@ public partial class MainWindow : Window
     /// Whether the firmware interface was found at startup.
     ///
     /// Cached deliberately. Asking WMI costs a fresh scope connection and a
-    /// query, and the banner asked every five seconds — which leaked kernel
+    /// query, and the banner asked every five seconds â€” which leaked kernel
     /// handles at roughly four a second and was the application's only leak.
     /// The answer cannot change while the process runs: the interface is a
     /// property of the machine, not of anything we do.
@@ -195,6 +213,7 @@ public partial class MainWindow : Window
         RefreshStorage();
         RefreshBanner();
         StartSlowTimer();
+        Microsoft.Win32.SystemEvents.PowerModeChanged += OnPowerSourceMayHaveChanged;
 
         if (!_mailboxSupported)
         {
@@ -217,6 +236,7 @@ public partial class MainWindow : Window
         }
 
         LoadSystemMode();
+        RestoreModeAtStartup();
         LoadLightingUi();
 
         _timer.Tick += (_, _) => Sample();
@@ -461,6 +481,7 @@ public partial class MainWindow : Window
         if (_exiting || !_settings.MinimiseToTray || _tray is null)
         {
             _timer.Stop();
+            Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
             _tray?.Dispose();
             _mailbox?.Dispose();
             _cpuClock.Dispose();
@@ -503,7 +524,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Asks Windows to page out what the window was using.
     ///
-    /// This does not free memory — the pages are still committed and come back
+    /// This does not free memory â€” the pages are still committed and come back
     /// when needed. It hands back the resident set of a window nobody is
     /// looking at, which is what a tray application should do rather than
     /// holding a hundred-odd megabytes of rendering state on screen-less watch.
@@ -512,7 +533,7 @@ public partial class MainWindow : Window
     /// Reclaims what the tray watch leaves behind, and hands back the pages.
     ///
     /// Each firmware read leaves a few objects whose handles are only released
-    /// when a finaliser runs — measured at about five and a half per read. With
+    /// when a finaliser runs â€” measured at about five and a half per read. With
     /// the window on screen this never shows, because drawing allocates enough
     /// to keep collections coming. Hidden, the application allocates almost
     /// nothing, so no collection happens and nothing runs those finalisers: the
@@ -521,7 +542,7 @@ public partial class MainWindow : Window
     ///
     /// Forcing a collection is normally the wrong instinct, because the runtime
     /// schedules them better than a guess does. The exception is an application
-    /// that has gone idle, where the heuristics have nothing left to work from —
+    /// that has gone idle, where the heuristics have nothing left to work from â€”
     /// which is exactly this, and is the same reasoning that already justifies
     /// <see cref="TrimWorkingSet"/> on the same transition. It runs every tenth
     /// hidden tick, so once every five minutes, and only while nobody is
@@ -529,8 +550,8 @@ public partial class MainWindow : Window
     /// </summary>
     private static void ReclaimWhileIdle()
     {
-        // The first pass queues the finalisers, the wait runs them — which is
-        // what actually closes the handles — and the second reclaims what they
+        // The first pass queues the finalisers, the wait runs them â€” which is
+        // what actually closes the handles â€” and the second reclaims what they
         // released. Blocking here is safe: the window is hidden, so the thread
         // this runs on has nothing to draw.
         GC.Collect();
@@ -584,20 +605,70 @@ public partial class MainWindow : Window
         _modeUiReady = false;
         var current = _modes.DetectCurrent();
         if (current is { } mode)
-        {
             ModeButtonFor(mode).IsChecked = true;
-            SystemModeNote.Visibility = Visibility.Collapsed;
-        }
         else
-        {
-            // None of the three. Say what is, rather than leave the tabs blank.
             foreach (var button in new[] { ModeOffice, ModeGaming, ModePerformance })
                 button.IsChecked = false;
-            SystemModeNote.Text = $"No mode is active. Windows is on the {SystemModeService.DescribeCurrent()}. Pick one above.";
-            SystemModeNote.Visibility = Visibility.Visible;
-        }
+        _currentMode = current;
         _modeUiReady = true;
+        RefreshModeStatus(current);
     }
+
+    /// <summary>
+    /// Puts the person's mode back after a restart. Windows comes up on
+    /// Balanced regardless of what was active at shutdown, so the mode they
+    /// chose is remembered here and re-applied: as it was, on the charger;
+    /// the quiet one, on battery, with theirs restored when the charger
+    /// returns. Nothing is written when the machine is already there.
+    /// </summary>
+    private void RestoreModeAtStartup()
+    {
+        if (_settings.LastSystemMode is not { } last || !_support.AllowsReads) return;
+
+        var target = _onBattery && _settings.QuietOnBattery
+            ? _battery.OnUnplugged(last) ?? BatteryModePolicy.QuietMode
+            : last;
+        if (_currentMode == target) return;
+
+        try
+        {
+            _modes.Apply(target);
+            LoadSystemMode();
+            RefreshOverlay();
+        }
+        catch (Exception)
+        {
+            // Performance without the guard, or a plan gone missing: the tabs
+            // show what is, and the person picks again.
+        }
+    }
+
+    /// <summary>The mode and power-source half of the subtitle, e.g. "Gaming mode, on AC power".</summary>
+    private string _modeStatus = string.Empty;
+
+    /// <summary>When the readings were last taken, for the other half.</summary>
+    private DateTimeOffset? _lastSampleAt;
+
+    /// <summary>
+    /// Says which mode is on and where the power is coming from. Six
+    /// variations for the three modes, plus a seventh when Windows is on none
+    /// of them - a fresh machine sits on Balanced, and blank tabs said nothing
+    /// about that. Composed with the reading time rather than fighting it for
+    /// the one line.
+    /// </summary>
+    private void RefreshModeStatus(SystemMode? current)
+    {
+        var source = _onBattery ? "on battery" : "on AC power";
+        _modeStatus = current is { } mode
+            ? $"{mode} mode, {source}"
+            : $"No mode active ({SystemModeService.DescribeCurrent()}), {source}";
+        ShowSubtitle();
+    }
+
+    private void ShowSubtitle() =>
+        SubtitleText.Text = _lastSampleAt is { } at
+            ? $"{_modeStatus}  ·  Updated {at:HH:mm:ss}"
+            : _modeStatus;
 
     private RadioButton ModeButtonFor(SystemMode mode) => mode switch
     {
@@ -614,7 +685,12 @@ public partial class MainWindow : Window
 
         try
         {
-            SubtitleText.Text = _modes.Apply(mode);
+            _modes.Apply(mode);
+            _currentMode = mode;
+            _battery.UserChose(mode, _onBattery);
+            _settings.LastSystemMode = mode;
+            _settings.Save();
+            RefreshModeStatus(mode);
             RefreshOverlay();
         }
         catch (Exception ex)
@@ -622,6 +698,45 @@ public partial class MainWindow : Window
             Dialogs.Warn("Could not change mode", ex.Message);
             LoadSystemMode();
         }
+    }
+
+    /// <summary>
+    /// The vendor's behaviour when the charger comes out: quiet mode on
+    /// battery, and the person's own mode back when the charger returns. The
+    /// rules are in <see cref="BatteryModePolicy"/>; this only notices the
+    /// change and applies what it says. Costs nothing between changes - it is
+    /// a Windows notification, not a poll.
+    /// </summary>
+    private void OnPowerSourceMayHaveChanged(object sender, Microsoft.Win32.PowerModeChangedEventArgs e)
+    {
+        if (e.Mode != Microsoft.Win32.PowerModes.StatusChange) return;
+
+        var onBattery = PowerSource.OnBattery();
+        if (onBattery == _onBattery) return;
+        _onBattery = onBattery;
+
+        Dispatcher.BeginInvoke(() =>
+        {
+            try
+            {
+                if (!_settings.QuietOnBattery || !_support.AllowsReads)
+                {
+                    RefreshModeStatus(_currentMode);
+                    return;
+                }
+
+                var next = onBattery ? _battery.OnUnplugged(_currentMode) : _battery.OnPluggedIn(_currentMode);
+                if (next is { } mode) _modes.Apply(mode);
+
+                LoadSystemMode();
+                RefreshOverlay();
+            }
+            catch (Exception)
+            {
+                // A mode that could not be switched on unplug is the state the
+                // machine was already in. Nothing to undo, nothing to say.
+            }
+        });
     }
 
     // ------------------------------------------------------------ graphics
@@ -658,7 +773,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Reports the current setting and puts the selection back.
     ///
-    /// The vendor software genuinely does switch the display path — watched on
+    /// The vendor software genuinely does switch the display path â€” watched on
     /// hardware: MS Hybrid plus a restart moved the panel from the discrete card
     /// to the integrated one. An earlier reading of this concluded the opposite
     /// and was wrong; the search had covered the managed code, where no firmware
@@ -671,7 +786,7 @@ public partial class MainWindow : Window
     /// install. Elevation is not what stops it - that was claimed here for a
     /// while on the strength of a rule nobody set - the driver is.
     ///
-    /// See PROTOCOL.md for the evidence, including the cost nobody mentions —
+    /// See PROTOCOL.md for the evidence, including the cost nobody mentions â€”
     /// the change invalidates TPM-sealed credentials, and the Windows PIN has to
     /// be set up again afterwards.
     /// </summary>
@@ -948,7 +1063,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Swaps the palette dictionary. Everything else in the application
     /// references brushes with DynamicResource, so replacing the entry is all it
-    /// takes — no reload, no restart.
+    /// takes â€” no reload, no restart.
     /// </summary>
     private void ApplyTheme()
     {
@@ -967,7 +1082,7 @@ public partial class MainWindow : Window
             _theme.MarkApplied();
 
             // The zone previews carry brushes assigned in code rather than
-            // resource references — the selection ring is one colour or
+            // resource references â€” the selection ring is one colour or
             // transparent, which a DynamicResource cannot express. Local values
             // do not follow a palette swap, so they are re-applied here. Without
             // this the selected zone keeps the previous theme's accent until the
@@ -981,7 +1096,7 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// Asks the machine what its processor and graphics card are called. Read
-    /// once at startup — these do not change while the application runs, and no
+    /// once at startup â€” these do not change while the application runs, and no
     /// model name is ever written into the source.
     /// </summary>
     private void LoadDeviceNames()
@@ -1016,13 +1131,13 @@ public partial class MainWindow : Window
     /// Takes one reading and puts it on screen.
     ///
     /// The firmware read happens on a thread-pool thread, and that is not a
-    /// performance flourish — it is the fix for a handle leak. The mailbox goes
+    /// performance flourish â€” it is the fix for a handle leak. The mailbox goes
     /// through <c>System.Management</c>, which requires an MTA thread; called
     /// from the single-threaded user-interface thread every call is marshalled
     /// across, and each marshalling leaves a kernel event behind that lives
     /// until the garbage collector finalises it. Measured at 2.4 handles a
     /// second, climbing past a thousand between collections. Thread-pool threads
-    /// are already MTA, so the marshalling — and the leak — simply stops.
+    /// are already MTA, so the marshalling â€” and the leak â€” simply stops.
     /// Taking a firmware round trip off the UI thread is the smaller benefit.
     /// </summary>
     private async void Sample()
@@ -1075,12 +1190,13 @@ public partial class MainWindow : Window
         ColourByTemperature(GpuTemp, s.GpuTemperatureC);
 
         RefreshClocks();
-        SubtitleText.Text = $"Updated {s.Timestamp:HH:mm:ss}";
+        _lastSampleAt = s.Timestamp;
+        ShowSubtitle();
     }
 
     /// <summary>
     /// Shows the frequencies the parts are actually running at. Either can be
-    /// unreadable — no NVIDIA card, an unavailable counter — and then the
+    /// unreadable â€” no NVIDIA card, an unavailable counter â€” and then the
     /// reading is left blank rather than filled with a guess.
     /// </summary>
     private void RefreshClocks()
@@ -1168,7 +1284,7 @@ public partial class MainWindow : Window
             }
 
             // The overheat warning is the one thing worth a firmware read while
-            // hidden — it is the reason the application stays resident at all.
+            // hidden â€” it is the reason the application stays resident at all.
             if (!_settings.WarnsAboutHeat && !onScreen) return;
 
             if (_thermal is null) return;
@@ -1490,7 +1606,7 @@ public partial class MainWindow : Window
             // against one already in flight.
             //
             // This still blocks the interface thread, exactly as before. That
-            // is deliberate — it preserves the ordering every caller here
+            // is deliberate â€” it preserves the ordering every caller here
             // assumes, and the throttling that keeps a drag from queueing
             // hundreds of writes the hardware would lag behind. Only the
             // apartment changes.

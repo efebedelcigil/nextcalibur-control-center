@@ -37,6 +37,7 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_startupItem);
         menu.Items.Add(CloseBehaviourItem());
+        menu.Items.Add(QuietOnBatteryItem());
         menu.Items.Add(OverheatWarningMenu());
         menu.Items.Add(ReadingIntervalMenu());
         menu.Items.Add(new Forms.ToolStripSeparator());
@@ -95,6 +96,23 @@ public sealed class TrayPresence : IDisposable
     /// a default. The window offers the same switch; both write the same two
     /// settings, so neither can contradict the other.
     /// </summary>
+    private Forms.ToolStripMenuItem QuietOnBatteryItem()
+    {
+        var item = new Forms.ToolStripMenuItem("Office mode on battery")
+        {
+            CheckOnClick = true,
+            Checked = _settings.QuietOnBattery,
+        };
+
+        item.CheckedChanged += (_, _) =>
+        {
+            _settings.QuietOnBattery = item.Checked;
+            _settings.Save();
+        };
+
+        return item;
+    }
+
     private Forms.ToolStripMenuItem OverheatWarningMenu()
     {
         var menu = new Forms.ToolStripMenuItem("Warn when the CPU reaches");
