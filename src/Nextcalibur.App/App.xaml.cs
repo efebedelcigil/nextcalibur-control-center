@@ -67,7 +67,7 @@ public partial class App : Application
         // Velopack takes over the process during install, update and uninstall
         // hooks, so this must run before any UI is created.
         VelopackApp.Build()
-            .OnFirstRun(_ => RepairPowerOverlayOnFirstRun())
+            .OnFirstRun(_ => { StartWithWindowsOnFirstRun(); RepairPowerOverlayOnFirstRun(); })
             .OnBeforeUninstallFastCallback(_ => CleanUpOnUninstall())
             .Run();
 
@@ -253,6 +253,27 @@ public partial class App : Application
         catch
         {
             return 3;
+        }
+    }
+
+    /// <summary>
+    /// Starts with Windows from the first install onwards, as the vendor's
+    /// software does through its logon task. A control centre that is not
+    /// running cannot warn about heat or answer the tray. The choice stays
+    /// the person's: the tray menu's "Start with Windows" turns it off, and
+    /// once they have touched it this is never set again.
+    /// </summary>
+    private static void StartWithWindowsOnFirstRun()
+    {
+        try
+        {
+            if (Environment.ProcessPath is { } self)
+                StartupRegistration.Set(true, self);
+        }
+        catch
+        {
+            // A Run entry that could not be written is a setting, not a fault;
+            // the tray menu shows it unchecked and the person can retry there.
         }
     }
 

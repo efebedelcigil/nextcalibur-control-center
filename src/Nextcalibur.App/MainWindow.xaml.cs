@@ -583,7 +583,19 @@ public partial class MainWindow : Window
     {
         _modeUiReady = false;
         var current = _modes.DetectCurrent();
-        if (current is { } mode) ModeButtonFor(mode).IsChecked = true;
+        if (current is { } mode)
+        {
+            ModeButtonFor(mode).IsChecked = true;
+            SystemModeNote.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            // None of the three. Say what is, rather than leave the tabs blank.
+            foreach (var button in new[] { ModeOffice, ModeGaming, ModePerformance })
+                button.IsChecked = false;
+            SystemModeNote.Text = $"No mode is active. Windows is on the {SystemModeService.DescribeCurrent()}. Pick one above.";
+            SystemModeNote.Visibility = Visibility.Visible;
+        }
         _modeUiReady = true;
     }
 
