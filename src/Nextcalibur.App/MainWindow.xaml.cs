@@ -224,20 +224,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        try
-        {
-            _mailbox = new EcMailbox();
-            _thermal = new ThermalReader(_mailbox);
-            _led = new LedController(_mailbox);
-            ListenForTheBacklightKey();
-        }
-        catch (EcMailboxUnavailableException)
-        {
-            _mailboxFailed = true;
-            RefreshBanner();
-            NavLighting.IsEnabled = false;
-            return;
-        }
+        if (!ConnectToMailbox()) return;
 
         LoadSystemMode();
         RestoreModeAtStartup();
@@ -247,6 +234,76 @@ public partial class MainWindow : Window
         Sample();
         RefreshClocks();
         if (IsVisible) _timer.Start();
+    }
+
+    /// <summary>Opens the mailbox and everything that reads through it.</summary>
+    private bool ConnectToMailbox()
+    {
+        try
+        {
+            _backlightKey?.Dispose();
+            _mailbox?.Dispose();
+            _mailbox = new EcMailbox();
+            _thermal = new ThermalReader(_mailbox);
+            _led = new LedController(_mailbox);
+            ListenForTheBacklightKey();
+            _mailboxFailed = false;
+            RefreshBanner();
+            return true;
+        }
+        catch (EcMailboxUnavailableException)
+        {
+            _mailboxFailed = true;
+            RefreshBanner();
+            NavLighting.IsEnabled = false;
+            return false;
+        }
+    }
+
+    /// <summary>Whether the vendor's software was installed at the last look.</summary>
+    private bool? _vendorWasInstalled;
+
+    /// <summary>
+    /// Notices the vendor's software being removed while this runs, because
+    /// its uninstaller does two things to this application on the way out,
+    /// both measured 11 September 2026: it narrows the firmware permission
+    /// back to administrators, which stops every reading here; and it puts
+    /// Windows on Balanced, which drops the mode. The first needs the person
+    /// (one prompt), the second does not.
+    /// </summary>
+    private void WatchTheVendorComingAndGoing()
+    {
+        var installed = VendorSoftware.IsInstalled();
+        var removed = _vendorWasInstalled == true && !installed;
+        _vendorWasInstalled = installed;
+        if (!removed) return;
+
+        if (MailboxAccess.Check() == MailboxAvailability.AccessNotGranted)
+        {
+            var granted = AskForMailboxAccessIfNeeded(
+                "Casper's Control Center has just been removed, and its uninstaller took " +
+                "Nextcalibur's access to the firmware with it.");
+            if (granted)
+            {
+                _support = HardwareSupport.Check();
+                ApplySupportVerdict();
+                if (ConnectToMailbox()) { Sample(); LoadLightingUi(); }
+            }
+        }
+
+        if (_currentMode is { } mode)
+        {
+            try
+            {
+                ApplyMode(mode);
+                LoadSystemMode();
+                RefreshOverlay();
+            }
+            catch (Exception)
+            {
+                // The tabs show what is; the person picks again.
+            }
+        }
     }
 
     /// <summary>
@@ -404,19 +461,21 @@ public partial class MainWindow : Window
     /// needs elevation again, which is the difference between this and the
     /// vendor software prompting at every startup.
     /// </summary>
-    private void AskForMailboxAccessIfNeeded()
+    /// <returns>True when a grant was made just now.</returns>
+    private bool AskForMailboxAccessIfNeeded(string? because = null)
     {
         var access = MailboxAccess.Check();
-        if (access == MailboxAvailability.NotSupported) return;
+        if (access == MailboxAvailability.NotSupported) return false;
 
         // Two permissions, one prompt. On a fresh machine neither is there. On
         // one that already had the sensors - a copy from before Fn+Space was
         // heard - only the second is missing, and the wording says so.
         var needsSensors = access == MailboxAvailability.AccessNotGranted;
         var needsKey = !needsSensors && !MailboxAccess.CanHearEvents();
-        if (!needsSensors && !needsKey) return;
+        if (!needsSensors && !needsKey) return false;
 
         var proceed = Dialogs.Confirm("Nextcalibur - one-time permission",
+            (because is null ? string.Empty : because + Environment.NewLine + Environment.NewLine) +
             (needsSensors
                 ? "Nextcalibur needs permission to read this machine's sensors." +
                   Environment.NewLine + Environment.NewLine +
@@ -431,12 +490,12 @@ public partial class MainWindow : Window
             "Windows will ask you to confirm. This happens once - afterwards " +
             "Nextcalibur runs without any special privileges.");
 
-        if (!proceed) return;
+        if (!proceed) return false;
 
         try
         {
             var self = Environment.ProcessPath;
-            if (self is null) return;
+            if (self is null) return false;
 
             // A second, short-lived copy of this same executable: it writes one
             // registry value and exits. Shipping a script instead would mean
@@ -451,11 +510,13 @@ public partial class MainWindow : Window
             });
 
             elevated?.WaitForExit();
+            return elevated?.ExitCode == 0;
         }
         catch (Win32Exception)
         {
             // The user dismissed the prompt. Nothing was changed and nothing
             // more needs saying: the banner already explains what is missing.
+            return false;
         }
     }
 
@@ -1428,7 +1489,10 @@ public partial class MainWindow : Window
             // while this is running, and the recommendation is meant for the
             // moment it appears, not the next start.
             if (_support.Level != SupportLevel.Unsupported)
+            {
                 RecommendRemovingVendorSoftwareOnce();
+                WatchTheVendorComingAndGoing();
+            }
 
             // The overheat warning is the one thing worth a firmware read while
             // hidden — it is the reason the application stays resident at all.
