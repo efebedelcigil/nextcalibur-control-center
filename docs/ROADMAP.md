@@ -95,16 +95,45 @@ Detection has two levels and they mean different things:
 | Installed | the two will collide sooner or later | recommend removing, once, unless already accepted |
 | Running | they are colliding now | the banner already says so |
 
-### Hotkeys are the last real gap
+### Hotkeys: measured, and there is nothing to do
 
-The vendor listens on `GMC_WMIEvent` for the firmware's key events - the Fn row.
-Nextcalibur does not listen at all, so whatever those keys do through that
-software stops when it is replaced. Nobody has established what that covers.
+Closed 11 September 2026. The worry was that the vendor's Control Center
+subscribes to `GMC_WMIEvent` - the firmware's own key-event class - and that
+replacing it would quietly take the Fn row with it.
 
-Being able to read the events is not the question; the mailbox is already open.
-The question is what the firmware sends, what the vendor does in response, and
-which of those are things Windows would have done anyway. Until that is known,
-"complete replacement" is a claim this project cannot make.
+Tested on the machine with the vendor software **uninstalled**, listening on that
+class while each key was pressed in turn:
+
+| Key | Worked | Firmware event |
+|---|---|---|
+| Fn+F4 / F5 brightness | yes | none |
+| Fn+F6 mute, F7 / F8 volume | yes | none |
+| Fn+F9-F12 media | yes | none |
+| Fn+F3 projection | yes (opens Windows' projection flyout) | none |
+| Fn+F1 sleep, Fn+F2 wi-fi | yes | none |
+
+Every one of them works with no vendor software on the machine, and not one of
+them produces an event. **There is no lost function to reimplement.**
+
+Two things had to be ruled out before that sentence was worth writing, and the
+first attempt was worthless without them:
+
+- **The plumbing.** Seeing no events proves nothing on its own - "none are sent"
+  and "they are sent and we are not receiving them" look identical. Subscribing
+  to `WmiMonitorBrightnessEvent` alongside gives a control: it fired on the
+  brightness keys, so delivery works.
+- **The permission.** The firmware's event class has **no security descriptor**,
+  which means administrators only - a different GUID from the data block, and
+  one we never granted. So the first run, unelevated, could not have received an
+  event if one had been sent. Repeated elevated.
+
+The honest limit: some platforms only start emitting these events after a
+vendor driver enables them through ACPI, and no such driver is installed here.
+That question stays open and does not matter - the keys already work.
+
+Still unknown, and worth a minute when somebody has one: whether this keyboard
+has a **backlight key**, and whether it does anything without the vendor
+software. That one is ours - the lighting is a feature of this application.
 
 ### Look before you change anything
 
