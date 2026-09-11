@@ -7,7 +7,7 @@ artifacts/
 publish/
 installer/output/
 *.log
-releases/
+/releases/
 
 tools/graphics-*.json
 tools/graphics-*.csv
