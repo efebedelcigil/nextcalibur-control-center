@@ -205,11 +205,32 @@ was spent rather than saved.) The switch is **one write, through the mailbox
 this project already uses, with a permission it already holds**. No driver, no
 IOCTL, nothing to ship.
 
-**Nextcalibur can switch graphics modes.** Whether it should is a separate
-decision, and the costs are already written up on the Display page: the change
-invalidates TPM-sealed credentials, the Windows PIN has to be set up again, and
-BitLocker can demand its recovery key. Those do not go away because the command
-turned out to be simple.
+**Nextcalibur can switch graphics modes, and will.** Decided by the owner on
+11 September 2026, all three modes. The costs do not go away because the
+command turned out to be simple - the change invalidates TPM-sealed
+credentials, the Windows PIN has to be set up again, and BitLocker can demand
+its recovery key - so the difference from the vendor is honesty about them:
+said plainly before the switch, with a confirmation, rather than a bare
+"restart?" that mentions none of it.
+
+What gets built:
+
+| Mode | How | Needs | Restart |
+|---|---|---|---|
+| Hybrid | mailbox write `FB00/0203` = `1` | the sensor permission it already has | yes |
+| Discrete | mailbox write `FB00/0203` = `2` | same | yes |
+| UMA | SetupDi disable of the discrete adapter | administrator, once per switch | no |
+| leaving UMA | SetupDi enable | administrator | no |
+
+Rules carried over from watching the vendor: UMA is only offered from Hybrid,
+because in Discrete the panel is on the card being switched off. Only the two
+observed values are ever written to the register. And the register is read
+back before any restart is suggested, so a write that did not land is reported
+rather than followed by a pointless reboot.
+
+Test order, cheapest first: UMA and back (no restart, no PIN); then a
+Discrete/Hybrid round trip through our own code, which costs two PIN resets and
+is done when the owner chooses.
 
 The earlier check that "no vendor driver is involved" asked about
 `ControlCenter64` and `ControlCenterC64`, which are file names; the service is
@@ -857,7 +878,7 @@ overheat warning and the mailbox's `Hold()` stay in place for that day.
 Windows notification appears; it does not touch a fan, and there is no code path
 from it to one.
 
-### Graphics mode reports, it does not switch
+### Graphics mode: reported only until 11 September 2026, switched after
 
 Measured on hardware, not assumed - and an earlier version of this section was
 wrong in a way worth remembering. It said the vendor software "does not touch a
