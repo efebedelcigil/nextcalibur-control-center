@@ -306,3 +306,16 @@ public class MailboxAccessCoverageTests
         Assert.False(MailboxAccess.HasAccess(Descriptor("O:BAG:BAD:"), Me));
     }
 }
+
+public class ForwardCompatibilityTests
+{
+    [Fact]
+    public void A_setting_this_version_does_not_know_survives_a_round_trip()
+    {
+        var json = """{"PollIntervalMs":2000,"FutureSetting":"keep me","Nested":{"a":1}}""";
+        var settings = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json)!;
+        var back = System.Text.Json.JsonSerializer.Serialize(settings);
+        Assert.Contains("\"FutureSetting\":\"keep me\"", back);
+        Assert.Contains("\"Nested\":{\"a\":1}", back);
+    }
+}
