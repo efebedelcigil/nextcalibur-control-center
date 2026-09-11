@@ -611,9 +611,23 @@ order that would matter to somebody who installed this.
 
 1. **The Display page.** Done in 0.5.1: unreachable modes say so on their
    card, a pending restart says so above the cards, the settling countdown
-   is in place. Left for later, low priority: the card's own draw and
-   temperature on the Discrete card, from NVML, which only costs nothing in
-   Discrete (see "What each mode costs").
+   is in place, and the card's draw is on the page in every mode - without
+   waking it. The trick is `DEVPKEY_Device_PowerData`: the PnP manager's
+   record of the device's most recent power state, read from its own books.
+   Measured 12 September: D0 while a browser held the card, D3 within
+   seconds of closing it, and reading the record leaves the card asleep. So
+   Hybrid says "asleep" from the record and asks NVML only when the card is
+   awake anyway.
+
+   **CPU package power is not on the page, and the reason is a driver.**
+   RAPL lives in MSRs, which only kernel code can read; this machine has no
+   energy-meter interface, and the firmware sweep found no register that
+   moved with load. Every tool that shows CPU watts on Windows ships a
+   driver. The options, should the owner ever want the number: PawnIO
+   (open source, Microsoft-signed, what LibreHardwareMonitor now uses;
+   separate install, elevation, and the README's "no kernel driver" goes)
+   or a driver of our own (EV certificate, attestation signing, weeks).
+   Decided 12 September 2026: not now; the number is not worth the driver.
 
 2. **An icon audit.** Done 11 September by the design agent against the
    installed copy: window, taskbar, Alt-Tab, tray, installer, shortcuts,

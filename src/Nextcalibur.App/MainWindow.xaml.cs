@@ -968,6 +968,7 @@ public partial class MainWindow : Window
     {
         var config = _gpu.Detect();
         GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
+        RefreshCardDraw(config);
 
         // The transitions the firmware refuses, said on the card rather than
         // on click: UMA is a switched-off card and Discrete hands it the
@@ -1157,7 +1158,42 @@ public partial class MainWindow : Window
     /// from the mailbox in every mode and wake nothing.
     /// </summary>
     private GpuLoad? IdleWatts(GpuConfiguration config) =>
-        config.Mode == GpuMode.Discrete ? _gpuClock.ReadLoad() : null;
+        CardIsAwake(config) ? _gpuClock.ReadLoad() : null;
+
+    /// <summary>
+    /// Whether the card is awake already, asked without waking it. In
+    /// Discrete it always is. In Hybrid the PnP manager's record of the
+    /// device's power state says - D0 awake, D3 asleep - and a record that
+    /// cannot be read is taken as asleep, because the cost of the wrong
+    /// guess that way is a missing number, and the other way a woken card.
+    /// Measured 12 September 2026: the record follows the card's runtime
+    /// sleep within seconds, and reading it leaves the card where it was.
+    /// </summary>
+    private static bool CardIsAwake(GpuConfiguration config)
+    {
+        if (config.Mode == GpuMode.Discrete) return true;
+        if (config.Mode == GpuMode.Uma || !config.DiscretePresent) return false;
+        var id = GpuModeService.DiscreteAdapterInstanceId();
+        return id is not null && DevicePowerState.MostRecent(id) == DevicePowerState.D0;
+    }
+
+    /// <summary>
+    /// What the card is drawing, in every mode, without waking it: a number
+    /// when it is awake, "asleep" when it is not, "off" in UMA. The CPU has
+    /// no such line - its package power is behind a kernel driver this
+    /// application does not ship (see ROADMAP).
+    /// </summary>
+    private void RefreshCardDraw(GpuConfiguration config)
+    {
+        var temp = _lastThermal is { } t ? $", {t.GpuTemperatureC} °C" : string.Empty;
+        GpuDrawText.Text = config.Mode == GpuMode.Uma || !config.DiscretePresent
+            ? "Graphics card: off"
+            : !CardIsAwake(config)
+                ? "Graphics card: asleep" + temp
+                : _gpuClock.ReadLoad() is { } load
+                    ? $"Graphics card: {load.Watts:0.0} W{temp}"
+                    : "Graphics card: awake" + temp;
+    }
 
     private RadioButton GpuButtonFor(GpuMode mode) => mode switch
     {
@@ -1682,6 +1718,7 @@ public partial class MainWindow : Window
                 RefreshStorage();
                 if (_theme.PollForChange()) ApplyTheme();
                 await WatchForTheCardBeingSwitched();
+                if (NavDisplay.IsChecked == true) RefreshCardDraw(_gpu.Detect());
             }
 
             // Hidden or not: a registry read, no firmware. The vendor's

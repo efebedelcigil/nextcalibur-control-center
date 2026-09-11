@@ -273,3 +273,17 @@ readable text on them in **both** themes. Two named styles, applied in the
 markup; the code-behind only sets `Content` and visibility, so the colours
 must not depend on the text. Hover/pressed states in the same family. Same
 in light and dark.
+
+## 14. What the graphics card is drawing, on the Display page (12 September)
+
+A line the code-behind fills every five seconds while the page is open:
+`TextBlock x:Name="GpuDrawText"`, one of
+
+    Graphics card: 17.5 W, 57 °C      (awake - Discrete, or Hybrid with something using it)
+    Graphics card: asleep, 56 °C      (Hybrid, card powered down; nothing is woken to say so)
+    Graphics card: off                (UMA)
+
+Place it on the Display page where the cost of the current mode is read -
+above the three cards or in the status area under them, your call. It is one
+TextBlock and the code sets the whole string. No CPU line: its package power
+is not readable without a kernel driver (roadmap).
