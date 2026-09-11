@@ -562,6 +562,38 @@ public partial class MainWindow : Window
     /// the change invalidates TPM-sealed credentials, and the Windows PIN has to
     /// be set up again afterwards.
     /// </summary>
+    /// <summary>
+    /// How long the mode buttons stay locked after a switch.
+    ///
+    /// A device switch is not instantaneous: pnputil returns, the driver stops
+    /// or starts over the next second or two, WMI catches up after that, and
+    /// the sensor timer needs a couple of ticks on a fresh NVML handle before
+    /// anything about the card can be trusted again. A second click inside
+    /// that window would act on a state that is still settling. Four ticks of
+    /// the two-second timer, with a margin.
+    /// </summary>
+    private static readonly TimeSpan GpuSwitchCooldown = TimeSpan.FromSeconds(10);
+
+    private DispatcherTimer? _gpuCooldown;
+
+    /// <summary>Locks the mode buttons and unlocks them when the machine has settled.</summary>
+    private void LockGpuButtonsWhileSettling()
+    {
+        foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
+            button.IsEnabled = false;
+
+        _gpuCooldown?.Stop();
+        _gpuCooldown = new DispatcherTimer { Interval = GpuSwitchCooldown };
+        _gpuCooldown.Tick += (_, _) =>
+        {
+            _gpuCooldown!.Stop();
+            foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
+                button.IsEnabled = true;
+            LoadGpuMode();
+        };
+        _gpuCooldown.Start();
+    }
+
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
         var config = _gpu.Detect();
@@ -569,34 +601,133 @@ public partial class MainWindow : Window
 
         if (config.Mode is not { } current) return;
         if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
+        if (button.Tag is not string tag || !Enum.TryParse<GpuMode>(tag, out var target)) return;
 
-        MessageBox.Show(this,
-            """
-            Before you change this anywhere: if BitLocker is switched on, find your
-            recovery key first.
+        if (_mailbox is null)
+        {
+            MessageBox.Show(this, "The firmware interface is not available, so the mode cannot be changed from here.",
+                "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+            GpuButtonFor(current).IsChecked = true;
+            return;
+        }
 
-            Changing which graphics chip drives your screen changes what the TPM
-            measures when the machine starts, and BitLocker is bound to that
-            measurement. The next boot can ask for the 48-digit recovery key, and
-            without it the drive does not open. Your key is in your Microsoft
-            account at aka.ms/myrecoverykey, or wherever you saved it. Nextcalibur
-            cannot check whether BitLocker is on for you — that needs administrator,
-            which it never asks for.
+        // UMA and back are a device switch: immediate, no restart, and nothing
+        // the TPM measures. The firmware modes are the ones that cost a PIN.
+        var touchesFirmware = target != GpuMode.Uma && !(current == GpuMode.Uma && target == GpuMode.Hybrid);
 
-            Expect the same change to reset your Windows PIN, for the same reason.
-            That one is only an inconvenience.
+        if (touchesFirmware && !ConfirmFirmwareSwitch(target))
+        {
+            GpuButtonFor(current).IsChecked = true;
+            return;
+        }
 
-            Nextcalibur will not make this change. Casper's Control Center does it,
-            through the kernel driver it installs, and your BIOS setup may offer it
-            too. Nextcalibur installs no kernel driver, so this is one thing it
-            reports rather than touches.
+        // The NVML handle names a device that is about to be switched off or
+        // on. Using it afterwards does not fail, it kills the process inside
+        // nvml.dll - which is how the first attempt at this ended, and how the
+        // vendor's own software ends four seconds after its UMA button.
+        _gpuClock.Reset();
 
-            MS Hybrid lets the card idle when nothing needs it. Discrete keeps it
-            driving the screen, and drawing power, at all times.
-            """,
-            "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
+        try
+        {
+            var outcome = _gpu.Switch(_mailbox, target);
 
-        GpuButtonFor(current).IsChecked = true;
+            if (!outcome.Changed)
+            {
+                MessageBox.Show(this, outcome.Summary, "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+                LoadGpuMode();
+                return;
+            }
+
+            LockGpuButtonsWhileSettling();
+
+            if (outcome.RestartNeeded)
+            {
+                OfferRestart(outcome.Summary);
+            }
+            else
+            {
+                // Immediate changes deserve a word too. The first version said
+                // nothing after switching the card off, and the only sign that
+                // anything had happened was Windows' own elevation prompt.
+                MessageBox.Show(this, outcome.Summary, "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            LoadGpuMode();
+        }
+        catch (OperationCanceledException)
+        {
+            // They dismissed the elevation prompt. Nothing changed; nothing to say.
+            GpuButtonFor(current).IsChecked = true;
+        }
+        catch (InvalidOperationException ex)
+        {
+            // A transition the rules refuse: the card is driving the screen, or
+            // it is switched off. Said as it is, and the selection put back.
+            MessageBox.Show(this, ex.Message, "Not from here", MessageBoxButton.OK, MessageBoxImage.Warning);
+            GpuButtonFor(current).IsChecked = true;
+        }
+        catch (Exception ex) when (ex is EcMailboxUnavailableException or Win32Exception)
+        {
+            MessageBox.Show(this, ex.Message, "Could not change the mode", MessageBoxButton.OK, MessageBoxImage.Error);
+            GpuButtonFor(current).IsChecked = true;
+        }
+        finally
+        {
+            // Whatever happened to the device, the next clock read starts from
+            // a fresh enumeration rather than a handle that may name nothing.
+            _gpuClock.Reset();
+        }
+    }
+
+    /// <summary>
+    /// The conversation the vendor's software never has. Its dialogue asks
+    /// "restart?" and mentions neither the PIN nor BitLocker; both were learned
+    /// here by losing the PIN, four times in one night.
+    /// </summary>
+    private bool ConfirmFirmwareSwitch(GpuMode target)
+    {
+        var answer = MessageBox.Show(this,
+            $"Switch to {target}?" +
+            Environment.NewLine + Environment.NewLine +
+            "This changes which chip drives your screen, and takes effect at the next restart." +
+            Environment.NewLine + Environment.NewLine +
+            "Two things happen because of it, and Casper's own software warns about neither:" +
+            Environment.NewLine +
+            "    - Your Windows PIN will stop working and need setting up again." +
+            Environment.NewLine +
+            "    - If BitLocker is on, the next boot can ask for your 48-digit recovery key. " +
+            "Without it the drive does not open. Find it first - it is in your Microsoft " +
+            "account at aka.ms/myrecoverykey, or wherever you saved it." +
+            Environment.NewLine + Environment.NewLine +
+            "Both happen because the change alters what the TPM measures when the machine starts." +
+            Environment.NewLine + Environment.NewLine +
+            "Go ahead?",
+            "Graphics mode", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+
+        return answer == MessageBoxResult.Yes;
+    }
+
+    private void OfferRestart(string summary)
+    {
+        var answer = MessageBox.Show(this,
+            summary + Environment.NewLine + Environment.NewLine + "Restart now?",
+            "Graphics mode", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+        if (answer != MessageBoxResult.Yes) return;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 5 /c \"Nextcalibur: applying the graphics mode change.\"")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            });
+        }
+        catch (Win32Exception)
+        {
+            MessageBox.Show(this, "Could not start the restart. Restart the machine yourself to apply the change.",
+                "Graphics mode", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     // --------------------------------------------------------------- power mode
@@ -842,6 +973,44 @@ public partial class MainWindow : Window
         reading.SetResourceReference(ForegroundProperty, key);
     }
 
+    /// <summary>Whether the discrete adapter was enabled the last time anybody looked.</summary>
+    private bool? _discreteWasEnabled;
+
+    /// <summary>
+    /// Notices the discrete adapter being switched off or on by something
+    /// other than this window - Device Manager, the vendor's software - and
+    /// drops the NVML handle before it can be used against a device that is
+    /// no longer there.
+    ///
+    /// Our own switches reset the handle directly. This is for everyone else's,
+    /// and it has a window of one slow tick in which a stale handle could still
+    /// be read; that is the best available without a device-change
+    /// notification, and far better than the process ending.
+    ///
+    /// A WMI query, so off the interface thread: from a single-threaded
+    /// apartment every call leaks a kernel handle.
+    /// </summary>
+    private async Task WatchForTheCardBeingSwitched()
+    {
+        bool enabled;
+        try
+        {
+            enabled = await Task.Run(GpuModeService.DiscreteAdapterEnabled);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            return;
+        }
+
+        if (_discreteWasEnabled is { } was && was != enabled)
+        {
+            _gpuClock.Reset();
+            LoadGpuMode();
+        }
+
+        _discreteWasEnabled = enabled;
+    }
+
     private void StartSlowTimer()
     {
         var slow = new DispatcherTimer { Interval = VisibleSlowInterval };
@@ -860,6 +1029,7 @@ public partial class MainWindow : Window
                 ApplyPollInterval();
                 RefreshStorage();
                 if (_theme.PollForChange()) ApplyTheme();
+                await WatchForTheCardBeingSwitched();
             }
 
             // The overheat warning is the one thing worth a firmware read while

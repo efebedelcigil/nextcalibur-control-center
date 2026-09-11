@@ -201,6 +201,40 @@ public sealed class GpuClockReader : IDisposable
     private bool _tried;
     private bool _disposed;
 
+    /// <summary>
+    /// Forgets the device handle so the next read starts from a fresh
+    /// <c>nvmlInit</c>. Call it before and after the discrete adapter is
+    /// switched off or on as a device.
+    ///
+    /// The handle NVML hands out is only good while the device it names stays
+    /// where it was. Disable the adapter and it points at nothing;
+    /// <c>nvmlDeviceGetClockInfo</c> on it does not return an error, it dies
+    /// inside nvml.dll with an access violation, and .NET cannot catch that -
+    /// the process simply ends. Nextcalibur crashed exactly that way the first
+    /// time it switched its own card back on, on a two-second timer that was
+    /// still reading the clock. The vendor's Control Center dies the same way
+    /// four seconds after its own UMA button, and this project had already
+    /// noted that with some satisfaction before doing it itself.
+    ///
+    /// So: no probing a handle that might be stale. Drop it, and let the next
+    /// read re-enumerate. While the device is disabled, <c>nvmlInit</c> finds
+    /// no device and the reads return null, which is the right answer.
+    /// </summary>
+    public void Reset()
+    {
+        if (_disposed) return;
+
+        if (_ready)
+        {
+            try { Shutdown(); }
+            catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException) { }
+        }
+
+        _device = IntPtr.Zero;
+        _ready = false;
+        _tried = false;
+    }
+
     private bool EnsureReady()
     {
         if (_ready) return true;

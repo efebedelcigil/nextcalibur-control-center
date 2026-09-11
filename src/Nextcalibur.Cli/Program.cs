@@ -22,6 +22,7 @@ internal static class Program
                 "led" => Led(args),
                 "clocks" => Clocks(),
                 "access" => Access(args),
+                "gpu" => Gpu(args),
                 _ => Help(),
             };
         }
@@ -30,11 +31,58 @@ internal static class Program
             Error(ex.Message);
             return 2;
         }
+        catch (OperationCanceledException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return 6;
+        }
         catch (Exception ex)
         {
             Error(ex.Message);
             return 1;
         }
+    }
+
+    /// <summary>
+    /// The graphics mode: what the machine is in now, and what the firmware
+    /// has stored for the next restart. The two differ between a switch and the
+    /// reboot that applies it.
+    /// </summary>
+    private static int Gpu(string[] args)
+    {
+        var now = new GpuModeService().Detect();
+        Console.WriteLine($"Now                : {(now.Mode?.ToString() ?? "unknown")}" +
+                          (now.DiscreteName is { } n ? $"  ({n} {(now.DiscreteDrivesDisplay ? "drives the panel" : "idle")})" : ""));
+
+        using var mailbox = new EcMailbox();
+        var stored = GpuModeService.ReadFirmwareMode(mailbox);
+        Console.WriteLine($"Stored in firmware : {(stored.Mode?.ToString() ?? "unrecognised")}");
+        Console.WriteLine($"  reply bytes      : {BitConverter.ToString(stored.Raw, 0, 16)}");
+
+        if (stored.Mode is { } s && now.Mode is { } m && s != m && m != GpuMode.Uma)
+            Warn("The stored mode differs from the current one: a restart will apply it.");
+
+        if (args.Length < 2) return 0;
+
+        if (!Enum.TryParse<GpuMode>(args[1], ignoreCase: true, out var target))
+        {
+            Error("Give hybrid, discrete or uma.");
+            return 1;
+        }
+
+        Console.WriteLine();
+        if (target != GpuMode.Uma && !(now.Mode == GpuMode.Uma && target == GpuMode.Hybrid))
+        {
+            Warn("Switching which chip drives the screen changes what the TPM measures at boot.");
+            Warn("Your Windows PIN will need setting up again. If BitLocker is on, have the");
+            Warn("recovery key to hand before restarting.");
+            Console.WriteLine();
+        }
+
+        var outcome = new GpuModeService().Switch(mailbox, target);
+        Console.WriteLine(outcome.Summary);
+        if (outcome.RestartNeeded) Console.WriteLine("Restart to apply it.");
+        return outcome.Changed || outcome.Summary.StartsWith("Already") ? 0 : 5;
     }
 
     /// <summary>
@@ -109,6 +157,8 @@ internal static class Program
               nextcalibur access                 Report whether the sensors are readable
               nextcalibur access --grant         Allow this account to read them (admin)
               nextcalibur access --revoke        Put that back (admin)
+              nextcalibur gpu                    Which chip drives the panel, now and after restart
+              nextcalibur gpu <hybrid|discrete|uma>  Switch (uma and back need admin; the others a restart)
               nextcalibur led                    Show the stored lighting state
               nextcalibur led off                Turn the lighting off
               nextcalibur led colour <zone> <hex>  e.g. led colour left FF0000

@@ -15,6 +15,18 @@ public enum SmiSubsystem : ushort
 {
     Led = 0x0100,
     Thermal = 0x0200,
+
+    /// <summary>
+    /// Which chip drives the panel. Register 3 of the thermal family, which
+    /// is evidently a wider "platform" family than its name suggests.
+    ///
+    /// Found by watching the mailbox while the vendor's Display Mode button
+    /// was pressed and the restart accepted, 11 September 2026: the last thing
+    /// written before the machine went down was <c>FB00/0203</c> with 2, and it
+    /// came back Discrete; the way back it was 1, and it came back Hybrid.
+    /// See PROTOCOL.md.
+    /// </summary>
+    DisplayMode = 0x0203,
 }
 
 /// <summary>
