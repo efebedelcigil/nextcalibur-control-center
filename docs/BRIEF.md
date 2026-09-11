@@ -209,3 +209,20 @@ value beside each:
 Both rows should read as disabled when the toggle is off (the code-behind
 sets `IsEnabled`); a short label per row: "CPU" and "GPU". No numbers in the
 markup itself — the code-behind fills them from settings.
+
+## 9. Type the threshold, and a reset (12 September)
+
+The person wants to click the number beside each slider and type one, and a
+"reset to default" beside the pair. Rules are the code-behind's (positive
+integer, within `AppSettings.MinWarningTemperatureC`..`MaxWarningTemperatureC`,
+anything else refused and the old value put back); the markup is yours:
+
+- `CpuWarnValue` and `GpuWarnValue` become `TextBox`es - same look as the
+  `Value` text they replace (no visible border until focused is fine),
+  right-aligned, wide enough for `105 °C`. The code-behind shows `90 °C`
+  in them, strips the unit when the person edits, and validates on Enter
+  and on focus loss. Keep the names.
+- `OverheatResetButton` - a small text button, "Reset", next to the pair.
+  The code-behind puts both thresholds back to their defaults on click.
+
+Nothing else changes; the sliders and the toggle stay as they are.
