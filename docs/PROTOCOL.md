@@ -440,14 +440,38 @@ The last thing written before the machine went down:
 Write family, subsystem `0x02`, register `0x03`, value `2`. The machine came
 back in Discrete.
 
-Two independent measurements agree on the number. The firmware variable
-`TpvSetup` reads `0x02` in Discrete and `0x03` in Hybrid (see the firmware dump
-above), so the value written here is the value the firmware stores:
+Captured again on the way back, 06:15:11, Hybrid button and Yes:
 
-| Value | Mode |
-|---|---|
-| `2` | Discrete |
-| `3` | Hybrid - inferred from `TpvSetup`, not yet captured as a write |
+```
+06:15:11.701   a0=0xFB00  a1=0x0203  a2=1
+```
+
+The machine came back in Hybrid. So the register takes:
+
+| Value | Mode | Evidence |
+|---|---|---|
+| `1` | Hybrid | written 06:15:11, machine came up Hybrid |
+| `2` | Discrete | written 05:56:12, machine came up Discrete |
+
+**An inference in an earlier draft of this section was wrong.** It read the
+Hybrid value off the firmware variable `TpvSetup`, which holds `0x03` in Hybrid,
+and predicted the write would be `3`. The write is `1`. The variable and the
+mailbox use different encodings, and the only way to know a value is to watch
+it written - which is why the second reset was spent.
+
+The read side confirms the encoding independently. Pressing the button leaves
+this residue in the buffer - the command falls between polls, the response
+does not:
+
+```
+in Hybrid,   click:   00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 ...
+in Discrete, click:   00 00 00 00 02 00 00 00 00 00 00 00 02 00 00 00 ...
+```
+
+`a2` and `a4` carry the current mode, same numbers. So the register is
+readable as well as writable - by construction `0xFA00 / 0x0203`, though that
+command itself was never caught in the buffer - and reads back what was
+written.
 
 UMA is not a value here at all: it is a SetupDi device disable, as measured
 earlier, and never touches firmware.

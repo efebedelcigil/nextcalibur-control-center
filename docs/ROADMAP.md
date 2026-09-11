@@ -191,20 +191,25 @@ because capturing it costs a PIN reset.
 0xFB00 / 0x0203 / a2=2      write, subsystem 2, register 3, value 2  ->  Discrete
 ```
 
-Cross-checked against the firmware variable `TpvSetup`, which holds `0x02` in
-Discrete and `0x03` in Hybrid: the mailbox value is the stored value. So the
-switch is **one write, through the mailbox this project already uses, with a
-permission it already holds**. No driver, no IOCTL, nothing to ship.
+And the way back, 06:15:
+
+```
+0xFB00 / 0x0203 / a2=1      ->  Hybrid
+```
+
+So the register is `1` Hybrid, `2` Discrete - both watched being written, both
+confirmed by the machine coming up in that mode, and both matching what the
+button's own read returns. (An earlier draft inferred `3` for Hybrid from the
+firmware variable `TpvSetup`; that was wrong, and is why the second PIN reset
+was spent rather than saved.) The switch is **one write, through the mailbox
+this project already uses, with a permission it already holds**. No driver, no
+IOCTL, nothing to ship.
 
 **Nextcalibur can switch graphics modes.** Whether it should is a separate
 decision, and the costs are already written up on the Display page: the change
 invalidates TPM-sealed credentials, the Windows PIN has to be set up again, and
 BitLocker can demand its recovery key. Those do not go away because the command
 turned out to be simple.
-
-Left to confirm before building it: the Hybrid value as an actual write rather
-than an inference - capture the switch back, which is the second PIN reset
-already budgeted.
 
 The earlier check that "no vendor driver is involved" asked about
 `ControlCenter64` and `ControlCenterC64`, which are file names; the service is
