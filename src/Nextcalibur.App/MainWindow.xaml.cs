@@ -177,6 +177,9 @@ public partial class MainWindow : Window
         _updates.UpdateReady += (_, version) => _tray?.ShowMessage(
             $"Nextcalibur {version} is ready",
             "It will be installed the next time you close the application from the tray menu.");
+        _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
+        _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
+        _tray.Updates = _updates;
         _updates.Start();
 
         if (_settings.StartMinimised &&

@@ -589,11 +589,16 @@ order that would matter to somebody who installed this.
    and the title bar. Also the design agent's, and it wants checking on a
    running installed copy rather than in the markup.
 
-3. **Prove the update chain end to end.** 0.4.0 carries the metadata 0.3.0
-   lacked, so an installed copy should now find, download and apply a release on
-   its own. Nobody has watched it happen. The next release is the test: install
-   the current version, publish the next, and confirm the notice appears and the
-   update lands after a restart.
+3. **Prove the update chain end to end.** Done, 11 September 2026, 0.4.0 to
+   0.5.0: the installed copy checked a minute after start, downloaded the
+   delta (58 MB - the one-time cost of going self-contained; from here deltas
+   are small), rebuilt the full package from it, announced through the tray,
+   and applied on exit. Reopened as 0.5.0, uninstall entry 0.5.0. Two notes:
+   the binary's informational version names the commit at *build* time, so
+   build after the release commit next time, not before; and there is no
+   Start-menu or desktop shortcut on the development machine - Velopack's
+   Setup makes both by default, so either something here blocks it or they
+   were removed. Check in the sandbox at the next release.
 
 4. **A switch for the overheat notification, in the window.** The settings and
    the tray menu are done; the control in the window is the design agent's, and
@@ -683,6 +688,14 @@ that now returns nothing:
 The scripts stay in `tools/` and reinstall with `-Install` and `-Arm`. What they
 collected stays too: `tools/graphics-boot-log.csv`, the traces, and the firmware
 dumps under `tools/trace/`.
+
+### 0.5.0 is out
+
+Published 11 September 2026 and installed here through the update chain.
+Notes in [releases/0.5.0.md](releases/0.5.0.md). Since then: a switch for the
+automatic check (tray: "Check for updates automatically", plus "Check for
+updates now"). Off means no request at all; on means one small request a
+minute after start and one every six hours - not polling.
 
 ### 0.4.0 is out
 

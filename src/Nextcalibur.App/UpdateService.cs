@@ -43,6 +43,12 @@ public sealed class UpdateService : IDisposable
     private bool _announced;
     private bool _disposed;
 
+    /// <summary>Whether the timer is allowed to check. Read on every tick, so a change takes effect at the next one.</summary>
+    public Func<bool> AutomaticChecksEnabled { get; set; } = () => true;
+
+    /// <summary>True when this copy was installed and can update itself at all.</summary>
+    public bool CanUpdate => _manager is not null;
+
     public UpdateService()
     {
         // Only a copy installed by the installer can update itself. Running
@@ -63,7 +69,7 @@ public sealed class UpdateService : IDisposable
         _timer.Tick += async (_, _) =>
         {
             _timer.Interval = CheckInterval;
-            await CheckAsync();
+            if (AutomaticChecksEnabled()) await CheckAsync();
         };
     }
 
@@ -85,24 +91,36 @@ public sealed class UpdateService : IDisposable
         _timer?.Start();
     }
 
-    private async Task CheckAsync()
+    /// <summary>Raised after a check the person asked for, with what it found.</summary>
+    public event EventHandler<string>? CheckedByHand;
+
+    /// <summary>A check now, because somebody clicked. Reports either way.</summary>
+    public async Task CheckNowAsync()
     {
-        if (_manager is null || _busy || _disposed) return;
+        if (_manager is null) { CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself."); return; }
+        if (IsReady) { CheckedByHand?.Invoke(this, "An update is already downloaded. Exit from the tray menu to install it."); return; }
+        var found = await CheckAsync(report: true);
+        if (!found) CheckedByHand?.Invoke(this, "You have the latest version.");
+    }
+
+    private async Task<bool> CheckAsync(bool report = false)
+    {
+        if (_manager is null || _busy || _disposed) return false;
         _busy = true;
 
         try
         {
             var available = await _manager.CheckForUpdatesAsync();
-            if (available is null) return;
+            if (available is null) return false;
 
             await _manager.DownloadUpdatesAsync(available);
             Announce(available.TargetFullRelease?.Version?.ToString());
+            return true;
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
-            // No network, GitHub unreachable, a release without assets, a rate
-            // limit. None of it is worth a word to the user: the next check is
-            // six hours away and the application works regardless.
+            if (report) CheckedByHand?.Invoke(this, "Could not reach GitHub to check: " + ex.Message);
+            return false;
         }
         finally
         {
