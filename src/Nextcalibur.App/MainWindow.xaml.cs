@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -1027,17 +1027,67 @@ public partial class MainWindow : Window
 
         CpuWarnSlider.ValueChanged += (_, e) => OnThresholdMoved(e.NewValue, CpuWarnValue, v => _settings.CpuWarningTemperatureC = v);
         GpuWarnSlider.ValueChanged += (_, e) => OnThresholdMoved(e.NewValue, GpuWarnValue, v => _settings.GpuWarningTemperatureC = v);
+
+        // The number is typeable too. Unit stripped while editing; on Enter
+        // or leaving the box the text is either a whole number inside the
+        // range, or it is refused and the slider's value comes back.
+        WireTypedThreshold(CpuWarnValue, CpuWarnSlider);
+        WireTypedThreshold(GpuWarnValue, GpuWarnSlider);
+
+        OverheatResetButton.Click += (_, _) =>
+        {
+            var defaults = new AppSettings();
+            CpuWarnSlider.Value = defaults.CpuWarningTemperatureC;
+            GpuWarnSlider.Value = defaults.GpuWarningTemperatureC;
+        };
     }
 
-    private void OnThresholdMoved(double value, TextBlock readout, Action<int> store)
+    private void OnThresholdMoved(double value, System.Windows.Controls.TextBox readout, Action<int> store)
     {
         var celsius = (int)Math.Round(value);
-        readout.Text = $"{celsius} °C";
+        if (!readout.IsKeyboardFocused) readout.Text = $"{celsius} °C";
         if (!_thresholdsReady) return;
         store(celsius);
         _settings.Save();
         // A new limit is a new question: let the next hot reading warn again.
         _overheatNotified = false;
+    }
+
+    private static void WireTypedThreshold(System.Windows.Controls.TextBox box, Slider slider)
+    {
+        box.GotKeyboardFocus += (_, _) =>
+        {
+            box.Text = ((int)Math.Round(slider.Value)).ToString();
+            box.SelectAll();
+        };
+
+        void Commit()
+        {
+            var text = box.Text.Replace("°C", string.Empty).Trim();
+            var accepted = int.TryParse(text, out var typed)
+                && typed >= AppSettings.MinWarningTemperatureC
+                && typed <= AppSettings.MaxWarningTemperatureC;
+            if (accepted) slider.Value = typed;
+            // Either way the box shows what the setting now is, and nothing else.
+            box.Text = $"{(int)Math.Round(slider.Value)} °C";
+        }
+
+        box.LostKeyboardFocus += (_, _) => Commit();
+        box.PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                Commit();
+                System.Windows.Input.Keyboard.ClearFocus();
+                e.Handled = true;
+            }
+            else if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                box.Text = $"{(int)Math.Round(slider.Value)} °C";
+                System.Windows.Input.Keyboard.ClearFocus();
+                e.Handled = true;
+            }
+        };
     }
 
     /// <summary>The mode written to firmware this session and not yet restarted into.</summary>

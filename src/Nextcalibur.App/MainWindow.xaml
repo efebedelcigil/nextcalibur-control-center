@@ -281,6 +281,88 @@
                 </MultiDataTrigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Threshold Value TextBox Style (Border-less until focused, right-aligned, matches Value style) -->
+        <Style x:Key="WarnValueTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource Ink}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource Accent}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Width" Value="42" />
+            <Setter Property="Padding" Value="0,1" />
+            <Setter Property="Cursor" Value="IBeam" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Line}" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource CardBackground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Threshold Reset Button Style (Compact subtle text button) -->
+        <Style x:Key="WarnResetButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverSurface}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SelectedSurface}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <!-- Outer Window Border with Square Corners (0px) -->
@@ -308,7 +390,8 @@
 
                 <!-- Left: Official Nextcalibur LogoMark + Wordmark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Image Source="/Assets/app.ico" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,10,0"
+                    <Image Source="/Assets/logo-96.png" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,10,0"
+                           UseLayoutRounding="True"
                            RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="NEXTCALIBUR  CONTROL CENTER"
                                Style="{DynamicResource WordmarkTextStyle}" />
@@ -537,7 +620,7 @@
                                         <Border Width="1" Height="28" Background="{DynamicResource Line}" VerticalAlignment="Center" Margin="0,0,8,0" />
 
                                         <!-- Dual Threshold Sliders (CPU & GPU) -->
-                                        <StackPanel VerticalAlignment="Center" Width="116"
+                                        <StackPanel VerticalAlignment="Center" Width="124"
                                                     IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}">
                                             <StackPanel.Style>
                                                 <Style TargetType="StackPanel">
@@ -554,15 +637,14 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="24" />
                                                     <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="34" />
+                                                    <ColumnDefinition Width="42" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                                 <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                         TickFrequency="1" IsSnapToTickEnabled="True"
                                                         VerticalAlignment="Center" Margin="3,0" />
-                                                <TextBlock x:Name="CpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
-                                                           FontSize="12" Foreground="{DynamicResource Ink}"
-                                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                                <TextBox x:Name="CpuWarnValue" Grid.Column="2"
+                                                         Style="{StaticResource WarnValueTextBoxStyle}" />
                                             </Grid>
 
                                             <!-- GPU Threshold Row -->
@@ -570,17 +652,23 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="24" />
                                                     <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="34" />
+                                                    <ColumnDefinition Width="42" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                                 <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                         TickFrequency="1" IsSnapToTickEnabled="True"
                                                         VerticalAlignment="Center" Margin="3,0" />
-                                                <TextBlock x:Name="GpuWarnValue" Grid.Column="2" Style="{DynamicResource Value}"
-                                                           FontSize="12" Foreground="{DynamicResource Ink}"
-                                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                                <TextBox x:Name="GpuWarnValue" Grid.Column="2"
+                                                         Style="{StaticResource WarnValueTextBoxStyle}" />
                                             </Grid>
                                         </StackPanel>
+
+                                        <!-- Reset to Default Button -->
+                                        <Button x:Name="OverheatResetButton" Content="Reset"
+                                                Style="{StaticResource WarnResetButtonStyle}"
+                                                IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}"
+                                                VerticalAlignment="Center" Margin="8,0,0,0"
+                                                ToolTip="Reset thresholds to default" />
                                     </StackPanel>
                                 </Grid>
 
