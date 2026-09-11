@@ -152,17 +152,22 @@ and it is the one thing on the whole keyboard that needed it.
 Power source is not on this channel: unplugging and replugging produced nothing,
 so whatever the vendor does with `ModeBeforeDC` it learns some other way.
 
-**Open until confirmed:** whether the backlight visibly changes when that key is
-pressed with no vendor software installed. If it does, the firmware is applying
-the level itself and the event is a courtesy. If it does not, that key is dead
-right now, and the lighting is this application's own feature - so making it
-work again is ours to do.
+**Confirmed on hardware: the backlight changes anyway.** The firmware applies
+the level itself, so the event is a courtesy rather than a request, and that key
+works with no software of any kind on the machine. Nothing to reimplement.
 
-Worth knowing before building it: this event class has **no security descriptor**
-and is administrators-only. Subscribing would mean granting one more GUID
-alongside the data block - `74286d6e-429c-427a-b34b-b5d15d032b05` - which is a
-second permission to ask somebody for, and worth doing only for a key that is
-genuinely broken.
+What it does leave is a small honesty problem. Press Fn+Space while Nextcalibur
+sits in the notification area and the keyboard changes without this application
+knowing, so the lighting controls describe a state the keyboard is no longer in.
+Fixed by re-reading the hardware when the window becomes visible - hooked to
+visibility rather than to window state, because closing to the tray hides the
+window rather than minimising it, and the state never changes.
+
+**Not by subscribing to the event.** That class has no security descriptor and
+is therefore administrators-only, so listening would mean asking somebody for a
+second elevation on a second GUID
+(`74286d6e-429c-427a-b34b-b5d15d032b05`) - a poor trade for keeping a panel in
+step that nobody is looking at while it is wrong.
 
 ### Look before you change anything
 

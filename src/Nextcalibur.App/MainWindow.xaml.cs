@@ -102,6 +102,10 @@ public partial class MainWindow : Window
         ApplyPollInterval();
         Loaded += OnLoaded;
         StateChanged += OnStateChanged;
+
+        // Not StateChanged: closing to the tray hides the window rather than
+        // minimising it, so the state never changes and the handler never runs.
+        IsVisibleChanged += (_, e) => { if (e.NewValue is true) RefreshLightingFromHardware(); };
         Closing += OnClosing;
     }
 
@@ -317,6 +321,36 @@ public partial class MainWindow : Window
         else if (_thermal is not null)
         {
             _timer.Start();
+        }
+    }
+
+    /// <summary>
+    /// Re-reads the lighting the machine is actually showing.
+    ///
+    /// Fn+Space changes the keyboard backlight without going through this
+    /// application at all - the firmware reports the new level on its event
+    /// class and applies it itself, measured on hardware. So anything set from
+    /// that key while the window was away leaves the controls describing a state
+    /// the keyboard is no longer in.
+    ///
+    /// Deliberately a re-read on becoming visible rather than a subscription to
+    /// that event class. Subscribing would mean asking for administrator on a
+    /// second GUID - the event class has no security descriptor of its own, so
+    /// it is administrators-only - and a second permission prompt is a poor
+    /// trade for keeping a panel in step that nobody is looking at anyway.
+    /// </summary>
+    private void RefreshLightingFromHardware()
+    {
+        if (_led is null || !_mailboxSupported) return;
+
+        try
+        {
+            LoadLightingUi();
+        }
+        catch (EcMailboxUnavailableException)
+        {
+            // A miss here costs nothing: the controls keep the values they had,
+            // and the next time the window is opened it tries again.
         }
     }
 
