@@ -110,6 +110,17 @@ Detection has two levels and they mean different things:
 | Installed | the two will collide sooner or later | recommend removing, once, unless already accepted |
 | Running | they are colliding now | the banner already says so |
 
+**And when it leaves, 11 September 2026.** Its uninstaller, run with this
+application open, did two things to it: narrowed the firmware permission back
+to administrators (every reading stops) and put Windows on Balanced (the mode
+drops). The plans survived this time. So the slow timer watches the vendor's
+install state; on installed-to-gone it asks once for the permission back with
+a sentence saying why, reconnects the mailbox, and re-applies the current
+mode - plan, overlay and firmware profile. The recommendation to remove is
+also re-armed when the vendor is gone, so a later reinstall is a new question,
+and it is put while running rather than only at start. Startup path tested
+live after the uninstall; the running path is the same code, untested live.
+
 ### Hotkeys: measured, and there is nothing to do
 
 Closed 11 September 2026. The worry was that the vendor's Control Center
