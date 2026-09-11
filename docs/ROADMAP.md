@@ -609,33 +609,16 @@ leaving a registry value behind.
 Taken from an audit of the repository rather than from memory, roughly in the
 order that would matter to somebody who installed this.
 
-1. **The Display page, once the graphics-mode work concludes.** Also the design
-   agent's, and it should wait for the answer rather than anticipate it — but
-   some of it is already known and can be planned:
+1. **The Display page.** Done in 0.5.1: unreachable modes say so on their
+   card, a pending restart says so above the cards, the settling countdown
+   is in place. Left for later, low priority: the card's own draw and
+   temperature on the Discrete card, from NVML, which only costs nothing in
+   Discrete (see "What each mode costs").
 
-   - **A mode can be unavailable, and the page has to say why.** The vendor
-     software refuses to go from Discrete straight to UMA — "Please switch to
-     Hybrid mode first" — because in Discrete the panel is driven by the
-     discrete card and switching it off would take the screen with it. Whatever
-     this page becomes, an unreachable mode needs to look unreachable and give
-     its reason, not fail on click.
-   - **Some transitions need a restart**, and the page should say so before the
-     user commits rather than after.
-   - **What the current mode costs belongs on screen.** The code already reads
-     the card's draw and utilisation through NVML — 16.5 W and 61 °C was the
-     quietest Discrete reading taken. A number does more than a warning
-     sentence. Do not quote the higher figures seen that day as the cost of the
-     mode: Wallpaper Engine was running and rendering continuously, and that
-     was probably most of them.
-   - The three cards already exist and are named in [CONTRACT.md](CONTRACT.md).
-     Nothing about them needs replacing — this is about states they cannot
-     currently express: unavailable, needs-restart, and in-progress.
-
-2. **An icon audit.** Confirm there is an icon everywhere one belongs and that
-   they are the current mark: window and taskbar, Alt-Tab, notification area,
-   the installer, the desktop and Start-menu shortcuts, Add or Remove Programs,
-   and the title bar. Also the design agent's, and it wants checking on a
-   running installed copy rather than in the markup.
+2. **An icon audit.** Done 11 September by the design agent against the
+   installed copy: window, taskbar, Alt-Tab, tray, installer, shortcuts,
+   Add/Remove - one mark everywhere. The title-bar and rail marks are the
+   owner's own images since 12 September.
 
 3. **Prove the update chain end to end.** Done, 11 September 2026, 0.4.0 to
    0.5.0: the installed copy checked a minute after start, downloaded the
@@ -650,9 +633,8 @@ order that would matter to somebody who installed this.
    Start-menu and desktop shortcuts were the sandboxed view again - the
    person's own install of 0.5.0 has both.
 
-4. **A switch for the overheat notification, in the window.** The settings and
-   the tray menu are done; the control in the window is the design agent's, and
-   the brief spells out which two settings back it.
+4. **A switch for the overheat notification, in the window.** Done in
+   0.5.1, with a threshold per chip beside it - sliders, typeable, a reset.
 
 ## The graphics-mode question is answered
 
