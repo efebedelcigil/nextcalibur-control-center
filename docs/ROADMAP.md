@@ -591,8 +591,7 @@ leaving a registry value behind.
    To settle before building: whether a Velopack copy outside
    `%LOCALAPPDATA%` still updates itself without elevation (it will, if the
    chosen directory is writable by the user; a Program Files choice needs an
-   answer), that the two do not leave two Add/Remove entries, and that the
-   start-menu shortcut appears - it does not here today. Inno Setup is free
+   answer), and that the two do not leave two Add/Remove entries. Inno Setup is free
    and its licence permits this; the script goes in `installer/`.
 
 
@@ -636,10 +635,9 @@ order that would matter to somebody who installed this.
    with Windows" below), so the chain works but the person's real session
    still has no 0.5.0; they install it themselves. Two notes:
    the binary's informational version names the commit at *build* time, so
-   build after the release commit next time, not before; and there is no
-   Start-menu or desktop shortcut on the development machine - Velopack's
-   Setup makes both by default, so either something here blocks it or they
-   were removed. Check in the sandbox at the next release.
+   build after the release commit next time, not before; and the missing
+   Start-menu and desktop shortcuts were the sandboxed view again - the
+   person's own install of 0.5.0 has both.
 
 4. **A switch for the overheat notification, in the window.** The settings and
    the tray menu are done; the control in the window is the design agent's, and
