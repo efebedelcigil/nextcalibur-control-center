@@ -21,7 +21,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -34,7 +34,7 @@ jobs:
           "version=$v" >> $env:GITHUB_OUTPUT
 
       - name: .NET 8 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
@@ -96,7 +96,7 @@ jobs:
           Remove-Item "$env:RUNNER_TEMP\cert.pfx"
 
       - name: Attest provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             installer/output/Nextcalibur-Setup-*.exe
