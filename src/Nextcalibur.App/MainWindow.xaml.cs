@@ -2189,18 +2189,30 @@ public partial class MainWindow : Window
             // Off the user-interface thread for the same reason as Sample: see
             // the note there. This read is the one that keeps the tray tooltip
             // and the overheat warning alive while the window is put away.
-            var reader = _thermal;
+            // On screen the fast timer has just read the firmware for the
+            // window; a second read here for the tooltip and the warning
+            // was a third of all mailbox traffic for nothing (12 September
+            // 2026). Use that sample while it is fresh; read only when it
+            // is not - hidden, or the fast timer stalled.
             ThermalSample s;
-            try
+            if (_lastThermal is { } recent && DateTimeOffset.Now - recent.Timestamp < VisibleSlowInterval)
             {
-                var reading = await Task.Run(
-                    () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
-                if (reading is null) return;
-                s = reading.Value;
+                s = recent;
             }
-            catch (Exception ex) when (ex is not OutOfMemoryException)
+            else
             {
-                return;
+                var reader = _thermal;
+                try
+                {
+                    var reading = await Task.Run(
+                        () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
+                    if (reading is null) return;
+                    s = reading.Value;
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    return;
+                }
             }
 
             _lastThermal = s;

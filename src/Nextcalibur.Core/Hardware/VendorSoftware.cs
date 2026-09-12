@@ -118,24 +118,12 @@ public static class VendorSoftware
         return null;
     }
 
-    private static bool Detect()
-    {
-        foreach (var name in ProcessNames)
-        {
-            var found = Process.GetProcessesByName(name);
-            try
-            {
-                if (found.Length > 0) return true;
-            }
-            finally
-            {
-                // Each Process holds a handle. Left undisposed these accumulate
-                // for the life of the application.
-                foreach (var p in found) p.Dispose();
-            }
-        }
-        return false;
-    }
+    // One instance for the life of the process: it remembers which ids it
+    // has looked at, which is what makes a look cheap (see ProcessPresence).
+    private static readonly ProcessPresence Presence =
+        new(ProcessNames.Select(n => n + ".exe").ToArray());
+
+    private static bool Detect() => Presence.AnyRunning();
 
     /// <summary>The polling interval to use right now, in milliseconds.</summary>
     public static int PollIntervalMs(int preferred) =>
