@@ -10,7 +10,6 @@ Usage:
 
 Reads : src/Nextcalibur.App/Assets/logo.png
 Writes: src/Nextcalibur.App/Assets/app.ico
-        docs/logo.png   (512 px, for the README)
 """
 
 from __future__ import annotations
@@ -23,7 +22,6 @@ from PIL import Image, ImageEnhance, ImageFilter
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "src" / "Nextcalibur.App" / "Assets" / "logo.png"
 ICON = ROOT / "src" / "Nextcalibur.App" / "Assets" / "app.ico"
-README_IMAGE = ROOT / "docs" / "logo.png"
 
 # Windows picks from these: 16 in the tray and title bar, 32 on the taskbar,
 # 256 in large icon views and the installer.
@@ -59,9 +57,6 @@ def main() -> int:
     frames[-1].save(ICON, format="ICO", sizes=[(s, s) for s in SIZES], append_images=frames[:-1])
     print(f"{ICON.relative_to(ROOT)}  <- {', '.join(str(s) for s in SIZES)}")
 
-    README_IMAGE.parent.mkdir(parents=True, exist_ok=True)
-    source.resize((512, 512), Image.LANCZOS).save(README_IMAGE, format="PNG")
-    print(f"{README_IMAGE.relative_to(ROOT)}  <- 512")
 
     return 0
 

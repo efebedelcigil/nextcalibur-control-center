@@ -10,13 +10,6 @@ public sealed class AppSettings
     /// <summary>How often to sample sensors while the window is visible, in milliseconds.</summary>
     public int PollIntervalMs { get; set; } = 2000;
 
-    /// <summary>Keep running in the notification area when the window is closed.</summary>
-    /// <summary>
-    /// No longer read. Close exits, after a question, and the title bar has a
-    /// tray button of its own (12 September 2026). Kept so older files load.
-    /// </summary>
-    public bool MinimiseToTray { get; set; } = true;
-
     /// <summary>Start hidden in the notification area.</summary>
     public bool StartMinimised { get; set; }
 
