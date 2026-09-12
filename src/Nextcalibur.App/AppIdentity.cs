@@ -65,6 +65,49 @@ public static class AppIdentity
         }
     }
 
+    /// <summary>The folders our shortcuts can be in: Start menu, desktop, the taskbar's pins.</summary>
+    private static IEnumerable<string> ShortcutFolders()
+    {
+        yield return Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+        yield return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
+    }
+
+    /// <summary>
+    /// Deletes every shortcut that points into the install folder - the
+    /// Start-menu and desktop ones the installer made and any pin the person
+    /// added. For the uninstall, which must leave nothing.
+    /// </summary>
+    public static int RemoveShortcutsPointingAt(string installRoot)
+    {
+        var removed = 0;
+        foreach (var folder in ShortcutFolders())
+        {
+            if (!Directory.Exists(folder)) continue;
+            foreach (var link in Directory.EnumerateFiles(folder, "*.lnk"))
+            {
+                try
+                {
+                    if (!PointsInto(link, installRoot)) continue;
+                    System.IO.File.Delete(link);
+                    removed++;
+                }
+                catch (Exception ex) when (ex is COMException or IOException or UnauthorizedAccessException) { }
+            }
+        }
+        return removed;
+    }
+
+    private static bool PointsInto(string linkPath, string installRoot)
+    {
+        var shellLink = (IShellLinkW)new ShellLink();
+        ((IPersistFile)shellLink).Load(linkPath, 0 /* STGM_READ */);
+        var target = new System.Text.StringBuilder(1024);
+        shellLink.GetPath(target, target.Capacity, IntPtr.Zero, 0);
+        return target.ToString().StartsWith(installRoot, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void StampIfOurs(string linkPath, string installRoot)
     {
         var shellLink = (IShellLinkW)new ShellLink();

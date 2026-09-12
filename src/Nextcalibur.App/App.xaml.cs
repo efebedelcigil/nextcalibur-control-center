@@ -77,6 +77,7 @@ public partial class App : Application
         if (args.Contains(CleanUpArgument))
         {
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
+            FinishUninstall(self);
             Environment.Exit(0);
             return;
         }
@@ -343,6 +344,54 @@ public partial class App : Application
             Log.Warn("uninstall", "Elevation declined; the scheduled tasks and the permission stay");
         }
     }
+    /// <summary>
+    /// What Velopack's uninstaller leaves when the copy lived under Program
+    /// Files: the folder (it runs as the account and cannot delete there)
+    /// and, having stopped at that, the shortcuts. This helper is elevated,
+    /// so it takes the shortcuts now and leaves a script to take the folder
+    /// once the uninstaller - which runs from inside it - has exited. Seen
+    /// in the sandbox 12 September 2026: folder, desktop and Start-menu
+    /// shortcuts all still there after "uninstall".
+    /// </summary>
+    private static void FinishUninstall(string? self)
+    {
+        if (self is null || InstallFolderGuard.RootOf(self) is not { } root) return;
+        if (!File.Exists(System.IO.Path.Combine(root, "Update.exe"))) return;   // not an installed copy
+
+        var shortcuts = AppIdentity.RemoveShortcutsPointingAt(root);
+        Log.Info("uninstall", $"Removed {shortcuts} shortcut(s) pointing into {root}");
+
+        try
+        {
+            // Retries for two minutes: the uninstaller and this process are
+            // still running from the folder when the script starts.
+            var script = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "nextcalibur-remove.cmd");
+            File.WriteAllText(script,
+                "@echo off\r\n" +
+                "set n=0\r\n" +
+                ":again\r\n" +
+                "timeout /t 3 /nobreak >nul\r\n" +
+                $"rmdir /s /q \"{root}\" 2>nul\r\n" +
+                $"if not exist \"{root}\" goto done\r\n" +
+                "set /a n+=1\r\n" +
+                "if %n% lss 40 goto again\r\n" +
+                ":done\r\n" +
+                "reg delete \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nextcalibur\" /f >nul 2>&1\r\n" +
+                "del \"%~f0\"\r\n");
+            Process.Start(new ProcessStartInfo("cmd.exe", $"/c \"{script}\"")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            });
+            Log.Info("uninstall", "Folder removal scheduled: " + root);
+        }
+        catch (Exception ex) when (ex is IOException or Win32Exception or UnauthorizedAccessException)
+        {
+            Log.Warn("uninstall", "Could not schedule the folder's removal: " + ex.Message);
+        }
+    }
+
     private static int GrantSensorAccess()
     {
         try
