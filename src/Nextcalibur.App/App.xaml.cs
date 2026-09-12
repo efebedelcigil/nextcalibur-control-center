@@ -350,12 +350,17 @@ public partial class App : Application
             // plain Velopack Setup, which asks nothing - means yes, as before.
             var wanted = true;
             var marker = FirstRunMarker(self);
+            var keep = false;
             if (marker is not null && File.Exists(marker))
             {
-                wanted = !File.ReadAllText(marker).Contains("StartWithWindows=0", StringComparison.OrdinalIgnoreCase);
+                var text = File.ReadAllText(marker);
+                wanted = !text.Contains("StartWithWindows=0", StringComparison.OrdinalIgnoreCase);
+                // A repair: the person's choice stands; only re-register what is there.
+                keep = text.Contains("StartWithWindows=keep", StringComparison.OrdinalIgnoreCase);
                 try { File.Delete(marker); } catch (IOException) { }
             }
 
+            if (keep) wanted = StartupRegistration.IsEnabled;
             StartupRegistration.Set(wanted, self);
         }
         catch
