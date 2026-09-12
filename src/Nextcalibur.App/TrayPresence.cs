@@ -198,6 +198,9 @@ public sealed class TrayPresence : IDisposable
     public void ShowMessage(string title, string body) =>
         _icon.ShowBalloonTip(5000, title, body, Forms.ToolTipIcon.Warning);
 
+    /// <summary>Brings the window up for something that is not the tray icon - a toast, say.</summary>
+    public void ShowWindowFromOutside() => ShowWindow();
+
     private void ShowWindow()
     {
         _window.Show();
