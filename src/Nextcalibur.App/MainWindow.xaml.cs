@@ -138,6 +138,7 @@ public partial class MainWindow : Window
         // minimising it, so the state never changes and the handler never runs.
         IsVisibleChanged += (_, e) => { if (e.NewValue is true) RefreshLightingFromHardware(); };
         Closing += OnClosing;
+        DriveList.ItemsSource = _drives;
         Application.Current.SessionEnding += (_, _) => _sessionEnding = true;
     }
 
@@ -1620,11 +1621,24 @@ public partial class MainWindow : Window
         RamPercent.Text = $"{memory.Percent:N1}%";
         RamDetail.Text = memory.Describe();
 
-        var disk = SystemInfo.SystemDrive();
-        SsdGauge.Value = disk.Percent;
-        SsdPercent.Text = $"{disk.Percent:N1}%";
-        SsdDetail.Text = disk.Describe();
+        // Every fixed drive, the Windows one first. Rows are kept and
+        // updated, not rebuilt, so the gauges do not restart each refresh;
+        // a drive that appears or disappears changes the list's length only.
+        var drives = SystemInfo.FixedDrives();
+        while (_drives.Count > drives.Count) _drives.RemoveAt(_drives.Count - 1);
+        while (_drives.Count < drives.Count) _drives.Add(new DriveRow());
+        for (var i = 0; i < drives.Count; i++)
+        {
+            var row = _drives[i];
+            row.Name = drives[i].Name;
+            row.Percent = drives[i].Use.Percent;
+            row.PercentText = $"{drives[i].Use.Percent:N1}%";
+            row.Detail = drives[i].Use.Describe();
+        }
     }
+
+    /// <summary>The drives as shown; <c>DriveList</c> binds to this.</summary>
+    private readonly System.Collections.ObjectModel.ObservableCollection<DriveRow> _drives = new();
 
     // ---------------------------------------------------------------- sensors
 
