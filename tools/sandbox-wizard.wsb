@@ -1,6 +1,8 @@
 ﻿<Configuration>
-  <!-- The installer wizard, tried by hand on a clean Windows: the wizard is
-       mapped in and opened in Explorer; the person drives it from there. -->
+  <!-- The installer wizard, tried by hand on a clean Windows. The wizard is
+       mapped in and started with /skipnvidia=1, because a virtual machine
+       has no NVIDIA driver and the wizard refuses to install without one
+       everywhere else. The person drives it from there. -->
   <MappedFolders>
     <MappedFolder>
       <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\installer\output</HostFolder>
@@ -10,6 +12,6 @@
   </MappedFolders>
   <Networking>Enable</Networking>
   <LogonCommand>
-    <Command>explorer.exe C:\Setup</Command>
+    <Command>cmd.exe /c for %f in (C:\Setup\Nextcalibur-Setup-*.exe) do start "" "%f" /skipnvidia=1</Command>
   </LogonCommand>
 </Configuration>
