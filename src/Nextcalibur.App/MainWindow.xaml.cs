@@ -688,11 +688,15 @@ public partial class MainWindow : Window
             // to be on screen to ask it: a close from the taskbar's menu
             // arrives with the window minimised, and Windows' box is not
             // the look this application has.
+            // ...but a window cannot be shown while it is closing (WPF throws,
+            // and the taskbar's "Close window" found that out). So: refuse
+            // this close, bring the window up, and ask from there - Exit()
+            // asks and then closes for real.
             if (!IsVisible || WindowState == WindowState.Minimized)
             {
-                Show();
-                WindowState = WindowState.Normal;
-                Activate();
+                e.Cancel = true;
+                Dispatcher.BeginInvoke(Exit);
+                return;
             }
 
             if (!Dialogs.Ask("Exit Nextcalibur?",
