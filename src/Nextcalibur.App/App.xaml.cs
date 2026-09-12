@@ -103,8 +103,28 @@ public partial class App : Application
         // prompt-free; registering it is idempotent and costs a schtasks call.
         if (self is not null) Elevation.RegisterOpenTask(self);
 
+        Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            Log.Error("crash", "Unhandled exception; the process is ending", e.ExceptionObject as Exception);
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            Log.Error("task", "Unobserved task exception", e.Exception);
+            e.SetObserved();
+        };
+
         var app = new App();
         app.InitializeComponent();
+        app.DispatcherUnhandledException += (_, e) =>
+        {
+            // On the interface thread a fault is logged and shown, and the
+            // application goes on: one bad click must not take the tray
+            // icon and the temperature warning with it.
+            Log.Error("ui", "Unhandled exception on the interface thread", e.Exception);
+            Dialogs.Warn("Nextcalibur - something went wrong",
+                "An error was recorded in the log and the application is still running." +
+                Environment.NewLine + Environment.NewLine + e.Exception.Message);
+            e.Handled = true;
+        };
         ListenForWakeRequests(app);
         app.Run();
 
@@ -183,6 +203,7 @@ public partial class App : Application
     /// </summary>
     private static void CleanUpOnUninstall()
     {
+        Log.Info("uninstall", "Uninstall hook running");
         Footprint.RemoveUserTraces();
 
         // Everything still standing that is either not ours to assume about, or
