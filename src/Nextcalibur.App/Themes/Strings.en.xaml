@@ -41,7 +41,6 @@
     <sys:String x:Key="S.Corner.UpdateTooltip">A newer version will appear here when available</sys:String>
     <sys:String x:Key="S.Corner.OpenLog">Open log</sys:String>
     <sys:String x:Key="S.Corner.OpenLogTooltip">Open application log folder</sys:String>
-    <sys:String x:Key="S.Corner.Language">Türkçe</sys:String>
 
     <!-- The status line -->
     <sys:String x:Key="S.Status.OnAc">on AC power</sys:String>
@@ -149,6 +148,10 @@
     <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, elevated, without a prompt.</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Office mode on battery</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Drop to Office when the charger comes out; back to your mode when it returns.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageTitle">Language</sys:String>
+    <sys:String x:Key="S.Settings.LanguageDesc">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
+    <sys:String x:Key="S.Settings.LanguageTurkish">Türkçe</sys:String>
     <sys:String x:Key="S.Settings.GroupReadings">Readings</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningTitle">Warn when the CPU or GPU runs hot</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningDesc">The thresholds are beside the temperatures.</sys:String>

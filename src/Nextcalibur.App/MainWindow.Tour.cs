@@ -184,6 +184,8 @@ public partial class MainWindow
             "A minute after start and every six hours, one small request to GitHub. A release found is offered, never installed on its own - unless the next switch is on.", "Settings"),
         new TourStep("SettingAutoInstallUpdates", TourPage.Settings, "Install updates automatically",
             "Goes one step further: a release found is downloaded, verified and installed without asking, and the application restarts into it. Off by default. It waits while a graphics change is pending a restart, since that restart is yours to time.", "Settings"),
+        new TourStep("SettingLanguageEnglish", TourPage.Settings, "Language",
+            "English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.", "Settings"),
         new TourStep("SettingCheckNowButton", TourPage.Settings, "Check now",
             "Asks GitHub right away and tells you the answer either way.", "Settings"),
 

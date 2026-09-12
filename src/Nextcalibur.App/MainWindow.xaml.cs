@@ -1005,19 +1005,9 @@ public partial class MainWindow : Window
             ? Strings.Get("S.Corner.UpdateTo", v)
             : Strings.Get("S.Corner.UpToDate");
         OpenLogButton.Content = Strings.Get("S.Corner.OpenLog");
-        if (FindName("LanguageButton") is System.Windows.Controls.Button language)
-            language.Content = Strings.Get("S.Corner.Language");
         _tray?.RebuildMenu();
+        LoadSettingsPage();
         Log.Info("language", $"Switched to {Strings.Current}");
-    }
-
-    /// <summary>The language button under the version: the other language, at once, remembered.</summary>
-    private void OnLanguageClick(object sender, RoutedEventArgs e)
-    {
-        var next = Strings.Current == UiLanguage.English ? UiLanguage.Turkish : UiLanguage.English;
-        _settings.Language = next;
-        _settings.Save();
-        Strings.Apply(next);
     }
 
     private RadioButton ModeButtonFor(SystemMode mode) => mode switch

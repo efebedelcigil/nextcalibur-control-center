@@ -39,7 +39,6 @@
     <sys:String x:Key="S.Corner.UpdateTooltip">Yeni bir sürüm çıktığında burada görünür</sys:String>
     <sys:String x:Key="S.Corner.OpenLog">Günlüğü aç</sys:String>
     <sys:String x:Key="S.Corner.OpenLogTooltip">Uygulama günlük klasörünü aç</sys:String>
-    <sys:String x:Key="S.Corner.Language">English</sys:String>
 
     <!-- Durum satırı -->
     <sys:String x:Key="S.Status.OnAc">fişe takılı</sys:String>
@@ -59,12 +58,12 @@
     <sys:String x:Key="S.Language.Name">Türkçe</sys:String>
 
     <!-- Başlık çubuğu -->
-    <sys:String x:Key="S.Caption.Title">Nextcalibur Kontrol Merkezi</sys:String>
+    <sys:String x:Key="S.Caption.Title">Nextcalibur Control Center</sys:String>
     <sys:String x:Key="S.Caption.Wordmark">NEXTCALIBUR CONTROL CENTER</sys:String>
     <sys:String x:Key="S.Caption.ThemeDark">Koyu tema</sys:String>
     <sys:String x:Key="S.Caption.ThemeLight">Açık tema</sys:String>
     <sys:String x:Key="S.Caption.ThemeSystem">Windows temasını izle</sys:String>
-    <sys:String x:Key="S.Caption.Tour">Tanıtımı başlat</sys:String>
+    <sys:String x:Key="S.Caption.Tour">Turu başlat</sys:String>
     <sys:String x:Key="S.Caption.Minimise">Simge durumuna küçült</sys:String>
     <sys:String x:Key="S.Caption.HideToTray">Tepsiye gizle</sys:String>
     <sys:String x:Key="S.Caption.Close">Kapat</sys:String>
@@ -100,12 +99,12 @@
     <!-- Ekran Modu sayfası -->
     <sys:String x:Key="S.Display.Title">Ekran Modu</sys:String>
     <sys:String x:Key="S.Display.Discrete">Discrete GPU</sys:String>
-    <sys:String x:Key="S.Display.DiscreteDesc">Yalnızca harici grafik</sys:String>
+    <sys:String x:Key="S.Display.DiscreteDesc">Yalnızca ayrık ekran kartı</sys:String>
     <sys:String x:Key="S.Display.DiscreteFromUmaNote">Doğrudan UMA modundan geçilemez</sys:String>
     <sys:String x:Key="S.Display.Hybrid">MS Hybrid</sys:String>
     <sys:String x:Key="S.Display.HybridDesc">Dinamik grafik geçişi</sys:String>
     <sys:String x:Key="S.Display.Uma">UMA Mode</sys:String>
-    <sys:String x:Key="S.Display.UmaDesc">Yalnızca dahili grafik</sys:String>
+    <sys:String x:Key="S.Display.UmaDesc">Yalnızca tümleşik grafik</sys:String>
     <sys:String x:Key="S.Display.UmaFromDiscreteNote">Doğrudan Discrete modundan geçilemez</sys:String>
 
     <!-- Aydınlatma sayfası -->
@@ -116,11 +115,11 @@
     <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
     <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
     <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
-    <sys:String x:Key="S.Lighting.LedPower">LED açık/kapalı</sys:String>
+    <sys:String x:Key="S.Lighting.LedPower">Aydınlatma açık/kapalı</sys:String>
     <sys:String x:Key="S.Lighting.SelectAll">Tümünü seç</sys:String>
-    <sys:String x:Key="S.Lighting.Reload">Ayarları yeniden yükle</sys:String>
+    <sys:String x:Key="S.Lighting.Reload">Yeniden uygula</sys:String>
     <sys:String x:Key="S.Lighting.EffectStatic">Sabit</sys:String>
-    <sys:String x:Key="S.Lighting.EffectBreathing">Nefes alma</sys:String>
+    <sys:String x:Key="S.Lighting.EffectBreathing">Nefes</sys:String>
     <sys:String x:Key="S.Lighting.EffectBlink">Yanıp sönme</sys:String>
     <sys:String x:Key="S.Lighting.EffectHeartbeat">Kalp atışı</sys:String>
     <sys:String x:Key="S.Lighting.EffectCycle">Renk döngüsü</sys:String>
@@ -130,23 +129,27 @@
 
     <!-- Ayarlar sayfası -->
     <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
-    <sys:String x:Key="S.Settings.WinUtilTitle">Windows hafifletme ve ince ayarlar</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>
     <sys:String x:Key="S.Settings.DriversTitle">Sürücüler</sys:String>
     <sys:String x:Key="S.Settings.DriversDesc">Tarayıcınızda dizüstü bilgisayar üreticisinin kendi sürücü indirme sayfası.</sys:String>
-    <sys:String x:Key="S.Settings.DriversButton">Sürücü indirmeleri</sys:String>
+    <sys:String x:Key="S.Settings.DriversButton">Sürücü sayfası</sys:String>
     <sys:String x:Key="S.Settings.ReportTitle">Sorun bildir</sys:String>
-    <sys:String x:Key="S.Settings.ReportDesc">GitHub'daki proje sorunları sayfası. Günün günlüğünü ekleyin.</sys:String>
-    <sys:String x:Key="S.Settings.ReportButton">Sorunları aç</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">Projenin GitHub'daki issues sayfası. Günün günlük dosyasını ekleyin.</sys:String>
+    <sys:String x:Key="S.Settings.ReportButton">GitHub'da aç</sys:String>
     <sys:String x:Key="S.Settings.PrivacyTitle">Gizlilik</sys:String>
     <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur verilerle ne yapar: hiçbir şey toplanmaz, hakkınızda hiçbir şey gönderilmez.</sys:String>
     <sys:String x:Key="S.Settings.PrivacyButton">Gizlilik</sys:String>
     <sys:String x:Key="S.Settings.GroupBehaviour">Davranış</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Windows ile başlat</sys:String>
-    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açıldığında yetki yükseltilmiş olarak sormadan başlar.</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açılınca yönetici olarak, sormadan başlar.</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Pilde Office modu</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Şarj kablosu çıktığında Office moduna geç; takıldığında önceki moda dön.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageTitle">Dil</sys:String>
+    <sys:String x:Key="S.Settings.LanguageDesc">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
+    <sys:String x:Key="S.Settings.LanguageTurkish">Türkçe</sys:String>
     <sys:String x:Key="S.Settings.GroupReadings">Sensörler</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningTitle">CPU veya GPU ısınınca uyar</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningDesc">Eşik değerleri sıcaklıkların yanındadır.</sys:String>
@@ -160,7 +163,7 @@
     <sys:String x:Key="S.Settings.AutoCheckTitle">Güncellemeleri otomatik denetle</sys:String>
     <sys:String x:Key="S.Settings.AutoCheckDesc">Başlangıçtan bir dakika sonra, ardından her altı saatte bir; küçük bir istek.</sys:String>
     <sys:String x:Key="S.Settings.AutoInstallTitle">Güncellemeleri otomatik kur</sys:String>
-    <sys:String x:Key="S.Settings.AutoInstallDesc">Sormadan indir, doğrula ve yeniden başlatıp kur. Grafik modu değişikliği beklenirken bekler.</sys:String>
+    <sys:String x:Key="S.Settings.AutoInstallDesc">Sormadan indirir, doğrular ve yeni sürümle yeniden başlar. Bekleyen bir grafik modu değişikliği varsa erteler.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Güncellemeleri şimdi denetle</sys:String>
     <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve her durumda sonucu bildirir.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Şimdi denetle</sys:String>

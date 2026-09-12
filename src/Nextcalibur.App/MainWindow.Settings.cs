@@ -23,6 +23,7 @@ public partial class MainWindow
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
+    private RadioButton? _settingLanguageEnglish, _settingLanguageTurkish;
     private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton, _settingReportButton, _settingPrivacyButton;
     private bool _settingsPageWired;
     private bool _settingsPageLoading;
@@ -48,6 +49,8 @@ public partial class MainWindow
         foreach (var ms in new[] { 1000, 2000, 5000, 10000 })
             if (FindName($"SettingInterval{ms / 1000}") is RadioButton button)
                 _settingIntervals.Add((button, ms));
+        _settingLanguageEnglish = FindName("SettingLanguageEnglish") as RadioButton;
+        _settingLanguageTurkish = FindName("SettingLanguageTurkish") as RadioButton;
 
         Wire(_settingStartWithWindows, on =>
         {
@@ -71,6 +74,13 @@ public partial class MainWindow
         Wire(_settingAutoInstallUpdates, on => _settings.AutoInstallUpdates = on);
         foreach (var (button, ms) in _settingIntervals)
             button.Checked += (_, _) => ChangeSetting(() => _settings.PollIntervalMs = ms);
+
+        // The language: chosen once here, remembered, applied at once. The
+        // first start takes Windows' language; from then on the choice.
+        if (_settingLanguageEnglish is not null)
+            _settingLanguageEnglish.Checked += (_, _) => ChangeSetting(() => ChooseLanguage(UiLanguage.English));
+        if (_settingLanguageTurkish is not null)
+            _settingLanguageTurkish.Checked += (_, _) => ChangeSetting(() => ChooseLanguage(UiLanguage.Turkish));
         if (_settingCheckNowButton is not null)
             _settingCheckNowButton.Click += (_, _) => CheckForUpdatesByHand();
         if (_settingWinUtilButton is not null)
@@ -130,6 +140,8 @@ public partial class MainWindow
             }
             foreach (var (button, ms) in _settingIntervals)
                 button.IsChecked = _settings.PollIntervalMs == ms;
+            if (_settingLanguageEnglish is not null) _settingLanguageEnglish.IsChecked = Strings.Current == UiLanguage.English;
+            if (_settingLanguageTurkish is not null) _settingLanguageTurkish.IsChecked = Strings.Current == UiLanguage.Turkish;
         }
         finally
         {
@@ -212,6 +224,12 @@ public partial class MainWindow
                 "Open the full policy, with the list of every request, in your browser?",
                 defaultNo: true))
             OpenLink(UpdateService.Repository + "/blob/main/docs/PRIVACY.md", "privacy", "Opened the privacy policy");
+    }
+
+    private void ChooseLanguage(UiLanguage language)
+    {
+        _settings.Language = language;
+        Strings.Apply(language);   // saved by ChangeSetting; the swap re-says everything the code wrote
     }
 
     private void ShowSettingsPageIfChosen()
