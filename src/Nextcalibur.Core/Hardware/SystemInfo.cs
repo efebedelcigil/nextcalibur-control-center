@@ -62,6 +62,51 @@ public static class SystemInfo
         return new StorageUse(status.TotalPhys - status.AvailPhys, status.TotalPhys);
     }
 
+    /// <summary>One fixed drive: its letter, its label if it has one, and its use.</summary>
+    /// <param name="Letter">"C:", "D:" - what the person calls it.</param>
+    /// <param name="Label">The volume label, or empty.</param>
+    public readonly record struct DriveUse(string Letter, string Label, StorageUse Use)
+    {
+        /// <summary>"C:" or "D: Games" - the label only when it adds something.</summary>
+        public string Name => string.IsNullOrWhiteSpace(Label) ? Letter : $"{Letter} {Label}";
+    }
+
+    /// <summary>
+    /// Every fixed drive that is ready, the Windows drive first. Removable
+    /// media and network shares are not the laptop's storage and are left
+    /// out. One <c>DriveInfo</c> read per drive, nothing spun up: the
+    /// numbers come from the volume, not the disk.
+    /// </summary>
+    public static IReadOnlyList<DriveUse> FixedDrives()
+    {
+        var system = Path.GetPathRoot(Environment.SystemDirectory);
+        var drives = new List<DriveUse>();
+        try
+        {
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                try
+                {
+                    if (drive.DriveType != DriveType.Fixed || !drive.IsReady) continue;
+                    var use = new StorageUse((ulong)(drive.TotalSize - drive.TotalFreeSpace), (ulong)drive.TotalSize);
+                    drives.Add(new DriveUse(drive.Name.TrimEnd('\\'), drive.VolumeLabel, use));
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    // A drive that will not answer is not a drive to show.
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+
+        return drives
+            .OrderBy(d => string.Equals(d.Letter + "\\", system, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(d => d.Letter, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     /// <summary>
     /// Space used on the drive Windows is installed on. Other drives are the
     /// user's business, not this application's.

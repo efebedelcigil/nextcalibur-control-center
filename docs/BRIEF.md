@@ -333,3 +333,26 @@ the application; no leaves the button. Two pieces of markup:
   `ModalDialogOverlay`'s card between `DialogBodyText` and the buttons,
   `Visibility="Collapsed"`, in the accent colour, about 6 px tall. The
   code-behind shows it and hides the buttons while a download runs.
+
+## 18. Every fixed drive in Memory & Disk (12 September)
+
+The panel shows one drive; the owner's laptop has two. The code-behind now
+keeps a list of rows - `DriveRow` with `Name` ("C:" or "D: Games"),
+`Percent` (0-100), `PercentText` ("63,1%") and `Detail` ("586,9/930,3GB") -
+and sets `DriveList.ItemsSource` to it once; rows update in place, so the
+gauges must not be re-created per refresh (an `ItemsControl` with a
+`DataTemplate` does exactly that).
+
+Replace the single SSD block (`SsdGauge`, `SsdPercent`, `SsdDetail` - the
+code no longer references them) with:
+
+- `ItemsControl x:Name="DriveList"` under the RAM block, whose
+  `ItemTemplate` is the same donut-gauge row the SSD had: `DonutGauge
+  Value="{Binding Percent}"`, the name where "SSD" was (`{Binding Name}`),
+  `{Binding PercentText}` large, `{Binding Detail}` small.
+- One drive must look exactly as today (RAM above, one drive below). Two
+  or three must fit the panel with nothing cramped or clipped - the
+  owner's condition is that it looks designed. If three rows of the current
+  size do not fit, scale the drive rows down together (smaller gauge,
+  tighter spacing) rather than letting the panel grow or scroll; the panel
+  is the same height on every page.
