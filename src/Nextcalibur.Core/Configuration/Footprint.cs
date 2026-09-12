@@ -113,7 +113,10 @@ public static class Footprint
     /// </summary>
     public static void RemoveOwnPowerPlans()
     {
-        foreach (var plan in SystemModeService.EnumeratePlans())
+        // Windows refuses to delete the active plan; step off it first.
+        var plans = SystemModeService.EnumeratePlans();
+        if (plans.TryGetValue("Balanced", out var balanced)) SystemModeService.TryActivate(balanced);
+        foreach (var plan in plans)
         {
             if (!plan.Key.StartsWith("Nextcalibur ", StringComparison.Ordinal)) continue;
             SystemModeService.DeletePlan(plan.Value);
@@ -124,7 +127,7 @@ public static class Footprint
     /// Removes the two machine-wide changes. Needs administrator, and is only
     /// ever called after the person has been asked.
     /// </summary>
-    public static void RemoveMachineTraces()
+    public static void RemoveMachineTraces(bool removeRepair = true)
     {
         try { MailboxAccess.Revoke(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
@@ -132,6 +135,7 @@ public static class Footprint
         CardSwitchTasks.Unregister();
         Elevation.RemoveTasks();
 
+        if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
     }

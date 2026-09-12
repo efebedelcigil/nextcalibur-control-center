@@ -35,6 +35,19 @@ public partial class App : Application
     /// </summary>
     public const string CleanUpArgument = "--remove-system-changes";
 
+    /// <summary>With <see cref="CleanUpArgument"/>: take the tasks and the permission, leave the power repair.</summary>
+    public const string KeepRepairArgument = "--keep-repair";
+
+    /// <summary>
+    /// Velopack runs this executable with one of its own switches for the
+    /// install, update and uninstall hooks. Those runs must not elevate:
+    /// the uninstall hook in particular was being handed to the scheduled
+    /// task, which started an ordinary copy of the application in the
+    /// middle of the uninstall and never ran the hook at all.
+    /// </summary>
+    private static bool IsVelopackHook(string[] args) =>
+        args.Any(a => a.StartsWith("--veloapp-", StringComparison.OrdinalIgnoreCase));
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -47,7 +60,8 @@ public partial class App : Application
         // exits. Helper modes below are already elevated when they run.
         var self = Environment.ProcessPath;
         if (self is not null && !args.Contains(GrantAccessArgument) && !args.Contains(CleanUpArgument)
-            && !args.Contains(CardSwitchTasks.Argument) && !Elevation.EnsureElevated(args, self))
+            && !args.Contains(CardSwitchTasks.Argument) && !IsVelopackHook(args)
+            && !Elevation.EnsureElevated(args, self))
             return;
 
         // Before anything else, including Velopack: this is a short-lived
@@ -62,7 +76,7 @@ public partial class App : Application
 
         if (args.Contains(CleanUpArgument))
         {
-            Footprint.RemoveMachineTraces();
+            Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
             Environment.Exit(0);
             return;
         }
@@ -105,9 +119,36 @@ public partial class App : Application
         {
             Elevation.RegisterOpenTask(self);
             StartupRegistration.MigrateRunEntry(self);
+
+            // The card-switch tasks of the unelevated versions ran this
+            // executable elevated on demand to enable or disable the card.
+            // The elevated application does that itself; two tasks that
+            // elevate a file in a user-writable folder are not worth keeping.
+            if (CardSwitchTasks.Registered())
+            {
+                CardSwitchTasks.Unregister();
+                Log.Info("tasks", "Removed the card-switch tasks of an earlier version; not needed elevated");
+            }
         }
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
+
+        // Versions before the elevated model widened the firmware interface's
+        // permission to this account by name, so an unelevated copy could
+        // read it. Elevated, it is not needed, and it lets anything running
+        // as the account send firmware commands. Taken back, once, here.
+        try
+        {
+            if (MailboxAccess.WidenedForCurrentAccount())
+            {
+                MailboxAccess.Revoke();
+                Log.Info("access", "Took back the firmware permission an earlier version granted to this account; the elevated application does not need it");
+            }
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            Log.Warn("access", "Could not take back the widened firmware permission: " + ex.Message);
+        }
 
         // The wizard's install: Velopack's Setup ran silently and never
         // launched us, so its first-run hook never fires. The wizard leaves
@@ -235,39 +276,36 @@ public partial class App : Application
         Log.Info("uninstall", "Uninstall hook running");
         Footprint.RemoveUserTraces();
 
-        // Everything still standing that is either not ours to assume about, or
-        // not ours to remove without a prompt from Windows.
-        var remaining = Footprint.Survey()
-            .Where(t => t.Present && (t.NeedsElevation || t.KeepingIsReasonable))
-            .ToList();
-        if (remaining.Count == 0) return;
+        var present = Footprint.Survey().Where(t => t.Present).ToList();
+        var ours = present.Where(t => !t.KeepingIsReasonable).ToList();       // tasks, permission: always go
+        var keepable = present.Where(t => t.KeepingIsReasonable).ToList();    // plans, the repair: asked
 
-        var keepable = remaining.Where(t => t.KeepingIsReasonable).Select(t => t.Name).ToList();
-        var body =
-            "Nextcalibur has removed its own files and settings." +
+        // The owner's rule: the uninstall leaves nothing of ours behind and
+        // does not ask about that; it asks only about what somebody may
+        // want to keep - the power plans, which show in Windows' own power
+        // options, and the repair, which fixes a Windows fault whether or
+        // not this is installed.
+        var removeKeepable = keepable.Count > 0 && Dialogs.Ask("Nextcalibur - keep or remove?",
+            "Nextcalibur has removed its own files, settings and scheduled tasks." +
             Environment.NewLine + Environment.NewLine +
-            "These changes to Windows are still in place:" +
+            "Two things it did to Windows can stay or go:" +
             Environment.NewLine +
-            string.Join(Environment.NewLine, remaining.Select(t => "    - " + t.Name)) +
+            string.Join(Environment.NewLine, keepable.Select(t => "    - " + t.Name)) +
             Environment.NewLine + Environment.NewLine +
-            (keepable.Count > 0
-                ? $"You may want to keep {string.Join(" and ", keepable)}. The power repair fixes a " +
-                  "Windows fault and works whether or not Nextcalibur is installed, and the plans are " +
-                  "yours to keep using." + Environment.NewLine + Environment.NewLine
-                : string.Empty) +
-            "Remove them as well? Windows will ask you to confirm.";
+            "The power repair fixes a Windows fault and works whether or not Nextcalibur is installed; " +
+            "the plans are yours to keep using." +
+            Environment.NewLine + Environment.NewLine +
+            "Remove them as well?",
+            defaultNo: true);
 
-        if (!Dialogs.Ask("Nextcalibur - anything else to remove?", body, defaultNo: true)) return;
+        if (removeKeepable) Footprint.RemoveOwnPowerPlans();
 
-        // Power plans need no privileges, so they go first and go regardless of
-        // whether the prompt below is accepted.
-        Footprint.RemoveOwnPowerPlans();
-
-        if (!remaining.Any(t => t.NeedsElevation)) return;
+        var needsElevation = ours.Any(t => t.NeedsElevation) || (removeKeepable && keepable.Any(t => t.NeedsElevation));
+        if (!needsElevation) return;
 
         if (MailboxAccess.IsElevated())
         {
-            Footprint.RemoveMachineTraces();
+            Footprint.RemoveMachineTraces(removeRepair: removeKeepable);
             return;
         }
 
@@ -275,42 +313,25 @@ public partial class App : Application
         {
             var self = Environment.ProcessPath;
             if (self is null) return;
-
             using var elevated = Process.Start(new ProcessStartInfo
             {
                 FileName = self,
-                Arguments = CleanUpArgument,
+                Arguments = removeKeepable ? CleanUpArgument : $"{CleanUpArgument} {KeepRepairArgument}",
                 UseShellExecute = true,
                 Verb = "runas",
             });
-
-            // Bounded, because the callback is killed at thirty seconds and a
-            // half-finished uninstall is worse than an unanswered prompt.
             elevated?.WaitForExit(15000);
         }
         catch (Win32Exception)
         {
-            // The prompt was dismissed. Nothing was undone, which is the safe
-            // outcome of the two.
+            Log.Warn("uninstall", "Elevation declined; the scheduled tasks and the permission stay");
         }
     }
-
-    /// <summary>
-    /// Grants access to the firmware mailbox. Runs in the elevated copy.
-    /// </summary>
-    /// <returns>Zero on success, non-zero for the caller to notice.</returns>
     private static int GrantSensorAccess()
     {
         try
         {
             MailboxAccess.Grant();
-
-            // The one elevation this application ever asks for, so everything
-            // that needs elevation is done now. The card-switch tasks are what
-            // let UMA and back happen later without a prompt each time.
-            if (Environment.ProcessPath is { } self)
-                CardSwitchTasks.Register(self);
-
             return 0;
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)

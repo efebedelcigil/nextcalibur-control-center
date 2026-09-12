@@ -315,6 +315,9 @@ public sealed class SystemModeService
             throw new InvalidOperationException($"Windows refused the plan change (error {result}).");
     }
 
+    /// <summary>Activates a plan, saying only whether it worked.</summary>
+    public static bool TryActivate(Guid plan) => PowerSetActiveScheme(IntPtr.Zero, ref plan) == 0;
+
     [System.Runtime.InteropServices.DllImport("powrprof.dll")]
     private static extern uint PowerSetActiveScheme(IntPtr rootKey, ref Guid scheme);
 }

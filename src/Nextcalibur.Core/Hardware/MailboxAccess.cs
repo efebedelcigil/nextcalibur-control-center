@@ -213,6 +213,37 @@ public static class MailboxAccess
     /// half the vendor's uninstaller does not do.
     /// </summary>
     /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
+    /// <summary>
+    /// Whether an earlier version widened the interface's permission to this
+    /// account by name. The elevated application does not need it, and a
+    /// permission that lets any process running as the account send
+    /// firmware commands is one the machine is better without; the caller
+    /// takes it back with <see cref="Revoke()"/>.
+    /// </summary>
+    public static bool WidenedForCurrentAccount()
+    {
+        var sid = WindowsIdentity.GetCurrent().User;
+        if (sid is null) return false;
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(SecurityKey);
+            if (key is null) return false;
+            foreach (var guid in new[] { BlockGuid, EventGuid })
+            {
+                if (key.GetValue(guid) is not byte[] bytes) continue;
+                var acl = new RawSecurityDescriptor(bytes, 0).DiscretionaryAcl;
+                if (acl is null) continue;
+                foreach (var entry in acl)
+                    if (entry is CommonAce { AceType: AceType.AccessAllowed } ace && ace.SecurityIdentifier == sid)
+                        return true;
+            }
+        }
+        catch (Exception ex) when (ex is System.Security.SecurityException or UnauthorizedAccessException or IOException)
+        {
+        }
+        return false;
+    }
+
     public static void Revoke()
     {
         Revoke(BlockGuid);

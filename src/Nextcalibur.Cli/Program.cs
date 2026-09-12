@@ -152,8 +152,10 @@ internal static class Program
             MailboxAvailability.Available =>
                 "The sensors are readable by this account.",
             MailboxAvailability.AccessNotGranted =>
-                "This machine has the interface, but this account may not use it." +
-                Environment.NewLine + "Run 'nextcalibur access --grant' from an elevated prompt, once.",
+                "This machine has the interface, but this account may not use it unelevated." +
+                Environment.NewLine + "Run the command from an elevated prompt. ('nextcalibur access --grant' opens the" +
+                Environment.NewLine + "interface to this account permanently; the application takes that back at its next start," +
+                Environment.NewLine + "because it lets anything running as the account send firmware commands.)",
             _ =>
                 "This machine does not expose the firmware interface Nextcalibur reads.",
         });

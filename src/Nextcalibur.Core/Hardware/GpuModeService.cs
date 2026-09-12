@@ -272,10 +272,15 @@ public sealed class GpuModeService
         // The device state, not any exit code, is the truth: pnputil can report
         // success and leave the device where it was if the driver refuses, and
         // a scheduled task returns before its work is done. Poll for it.
-        for (var waited = 0; waited < 12000; waited += 500)
+        // Watched through the PnP manager's status word, not WMI: this loop
+        // used to be a WMI query every half second for up to twelve seconds
+        // on the interface thread.
+        var id = DiscreteAdapterInstanceId();
+        for (var waited = 0; waited < 12000; waited += 250)
         {
-            Thread.Sleep(500);
-            if (DiscreteAdapterEnabled() == enabled) return true;
+            Thread.Sleep(250);
+            var disabled = id is null ? !DiscreteAdapterEnabled() : DevicePowerState.IsDisabled(id) ?? !DiscreteAdapterEnabled();
+            if (disabled == !enabled) return true;
         }
         return false;
     }
