@@ -42,7 +42,10 @@ Nextcalibur detects and repairs this at install time, and keeps it from coming b
 ## Download
 
 **[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
-— `Nextcalibur-win-Setup.exe`, about 65 MB.
+— `Nextcalibur-Setup-<version>.exe`, about 65 MB: a wizard that asks where
+to install and does the rest. (`Nextcalibur-win-Setup.exe`, beside it, is the
+plain installer the wizard drives; it installs to `%LOCALAPPDATA%\Nextcalibur`
+without asking.)
 
 It carries the **.NET 8 desktop runtime** inside, so nothing is downloaded
 during install. An earlier release tried to fetch the runtime instead and
