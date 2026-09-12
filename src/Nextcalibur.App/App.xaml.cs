@@ -304,8 +304,8 @@ public partial class App : Application
             // beside the executable, read once and removed. No file - the
             // plain Velopack Setup, which asks nothing - means yes, as before.
             var wanted = true;
-            var root = Path.GetDirectoryName(Path.GetDirectoryName(self)) ?? Path.GetDirectoryName(self);
-            var marker = root is null ? null : Path.Combine(root, "first-run.ini");
+            var root = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(self)) ?? System.IO.Path.GetDirectoryName(self);
+            var marker = root is null ? null : System.IO.Path.Combine(root, "first-run.ini");
             if (marker is not null && File.Exists(marker))
             {
                 wanted = !File.ReadAllText(marker).Contains("StartWithWindows=0", StringComparison.OrdinalIgnoreCase);
