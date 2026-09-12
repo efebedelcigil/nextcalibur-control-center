@@ -71,10 +71,21 @@ en.CannotWrite=Nextcalibur cannot write to that folder. Choose one your account 
 tr.CannotWrite=Nextcalibur bu klasöre yazamıyor. Hesabınızın yazabildiği bir klasör seçin - güncellemeler daha sonra yönetici hakkı istemeden oraya kurulur.
 en.Installing=Installing Nextcalibur...
 tr.Installing=Nextcalibur kuruluyor...
+en.StartWithWindows=Start Nextcalibur with Windows (in the notification area)
+tr.StartWithWindows=Nextcalibur Windows ile başlasın (bildirim alanında)
+
+[Tasks]
+Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce
 
 [Files]
 ; The engine, carried inside and run once.
 Source: "..\releases\Nextcalibur-win-Setup.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+
+[INI]
+; The application reads this on its first run, registers (or not) its logon
+; task accordingly, and deletes the file. Written after Velopack has made the
+; folder, so it lands beside Nextcalibur.exe.
+Filename: "{app}\first-run.ini"; Section: "FirstRun"; Key: "StartWithWindows"; String: "{code:StartupChoice}"
 
 [Run]
 ; Velopack installs into the chosen folder, quietly, and does not start the
@@ -83,6 +94,11 @@ Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto "
 Filename: "{app}\Nextcalibur.exe"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
 
 [Code]
+function StartupChoice(Param: String): String;
+begin
+  if WizardIsTaskSelected('startup') then Result := '1' else Result := '0';
+end;
+
 // One copy per machine. Velopack registers the installed copy under this key;
 // a second install elsewhere would take over the entry and orphan the first
 // folder, and two versions side by side is exactly what the owner ruled out.

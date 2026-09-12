@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using Nextcalibur.Core.Configuration;
@@ -297,8 +298,21 @@ public partial class App : Application
     {
         try
         {
-            if (Environment.ProcessPath is { } self)
-                StartupRegistration.Set(true, self);
+            if (Environment.ProcessPath is not { } self) return;
+
+            // The installer's wizard asks; its answer is a one-line file
+            // beside the executable, read once and removed. No file - the
+            // plain Velopack Setup, which asks nothing - means yes, as before.
+            var wanted = true;
+            var root = Path.GetDirectoryName(Path.GetDirectoryName(self)) ?? Path.GetDirectoryName(self);
+            var marker = root is null ? null : Path.Combine(root, "first-run.ini");
+            if (marker is not null && File.Exists(marker))
+            {
+                wanted = !File.ReadAllText(marker).Contains("StartWithWindows=0", StringComparison.OrdinalIgnoreCase);
+                try { File.Delete(marker); } catch (IOException) { }
+            }
+
+            StartupRegistration.Set(wanted, self);
         }
         catch
         {
