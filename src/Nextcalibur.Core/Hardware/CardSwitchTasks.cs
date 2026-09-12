@@ -123,7 +123,9 @@ public static class CardSwitchTasks
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                StandardOutputEncoding = System.Text.Encoding.Unicode,
+                // The XML declares UTF-16 but schtasks writes the console
+                // code page when redirected; read it as the console does.
+                StandardOutputEncoding = ConsoleEncoding(),
             });
             if (process is null) return null;
             var output = process.StandardOutput.ReadToEnd();
@@ -133,6 +135,19 @@ public static class CardSwitchTasks
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
             return null;
+        }
+    }
+
+    private static System.Text.Encoding ConsoleEncoding()
+    {
+        try
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            return System.Text.Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException)
+        {
+            return System.Text.Encoding.Default;
         }
     }
 
