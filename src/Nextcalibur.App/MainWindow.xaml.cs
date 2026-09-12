@@ -219,6 +219,7 @@ public partial class MainWindow : Window
         // just said about itself, and an unsupported one is locked before a
         // single control is wired.
         _support = HardwareSupport.Check();
+        Log.Info("support", $"{_support.Level}: {string.Join(" | ", _support.Reasons)}");
         ApplySupportVerdict();
         if (_support.Level == SupportLevel.Unsupported) return;
 
@@ -298,6 +299,7 @@ public partial class MainWindow : Window
         var removed = _vendorWasInstalled == true && !installed;
         _vendorWasInstalled = installed;
         if (!removed) return;
+        Log.Info("vendor", "The vendor's software was removed while running");
 
         if (MailboxAccess.Check() == MailboxAvailability.AccessNotGranted)
         {
@@ -570,6 +572,7 @@ public partial class MainWindow : Window
                 defaultNo: true))
             return;
         _exiting = true;
+        Log.Info("exit", "Exit from the tray menu");
         Close();
     }
 
@@ -954,6 +957,7 @@ public partial class MainWindow : Window
 
         try
         {
+            Log.Info("mode", $"Chosen: {mode}");
             ApplyMode(mode);
             _currentMode = mode;
             _battery.UserChose(mode, _onBattery);
@@ -995,6 +999,7 @@ public partial class MainWindow : Window
                 }
 
                 var next = onBattery ? _battery.OnUnplugged(_currentMode) : _battery.OnPluggedIn(_currentMode);
+                Log.Info("power", $"{(onBattery ? "On battery" : "Charger back")}; mode {_currentMode} -> {(next?.ToString() ?? "unchanged")}");
                 if (next is { } mode) ApplyMode(mode);
 
                 LoadSystemMode();
@@ -1086,6 +1091,7 @@ public partial class MainWindow : Window
         }
 
         _updating = true;
+        Log.Info("update", $"Accepted {version}; downloading");
         try
         {
             ShowProgress($"Updating to {version}", "Downloading...");
@@ -1144,6 +1150,7 @@ public partial class MainWindow : Window
                 DialogBodyText.Text = p < 100 ? $"Downloading... {p}%" : "Installing...";
             });
             var (ok, message) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
+            Log.Info("dependency", message);
             HideProgress();
             if (ok) Dialogs.Tell("Nextcalibur - dependencies", message);
             else Dialogs.Warn("Nextcalibur - dependencies", message);
@@ -1461,6 +1468,7 @@ public partial class MainWindow : Window
         try
         {
             var outcome = _gpu.Switch(_mailbox, target);
+            Log.Info("gpu", $"Switch to {target}: changed={outcome.Changed} restart={outcome.RestartNeeded}; {outcome.Summary}");
 
             if (!outcome.Changed)
             {
@@ -1668,10 +1676,11 @@ public partial class MainWindow : Window
         {
             if (wParam != IntPtr.Zero)
             {
+                Log.Info("session", $"Session ending; pending graphics mode: {_gpuPendingRestart?.ToString() ?? "none"}");
                 if (_gpuPendingRestart is { } target && _mailbox is not null)
                 {
-                    try { _gpu.WriteFirmwareMode(_mailbox, target); }
-                    catch (Exception) { }
+                    try { _gpu.WriteFirmwareMode(_mailbox, target); Log.Info("gpu", $"Firmware mode written: {target}"); }
+                    catch (Exception ex) { Log.Error("gpu", "Firmware mode write failed at session end", ex); }
                 }
             }
             else

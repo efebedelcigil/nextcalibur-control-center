@@ -82,6 +82,8 @@ public static class Footprint
     /// </summary>
     public static void RemoveUserTraces()
     {
+        Log.Remove();
+
         try
         {
             var directory = Path.GetDirectoryName(SettingsPath);
