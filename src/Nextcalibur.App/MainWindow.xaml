@@ -1352,35 +1352,94 @@
                                         </StackPanel>
                                     </Grid>
 
-                                    <!-- Subtle Row Divider -->
-                                    <Border Height="1" Background="{DynamicResource Line}" Margin="0,4,0,8" />
+                                    <!-- Fixed Drives List (§18) -->
+                                    <ItemsControl x:Name="DriveList">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel>
+                                                        <!-- Row Divider above each drive row -->
+                                                        <Border x:Name="DriveDivider" Height="1" Background="{DynamicResource Line}" Margin="0,4,0,8" />
 
-                                    <!-- Row 2: SSD Condition -->
-                                    <Grid Margin="0,0,0,2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="68" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
+                                                        <!-- Drive Gauge & Telemetry Row -->
+                                                        <Grid x:Name="DriveRowGrid" Margin="0,0,0,2">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition x:Name="ColGauge" Width="68" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
 
-                                        <c:DonutGauge x:Name="SsdGauge" Grid.Column="0" Value="0" Maximum="100" Width="64" Height="64"
-                                                      ArcBrush="#0088FF"
-                                                      TrackBrush="{DynamicResource GaugeTrackBrush}"
-                                                      BracketBrush="{DynamicResource Line}"
-                                                      HubBrush="{DynamicResource CardBackground}"
-                                                      StrokeThickness="7" HorizontalAlignment="Left" />
+                                                            <c:DonutGauge x:Name="DriveGauge" Grid.Column="0"
+                                                                          Value="{Binding Percent}" Maximum="100"
+                                                                          Width="64" Height="64"
+                                                                          ArcBrush="#0088FF"
+                                                                          TrackBrush="{DynamicResource GaugeTrackBrush}"
+                                                                          BracketBrush="{DynamicResource Line}"
+                                                                          HubBrush="{DynamicResource CardBackground}"
+                                                                          StrokeThickness="7" HorizontalAlignment="Left" />
 
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Ellipse Width="6" Height="6" Fill="#0088FF" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                <TextBlock Text="SSD" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
-                                                           FontWeight="Bold" FontSize="11" />
-                                            </StackPanel>
-                                            <TextBlock x:Name="SsdPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
-                                                       Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
-                                            <TextBlock x:Name="SsdDetail" Text="--" Style="{DynamicResource Label}"
-                                                       FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
-                                        </StackPanel>
-                                    </Grid>
+                                                            <StackPanel x:Name="DriveTextStack" Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Ellipse x:Name="DriveDot" Width="6" Height="6" Fill="#0088FF"
+                                                                             VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                    <TextBlock Text="{Binding Name}" Style="{DynamicResource Label}"
+                                                                               Foreground="{DynamicResource Ink}"
+                                                                               FontWeight="Bold" FontSize="11" />
+                                                                </StackPanel>
+                                                                <TextBlock x:Name="DrivePercentText" Text="{Binding PercentText}"
+                                                                           Style="{DynamicResource Value}" FontSize="22"
+                                                                           Foreground="{DynamicResource Ink}" Margin="0,1,0,0" />
+                                                                <TextBlock x:Name="DriveDetailText" Text="{Binding Detail}"
+                                                                           Style="{DynamicResource Label}" FontSize="10.5"
+                                                                           Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                    <DataTemplate.Triggers>
+                                                        <!-- 2 Drives: scaled down together so both fit with nothing cramped -->
+                                                        <DataTrigger Binding="{Binding Path=ItemsSource.Count, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="2">
+                                                            <Setter TargetName="DriveGauge" Property="Width" Value="42" />
+                                                            <Setter TargetName="DriveGauge" Property="Height" Value="42" />
+                                                            <Setter TargetName="DriveGauge" Property="StrokeThickness" Value="5" />
+                                                            <Setter TargetName="ColGauge" Property="Width" Value="48" />
+                                                            <Setter TargetName="DriveTextStack" Property="Margin" Value="8,0,0,0" />
+                                                            <Setter TargetName="DriveDot" Property="Width" Value="5" />
+                                                            <Setter TargetName="DriveDot" Property="Height" Value="5" />
+                                                            <Setter TargetName="DrivePercentText" Property="FontSize" Value="15" />
+                                                            <Setter TargetName="DriveDetailText" Property="FontSize" Value="9.5" />
+                                                            <Setter TargetName="DriveDivider" Property="Margin" Value="0,2,0,3" />
+                                                            <Setter TargetName="DriveRowGrid" Property="Margin" Value="0,0,0,2" />
+                                                        </DataTrigger>
+                                                        <!-- 3 Drives: scaled down further so 3 drives fit cleanly without growing panel -->
+                                                        <DataTrigger Binding="{Binding Path=ItemsSource.Count, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="3">
+                                                            <Setter TargetName="DriveGauge" Property="Width" Value="28" />
+                                                            <Setter TargetName="DriveGauge" Property="Height" Value="28" />
+                                                            <Setter TargetName="DriveGauge" Property="StrokeThickness" Value="3.5" />
+                                                            <Setter TargetName="ColGauge" Property="Width" Value="34" />
+                                                            <Setter TargetName="DriveTextStack" Property="Margin" Value="6,0,0,0" />
+                                                            <Setter TargetName="DriveDot" Property="Width" Value="4" />
+                                                            <Setter TargetName="DriveDot" Property="Height" Value="4" />
+                                                            <Setter TargetName="DrivePercentText" Property="FontSize" Value="12" />
+                                                            <Setter TargetName="DriveDetailText" Property="FontSize" Value="8.5" />
+                                                            <Setter TargetName="DriveDivider" Property="Margin" Value="0,1,0,2" />
+                                                            <Setter TargetName="DriveRowGrid" Property="Margin" Value="0" />
+                                                        </DataTrigger>
+                                                        <!-- 4 Drives fallback -->
+                                                        <DataTrigger Binding="{Binding Path=ItemsSource.Count, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="4">
+                                                            <Setter TargetName="DriveGauge" Property="Width" Value="24" />
+                                                            <Setter TargetName="DriveGauge" Property="Height" Value="24" />
+                                                            <Setter TargetName="DriveGauge" Property="StrokeThickness" Value="3" />
+                                                            <Setter TargetName="ColGauge" Property="Width" Value="28" />
+                                                            <Setter TargetName="DriveTextStack" Property="Margin" Value="5,0,0,0" />
+                                                            <Setter TargetName="DriveDot" Property="Width" Value="4" />
+                                                            <Setter TargetName="DriveDot" Property="Height" Value="4" />
+                                                            <Setter TargetName="DrivePercentText" Property="FontSize" Value="11" />
+                                                            <Setter TargetName="DriveDetailText" Property="FontSize" Value="8" />
+                                                            <Setter TargetName="DriveDivider" Property="Margin" Value="0,1,0,1" />
+                                                            <Setter TargetName="DriveRowGrid" Property="Margin" Value="0" />
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                 </StackPanel>
                             </Border>
                         </Grid>
