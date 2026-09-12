@@ -41,5 +41,13 @@ vpk pack `
     -o releases
 
 if ($LASTEXITCODE -ne 0) { Write-Host "==> vpk failed (is a sandbox holding releases\ open?)" -ForegroundColor Red; exit 1 }
+$iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
+if (Test-Path $iscc) {
+    Write-Host "==> Wrapping in the Inno Setup wizard" -ForegroundColor Cyan
+    & $iscc /Q "/DAppVersion=$Version" installer\Nextcalibur.iss
+    if ($LASTEXITCODE -ne 0) { Write-Host "==> ISCC failed" -ForegroundColor Red; exit 1 }
+} else {
+    Write-Host "==> Inno Setup not installed; wizard not built (releases\Nextcalibur-win-Setup.exe still works)" -ForegroundColor Yellow
+}
 Write-Host "==> Done" -ForegroundColor Green
 Get-ChildItem releases | Select-Object Name, @{n='MB';e={[math]::Round($_.Length/1MB,1)}}
