@@ -730,6 +730,18 @@ order that would matter to somebody who installed this.
 4. **A switch for the overheat notification, in the window.** Done in
    0.5.1, with a threshold per chip beside it - sliders, typeable, a reset.
 
+4b. **A log of its own.** Set 12 September 2026 after a crash the Windows
+    event log saw and the application did not. Built the same day:
+    `%AppData%\Nextcalibur\logs\nextcalibur-YYYYMMDD.log`, one file a day,
+    seven kept, each line stamped to the millisecond with thread and
+    category. Events only - start, support verdict, mode changes, charger,
+    graphics switches and the session-end firmware write, updates and
+    dependency installs, the vendor coming and going, exit - never
+    readings. Unhandled exceptions on the interface thread are logged and
+    shown in the application's own dialogue and the application carries on;
+    on any other thread they are logged before the process ends. "Open the
+    log folder" is in the tray menu; the uninstall removes the folder.
+
 5. **Turkish and English, live.** Set 12 September 2026, and placed last
    on purpose: everything above ships first. A language button directly
    under the version label; two languages; switching is immediate, no
