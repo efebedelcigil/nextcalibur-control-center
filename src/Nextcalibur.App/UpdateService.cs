@@ -72,7 +72,9 @@ public sealed class UpdateService : IDisposable
         _timer.Tick += async (_, _) =>
         {
             _timer.Interval = CheckInterval;
-            if (AutomaticChecksEnabled()) await CheckAsync(report: false);
+            if (!AutomaticChecksEnabled()) return;
+            await CheckAsync(report: false);
+            await CheckDependenciesAsync();
         };
     }
 
@@ -82,6 +84,33 @@ public sealed class UpdateService : IDisposable
     /// <summary>Raised after a check the person asked for that found nothing, or failed, with what to tell them.</summary>
     public event EventHandler<string>? CheckedByHand;
 
+    /// <summary>Raised for each dependency found missing or behind. Nothing has been downloaded.</summary>
+    public event EventHandler<Nextcalibur.Core.Dependencies.DependencyStatus>? DependencyFound;
+
+    /// <summary>Dependencies declined this session; asked again at the next start, not before.</summary>
+    private readonly HashSet<string> _declinedDependencies = new(StringComparer.Ordinal);
+
+    /// <summary>Remembers a "no" for the session.</summary>
+    public void DeclineDependency(Nextcalibur.Core.Dependencies.DependencyStatus status) =>
+        _declinedDependencies.Add(status.Dependency.Id + status.Latest.Version);
+
+    /// <summary>
+    /// The same check for what the application depends on. Runs on the
+    /// installed copy and the development build alike - a driver does not
+    /// care how the application was started.
+    /// </summary>
+    public async Task<bool> CheckDependenciesAsync()
+    {
+        var found = false;
+        foreach (var status in await Nextcalibur.Core.Dependencies.DependencyManager.CheckAsync())
+        {
+            if (_declinedDependencies.Contains(status.Dependency.Id + status.Latest.Version)) continue;
+            found = true;
+            DependencyFound?.Invoke(this, status);
+        }
+        return found;
+    }
+
     public void Start() => _timer?.Start();
 
     /// <summary>A check now, because somebody clicked. Reports either way.</summary>
@@ -89,7 +118,9 @@ public sealed class UpdateService : IDisposable
     {
         if (_manager is null)
         {
-            CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself.");
+            // Not an installed copy: only the dependencies can be checked.
+            if (!await CheckDependenciesAsync())
+                CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself; the things it depends on are current.");
             return;
         }
 
@@ -100,8 +131,10 @@ public sealed class UpdateService : IDisposable
             return;
         }
 
-        if (!await CheckAsync(report: true))
-            CheckedByHand?.Invoke(this, "You have the latest version.");
+        var app = await CheckAsync(report: true);
+        var dependencies = await CheckDependenciesAsync();
+        if (!app && !dependencies)
+            CheckedByHand?.Invoke(this, "You have the latest version, and so do the things it depends on.");
     }
 
     private async Task<bool> CheckAsync(bool report)
