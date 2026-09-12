@@ -28,8 +28,7 @@ Raw evidence the documents refer to. Not scripts; do not run.
   software's Display Mode buttons, and after the restart each one asks for.
   The basis of the graphics-mode section of `docs/PROTOCOL.md`.
 - `quiet-hybrid.txt`, `quiet-discrete.txt`: what the card draws at idle in
-  each mode, cited in `docs/ROADMAP.md` ("What each mode costs").
+  each mode.
 
-Captures from a single night whose conclusions are written up in the roadmap
-(the Fn-key events, the charger transitions) were removed on 12 September
-2026; the tables in `docs/ROADMAP.md` are what they established.
+Captures from a single night whose conclusions were written up (the Fn-key
+events, the charger transitions) were removed on 12 September 2026.

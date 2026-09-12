@@ -361,7 +361,7 @@ certificate expired in July 2026. The switch watched on 10 September happened
 with the driver in exactly that state. Whatever performs it, it is not the
 driver - and with no driver there is no port I/O and no private IOCTL, which
 leaves the ACPI-WMI mailbox this document is about. Unresolved; the next step is
-to watch the mailbox during a click. See ROADMAP.md.
+to watch the mailbox during a click.
 
 The lesson is the same one as above, one level up: `DeviceIoControl` in a
 library is evidence that the library *can* talk to a driver, not that the thing

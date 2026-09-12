@@ -165,7 +165,8 @@ the vendor application. They are inert - `FanControlStatus` is 0, meaning
 firmware runs the fans, and all three "profiles" hold identical values, which is
 a template nobody filled in. Whether they survive a format is not a question
 this project has to care about: it never looks at them, and it does not write
-fan speeds. See ROADMAP.md for why that is a decision rather than a gap.
+fan speeds. That is a decision rather than a gap: the vendor has no fan
+control either, and a curve is only safe for a known state of the cooling.
 
 ## What degrades, and how
 

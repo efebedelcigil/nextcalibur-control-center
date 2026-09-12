@@ -114,9 +114,9 @@ you might want to keep: the power plans and the power-overlay repair.
 | A log of its own | `%AppData%\Nextcalibur\logs` |
 | Fan control | **deliberately not implemented** |
 
-Fan control is left out on purpose, and [docs/ROADMAP.md](docs/ROADMAP.md)
-explains why: the vendor offers none, and a curve is only safe relative to how
-clean the cooling is, which a program cannot check. What the vendor does do
+Fan control is left out on purpose: the vendor offers none, and a curve is
+only safe relative to how clean the cooling is, which a program cannot check
+(the FAQ has the longer answer). What the vendor does do
 with the fans - a thermal profile written with each mode - is copied exactly.
 
 The graphics switch was traced on hardware through every transition: Hybrid

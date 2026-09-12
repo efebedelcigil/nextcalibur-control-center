@@ -140,7 +140,8 @@ Nextcalibur notices the vendor going and puts both right.
 No, deliberately. The vendor's software offers no fan control either; what
 it does is write a thermal profile with each mode, and Nextcalibur writes
 the same. A fan curve is only safe relative to how clean the cooling is,
-which a program cannot see. See the roadmap's *Fan control stays out*.
+which a program cannot see: a curve tuned for a clean heatsink is a wrong
+curve for a dusty one, and the program cannot tell which it has.
 
 **Does it change the screen's refresh rate?**
 No. NVIDIA's and Windows' own settings do that.
@@ -212,7 +213,8 @@ Measured from a copy the person started: about 0.1 % of one processor core
 with the window open on the System page, about 0.05 % hidden in the tray,
 around 180-250 MB of private memory. Nothing polls where a notification
 exists; nothing wakes a device the mode is keeping asleep. The numbers and
-how they were taken are in the roadmap under *What things cost*.
+how they were taken: the process's own CPU time over 120-second windows,
+from a copy started by hand rather than by a tool.
 
 **How are releases built, and how can I check one?**
 By a GitHub Actions workflow from a tag, on GitHub's own runners: tests,
@@ -237,4 +239,4 @@ start), `gpu` (switches and the session-end write), `update` and
 Problems: an issue on GitHub with the day's log attached and the machine's
 model and firmware version (the *Hardware* table in the README shows the
 form). Security: privately, through the repository's *Report a
-vulnerability* - see [SECURITY.md](../SECURITY.md).
+vulnerability* - see [SECURITY.md](SECURITY.md).
