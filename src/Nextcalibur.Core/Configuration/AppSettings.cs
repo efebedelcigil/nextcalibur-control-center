@@ -153,42 +153,38 @@ public sealed class AppSettings
     }
 }
 
-/// <summary>Registers the application to start with Windows, for the current user.</summary>
+/// <summary>
+/// Start with Windows. Since the application runs elevated (12 September
+/// 2026), this is the logon task in <see cref="Elevation"/> rather than a
+/// <c>Run</c> entry: Windows will not start an elevated program from
+/// <c>Run</c>. The old entry, from earlier versions, is removed whenever
+/// this is set.
+/// </summary>
 public static class StartupRegistration
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ValueName = "Nextcalibur";
 
-    public static bool IsEnabled
-    {
-        get
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(RunKey);
-            return key?.GetValue(ValueName) is not null;
-        }
-    }
+    public static bool IsEnabled =>
+        Environment.ProcessPath is { } self && Elevation.StartsWithWindows(self);
 
-    /// <summary>
-    /// Enables or disables launch at sign-in. Uses HKCU so no elevation is
-    /// needed and the setting stays scoped to this user.
-    /// </summary>
-    /// <returns>False when the registry already said what we were about to say.</returns>
+    /// <summary>Enables or disables launch at sign-in. Elevated only.</summary>
+    /// <returns>False when nothing needed changing.</returns>
     public static bool Set(bool enabled, string executablePath)
     {
-        var wanted = enabled ? $"\"{executablePath}\" --tray" : null;
+        RemoveOldRunEntry();
+        return Elevation.SetStartWithWindows(enabled, executablePath);
+    }
 
-        using var read = Registry.CurrentUser.OpenSubKey(RunKey);
-        var current = read?.GetValue(ValueName) as string;
-        if (current == wanted) return false;
-
-        using var key = Registry.CurrentUser.CreateSubKey(RunKey, writable: true)
-            ?? throw new InvalidOperationException("Could not open the Run key.");
-
-        if (wanted is not null)
-            key.SetValue(ValueName, wanted, RegistryValueKind.String);
-        else
-            key.DeleteValue(ValueName, throwOnMissingValue: false);
-
-        return true;
+    private static void RemoveOldRunEntry()
+    {
+        try
+        {
+            using var run = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
+            run?.DeleteValue(ValueName, throwOnMissingValue: false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+        }
     }
 }

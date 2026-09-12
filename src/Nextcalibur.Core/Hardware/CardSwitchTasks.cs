@@ -110,7 +110,33 @@ public static class CardSwitchTasks
         }
     }
 
-    private static int Schtasks(string arguments)
+    /// <summary>Runs schtasks and returns what it printed, or null when it failed.</summary>
+    internal static string? SchtasksOutput(string arguments)
+    {
+        try
+        {
+            using var process = Process.Start(new ProcessStartInfo
+            {
+                FileName = "schtasks.exe",
+                Arguments = arguments,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardOutputEncoding = System.Text.Encoding.Unicode,
+            });
+            if (process is null) return null;
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit(15000);
+            return process.HasExited && process.ExitCode == 0 ? output : null;
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    internal static int Schtasks(string arguments)
     {
         try
         {

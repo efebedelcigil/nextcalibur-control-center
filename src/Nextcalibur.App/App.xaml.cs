@@ -41,6 +41,14 @@ public partial class App : Application
         // Velopack's hooks included, since they may show one.
         AppIdentity.Claim();
 
+        // The application runs elevated. An unelevated start hands over to
+        // the scheduled task (no prompt) or to a relaunch (one prompt), and
+        // exits. Helper modes below are already elevated when they run.
+        var self = Environment.ProcessPath;
+        if (self is not null && !args.Contains(GrantAccessArgument) && !args.Contains(CleanUpArgument)
+            && !args.Contains(CardSwitchTasks.Argument) && !Elevation.EnsureElevated(args, self))
+            return;
+
         // Before anything else, including Velopack: this is a short-lived
         // elevated copy of the application doing one registry write and exiting.
         // It must not run installer hooks, take the single-instance mutex, or
@@ -89,6 +97,10 @@ public partial class App : Application
             WakeRunningInstance();
             return;
         }
+
+        // Elevated now. The on-demand task is what makes the next start
+        // prompt-free; registering it is idempotent and costs a schtasks call.
+        if (self is not null) Elevation.RegisterOpenTask(self);
 
         var app = new App();
         app.InitializeComponent();
