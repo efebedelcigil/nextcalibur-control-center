@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <!--
+        Türkçe. Strings.en.xaml ile birebir aynı anahtarlar; ikisi anahtar
+        anahtar aynı kalmalı. Yer tutucular ({0}, {1}…) iki dosyada da aynı
+        şeyi ifade eder. Düzgün Türkçe, doğru karakterlerle; makine çevirisi
+        değil.
+    -->
+
+    <!-- Diyalog düğmeleri -->
+    <sys:String x:Key="S.Dialog.Yes">Evet</sys:String>
+    <sys:String x:Key="S.Dialog.No">Hayır</sys:String>
+    <sys:String x:Key="S.Dialog.OK">Tamam</sys:String>
+    <sys:String x:Key="S.Dialog.Cancel">İptal</sys:String>
+
+    <!-- Tepsi menüsü -->
+    <sys:String x:Key="S.Tray.Open">Nextcalibur'u aç</sys:String>
+    <sys:String x:Key="S.Tray.StartWithWindows">Windows ile başlat</sys:String>
+    <sys:String x:Key="S.Tray.OfficeOnBattery">Pilde Office modu</sys:String>
+    <sys:String x:Key="S.Tray.OverheatWarning">CPU veya GPU ısınınca uyar</sys:String>
+    <sys:String x:Key="S.Tray.ReadEvery">Sensörleri okuma sıklığı</sys:String>
+    <sys:String x:Key="S.Tray.Interval.1">Saniyede bir</sys:String>
+    <sys:String x:Key="S.Tray.Interval.2">2 saniyede bir</sys:String>
+    <sys:String x:Key="S.Tray.Interval.5">5 saniyede bir</sys:String>
+    <sys:String x:Key="S.Tray.Interval.10">10 saniyede bir</sys:String>
+    <sys:String x:Key="S.Tray.AutoCheck">Güncellemeleri otomatik denetle</sys:String>
+    <sys:String x:Key="S.Tray.AutoInstall">Güncellemeleri otomatik kur</sys:String>
+    <sys:String x:Key="S.Tray.CheckNow">Güncellemeleri şimdi denetle</sys:String>
+    <sys:String x:Key="S.Tray.OpenLog">Günlük klasörünü aç</sys:String>
+    <sys:String x:Key="S.Tray.Exit">Çıkış</sys:String>
+    <sys:String x:Key="S.Tray.Tooltip">CPU {0}°C · GPU {1}°C · fan {2} rpm</sys:String>
+    <sys:String x:Key="S.Tray.TourBalloonTitle">Bu Nextcalibur'un tepsi simgesi</sys:String>
+    <sys:String x:Key="S.Tray.TourBalloonBody">Menü için sağ tıklayın; pencereyi açmak için çift tıklayın.</sys:String>
+
+    <!-- Köşe -->
+    <sys:String x:Key="S.Corner.UpToDate">Güncel</sys:String>
+    <sys:String x:Key="S.Corner.UpdateTo">{0} sürümüne güncelle</sys:String>
+    <sys:String x:Key="S.Corner.OpenLog">Günlüğü aç</sys:String>
+    <sys:String x:Key="S.Corner.Language">English</sys:String>
+
+    <!-- Durum satırı -->
+    <sys:String x:Key="S.Status.OnAc">fişe takılı</sys:String>
+    <sys:String x:Key="S.Status.OnBattery">pilde</sys:String>
+    <sys:String x:Key="S.Status.Mode">{0} modu, {1}</sys:String>
+    <sys:String x:Key="S.Status.NoMode">Etkin mod yok ({0}), {1}</sys:String>
+    <sys:String x:Key="S.Status.Updated">Güncellendi {0}</sys:String>
+    <sys:String x:Key="S.Status.Stalled">Okumalar durdu. Casper Control Center'ı kapatıp bu pencereyi yeniden açın.</sys:String>
+
+    <!-- Çıkış -->
+    <sys:String x:Key="S.Exit.Title">Nextcalibur'dan çıkılsın mı?</sys:String>
+    <sys:String x:Key="S.Exit.Body">Bu, Nextcalibur'u tamamen kapatır: yeniden başlatılana kadar sıcaklık uyarısı da, şarj takılıp çıkarılınca mod değişimi de olmaz.</sys:String>
+    <sys:String x:Key="S.Exit.BodyFromClose">Bu, Nextcalibur'u tamamen kapatır: yeniden başlatılana kadar sıcaklık uyarısı da, şarj takılıp çıkarılınca mod değişimi de olmaz.&#10;&#10;Arka planda çalışmaya devam etmesi için bunun yerine tepsi düğmesini kullanın.</sys:String>
+    <sys:String x:Key="S.Exit.PendingGraphics">{0} grafik moduna geçiş yeniden başlatmayı bekliyor ve oturum kapanırken Nextcalibur tarafından uygulanır - Nextcalibur çalışmıyorsa uygulanmaz.</sys:String>
+
+    <!-- Dil düğmesi -->
+    <sys:String x:Key="S.Language.Name">Türkçe</sys:String>
+</ResourceDictionary>

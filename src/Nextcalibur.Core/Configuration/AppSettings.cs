@@ -39,6 +39,14 @@ public sealed class AppSettings
     public bool AutoInstallUpdates { get; set; }
 
     /// <summary>
+    /// The language of the interface: English or Turkish, switched live.
+    /// Null until chosen, meaning "whatever Windows is set to" - Turkish on
+    /// a Turkish Windows, English on every other.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+    public UiLanguage? Language { get; set; }
+
+    /// <summary>
     /// The mode the person last chose, put back at the next start. Windows
     /// comes up on Balanced after a restart whatever plan was active before,
     /// so without this a chosen mode lasted one session.
@@ -214,4 +222,11 @@ public static class StartupRegistration
         {
         }
     }
+}
+
+/// <summary>The two languages the interface speaks.</summary>
+public enum UiLanguage
+{
+    English,
+    Turkish,
 }

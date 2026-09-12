@@ -17,7 +17,7 @@ public sealed class TrayPresence : IDisposable
     private readonly Forms.NotifyIcon _icon;
     private readonly Window _window;
     private readonly AppSettings _settings;
-    private readonly Forms.ToolStripMenuItem _startupItem;
+    private Forms.ToolStripMenuItem _startupItem = null!;
     private bool _disposed;
 
     /// <summary>Raised by the menu's "Check for updates now"; the window runs the check and makes the offer.</summary>
@@ -34,7 +34,26 @@ public sealed class TrayPresence : IDisposable
         _window = window;
         _settings = settings;
 
-        _startupItem = new Forms.ToolStripMenuItem("Start with Windows")
+        _icon = new Forms.NotifyIcon
+        {
+            Icon = LoadIcon(),
+            Visible = true,
+            Text = "Nextcalibur Control Center",
+            ContextMenuStrip = BuildMenu(),
+        };
+        _icon.DoubleClick += (_, _) => ShowWindow();
+        _icon.BalloonTipClicked += (_, _) => { ShowWindow(); BalloonClicked?.Invoke(this, EventArgs.Empty); };
+    }
+
+    /// <summary>
+    /// The menu, in the current language. Built once at start and again on
+    /// a language swap (<see cref="RebuildMenu"/>): WinForms items carry
+    /// their text as a plain string, so the whole menu is remade rather
+    /// than each item retitled - it is a dozen items and takes a moment.
+    /// </summary>
+    private Forms.ContextMenuStrip BuildMenu()
+    {
+        _startupItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.StartWithWindows"))
         {
             CheckOnClick = true,
             Checked = StartupRegistration.IsEnabled,
@@ -42,7 +61,7 @@ public sealed class TrayPresence : IDisposable
         _startupItem.CheckedChanged += OnStartupToggled;
 
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Open Nextcalibur", null, (_, _) => ShowWindow());
+        menu.Items.Add(Strings.Get("S.Tray.Open"), null, (_, _) => ShowWindow());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_startupItem);
         menu.Items.Add(QuietOnBatteryItem());
@@ -51,24 +70,25 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(AutoUpdateItem());
         menu.Items.Add(AutoInstallItem());
-        menu.Items.Add("Check for updates now", null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
-        menu.Items.Add("Open the log folder", null, (_, _) =>
+        menu.Items.Add(Strings.Get("S.Tray.CheckNow"), null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
+        menu.Items.Add(Strings.Get("S.Tray.OpenLog"), null, (_, _) =>
         {
             try { Unelevated.Open(Log.Folder); }
             catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { }
         });
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("Exit", null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
+        menu.Items.Add(Strings.Get("S.Tray.Exit"), null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
+        return menu;
+    }
 
-        _icon = new Forms.NotifyIcon
-        {
-            Icon = LoadIcon(),
-            Visible = true,
-            Text = "Nextcalibur Control Center",
-            ContextMenuStrip = menu,
-        };
-        _icon.DoubleClick += (_, _) => ShowWindow();
-        _icon.BalloonTipClicked += (_, _) => { ShowWindow(); BalloonClicked?.Invoke(this, EventArgs.Empty); };
+    /// <summary>Remakes the menu in the current language; the old one is disposed.</summary>
+    public void RebuildMenu()
+    {
+        if (_disposed) return;
+        var old = _icon.ContextMenuStrip;
+        _intervalItems.Clear();
+        _icon.ContextMenuStrip = BuildMenu();
+        old?.Dispose();
     }
 
     /// <summary>Raised when the user chooses Exit.</summary>
@@ -125,7 +145,7 @@ public sealed class TrayPresence : IDisposable
 
     private Forms.ToolStripMenuItem AutoUpdateItem()
     {
-        _autoCheckItem = new Forms.ToolStripMenuItem("Check for updates automatically")
+        _autoCheckItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.AutoCheck"))
         {
             CheckOnClick = true,
             Checked = _settings.AutoCheckForUpdates,
@@ -145,7 +165,7 @@ public sealed class TrayPresence : IDisposable
     /// <summary>Install without asking - a step beyond checking, and only meaningful with checking on.</summary>
     private Forms.ToolStripMenuItem AutoInstallItem()
     {
-        _autoInstallItem = new Forms.ToolStripMenuItem("Install updates automatically")
+        _autoInstallItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.AutoInstall"))
         {
             CheckOnClick = true,
             Checked = _settings.AutoInstallUpdates,
@@ -164,7 +184,7 @@ public sealed class TrayPresence : IDisposable
 
     private Forms.ToolStripMenuItem QuietOnBatteryItem()
     {
-        _quietItem = new Forms.ToolStripMenuItem("Office mode on battery")
+        _quietItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.OfficeOnBattery"))
         {
             CheckOnClick = true,
             Checked = _settings.QuietOnBattery,
@@ -197,7 +217,7 @@ public sealed class TrayPresence : IDisposable
     /// </summary>
     private Forms.ToolStripMenuItem OverheatWarningMenu()
     {
-        _overheatItem = new Forms.ToolStripMenuItem("Warn when the CPU or GPU runs hot")
+        _overheatItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.OverheatWarning"))
         {
             CheckOnClick = true,
             Checked = _settings.OverheatWarningEnabled,
@@ -216,10 +236,11 @@ public sealed class TrayPresence : IDisposable
 
     private Forms.ToolStripMenuItem ReadingIntervalMenu()
     {
-        var menu = new Forms.ToolStripMenuItem("Read the sensors every");
+        var menu = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.ReadEvery"));
         var choices = new (string Label, int Ms)[]
         {
-            ("Second", 1000), ("2 seconds", 2000), ("5 seconds", 5000), ("10 seconds", 10000),
+            (Strings.Get("S.Tray.Interval.1"), 1000), (Strings.Get("S.Tray.Interval.2"), 2000),
+            (Strings.Get("S.Tray.Interval.5"), 5000), (Strings.Get("S.Tray.Interval.10"), 10000),
         };
 
         foreach (var (label, ms) in choices)
@@ -258,7 +279,7 @@ public sealed class TrayPresence : IDisposable
     public void UpdateStatus(int cpuC, int gpuC, int cpuRpm)
     {
         if (_disposed) return;
-        _icon.Text = $"CPU {cpuC}°C · GPU {gpuC}°C · fan {cpuRpm} rpm";
+        _icon.Text = Strings.Get("S.Tray.Tooltip", cpuC, gpuC, cpuRpm);
     }
 
     public void ShowMessage(string title, string body) =>
@@ -274,7 +295,7 @@ public sealed class TrayPresence : IDisposable
     public void ShowMenuForTour()
     {
         if (_disposed) return;
-        _icon.ShowBalloonTip(8000, "This is Nextcalibur's tray icon", "Right-click it for the menu; double-click to open the window.", Forms.ToolTipIcon.Info);
+        _icon.ShowBalloonTip(8000, Strings.Get("S.Tray.TourBalloonTitle"), Strings.Get("S.Tray.TourBalloonBody"), Forms.ToolTipIcon.Info);
         var area = Forms.Screen.PrimaryScreen?.WorkingArea ?? Forms.SystemInformation.WorkingArea;
         _icon.ContextMenuStrip?.Show(new System.Drawing.Point(area.Right - 8, area.Bottom - 8), Forms.ToolStripDropDownDirection.AboveLeft);
     }

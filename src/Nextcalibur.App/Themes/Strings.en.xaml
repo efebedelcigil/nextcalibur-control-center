@@ -1,0 +1,60 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <!--
+        English. Every word the application shows, keyed. Strings.tr.xaml has
+        the same keys in Turkish; the two must stay in step, key for key.
+
+        Keys: S.<Area>.<Thing>. The code-behind reads them through Strings.Get;
+        the markup through {DynamicResource S.…}. Placeholders are {0}, {1}…
+        and mean the same thing in both files.
+    -->
+
+    <!-- Dialogue buttons -->
+    <sys:String x:Key="S.Dialog.Yes">Yes</sys:String>
+    <sys:String x:Key="S.Dialog.No">No</sys:String>
+    <sys:String x:Key="S.Dialog.OK">OK</sys:String>
+    <sys:String x:Key="S.Dialog.Cancel">Cancel</sys:String>
+
+    <!-- Tray menu -->
+    <sys:String x:Key="S.Tray.Open">Open Nextcalibur</sys:String>
+    <sys:String x:Key="S.Tray.StartWithWindows">Start with Windows</sys:String>
+    <sys:String x:Key="S.Tray.OfficeOnBattery">Office mode on battery</sys:String>
+    <sys:String x:Key="S.Tray.OverheatWarning">Warn when the CPU or GPU runs hot</sys:String>
+    <sys:String x:Key="S.Tray.ReadEvery">Read the sensors every</sys:String>
+    <sys:String x:Key="S.Tray.Interval.1">Second</sys:String>
+    <sys:String x:Key="S.Tray.Interval.2">2 seconds</sys:String>
+    <sys:String x:Key="S.Tray.Interval.5">5 seconds</sys:String>
+    <sys:String x:Key="S.Tray.Interval.10">10 seconds</sys:String>
+    <sys:String x:Key="S.Tray.AutoCheck">Check for updates automatically</sys:String>
+    <sys:String x:Key="S.Tray.AutoInstall">Install updates automatically</sys:String>
+    <sys:String x:Key="S.Tray.CheckNow">Check for updates now</sys:String>
+    <sys:String x:Key="S.Tray.OpenLog">Open the log folder</sys:String>
+    <sys:String x:Key="S.Tray.Exit">Exit</sys:String>
+    <sys:String x:Key="S.Tray.Tooltip">CPU {0}°C · GPU {1}°C · fan {2} rpm</sys:String>
+    <sys:String x:Key="S.Tray.TourBalloonTitle">This is Nextcalibur's tray icon</sys:String>
+    <sys:String x:Key="S.Tray.TourBalloonBody">Right-click it for the menu; double-click to open the window.</sys:String>
+
+    <!-- The corner -->
+    <sys:String x:Key="S.Corner.UpToDate">Up to date</sys:String>
+    <sys:String x:Key="S.Corner.UpdateTo">Update to {0}</sys:String>
+    <sys:String x:Key="S.Corner.OpenLog">Open log</sys:String>
+    <sys:String x:Key="S.Corner.Language">Türkçe</sys:String>
+
+    <!-- The status line -->
+    <sys:String x:Key="S.Status.OnAc">on AC power</sys:String>
+    <sys:String x:Key="S.Status.OnBattery">on battery</sys:String>
+    <sys:String x:Key="S.Status.Mode">{0} mode, {1}</sys:String>
+    <sys:String x:Key="S.Status.NoMode">No mode active ({0}), {1}</sys:String>
+    <sys:String x:Key="S.Status.Updated">Updated {0}</sys:String>
+    <sys:String x:Key="S.Status.Stalled">Readings have stalled. Close Casper's Control Center and reopen this window.</sys:String>
+
+    <!-- Exit -->
+    <sys:String x:Key="S.Exit.Title">Exit Nextcalibur?</sys:String>
+    <sys:String x:Key="S.Exit.Body">This closes Nextcalibur completely: no temperature warning, no mode switch when the charger moves, until it is started again.</sys:String>
+    <sys:String x:Key="S.Exit.BodyFromClose">This closes Nextcalibur completely: no temperature warning, no mode switch when the charger moves, until it is started again.&#10;&#10;To keep it running out of the way, use the tray button instead.</sys:String>
+    <sys:String x:Key="S.Exit.PendingGraphics">A graphics mode change to {0} is waiting for a restart and is applied by Nextcalibur as the session ends - if Nextcalibur is not running, it will not happen.</sys:String>
+
+    <!-- The language switch -->
+    <sys:String x:Key="S.Language.Name">English</sys:String>
+</ResourceDictionary>

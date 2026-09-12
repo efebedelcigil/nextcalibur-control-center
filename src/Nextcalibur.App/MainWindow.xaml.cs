@@ -126,6 +126,11 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        // The words first, so the markup's DynamicResources find them at
+        // the first render; the choice is remembered, or Windows' language
+        // the first time.
+        Strings.Apply(Strings.Initial(_settings));
+        Strings.Changed += (_, _) => OnLanguageChanged();
         InitializeComponent();
 
         // Every dialogue the application raises is owned by this window from
@@ -572,13 +577,10 @@ public partial class MainWindow : Window
         }
 
         var pending = _gpuPendingRestart is { } mode
-            ? $"A graphics mode change to {mode} is waiting for a restart and is applied by Nextcalibur as the " +
-              "session ends - if Nextcalibur is not running, it will not happen." + Environment.NewLine + Environment.NewLine
+            ? Strings.Get("S.Exit.PendingGraphics", mode) + Environment.NewLine + Environment.NewLine
             : string.Empty;
-        if (!Dialogs.Ask("Exit Nextcalibur?",
-                pending +
-                "This closes Nextcalibur completely: no temperature warning, no mode switch " +
-                "when the charger moves, until it is started again.",
+        if (!Dialogs.Ask(Strings.Get("S.Exit.Title"),
+                pending + Strings.Get("S.Exit.Body"),
                 defaultNo: true))
         {
             _exitRoute = null;
@@ -726,12 +728,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            if (!Dialogs.Ask("Exit Nextcalibur?",
-                    "This closes Nextcalibur completely: no temperature warning, no mode switch " +
-                    "when the charger moves, until it is started again." +
-                    Environment.NewLine + Environment.NewLine +
-                    "To keep it running out of the way, use the tray button instead.",
-                    defaultNo: true))
+            if (!Dialogs.Ask(Strings.Get("S.Exit.Title"), Strings.Get("S.Exit.BodyFromClose"), defaultNo: true))
             {
                 e.Cancel = true;
                 return;
@@ -979,17 +976,49 @@ public partial class MainWindow : Window
     /// </summary>
     private void RefreshModeStatus(SystemMode? current)
     {
-        var source = _onBattery ? "on battery" : "on AC power";
+        var source = Strings.Get(_onBattery ? "S.Status.OnBattery" : "S.Status.OnAc");
+        _lastModeShown = current;
         _modeStatus = current is { } mode
-            ? $"{mode} mode, {source}"
-            : $"No mode active ({SystemModeService.DescribeCurrent()}), {source}";
+            ? Strings.Get("S.Status.Mode", mode, source)
+            : Strings.Get("S.Status.NoMode", SystemModeService.DescribeCurrent(), source);
         ShowSubtitle();
     }
 
     private void ShowSubtitle() =>
         SubtitleText.Text = _lastSampleAt is { } at
-            ? $"{_modeStatus}  ·  Updated {at:HH:mm:ss}"
+            ? $"{_modeStatus}  ·  {Strings.Get("S.Status.Updated", at.ToString("HH:mm:ss"))}"
             : _modeStatus;
+
+    /// <summary>The mode the status line last described, so it can be re-said in a new language.</summary>
+    private SystemMode? _lastModeShown;
+
+    /// <summary>
+    /// Everything the code-behind put on screen in words, said again in the
+    /// language just chosen. The markup's own texts follow the dictionary
+    /// swap by themselves.
+    /// </summary>
+    private void OnLanguageChanged()
+    {
+        if (PageSystem is null) return;   // before the tree is built
+        RefreshModeStatus(_lastModeShown);
+        UpdateNowButton.Content = _updates.Available is not null && _updates.AvailableVersion is { } v
+            ? Strings.Get("S.Corner.UpdateTo", v)
+            : Strings.Get("S.Corner.UpToDate");
+        OpenLogButton.Content = Strings.Get("S.Corner.OpenLog");
+        if (FindName("LanguageButton") is System.Windows.Controls.Button language)
+            language.Content = Strings.Get("S.Corner.Language");
+        _tray?.RebuildMenu();
+        Log.Info("language", $"Switched to {Strings.Current}");
+    }
+
+    /// <summary>The language button under the version: the other language, at once, remembered.</summary>
+    private void OnLanguageClick(object sender, RoutedEventArgs e)
+    {
+        var next = Strings.Current == UiLanguage.English ? UiLanguage.Turkish : UiLanguage.English;
+        _settings.Language = next;
+        _settings.Save();
+        Strings.Apply(next);
+    }
 
     private RadioButton ModeButtonFor(SystemMode mode) => mode switch
     {
@@ -1140,7 +1169,7 @@ public partial class MainWindow : Window
     private void OnUpdateFound(string version)
     {
         UpdateNowButton.IsEnabled = true;
-        UpdateNowButton.Content = $"Update to {version}";
+        UpdateNowButton.Content = Strings.Get("S.Corner.UpdateTo", version);
         if (_checkingByHand) return;
 
         // Installing without asking is a setting of its own, off by default,
@@ -1350,9 +1379,9 @@ public partial class MainWindow : Window
     {
         var (primary, secondary, primaryText, secondaryText) = buttons switch
         {
-            MessageBoxButton.YesNo => (MessageBoxResult.Yes, MessageBoxResult.No, "Yes", "No"),
-            MessageBoxButton.OKCancel => (MessageBoxResult.OK, MessageBoxResult.Cancel, "OK", "Cancel"),
-            _ => (MessageBoxResult.OK, (MessageBoxResult?)null, "OK", string.Empty),
+            MessageBoxButton.YesNo => (MessageBoxResult.Yes, MessageBoxResult.No, Strings.Get("S.Dialog.Yes"), Strings.Get("S.Dialog.No")),
+            MessageBoxButton.OKCancel => (MessageBoxResult.OK, MessageBoxResult.Cancel, Strings.Get("S.Dialog.OK"), Strings.Get("S.Dialog.Cancel")),
+            _ => (MessageBoxResult.OK, (MessageBoxResult?)null, Strings.Get("S.Dialog.OK"), string.Empty),
         };
 
         DialogTitleText.Text = title;
@@ -2094,7 +2123,7 @@ public partial class MainWindow : Window
                 // A single miss is normal when something else touches the mailbox.
                 if (++_consecutiveFailures >= 5)
                 {
-                    SubtitleText.Text = "Readings have stalled. Close Casper's Control Center and reopen this window.";
+                    SubtitleText.Text = Strings.Get("S.Status.Stalled");
                     _timer.Stop();
                 }
                 return;
