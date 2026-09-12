@@ -1,167 +1,132 @@
 # Nextcalibur Control Center
 
-An independent, open-source control center for Tongfang-based laptops
-(Casper Excalibur G870 and relatives).
+An independent, open-source replacement for the Casper Excalibur Control
+Center on Tongfang-built laptops: temperatures, fans, keyboard lighting,
+power modes and the graphics mode, from the machine's own firmware
+interface. Windows 11, English and Turkish.
 
-> **Not affiliated with, endorsed by, or connected to Casper Bilgisayar Sistemleri A.Ş.,
-> Tongfang, or Uniwill.** "Casper" and "Excalibur" are trademarks of their respective
-> owners and are referenced here only to describe hardware compatibility.
-> This project ships no vendor code, drivers, binaries, fonts, or artwork.
-
----
-
-## Why
-
-The stock Excalibur Control Center has a design gap that hurts every user on
-Windows 11:
-
-Windows 11 layers power configuration in two levels — the **power plan**
-(Balanced, Office, Gaming…) and the **power mode overlay** on top of it.
-The overlay wins.
-
-The stock software only ever calls the legacy plan API:
-
-```
-PowerGetActiveScheme / PowerSetActiveScheme
-```
-
-It never calls `PowerSetActiveOverlayScheme`. So when the AC overlay is stuck on
-**Max Performance** — which carries `PROCTHROTTLEMIN = 100%` — the CPU is pinned
-at maximum frequency at idle, and *nothing you pick in the Control Center changes
-it*. Its "Office mode" only swaps the plan underneath an overlay that overrides it.
-
-Measured on a Casper Excalibur G870 (i7-12650H, base 2300 MHz):
-
-| | Stuck overlay | After fix |
-|---|---|---|
-| Idle floor | 123% → **2829 MHz** | 54% → **1242 MHz** |
-| Peak | 180% → 4148 MHz | normal boost |
-
-Nextcalibur detects and repairs this at install time, and keeps it from coming back.
+> **Not affiliated with, endorsed by, or connected to Casper Bilgisayar
+> Sistemleri A.Ş., Tongfang or Uniwill.** "Casper" and "Excalibur" are
+> trademarks of their owners and are used here only to say which hardware
+> this is for. The project ships no vendor code, driver, binary, font or
+> artwork.
 
 ## Download
 
-**[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
-— `Nextcalibur-<version>-1-Installer.exe`, about 65 MB: a wizard that installs
-under Program Files and does the rest. `Nextcalibur-<version>-2-Portable.zip`
-runs without installing, from any folder - and asks for administrator
-rights at every start, because a copy in an ordinary folder cannot safely be
-started elevated without a prompt (see below). The remaining files on the
-release page are what the application's own updater reads.
+**[Latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
 
-It carries the **.NET 8 desktop runtime** inside, so nothing is downloaded
-during install. An earlier release tried to fetch the runtime instead and
-stalled silently on a clean machine; sixty megabytes was the price of an
-installer that finishes.
+| File | What it is |
+|---|---|
+| `Nextcalibur-<version>-1-Installer.exe` | The installer: a wizard, English or Turkish, that installs under Program Files and does the rest. **This is the one to download.** |
+| `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - and asks for administrator rights at every start (see *Why it runs as administrator*). |
+| the rest | Read by the application's own updater; not for you. |
 
-The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
-anyway*. The wizard is in English and Turkish, shows a notice you have to
-accept, and asks whether to start with Windows. One copy per machine: a
-second install is refused until the first is removed.
+About 65 MB: the .NET 8 desktop runtime is carried inside, so nothing is
+downloaded during install. The installer is not code-signed, so SmartScreen
+warns: *More info → Run anyway*. Every release is built by a public GitHub
+Actions workflow from a tag, with a build-provenance attestation; any file on
+the release page can be checked with
+`gh attestation verify <file> --repo efebedelcigil/nextcalibur-control-center`.
 
-**It runs as administrator**, the way the vendor's software does. That is what
-reading the firmware, switching the graphics card, and reading the
-processor's power all need. You are asked once, on the first run; after that
-a scheduled task starts it with those rights and no prompt - from the Start
-menu, a pin, or at sign-in. On first run it also repairs the power-overlay
-fault described above and tells you what it changed.
-
-Because a scheduled task starts it elevated without asking, the files it
-runs from must be somewhere only administrators can write - otherwise
-anything running as your account could swap the executable and be run as
-administrator at the next start. The wizard installs under Program Files for
-that reason. A copy that lives in `%LOCALAPPDATA%` (an earlier version
-updated in place) is protected by the application itself:
-at its first elevated start it takes ownership of that folder for
-Administrators and leaves the account read-only on it; the uninstall hands
-it back.
-
-Nextcalibur installs **no kernel driver of its own**. One reading - the
-processor's power draw - is only possible through a driver, and for that it
-uses [PawnIO](https://pawnio.eu), a Microsoft-signed, open-source driver
-that is the person's to install. Without it the number reads `--` and
-nothing else changes. When PawnIO is missing or behind, the application
-offers it: downloaded from its own releases, signature checked, installed
-quietly, on a yes.
-
-Updates work the same way: found quietly, offered once through a
-notification with an *Update now* button, downloaded with a progress bar,
-and the application restarts into the new version. Both can be turned off
-in the tray menu.
-
-Uninstalling removes everything it put on the machine - settings, logs,
-the scheduled tasks, its permissions - and asks first about the two things
-you might want to keep: the power plans and the power-overlay repair.
+The wizard shows a notice you have to accept, asks whether to start with
+Windows, refuses to install without the NVIDIA driver, and installs one copy
+per machine (a second run offers to repair the first). The application then
+keeps itself current: a new release is found quietly and offered once, and
+installs on a yes - or, if you switch it on, without asking.
 
 ## What it does
 
 | | |
 |---|---|
-| Power-mode overlay diagnosis and repair | working |
-| Office / Gaming / Performance system modes | working |
-| Windows power modes as choice cards | working |
-| Temperatures, fan speeds, clock speeds | working |
-| Memory and disk gauges, device names | working, read at runtime |
-| Keyboard lighting — three zones, colour, six effects, brightness | working |
-| Graphics mode — Hybrid, Discrete, UMA — switched from the firmware | working; a restart you can cancel |
-| The card's clock and draw, without waking it when it sleeps | working |
-| CPU package power, through PawnIO | working when PawnIO is installed |
-| Office mode on battery, your mode back on the charger and after a restart | working |
-| Overheat warning with a threshold per chip | working |
-| Notification-area icon, start with Windows, self-update, dependency update | working |
-| Dark / light / follow-system theme, its own dialogues | working |
-| Coexistence with the vendor software, and surviving its removal | working |
-| A log of its own | `%AppData%\Nextcalibur\logs` |
-| Fan control | **deliberately not implemented** |
+| Office / Gaming / Performance modes | the Windows power plan, the power mode and the firmware's thermal profile together, as the vendor does it |
+| Windows power modes as cards, within the chosen mode | |
+| Office on battery, your mode back on the charger, and after a restart | |
+| Repair of the power-mode fault the vendor's software leaves | a Windows power mode that holds the CPU at full speed while idle - found, fixed once, guarded |
+| Temperatures, fan speeds, clocks, CPU package power | CPU power through PawnIO, when installed |
+| The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |
+| Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected |
+| Overheat warning | a threshold per chip, typeable |
+| Memory and every fixed drive | |
+| A guided tour | `?` in the title bar walks every page and every control, and ends at the tray |
+| A Settings page | everything the tray menu has, kept in step with it; the language; WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
+| Tray icon, start with Windows, self-update, dependency update, a log | |
+| Dark, light or Windows' theme; the application's own dialogues | |
+| Fan control | **deliberately not implemented** - see the FAQ |
 
-Fan control is left out on purpose: the vendor offers none, and a curve is
-only safe relative to how clean the cooling is, which a program cannot check
-(the FAQ has the longer answer). What the vendor does do
-with the fans - a thermal profile written with each mode - is copied exactly.
+The guided tour is the manual: sixty-six steps, one control at a time.
 
-The graphics switch was traced on hardware through every transition: Hybrid
-and Discrete are one write to the firmware mailbox and a restart, UMA is the
-card switched off as a device. Nothing is written until Windows says the
-session is really ending, so cancelling the restart leaves the machine as it
-was. Switching changes what the TPM measures at startup: the Windows PIN has
-to be set up again, and BitLocker, if on, will ask for its recovery key. The
-application says so before it does anything.
+## Why it runs as administrator
 
-[docs/FAQ.md](docs/FAQ.md) answers the questions people ask - what it needs,
-what it changes, the PIN and BitLocker warning, updates, PawnIO, uninstall -
-and the technical ones behind them. [docs/PRIVACY.md](docs/PRIVACY.md) is
-the privacy policy: nothing collected, nothing sent about you, and the
-table of every request the application ever makes.
-[docs/PROTOCOL.md](docs/PROTOCOL.md) documents the hardware interface, with the
-evidence behind each claim, and [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md)
-audits what the application needs on a machine that has never had the vendor
-software on it - which is the point of replacing it rather than sitting beside it.
+Reading the firmware, switching the graphics card and reading the
+processor's power all need it; the vendor's software runs the same way. You
+are asked once, at the first start; after that a scheduled task starts it
+with those rights and no prompt.
 
-There is also a command line, `nextcalibur`, built alongside: `sensors`,
-`watch`, `clocks`, `info`, `overlay`, `gpu`, `access`, and `led` for colour,
-effect and brightness.
+A task that starts a program elevated without asking is only safe if the
+program's files cannot be swapped by something running as your account. So
+the installer puts them under Program Files, where only administrators can
+write, and accepts nowhere else; a copy that lives in your profile from an
+earlier version is made Administrators' by the application at its first
+elevated start. The portable copy, which can live anywhere, is prompted at
+every start instead. Everything the window opens for you - the browser, the
+log folder, Windows Settings - is opened with your own rights, not the
+application's.
+
+Nextcalibur installs **no kernel driver of its own**. The one reading that
+needs one, the processor's power draw, comes through
+[PawnIO](https://pawnio.eu) - a Microsoft-signed, open-source driver that is
+yours to install; the application offers it, verifies its signature, and
+keeps it current. Without it that number reads `--` and nothing else changes.
+
+## Privacy
+
+Nothing is collected and nothing about you is sent anywhere. The only
+network requests are to GitHub, for the application's own updates and
+PawnIO's, and there are none at all with automatic checks off.
+[docs/PRIVACY.md](docs/PRIVACY.md) lists every request the application ever
+makes.
+
+## Uninstalling
+
+Removes everything of its own - files, shortcuts, settings, logs, the
+scheduled tasks - without asking, and asks about what you may want to keep:
+the power plans it created, the power-mode repair, and each dependency
+(PawnIO) separately.
 
 ## Hardware
 
-Developed and tested on exactly one machine. Every claim in this repository
-was measured there, and nowhere else:
+Developed and tested on one machine. Every claim in this repository was
+measured there:
 
 | | |
 |---|---|
-| Laptop | Casper Excalibur G870 (vendor package `G870.12XX`) — Tongfang **JS970** barebone |
-| CPU | 12th Gen Intel Core i7-12650H |
-| GPU | NVIDIA GeForce RTX 4050 Laptop GPU + Intel UHD Graphics (hybrid) |
-| Firmware | AMI BIOS `QQ141`, 27 June 2024; SMBIOS left unfilled by the vendor (`Type1MTM` / `Type2ProjectName`) |
+| Laptop | Casper Excalibur G870 (Tongfang **JS970** barebone) |
+| CPU / GPU | Intel Core i7-12650H / NVIDIA GeForce RTX 4050 Laptop GPU + Intel UHD Graphics |
+| Firmware | AMI BIOS `QQ141` |
 | Windows | Windows 11 Pro, Insider Dev channel, build 10.0.29661 |
 | Interface | ACPI-WMI `RW_GMWMI` on `ACPI\PNP0C14`, through the in-box `wmiacpi.sys` |
 
-The model name is read at runtime, never written into the source; the table
-above is documentation of where the testing happened, so you can judge how far
-your machine is from it.
+The model name is read at runtime and never written into the source. A
+laptop is treated as supported by what its firmware answers, not by its
+name: one that answers like this machine gets everything, one that answers
+oddly gets readings only, and one without the interface gets nothing to
+click - and nothing is changed on it. Other Tongfang/Uniwill machines that
+expose `RW_GMWMI` may work; machines using the older Uniwill `ABBC0F6x` WMI
+GUIDs or direct EC port I/O are not supported.
 
-Other Tongfang/Uniwill machines exposing `RW_GMWMI` may work. Machines using the
-older Uniwill `ABBC0F6x` WMI GUIDs or direct EC port I/O are **not** supported —
-see [docs/PROTOCOL.md](docs/PROTOCOL.md) for why.
+## Documents
+
+- [docs/FAQ.md](docs/FAQ.md) - the questions people ask, and the technical ones behind them
+- [docs/PRIVACY.md](docs/PRIVACY.md) - the privacy policy
+- [docs/PROTOCOL.md](docs/PROTOCOL.md) - the firmware interface, with the evidence for each claim
+- [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md) - what the application needs on a machine that never had the vendor's software
+- [docs/RELEASING.md](docs/RELEASING.md) - how releases are built, verified and (one day) signed
+- [docs/SECURITY.md](docs/SECURITY.md) - how to report a vulnerability
+- `docs/releases/` - the notes of every release
+
+There is also a command line, `nextcalibur`, built alongside: `sensors`,
+`watch`, `clocks`, `info`, `overlay`, `gpu`, `access`, and `led`. Run it
+from an elevated prompt.
 
 ## Building
 
@@ -172,47 +137,51 @@ dotnet build Nextcalibur.sln -c Release
 dotnet test Nextcalibur.sln -c Release
 ```
 
-To produce the installers as well, you also need the Velopack CLI
-(`dotnet tool install -g vpk`) and, for the wizard, Inno Setup 6; then:
+To produce the installers as well you need the Velopack CLI
+(`dotnet tool install -g vpk`) and, for the wizard, Inno Setup 6:
 
 ```
 .\build.ps1
 ```
 
-`releases\` gets the Velopack package and its plain Setup; `installer\output\`
-gets the wizard. Without Inno Setup the plain Setup is still built.
+`releases\` gets the Velopack package and the portable zip; `installer\output\`
+gets the wizard. Releases themselves are built by the `Release` workflow from
+a tag, not on a development machine.
 
-## Safety
+## Rules of the project
 
-This software talks to your laptop's embedded controller. Read
-[docs/PROTOCOL.md](docs/PROTOCOL.md) before contributing. Rules of the project:
+This software talks to the laptop's embedded controller. Read
+[docs/PROTOCOL.md](docs/PROTOCOL.md) before contributing.
 
-- Never send an EC command whose meaning is not documented.
+- Never send a firmware command whose meaning is not documented.
 - Read commands (`0xFA00`) before write commands (`0xFB00`).
 - Nothing the vendor's software does not do to the fans.
-- A machine that does not answer like the reference machine gets nothing
-  to click: the check is on its answers, not its model name.
+- A machine that does not answer like the reference machine gets nothing to
+  click: the check is on its answers, not its model name.
 - Nothing on screen is invented: no reading, no default number where a
   measurement failed. `--` is the honest value.
+- Nothing polls where a notification exists; nothing wakes a device the mode
+  is keeping asleep.
+- Nothing read off a machine - inventories, dumps, serial numbers - goes into
+  the repository.
 
 ## Legal
 
-Licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE). Third-party notices are in
+[docs/NOTICE.md](docs/NOTICE.md).
 
 The hardware interface described in `docs/PROTOCOL.md` was determined by
-observing the behaviour of the machine's own firmware and by inspecting publicly
-readable metadata of software shipped on the device, for the sole purpose of
-interoperability. Interface facts are not copyrightable expression. No vendor
-source code, binaries, or assets are reproduced or redistributed by this project.
+observing the behaviour of the machine's own firmware and by inspecting
+publicly readable metadata of software shipped on the device, for the sole
+purpose of interoperability. Interface facts are not copyrightable
+expression. No vendor source code, binaries or assets are reproduced or
+redistributed by this project.
 
 `nvml.dll` is loaded from the installed NVIDIA driver at runtime and is not
-redistributed.
-
-The PawnIO driver is not redistributed either; the application offers to
-download it from its own releases. The one file of PawnIO's shipped here is
-the `IntelMSR` module (`src/Nextcalibur.Core/Resources/PawnIO/`), which is
-LGPL-2.1 and travels with its licence; it is loaded into the driver through
-its documented device interface and nothing of it is linked into this code.
-
-Inno Setup, used for the installer wizard, is free software under its own
-licence and is not part of the repository.
+redistributed. The PawnIO driver is not redistributed either; the
+application downloads it from its own releases. The one file of PawnIO's
+shipped here is the `IntelMSR` module (`src/Nextcalibur.Core/Resources/PawnIO/`),
+LGPL-2.1, travelling with its licence; it is handed to the driver through
+its documented interface and nothing of it is linked into this code. Inno
+Setup, used for the wizard, is free software under its own licence and is
+not part of the repository.

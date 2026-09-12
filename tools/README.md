@@ -8,7 +8,7 @@ here is needed to build or run Nextcalibur.
 
 | Script | What for |
 |---|---|
-| `Grant-MailboxAccess.ps1` | Grants (or with `-Revoke` restores) the WMI security descriptor on the firmware mailbox by hand. The application does this itself; the script is for a machine where it cannot. Cited by `docs/PROTOCOL.md` and `docs/CLEAN-INSTALL.md`. |
+| `Grant-MailboxAccess.ps1` | Grants an account (or with `-Revoke` takes back) access to the firmware mailbox's WMI security descriptor, by hand. The application runs elevated and does not need this - and takes such a grant back at start, since it opens the embedded controller to everything running as the account; the script is for a machine where that is wanted anyway, such as running the CLI unelevated. Cited by `docs/PROTOCOL.md` and `docs/CLEAN-INSTALL.md`. |
 | `Trace-ModeSwitch.ps1`, `Dump-UefiVars.ps1` | Capture the mailbox traffic and the firmware variables around a graphics-mode switch. How `docs/PROTOCOL.md`'s display-mode section was established. |
 | `Snapshot-Graphics.ps1`, `Watch-Graphics.ps1`, `Log-Graphics.ps1` | Record which chip drives the panel: once, continuously, or across restarts (`-Install` registers a logon task). Reads only. |
 | `Arm-GpuRecovery.ps1` | A safety net before experimenting with graphics modes: `-Arm` registers a task that re-enables the NVIDIA adapter at every startup so a bad switch cannot leave a black screen. Remove it with `-Disarm` when done. |

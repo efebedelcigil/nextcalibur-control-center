@@ -48,10 +48,10 @@ Three kinds of thing, all of them in the open:
   mode.
 - *Its own footprint*: settings and a log under `%AppData%\Nextcalibur`, and
   two scheduled tasks (start elevated, start with Windows). The files
-  themselves live under Program Files, or - for a copy installed into the
-  profile by the plain installer or an earlier version - in a folder the
-  application has made read-only to the account, so that the executable the
-  task starts as administrator cannot be swapped by anything running as you.
+  themselves live under Program Files, or - for a copy an earlier version
+  installed into the profile - in a folder the application has made
+  Administrators', so that the executable the task starts as administrator
+  cannot be swapped by anything running as you.
 
 **What does switching the graphics mode do to my PIN?**
 Switching between Hybrid and Discrete changes what the TPM measures at
@@ -91,8 +91,16 @@ then every six hours) and, when a newer one exists, tells you once through a
 notification with an *Update now* button and lights the button in the
 bottom-left corner. Nothing is downloaded until you say so; then a progress
 bar, and the application restarts into the new version. Declined, it stays
-quiet until the next start. *Check for updates automatically* in the tray
-menu turns the checking off; *Check for updates now* asks on demand.
+quiet until the next start. *Check for updates automatically* turns the
+checking off, *Install updates automatically* makes the whole thing happen
+without asking (never while a graphics change is waiting for a restart),
+and *Check for updates now* asks on demand - all three on the Settings page
+and in the tray menu, which are kept in step.
+
+**Which language does it come up in?**
+The one Windows is set to - Turkish on a Turkish Windows, English on every
+other. Change it on the Settings page; the switch is immediate and
+remembered.
 
 **What is PawnIO, and why would I install it?**
 An open-source, Microsoft-signed kernel driver that runs small signed
@@ -121,13 +129,13 @@ is in the corner of the window. Attach the day's file when reporting a
 problem.
 
 **What does uninstalling leave behind?**
-Nothing of its own: settings, logs, both scheduled tasks and the folder
-protection are removed without asking. It asks about two things you might
-want to keep: the power plans it created, and the power-overlay repair -
-undoing the repair puts the vendor's fault back, so the default answer is to
-keep it. A third question covers what it installed for its own use - the
-PawnIO driver - which other programs may be using too, so the default is
-to keep it. Removing the tasks needs one administrator prompt, which Windows
+Nothing of its own: files, shortcuts, settings, logs, both scheduled tasks
+and the folder protection are removed without asking. It asks about what
+you might want to keep: the power plans it created; the power-overlay
+repair - undoing it puts the vendor's fault back, so the default is to keep
+it; and each thing it installed for its own use (the PawnIO driver), one
+question each, default keep, since other programs may read through the same
+driver. Removing the tasks needs one administrator prompt, which Windows
 shows during the uninstall.
 
 **Can I run it alongside the vendor's software?**
@@ -223,11 +231,11 @@ Inno Setup wizard, and a build-provenance attestation. Nothing is built on
 the developer's machine for a release. Any asset on a release page can be
 verified:
 
-    gh attestation verify Nextcalibur-Setup-X.Y.Z.exe --repo efebedelcigil/nextcalibur-control-center
+    gh attestation verify Nextcalibur-X.Y.Z-1-Installer.exe --repo efebedelcigil/nextcalibur-control-center
 
-Releases are unsigned (a certificate costs money the project does not spend),
-which is why SmartScreen warns; the attestation is the substitute.
-[RELEASING.md](RELEASING.md) has the details and the signing options.
+Releases are not yet code-signed, which is why SmartScreen warns; the
+attestation is the substitute until they are. [RELEASING.md](RELEASING.md)
+has the details.
 
 **How do I read the log?**
 Each line is `date time level [thread] category: message`. Look for `crash`

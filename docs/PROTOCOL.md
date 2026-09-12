@@ -32,13 +32,10 @@ the last command left behind — possibly minutes old, possibly all zeros.
 Events arrive separately on class `GMC_WMIEvent` (`EventDetail: uint8[]`), used
 for hotkeys and mode changes.
 
-**The mailbox is administrators-only until access is granted.** This was stated
-here the other way round for weeks - "reading requires no elevation" - and it
-was measured, on a machine where the vendor's Control Center had already opened
-the block up.
-
-The whole chain was then watched from scratch, in a disposable Windows that had
-never had either program installed:
+**The mailbox is administrators-only by default.** A kernel-WMI data block
+is governed by a security descriptor, and Windows' default admits
+administrators alone. The whole chain was watched from scratch, in a
+disposable Windows that had never had either program installed:
 
 | | Descriptor on the block | Who may use it |
 |---|---|---|
@@ -52,14 +49,16 @@ rewrites it to administrators only and leaves it there. That last value is
 byte-for-byte what the development laptop was found holding after its own
 uninstall, which is what made every reading stop.
 
-So: the interface is the machine's, the permission is the vendor's doing, and an
-application that never installs that software has to ask for the permission
-itself. The descriptor lives at
-`HKLM\SYSTEM\CurrentControlSet\Control\WMI\Security`, under the block's GUID
-written **without braces and in lower case**. Granting an account `0x12001f`
-there is enough; reads and writes then both work unelevated.
-`tools/Grant-MailboxAccess.ps1` does it and can undo it, and Nextcalibur offers
-to do it at startup.
+So: the interface is the machine's and the wide-open permission is the
+vendor's doing. Nextcalibur runs elevated, as the vendor's software does, and
+needs no descriptor of its own; an elevated version finds a grant an earlier,
+unelevated version made to the account and takes it back. The descriptor
+lives at `HKLM\SYSTEM\CurrentControlSet\Control\WMI\Security`, under the
+block's GUID written **without braces and in lower case**; granting an
+account `0x12001f` there lets it read and write unelevated, which
+`tools/Grant-MailboxAccess.ps1` can do and undo by hand for a machine where
+that is wanted - and which opens the embedded controller to everything
+running as that account, which is why the application no longer does it.
 
 The class definition is a separate matter and comes from the firmware, not from
 anybody's installer: installing the vendor software in that same sandbox did
@@ -290,13 +289,8 @@ writes it, which reads like a capability query on a machine without the
 capability. `0x0202`, `0x0205` and the temperature at `0x0201` (49 through
 everything, including 97 °C on the CPU) stayed put and remain unnamed.
 
-An earlier paragraph here said `0x0300` "reads back `1`", two restarts after the only write this project
-ever made to it (a probe, same value the vendor writes), so it is either
-persistent or defaults to `1`; either way nothing observable changed when it
-was written. `0x0206` answers zero. Neither is needed by anything this
-application does, and neither will be written: the vendor's startup writes it
-because the vendor's startup writes it, and a register whose meaning is not
-known is not one to set on somebody else's machine.
+`0x0206` answers zero in every state and is written by nobody; a register
+whose meaning is not known is not one to set on somebody else's machine.
 
 ## 5. Other interfaces (no mailbox involved)
 
@@ -471,10 +465,9 @@ boot; from outside, those two look the same. What can be said with the evidence
 in hand is narrower and still useful: `TpvSetup` is a readable indicator of the
 current mode, but it has not been shown to be the switch itself.
 
-Nextcalibur does not read it either. Detecting which adapter reports a
-resolution answers the same question through ordinary WMI, with no elevation
-and no firmware access - and reading firmware needs administrator, which this
-application does not ask for.
+Nextcalibur does not read it either: which adapter reports a resolution
+answers the same question through ordinary WMI, and the mailbox register
+below answers it from the firmware.
 
 #### Found: the switch is one mailbox write
 
@@ -544,8 +537,12 @@ left the mode unchanged, which is consistent.
 
 **So the driver was never involved**, which is what the previous section
 suspected once the driver turned out not to load. The whole switch is one
-command in a family this document already describes, through an interface this
-project already has permission to write. Nextcalibur can do it.
+command in a family this document already describes. Nextcalibur does it:
+the choice is made on the Display page, and the register is written on
+`WM_ENDSESSION` - the message Windows sends only once a restart or shutdown
+is really under way - so that a restart cancelled at Windows' "these apps
+are preventing restart" screen leaves the firmware untouched. The restart
+is asked for with `ExitWindowsEx(EWX_REBOOT)`, unforced.
 
 #### The restart has a cost nobody mentions
 
@@ -558,13 +555,7 @@ Worth stating plainly for anyone who does this: on a machine with BitLocker
 bound to the TPM, the same change can ask for a recovery key at the next boot.
 **Have it to hand before switching.** The vendor software gives no such warning.
 
-#### Why Nextcalibur still does not switch
-
-Not because it is impossible — because of how it would have to be done. The
-switch needs an undocumented IOCTL into a kernel driver this project does not
-ship and will not install, and it needs administrator. Both are things this
-project has ruled out, and neither is a limitation to be worked around later
-without the decision being revisited deliberately.
+#### Out of scope: the refresh rate
 
 `HSR` is a separate feature and not a graphics mode at all: the strings around
 it are `HSR_OFF_120_OnClick`, `HSR_ON_240_OnClick` and icons named
@@ -631,10 +622,12 @@ The mailbox reaches the embedded controller. Rules for this project:
 
 1. **Never send an undocumented command.** A write with wrong `a1`/`a2` can land
    on an unknown EC register.
-2. **Reads before writes.** `0xFA00` is understood; `0xFB00` is only understood
-   for LED.
-3. **Fan control must keep a firmware-auto fallback** and restore it on exit and
-   on crash.
+2. **Reads before writes.** `0xFA00` is understood; `0xFB00` is written to
+   three registers only: LED (`0x0100`), the display mode (`0x0203`) and the
+   thermal profile (`0x0300`), each documented here with the capture that
+   established it.
+3. **No fan control.** The vendor's software has none; what it writes with
+   each mode is the thermal profile, and that is copied exactly.
 4. **Tolerate torn reads.** Reject all-zero and partially-zero responses.
 5. **The mailbox is shared.** The stock software, if running, writes to the same
    buffer. Do not run both at once; detect and warn.
