@@ -115,6 +115,9 @@ was. Switching changes what the TPM measures at startup: the Windows PIN has
 to be set up again, and BitLocker, if on, will ask for its recovery key. The
 application says so before it does anything.
 
+[docs/FAQ.md](docs/FAQ.md) answers the questions people ask - what it needs,
+what it changes, the PIN and BitLocker warning, updates, PawnIO, uninstall -
+and the technical ones behind them.
 [docs/PROTOCOL.md](docs/PROTOCOL.md) documents the hardware interface, with the
 evidence behind each claim, and [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md)
 audits what the application needs on a machine that has never had the vendor
