@@ -14,6 +14,13 @@
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- PawnIO's IntelMSR module, loaded into the driver to read the CPU's
+       energy counters. LGPL-2.1, from github.com/namazso/PawnIO.Modules;
+       the licence sits beside it. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PawnIO\IntelMSR.bin" LogicalName="Nextcalibur.Core.Resources.PawnIO.IntelMSR.bin" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- So the tests can reach the few helpers that are internal rather than
          public: string tidying and the like, which are worth pinning and are

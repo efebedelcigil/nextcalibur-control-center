@@ -1,4 +1,4 @@
-; Nextcalibur.iss - the installer's face.
+﻿; Nextcalibur.iss - the installer's face.
 ;
 ; Inno Setup draws the wizard: where to install, what is happening, a finish
 ; page. Velopack does the installing and keeps doing the updating afterwards.
@@ -44,17 +44,33 @@ WizardStyle=modern
 WizardSizePercent=110
 Compression=lzma2/ultra64
 SolidCompression=yes
-ShowLanguageDialog=no
+; The person picks the language first, and the wizard, the notice and the
+; installed application's first words follow it.
+ShowLanguageDialog=yes
 
 [Languages]
-Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"; InfoBeforeFile: "notice-en.txt"
+Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"; InfoBeforeFile: "notice-tr.txt"
 
 [Messages]
-WelcomeLabel2=This will install [name/ver] on your computer.%n%nNextcalibur replaces the Casper Excalibur Control Center: temperatures, fans, keyboard lighting, power modes and graphics mode, from the laptop's own firmware interface. It installs no driver and runs without administrator rights.
-SelectDirDesc=Where should [name] be installed?
-SelectDirLabel3=Setup will install [name] into the following folder. Updates install themselves here later without asking for administrator rights, so choose a folder your account can write to.
-FinishedLabelNoIcons=Setup has finished installing [name] on your computer.
-FinishedLabel=Setup has finished installing [name] on your computer. It starts with Windows and lives in the notification area; the window is a double-click away.
+tr.WelcomeLabel2=Bu sihirbaz [name/ver] uygulamasını bilgisayarınıza kuracak.%n%nNextcalibur, Casper Excalibur Control Center'ın yerini alır: sıcaklıklar, fanlar, klavye aydınlatması, güç modları ve grafik modu, bilgisayarın kendi donanım yazılımı arayüzünden. Sürücü kurmaz ve yönetici hakları olmadan çalışır.
+tr.SelectDirDesc=[name] nereye kurulsun?
+tr.SelectDirLabel3=Kurulum [name] uygulamasını aşağıdaki klasöre kuracak. Güncellemeler daha sonra yönetici hakkı istemeden buraya kurulur; bu yüzden hesabınızın yazabildiği bir klasör seçin.
+tr.FinishedLabelNoIcons=Kurulum [name] uygulamasını bilgisayarınıza kurdu.
+tr.FinishedLabel=Kurulum [name] uygulamasını bilgisayarınıza kurdu. Windows ile birlikte başlar ve bildirim alanında yaşar; pencere bir çift tıklama uzağınızda.
+en.WelcomeLabel2=This will install [name/ver] on your computer.%n%nNextcalibur replaces the Casper Excalibur Control Center: temperatures, fans, keyboard lighting, power modes and graphics mode, from the laptop's own firmware interface. It installs no driver and runs without administrator rights.
+en.SelectDirDesc=Where should [name] be installed?
+en.SelectDirLabel3=Setup will install [name] into the following folder. Updates install themselves here later without asking for administrator rights, so choose a folder your account can write to.
+en.FinishedLabelNoIcons=Setup has finished installing [name] on your computer.
+en.FinishedLabel=Setup has finished installing [name] on your computer. It starts with Windows and lives in the notification area; the window is a double-click away.
+
+[CustomMessages]
+en.AlreadyInstalled=Nextcalibur %1 is already installed in%n%2%n%nOnly one copy can be installed. It updates itself - open it and use "Check for updates now" in the tray menu. To move it, remove it first from Settings > Apps.
+tr.AlreadyInstalled=Nextcalibur %1 zaten şurada kurulu:%n%2%n%nYalnızca bir kopya kurulabilir. Kendini günceller - açın ve bildirim alanı menüsünden "Check for updates now" seçin. Taşımak için önce Ayarlar > Uygulamalar'dan kaldırın.
+en.CannotWrite=Nextcalibur cannot write to that folder. Choose one your account can write to - updates install there later without administrator rights.
+tr.CannotWrite=Nextcalibur bu klasöre yazamıyor. Hesabınızın yazabildiği bir klasör seçin - güncellemeler daha sonra yönetici hakkı istemeden oraya kurulur.
+en.Installing=Installing Nextcalibur...
+tr.Installing=Nextcalibur kuruluyor...
 
 [Files]
 ; The engine, carried inside and run once.
@@ -63,8 +79,8 @@ Source: "..\releases\Nextcalibur-win-Setup.exe"; DestDir: "{tmp}"; Flags: delete
 [Run]
 ; Velopack installs into the chosen folder, quietly, and does not start the
 ; application itself (the finish page offers that).
-Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto ""{app}"""; StatusMsg: "Installing Nextcalibur..."; Flags: runhidden waituntilterminated
-Filename: "{app}\Nextcalibur.exe"; Description: "Start Nextcalibur now"; Flags: postinstall nowait skipifsilent
+Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto ""{app}"""; StatusMsg: "{cm:Installing}"; Flags: runhidden waituntilterminated
+Filename: "{app}\Nextcalibur.exe"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
 
 [Code]
 // One copy per machine. Velopack registers the installed copy under this key;
@@ -79,9 +95,7 @@ begin
   if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
   begin
     RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
-    MsgBox('Nextcalibur ' + Version + ' is already installed in' + #13#10 + Where + #13#10#13#10 +
-           'Only one copy can be installed. It updates itself - open it and use "Check for updates now" in the tray menu. ' +
-           'To move it, remove it first from Settings > Apps.', mbInformation, MB_OK);
+    MsgBox(FmtMessage(CustomMessage('AlreadyInstalled'), [Version, Where]), mbInformation, MB_OK);
     Result := False;
   end;
 end;
@@ -100,7 +114,7 @@ begin
     begin
       if not ForceDirectories(Dir) then
       begin
-        MsgBox('Nextcalibur cannot create that folder. Choose one your account can write to - updates install there later without administrator rights.', mbError, MB_OK);
+        MsgBox(CustomMessage('CannotWrite'), mbError, MB_OK);
         Result := False;
         exit;
       end;
@@ -111,7 +125,7 @@ begin
       Probe := AddBackslash(Dir) + 'nextcalibur-write-test.tmp';
       if not SaveStringToFile(Probe, 'ok', False) then
       begin
-        MsgBox('Nextcalibur cannot write to that folder. Choose one your account can write to - updates install there later without administrator rights.', mbError, MB_OK);
+        MsgBox(CustomMessage('CannotWrite'), mbError, MB_OK);
         Result := False;
         exit;
       end;
