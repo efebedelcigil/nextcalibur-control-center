@@ -1434,6 +1434,32 @@
                                 <TextBlock Text="{DynamicResource S.Settings.GroupBehaviour}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
+                                        <!-- SettingLanguage (§22c) -->
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.LanguageTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.LanguageDesc}"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="{DynamicResource CardBackground}"
+                                                    BorderBrush="{DynamicResource Line}" BorderThickness="1"
+                                                    CornerRadius="4" Padding="2" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <RadioButton x:Name="SettingLanguageEnglish" Style="{DynamicResource SegmentedRadioButtonStyle}"
+                                                                 GroupName="Language" Content="{DynamicResource S.Settings.LanguageEnglish}" />
+                                                    <RadioButton x:Name="SettingLanguageTurkish" Style="{DynamicResource SegmentedRadioButtonStyle}"
+                                                                 GroupName="Language" Content="{DynamicResource S.Settings.LanguageTurkish}" />
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
                                         <!-- SettingStartWithWindows -->
                                         <Grid Margin="0,3">
                                             <Grid.ColumnDefinitions>
