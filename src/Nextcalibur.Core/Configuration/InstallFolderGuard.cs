@@ -15,7 +15,7 @@ namespace Nextcalibur.Core.Configuration;
 /// administrators can write. A copy that lives in the profile from an
 /// earlier version is hardened here instead: the folder stops inheriting
 /// the profile's permissions and gets SYSTEM and Administrators full
-/// control, the account read and execute. The elevated application still
+/// control, Users read and execute. The elevated application still
 /// updates itself there (its updater inherits the elevation); the account
 /// cannot touch the files. The uninstall hands the folder back so the
 /// uninstaller, which runs as the account, can delete it.
@@ -72,7 +72,6 @@ public static class InstallFolderGuard
     {
         if (!Directory.Exists(root) || IsUnderProgramFiles(root) || IsHardened(root)) return false;
 
-        var user = WindowsIdentity.GetCurrent().User ?? throw new InvalidOperationException("Could not determine the current account.");
         var directory = new DirectoryInfo(root);
         var security = directory.GetAccessControl();
 
@@ -84,7 +83,10 @@ public static class InstallFolderGuard
 
         security.AddAccessRule(Rule(LocalSystem, FileSystemRights.FullControl));
         security.AddAccessRule(Rule(Administrators, FileSystemRights.FullControl));
-        security.AddAccessRule(Rule(user, FileSystemRights.ReadAndExecute | FileSystemRights.ListDirectory));
+        // Users, not this account by name: the account that starts the
+        // application unelevated (from the Start menu) may not be the one the
+        // elevated token belongs to, and it needs to read the executable.
+        security.AddAccessRule(Rule(Users, FileSystemRights.ReadAndExecute | FileSystemRights.ListDirectory));
         // The owner of a file may always rewrite its permissions, and the
         // account owns what it installed; so the owner changes too, or the
         // permissions above are a suggestion.
@@ -143,4 +145,5 @@ public static class InstallFolderGuard
 
     private static readonly SecurityIdentifier LocalSystem = new(WellKnownSidType.LocalSystemSid, null);
     private static readonly SecurityIdentifier Administrators = new(WellKnownSidType.BuiltinAdministratorsSid, null);
+    private static readonly SecurityIdentifier Users = new(WellKnownSidType.BuiltinUsersSid, null);
 }
