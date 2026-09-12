@@ -1,0 +1,15 @@
+﻿<Configuration>
+  <!-- The installer wizard, tried by hand on a clean Windows: the wizard is
+       mapped in and opened in Explorer; the person drives it from there. -->
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\installer\output</HostFolder>
+      <SandboxFolder>C:\Setup</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <Networking>Enable</Networking>
+  <LogonCommand>
+    <Command>explorer.exe C:\Setup</Command>
+  </LogonCommand>
+</Configuration>

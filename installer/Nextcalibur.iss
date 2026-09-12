@@ -11,7 +11,10 @@
 ; releases\Nextcalibur-win-Setup.exe). Output: installer\output\.
 
 #define AppName "Nextcalibur Control Center"
-#define AppVersion GetVersionNumbersString("..\releases\Nextcalibur-win-Setup.exe")
+#ifndef AppVersion
+  ; build.ps1 passes /DAppVersion=x.y.z; by hand, the engine's file version is used.
+  #define AppVersion GetVersionNumbersString("..\releases\Nextcalibur-win-Setup.exe")
+#endif
 #define Publisher "Efe Bedelcigil"
 #define Url "https://github.com/efebedelcigil/nextcalibur-control-center"
 
