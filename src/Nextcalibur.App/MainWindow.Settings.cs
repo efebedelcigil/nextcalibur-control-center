@@ -23,7 +23,7 @@ public partial class MainWindow
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
-    private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton, _settingReportButton;
+    private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton, _settingReportButton, _settingPrivacyButton;
     private bool _settingsPageWired;
     private bool _settingsPageLoading;
 
@@ -44,6 +44,7 @@ public partial class MainWindow
         _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
         _settingDriversButton = FindName("SettingDriversButton") as Button;
         _settingReportButton = FindName("SettingReportButton") as Button;
+        _settingPrivacyButton = FindName("SettingPrivacyButton") as Button;
         foreach (var ms in new[] { 1000, 2000, 5000, 10000 })
             if (FindName($"SettingInterval{ms / 1000}") is RadioButton button)
                 _settingIntervals.Add((button, ms));
@@ -78,6 +79,8 @@ public partial class MainWindow
             _settingDriversButton.Click += (_, _) => OpenVendorDrivers();
         if (_settingReportButton is not null)
             _settingReportButton.Click += (_, _) => OpenLink(UpdateService.Repository + "/issues", "issues", "Opened the repository's issues page");
+        if (_settingPrivacyButton is not null)
+            _settingPrivacyButton.Click += (_, _) => ShowPrivacy();
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -188,6 +191,27 @@ public partial class MainWindow
         {
             Dialogs.Warn("Nextcalibur", "The browser could not be opened: " + ex.Message);
         }
+    }
+
+    /// <summary>
+    /// The privacy policy, in the application's own words first and the
+    /// full page (docs/PRIVACY.md, kept with the source) on a yes. The
+    /// summary is the policy in four lines; the page is the same, with
+    /// the table of every request the application ever makes.
+    /// </summary>
+    private void ShowPrivacy()
+    {
+        if (Dialogs.Ask("Privacy",
+                "Nextcalibur collects nothing about you and sends nothing about you anywhere." +
+                Environment.NewLine + Environment.NewLine +
+                "The only requests it makes are to GitHub, to find its own updates and PawnIO's - and none at all " +
+                "with automatic checks off - and they carry nothing of yours beyond what any download does. " +
+                "Settings and the log stay in your profile; nothing is uploaded unless you attach it to a report yourself. " +
+                "No account, no telemetry, no analytics." +
+                Environment.NewLine + Environment.NewLine +
+                "Open the full policy, with the list of every request, in your browser?",
+                defaultNo: true))
+            OpenLink(UpdateService.Repository + "/blob/main/docs/PRIVACY.md", "privacy", "Opened the privacy policy");
     }
 
     private void ShowSettingsPageIfChosen()

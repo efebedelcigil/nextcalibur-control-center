@@ -104,6 +104,13 @@ It is downloaded from PawnIO's own releases, its Authenticode signature and
 chain verified, and installed quietly - and kept current the same way the
 application is. Without it: `--`.
 
+**Does it send anything anywhere? Is there telemetry?**
+No. The only network requests are to GitHub, to find the application's own
+updates and PawnIO's, and none at all with automatic checks off. Nothing
+about you or the machine is in them beyond what any download carries.
+[PRIVACY.md](PRIVACY.md) has the full table; *Privacy* on the Settings page
+says the same in the window.
+
 **Where is the log, and what is in it?**
 `%AppData%\Nextcalibur\logs\nextcalibur-YYYYMMDD.log` - one file a day,
 seven kept, events only: starts, the support verdict, mode changes, charger

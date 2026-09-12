@@ -170,6 +170,8 @@ public partial class MainWindow
             "Opens the laptop maker's own driver download page in your browser - the place for the firmware, chipset and keyboard drivers Nextcalibur does not ship.", "Settings"),
         new TourStep("SettingReportButton", TourPage.Settings, "Report a problem",
             "Opens the project's issues page on GitHub. Attach the day's log (Open log, bottom-left) and say which version you run; the version is under the buttons.", "Settings"),
+        new TourStep("SettingPrivacyButton", TourPage.Settings, "Privacy",
+            "What the application does with data, in its own words: nothing collected, nothing sent about you; the only requests are to GitHub for updates, and none with automatic checks off. The full policy is one click further.", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "Start with Windows",
             "Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.", "Settings"),
         new TourStep("SettingOfficeOnBattery", TourPage.Settings, "Office mode on battery",
