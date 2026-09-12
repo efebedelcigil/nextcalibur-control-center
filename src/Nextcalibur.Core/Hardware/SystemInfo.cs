@@ -65,6 +65,7 @@ public static class SystemInfo
     /// <summary>One fixed drive: its letter, its label if it has one, and its use.</summary>
     /// <param name="Letter">"C:", "D:" - what the person calls it.</param>
     /// <param name="Label">The volume label, or empty.</param>
+    /// <param name="Use">Used and total bytes.</param>
     public readonly record struct DriveUse(string Letter, string Label, StorageUse Use)
     {
         /// <summary>"C:" or "D: Games" - the label only when it adds something.</summary>
