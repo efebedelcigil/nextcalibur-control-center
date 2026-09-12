@@ -195,7 +195,9 @@ var
   Where, Version: String;
 begin
   Result := True;
-  if not NvidiaDriverPresent then
+  // /skipnvidia=1 is for trying the wizard in a virtual machine, which has
+  // no NVIDIA driver and never will; nothing else should pass it.
+  if (not NvidiaDriverPresent) and (ExpandConstant('{param:skipnvidia|0}') <> '1') then
   begin
     MsgBox(CustomMessage('NoNvidiaDriver'), mbError, MB_OK);
     Result := False;
