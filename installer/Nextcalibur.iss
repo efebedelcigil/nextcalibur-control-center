@@ -130,6 +130,12 @@ Filename: "{app}\Nextcalibur.exe"; Description: "{cm:LaunchProgram,Nextcalibur}"
 [Code]
 var
   DownloadPage: TDownloadWizardPage;
+  RepairDir: String;
+
+function Repairing(): Boolean;
+begin
+  Result := RepairDir <> '';
+end;
 
 function PawnIOInstalled(): Boolean;
 var
@@ -224,14 +230,6 @@ function NvidiaDriverPresent(): Boolean;
 begin
   Result := FileExists(ExpandConstant('{sys}\nvml.dll'))
          or FileExists(ExpandConstant('{commonpf}\NVIDIA Corporation\NVSMI\nvml.dll'));
-end;
-
-var
-  RepairDir: String;
-
-function Repairing(): Boolean;
-begin
-  Result := RepairDir <> '';
 end;
 
 function InitializeSetup(): Boolean;
