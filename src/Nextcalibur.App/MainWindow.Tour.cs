@@ -166,6 +166,8 @@ public partial class MainWindow
         // ---- Settings page
         new TourStep("SettingWinUtilButton", TourPage.Settings, "WinUtil",
             "Opens Chris Titus Tech's WinUtil - a Windows debloat and tweak tool - in an administrator PowerShell, downloaded from its author's site. It is not part of Nextcalibur; you are asked before it opens.", "Settings"),
+        new TourStep("SettingDriversButton", TourPage.Settings, "Drivers",
+            "Opens the laptop maker's own driver download page in your browser - the place for the firmware, chipset and keyboard drivers Nextcalibur does not ship.", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "Start with Windows",
             "Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.", "Settings"),
         new TourStep("SettingOfficeOnBattery", TourPage.Settings, "Office mode on battery",

@@ -23,7 +23,7 @@ public partial class MainWindow
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
-    private Button? _settingCheckNowButton, _settingWinUtilButton;
+    private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton;
     private bool _settingsPageWired;
     private bool _settingsPageLoading;
 
@@ -42,6 +42,7 @@ public partial class MainWindow
         _settingAutoInstallUpdates = FindName("SettingAutoInstallUpdates") as ToggleButton;
         _settingCheckNowButton = FindName("SettingCheckNowButton") as Button;
         _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
+        _settingDriversButton = FindName("SettingDriversButton") as Button;
         foreach (var ms in new[] { 1000, 2000, 5000, 10000 })
             if (FindName($"SettingInterval{ms / 1000}") is RadioButton button)
                 _settingIntervals.Add((button, ms));
@@ -72,6 +73,8 @@ public partial class MainWindow
             _settingCheckNowButton.Click += (_, _) => CheckForUpdatesByHand();
         if (_settingWinUtilButton is not null)
             _settingWinUtilButton.Click += (_, _) => OpenWinUtil();
+        if (_settingDriversButton is not null)
+            _settingDriversButton.Click += (_, _) => OpenVendorDrivers();
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -158,6 +161,26 @@ public partial class MainWindow
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
             Dialogs.Warn("Nextcalibur", "PowerShell could not be started: " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// The vendor's own driver download page, in the default browser. A link
+    /// and nothing more: the drivers are theirs, and this is where they
+    /// keep them. The owner's ask, 12 September 2026.
+    /// </summary>
+    private const string VendorDriverPage = "https://www.casper.com.tr/driver-indirme";
+
+    private void OpenVendorDrivers()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(VendorDriverPage) { UseShellExecute = true });
+            Log.Info("drivers", "Opened the vendor's driver page");
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Dialogs.Warn("Nextcalibur", "The browser could not be opened: " + ex.Message);
         }
     }
 
