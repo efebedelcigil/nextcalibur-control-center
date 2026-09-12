@@ -851,6 +851,9 @@ public partial class MainWindow : Window
         _currentMode = current;
         _modeUiReady = true;
         RefreshModeStatus(current);
+
+        // The Power Mode cards follow the mode: what is allowed changed.
+        if (PowerModeEfficiency is not null) LoadPowerModes();
     }
 
     /// <summary>
@@ -1644,9 +1647,16 @@ public partial class MainWindow : Window
         _modeUiReady = false;
 
         var active = PowerOverlayService.GetActiveOverlay();
+        var mode = _modes.DetectCurrent();
         foreach (var (option, button, text) in PowerModeControls())
         {
-            text.Text = option.Description;
+            // Within the system mode, not against it: the cards outside the
+            // mode's range are shown but cannot be chosen, and say why.
+            var allowed = mode is null || SystemModeService.OverlayAllowed(mode.Value, option.Overlay);
+            button.IsEnabled = allowed;
+            text.Text = allowed
+                ? option.Description
+                : $"Not available in {mode} mode. Change the mode on the System page first.";
             if (option.Overlay == active) button.IsChecked = true;
         }
 
@@ -1676,8 +1686,8 @@ public partial class MainWindow : Window
             PowerOverlayService.SetActiveOverlay(chosen.Option.Overlay);
             RefreshOverlay();
 
-            // Changing the overlay can move the machine out of whichever system
-            // mode it matched, so that page has to be re-read too.
+            // The choice was within the mode's range, so the mode stands; the
+            // System page re-reads to keep its subtitle honest.
             LoadSystemMode();
         }
         catch (Exception ex)

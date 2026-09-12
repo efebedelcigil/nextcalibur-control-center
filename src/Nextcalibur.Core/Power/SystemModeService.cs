@@ -41,6 +41,24 @@ public sealed class SystemModeService
         [SystemMode.Performance] = PowerOverlays.MaxPerformance,
     };
 
+    /// <summary>
+    /// The overlays a mode may run with. The mode's own overlay is what it
+    /// sets; the others are the room the Power Mode page gives within it.
+    /// Set by the owner on 12 September 2026 so that "Office with the
+    /// processor at full speed" cannot be chosen: a mode's fan profile and
+    /// its power ceiling belong together, and the Power Mode page adjusts
+    /// within a mode rather than pulling it apart.
+    /// </summary>
+    private static readonly Dictionary<SystemMode, Guid[]> AllowedOverlays = new()
+    {
+        [SystemMode.Office] = [PowerOverlays.BetterBattery, PowerOverlays.None],
+        [SystemMode.Gaming] = [PowerOverlays.None, PowerOverlays.HighPerformance],
+        [SystemMode.Performance] = [PowerOverlays.HighPerformance, PowerOverlays.MaxPerformance],
+    };
+
+    /// <summary>Whether this overlay may be chosen while the mode is on.</summary>
+    public static bool OverlayAllowed(SystemMode mode, Guid overlay) => AllowedOverlays[mode].Contains(overlay);
+
     /// <summary>Every power plan on the machine, as friendly name to GUID.</summary>
     /// <param name="includeBuiltIn">
     /// Whether Windows' own hidden plans count. They do not for choosing:
@@ -205,7 +223,7 @@ public sealed class SystemModeService
 
         foreach (var mode in Enum.GetValues<SystemMode>())
         {
-            if (Overlays[mode] != activeOverlay) continue;
+            if (!AllowedOverlays[mode].Contains(activeOverlay)) continue;
             if (ResolvePlan(mode) is { } plan && plan == activePlan) return mode;
         }
 
