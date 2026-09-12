@@ -128,6 +128,8 @@ public partial class App : Application
             return;
         }
 
+        Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
+
         // Elevated now. The on-demand task is what makes the next start
         // prompt-free; registering it is idempotent and costs a schtasks call.
         if (self is not null)
@@ -161,8 +163,6 @@ public partial class App : Application
                 Log.Warn("install", "Could not protect the install folder: " + ex.Message);
             }
         }
-
-        Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
 
         // Versions before the elevated model widened the firmware interface's
         // permission to this account by name, so an unelevated copy could

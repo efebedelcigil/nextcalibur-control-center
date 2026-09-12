@@ -43,10 +43,8 @@ Nextcalibur detects and repairs this at install time, and keeps it from coming b
 
 **[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
 — `Nextcalibur-Setup-<version>.exe`, about 65 MB: a wizard that installs
-under Program Files by default and does the rest. (`Nextcalibur-win-Setup.exe`,
-beside it, is the plain installer the wizard drives; it installs to
-`%LOCALAPPDATA%\Nextcalibur` without asking, and the application then puts
-that folder out of the account's reach at its first start - see below.)
+under Program Files and does the rest. It is the one file to download; the
+others on the release page are what the application's own updater reads.
 
 It carries the **.NET 8 desktop runtime** inside, so nothing is downloaded
 during install. An earlier release tried to fetch the runtime instead and
@@ -69,8 +67,8 @@ Because a scheduled task starts it elevated without asking, the files it
 runs from must be somewhere only administrators can write - otherwise
 anything running as your account could swap the executable and be run as
 administrator at the next start. The wizard installs under Program Files for
-that reason. A copy that lives in `%LOCALAPPDATA%` (the plain installer, or
-an earlier version updated in place) is protected by the application itself:
+that reason. A copy that lives in `%LOCALAPPDATA%` (an earlier version
+updated in place) is protected by the application itself:
 at its first elevated start it takes ownership of that folder for
 Administrators and leaves the account read-only on it; the uninstall hands
 it back.

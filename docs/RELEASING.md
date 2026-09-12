@@ -55,9 +55,8 @@ exports one, or a test certificate):
 Set them under Settings → Secrets and variables → Actions. For Azure Trusted
 Signing, replace those two steps with `azure/trusted-signing-action` and
 its secrets (tenant, client, subscription, endpoint, account, profile); the
-files to sign are the same three: `publish\Nextcalibur.exe` before
-packaging, then `releases\Nextcalibur-win-Setup.exe` and
-`installer\output\Nextcalibur-Setup-X.Y.Z.exe`.
+files to sign are `publish\Nextcalibur.exe` before packaging and
+`installer\output\Nextcalibur-Setup-X.Y.Z.exe` after.
 
 Velopack's `Update.exe` and the stub are Velopack's own signed binaries;
 `vpk pack --signParams` can re-sign them with the same certificate if wanted.
