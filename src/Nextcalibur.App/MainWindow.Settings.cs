@@ -23,7 +23,7 @@ public partial class MainWindow
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
-    private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton;
+    private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton, _settingReportButton;
     private bool _settingsPageWired;
     private bool _settingsPageLoading;
 
@@ -43,6 +43,7 @@ public partial class MainWindow
         _settingCheckNowButton = FindName("SettingCheckNowButton") as Button;
         _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
         _settingDriversButton = FindName("SettingDriversButton") as Button;
+        _settingReportButton = FindName("SettingReportButton") as Button;
         foreach (var ms in new[] { 1000, 2000, 5000, 10000 })
             if (FindName($"SettingInterval{ms / 1000}") is RadioButton button)
                 _settingIntervals.Add((button, ms));
@@ -75,6 +76,8 @@ public partial class MainWindow
             _settingWinUtilButton.Click += (_, _) => OpenWinUtil();
         if (_settingDriversButton is not null)
             _settingDriversButton.Click += (_, _) => OpenVendorDrivers();
+        if (_settingReportButton is not null)
+            _settingReportButton.Click += (_, _) => OpenLink(UpdateService.Repository + "/issues", "issues", "Opened the repository's issues page");
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -171,12 +174,15 @@ public partial class MainWindow
     /// </summary>
     private const string VendorDriverPage = "https://www.casper.com.tr/driver-indirme";
 
-    private void OpenVendorDrivers()
+    private void OpenVendorDrivers() => OpenLink(VendorDriverPage, "drivers", "Opened the vendor's driver page");
+
+    /// <summary>A page in the default browser; the failure, if any, is said in the window.</summary>
+    private void OpenLink(string url, string category, string logLine)
     {
         try
         {
-            Process.Start(new ProcessStartInfo(VendorDriverPage) { UseShellExecute = true });
-            Log.Info("drivers", "Opened the vendor's driver page");
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            Log.Info(category, logLine);
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {

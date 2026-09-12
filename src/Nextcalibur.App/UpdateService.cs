@@ -21,7 +21,7 @@ namespace Nextcalibur.App;
 /// </summary>
 public sealed class UpdateService : IDisposable
 {
-    private const string Repository = "https://github.com/efebedelcigil/nextcalibur-control-center";
+    public const string Repository = "https://github.com/efebedelcigil/nextcalibur-control-center";
 
     /// <summary>
     /// How long after startup the first check waits. Startup is when the
