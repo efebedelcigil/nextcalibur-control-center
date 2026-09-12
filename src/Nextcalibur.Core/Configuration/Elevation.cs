@@ -89,9 +89,24 @@ public static class Elevation
     /// </summary>
     public static bool RegisterOpenTask(string executablePath)
     {
+        if (!IsInstalledCopy(executablePath)) return false;
         if (TaskPointsAt(OpenTask, executablePath)) return false;
         return Create(OpenTask, executablePath, ViaTaskArgument, logon: false);
     }
+
+    /// <summary>
+    /// Whether this executable is an installed copy - one with the updater
+    /// beside its <c>current\</c> folder - as opposed to the portable zip, a
+    /// build output, or a copy somebody dropped in a folder. Only an
+    /// installed copy gets the no-prompt tasks: its folder is Program
+    /// Files' or made Administrators' (see InstallFolderGuard). A task that
+    /// elevated a file in an ordinary folder without a prompt would be the
+    /// UAC bypass the install location exists to prevent; a portable copy
+    /// is prompted at every start instead, which is the honest price.
+    /// </summary>
+    public static bool IsInstalledCopy(string executablePath) =>
+        InstallFolderGuard.RootOf(executablePath) is { } root
+        && File.Exists(Path.Combine(root, "Update.exe"));
 
     /// <summary>Whether the logon task exists and points at this executable.</summary>
     public static bool StartsWithWindows(string executablePath) => TaskPointsAt(StartupTask, executablePath);
@@ -102,6 +117,11 @@ public static class Elevation
     {
         if (enabled == StartsWithWindows(executablePath)) return false;
         if (!enabled) return CardSwitchTasks.Schtasks($"/delete /tn \"{StartupTask}\" /f") == 0;
+        if (!IsInstalledCopy(executablePath))
+            throw new InvalidOperationException(
+                "Start with Windows is for an installed copy. This one runs from a folder any program could " +
+                "write to, and starting it elevated at sign-in without a prompt would let such a program run as " +
+                "administrator. Install Nextcalibur with its installer to start it with Windows.");
         return Create(StartupTask, executablePath, $"--tray {ViaTaskArgument}", logon: true);
     }
 

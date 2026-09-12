@@ -42,9 +42,12 @@ Nextcalibur detects and repairs this at install time, and keeps it from coming b
 ## Download
 
 **[Download the latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
-— `Nextcalibur-Setup-<version>.exe`, about 65 MB: a wizard that installs
-under Program Files and does the rest. It is the one file to download; the
-others on the release page are what the application's own updater reads.
+— `Nextcalibur-<version>-Installer.exe`, about 65 MB: a wizard that installs
+under Program Files and does the rest. `Nextcalibur-<version>-Portable.zip`
+runs without installing, from any folder - and asks for administrator
+rights at every start, because a copy in an ordinary folder cannot safely be
+started elevated without a prompt (see below). The remaining files on the
+release page are what the application's own updater reads.
 
 It carries the **.NET 8 desktop runtime** inside, so nothing is downloaded
 during install. An earlier release tried to fetch the runtime instead and
