@@ -347,11 +347,13 @@ public sealed class GpuModeService
                     "Switch to Hybrid first. The card has to be on before the screen can be handed to it.");
 
             default:
-                if (!WriteFirmwareMode(mailbox, target))
-                    return new SwitchOutcome(false, false,
-                        "The firmware did not accept the change - nothing has been altered, and there is no reason to restart.");
+                // Nothing is written here. The register is written when the
+                // session is actually ending - by the window, on WM_ENDSESSION -
+                // so that a restart the person cancels at Windows' "these apps
+                // are preventing restart" screen leaves the machine exactly as
+                // it was. Set by the owner, 12 September 2026.
                 return new SwitchOutcome(true, true,
-                    $"The firmware will switch to {target} at the next restart.");
+                    $"The screen will be handed to {target} at the next restart. Nothing is changed until the restart begins.");
         }
     }
 

@@ -550,7 +550,12 @@ public partial class MainWindow : Window
     /// <summary>Exit from the tray menu: the same question, then the same close.</summary>
     private void Exit()
     {
+        var pending = _gpuPendingRestart is { } mode
+            ? $"A graphics mode change to {mode} is waiting for a restart and is applied by Nextcalibur as the " +
+              "session ends - if Nextcalibur is not running, it will not happen." + Environment.NewLine + Environment.NewLine
+            : string.Empty;
         if (!Dialogs.Ask("Exit Nextcalibur?",
+                pending +
                 "This closes Nextcalibur completely: no temperature warning, no mode switch " +
                 "when the charger moves, until it is started again.",
                 defaultNo: true))
@@ -1462,25 +1467,111 @@ public partial class MainWindow : Window
     private void OfferRestart(string summary)
     {
         var restart = Dialogs.Ask("Graphics mode",
-            summary + Environment.NewLine + Environment.NewLine + "Restart now?", defaultNo: true);
+            summary + Environment.NewLine + Environment.NewLine +
+            "Restart now? Windows will first ask any application that is holding unsaved work; " +
+            "if you cancel there, nothing changes." + Environment.NewLine + Environment.NewLine +
+            "No keeps the change waiting for whenever you next restart, as long as Nextcalibur is running.",
+            defaultNo: true);
 
         if (!restart) return;
 
+        if (!RequestRestart())
+            Dialogs.Warn("Graphics mode", "Windows did not start the restart. Restart the machine yourself; the change is applied as the session ends.");
+    }
+
+    // ----------------------------------------------------- restart, Windows' way
+
+    private const int WmQueryEndSession = 0x0011;
+    private const int WmEndSession = 0x0016;
+    private const uint EwxReboot = 0x00000002;
+    private const uint ShutdownReasonPlannedMaintenance = 0x80040001; // MAJOR_APPLICATION | MINOR_MAINTENANCE | FLAG_PLANNED
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+    private static extern bool ExitWindowsEx(uint flags, uint reason);
+
+    [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool OpenProcessToken(IntPtr process, uint access, out IntPtr token);
+
+    [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern bool LookupPrivilegeValue(string? system, string name, out long luid);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct TokenPrivileges { public uint Count; public long Luid; public uint Attributes; }
+
+    [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool AdjustTokenPrivileges(IntPtr token, bool disableAll, ref TokenPrivileges newState, uint length, IntPtr previous, IntPtr returnLength);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    private static extern bool CloseHandle(IntPtr handle);
+
+    /// <summary>
+    /// Asks Windows for a restart the way the Start menu does: every
+    /// application is asked first, one with unsaved work gets the person
+    /// the "restart anyway / cancel" screen, and cancel means cancel. Not
+    /// <c>shutdown /r</c>, which forces. Needs the shutdown privilege
+    /// enabled on this process's token; every interactive user holds it.
+    /// </summary>
+    private static bool RequestRestart()
+    {
+        const uint TokenAdjustPrivileges = 0x0020, TokenQuery = 0x0008, PrivilegeEnabled = 0x0002;
+        if (!OpenProcessToken(GetCurrentProcess(), TokenAdjustPrivileges | TokenQuery, out var token)) return false;
         try
         {
-            // /t 0: any longer delay makes Windows raise its own "your session
-            // will end" notice on top of the question just answered. The person
-            // has said yes twice by now; the third notice was noise.
-            Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 0 /d p:2:4 /c \"Nextcalibur: applying the graphics mode change.\"")
-            {
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            });
+            if (!LookupPrivilegeValue(null, "SeShutdownPrivilege", out var luid)) return false;
+            var privileges = new TokenPrivileges { Count = 1, Luid = luid, Attributes = PrivilegeEnabled };
+            if (!AdjustTokenPrivileges(token, false, ref privileges, 0, IntPtr.Zero, IntPtr.Zero)) return false;
         }
-        catch (Win32Exception)
+        finally
         {
-            Dialogs.Warn("Graphics mode", "Could not start the restart. Restart the machine yourself to apply the change.");
+            CloseHandle(token);
         }
+        return ExitWindowsEx(EwxReboot, ShutdownReasonPlannedMaintenance);
+    }
+
+    /// <summary>
+    /// The one moment the mode register is written: Windows says the session
+    /// is ending for real. <c>WM_ENDSESSION</c> with a true <c>wParam</c>
+    /// arrives only after every application has agreed or the person has
+    /// chosen "restart anyway"; a cancelled restart sends it with false, and
+    /// then nothing is written and the machine stays as it was. The write is
+    /// one mailbox call, well inside the grace Windows gives.
+    /// </summary>
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        if (System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle) is { } source)
+            source.AddHook(OnWindowMessage);
+    }
+
+    private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WmQueryEndSession)
+        {
+            // Never the application holding a restart up.
+            _sessionEnding = true;
+            handled = true;
+            return new IntPtr(1);
+        }
+
+        if (msg == WmEndSession)
+        {
+            if (wParam != IntPtr.Zero)
+            {
+                if (_gpuPendingRestart is { } target && _mailbox is not null)
+                {
+                    try { _gpu.WriteFirmwareMode(_mailbox, target); }
+                    catch (Exception) { }
+                }
+            }
+            else
+            {
+                // Cancelled at Windows' screen. Nothing was written; the
+                // choice stays pending for the restart that does happen.
+                _sessionEnding = false;
+            }
+        }
+
+        return IntPtr.Zero;
     }
 
     // --------------------------------------------------------------- power mode
