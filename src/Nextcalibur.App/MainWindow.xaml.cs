@@ -178,6 +178,7 @@ public partial class MainWindow : Window
         // Said once, through the tray, because that is where this application
         // lives when it has something to say and no window on screen.
         _updates.UpdateFound += (_, version) => OnUpdateFound(version);
+        _updates.DependencyFound += (_, status) => OfferDependency(status);
         _tray.BalloonClicked += (_, _) => { if (_updates.Available is not null) OfferUpdate(); };
         _tray.CheckForUpdatesRequested += async (_, _) =>
         {
@@ -1102,6 +1103,46 @@ public partial class MainWindow : Window
             _exiting = false;
             HideProgress();
             Dialogs.Warn("Nextcalibur - updates", "The update could not be installed: " + ex.Message);
+        }
+        finally
+        {
+            _updating = false;
+        }
+    }
+
+    /// <summary>
+    /// A dependency is missing or behind: the question, then the work, in
+    /// the window's own dialogue. No downloads the "no"; the next start asks
+    /// again, the checks in between do not.
+    /// </summary>
+    private async void OfferDependency(Nextcalibur.Core.Dependencies.DependencyStatus status)
+    {
+        if (_updating) return;
+
+        var verb = status.Missing ? "Install" : "Update";
+        if (!Dialogs.Ask($"{verb} {status.Dependency.Name}?",
+                status.Describe() + Environment.NewLine + Environment.NewLine +
+                "It is downloaded from its own releases, its signature is checked, and it installs quietly." +
+                Environment.NewLine + Environment.NewLine + $"{verb} now?",
+                defaultNo: false))
+        {
+            _updates.DeclineDependency(status);
+            return;
+        }
+
+        _updating = true;
+        try
+        {
+            ShowProgress($"{verb}ing {status.Dependency.Name}", "Downloading...");
+            var progress = new Progress<int>(p =>
+            {
+                DialogProgress.Value = p;
+                DialogBodyText.Text = p < 100 ? $"Downloading... {p}%" : "Installing...";
+            });
+            var (ok, message) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
+            HideProgress();
+            if (ok) Dialogs.Tell("Nextcalibur - dependencies", message);
+            else Dialogs.Warn("Nextcalibur - dependencies", message);
         }
         finally
         {
