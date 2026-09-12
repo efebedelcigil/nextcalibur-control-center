@@ -719,7 +719,19 @@ leaving a registry value behind.
    the reason. The wizard is the download from 0.5.2 on; Velopack's own
    Setup stays in the release assets for anyone who wants the plain one.
    Left to see: a custom-folder copy taking an update unelevated - the
-   sandbox can show that, since updates need no mailbox. Inno Setup is free
+   sandbox can show that, since updates need no mailbox.
+
+   **Grown the same night, on the owner's asks.** English and Turkish with
+   the language dialog, a "use at your own risk" notice per language that
+   must be accepted, a start-with-Windows checkbox whose answer travels to
+   the application's first run in `first-run.ini` (Velopack's own first-run
+   hook never fires when its Setup is run silently - found in the sandbox
+   when the tick was missing), Standard or Custom install with the
+   dependencies as optional components (PawnIO first: downloaded at setup,
+   Authenticode and signer checked through PowerShell, installed quietly),
+   one copy per machine with **Repair** in place of a flat refusal, and no
+   install at all without the NVIDIA driver (`nvml.dll`) - the wizard says
+   why and stops. `/skipnvidia=1` exists for the virtual machine only. Inno Setup is free
    and its licence permits this; the script goes in `installer/`.
 
 
