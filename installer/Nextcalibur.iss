@@ -73,8 +73,20 @@ en.Installing=Installing Nextcalibur...
 tr.Installing=Nextcalibur kuruluyor...
 en.StartWithWindows=Start Nextcalibur with Windows (in the notification area)
 tr.StartWithWindows=Nextcalibur Windows ile başlasın (bildirim alanında)
-en.InstallPawnIO=Install the PawnIO driver (reads the processor's power; signed, open source, from pawnio.eu)
-tr.InstallPawnIO=PawnIO sürücüsünü kur (işlemcinin güç tüketimini okur; imzalı, açık kaynak, pawnio.eu)
+en.TypeStandard=Standard - the application and everything it can use
+tr.TypeStandard=Standart - uygulama ve kullanabildiği her şey
+en.TypeCustom=Custom - choose which dependencies to install
+tr.TypeCustom=Özel - hangi bağımlılıkların kurulacağını seçin
+en.CompApp=Nextcalibur Control Center
+tr.CompApp=Nextcalibur Control Center
+en.CompDeps=Dependencies (optional; the application works without them)
+tr.CompDeps=Bağımlılıklar (isteğe bağlı; uygulama onlarsız da çalışır)
+en.CompPawnIO=PawnIO driver - reads the processor's power (signed, open source, pawnio.eu)
+tr.CompPawnIO=PawnIO sürücüsü - işlemcinin güç tüketimini okur (imzalı, açık kaynak, pawnio.eu)
+en.AlreadyInstalledRepair=Nextcalibur %1 is already installed in%n%2%n%nOnly one copy can be installed. Repair it? This reinstalls the application in place, keeps your settings, and puts back anything missing - start-up, dependencies. To move it, remove it first from Settings > Apps.
+tr.AlreadyInstalledRepair=Nextcalibur %1 zaten şurada kurulu:%n%2%n%nYalnızca bir kopya kurulabilir. Onarılsın mı? Uygulama yerinde yeniden kurulur, ayarlarınız korunur, eksik olan her şey - başlangıç, bağımlılıklar - geri konur. Taşımak için önce Ayarlar > Uygulamalar'dan kaldırın.
+en.RepairTitle=Repair
+tr.RepairTitle=Onar
 en.DownloadingPawnIO=Downloading the PawnIO driver...
 tr.DownloadingPawnIO=PawnIO sürücüsü indiriliyor...
 en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur works without it; it will offer it again later.
@@ -84,11 +96,20 @@ tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
 en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
 tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
 
+[Types]
+Name: "standard"; Description: "{cm:TypeStandard}"
+Name: "custom"; Description: "{cm:TypeCustom}"; Flags: iscustom
+
+; The application is fixed. Under "Dependencies" sit the things it can use
+; but does not need: leave one out and the feature it serves reads "--".
+; The application offers the same ones later when missing or behind.
+[Components]
+Name: "app"; Description: "{cm:CompApp}"; Types: standard custom; Flags: fixed
+Name: "deps"; Description: "{cm:CompDeps}"; Types: standard custom
+Name: "deps\pawnio"; Description: "{cm:CompPawnIO}"; Types: standard; Check: not PawnIOInstalled
+
 [Tasks]
-Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce
-; Dependencies the application can use, installed with it when ticked. The
-; application offers the same ones later when they are missing or behind.
-Name: "pawnio"; Description: "{cm:InstallPawnIO}"; Flags: checkedonce; Check: not PawnIOInstalled
+Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check: not Repairing
 
 [Files]
 ; The engine, carried inside and run once.
@@ -147,7 +168,7 @@ var
   File: String;
   Code: Integer;
 begin
-  if (CurStep = ssPostInstall) and WizardIsTaskSelected('pawnio') and (not PawnIOInstalled) then
+  if (CurStep = ssPostInstall) and WizardIsComponentSelected('deps\pawnio') and (not PawnIOInstalled) then
   begin
     DownloadPage.Clear;
     DownloadPage.Add('https://github.com/namazso/PawnIO.Setup/releases/latest/download/PawnIO_setup.exe', 'PawnIO_setup.exe', '');
@@ -174,7 +195,22 @@ end;
 
 function StartupChoice(Param: String): String;
 begin
-  if WizardIsTaskSelected('startup') then Result := '1' else Result := '0';
+  if Repairing then Result := 'keep'
+  else if WizardIsTaskSelected('startup') then Result := '1'
+  else Result := '0';
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if Repairing and (CurPageID = wpSelectDir) then
+    WizardForm.DirEdit.Text := RepairDir;
+end;
+
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  // A repair keeps the folder; the components page still shows so a
+  // dependency left out the first time can be added.
+  Result := Repairing and (PageID = wpSelectDir);
 end;
 
 // One copy per machine. Velopack registers the installed copy under this key;
@@ -190,11 +226,20 @@ begin
          or FileExists(ExpandConstant('{commonpf}\NVIDIA Corporation\NVSMI\nvml.dll'));
 end;
 
+var
+  RepairDir: String;
+
+function Repairing(): Boolean;
+begin
+  Result := RepairDir <> '';
+end;
+
 function InitializeSetup(): Boolean;
 var
   Where, Version: String;
 begin
   Result := True;
+  RepairDir := '';
   // /skipnvidia=1 is for trying the wizard in a virtual machine, which has
   // no NVIDIA driver and never will; nothing else should pass it.
   if (not NvidiaDriverPresent) and (ExpandConstant('{param:skipnvidia|0}') <> '1') then
@@ -206,8 +251,10 @@ begin
   if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
   begin
     RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
-    MsgBox(FmtMessage(CustomMessage('AlreadyInstalled'), [Version, Where]), mbInformation, MB_OK);
-    Result := False;
+    if MsgBox(FmtMessage(CustomMessage('AlreadyInstalledRepair'), [Version, Where]), mbConfirmation, MB_YESNO) = IDYES then
+      RepairDir := Where
+    else
+      Result := False;
   end;
 end;
 
