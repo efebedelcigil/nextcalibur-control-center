@@ -8,6 +8,15 @@ still work?
 This is the audit behind the answer. Every row was checked on hardware rather
 than reasoned about.
 
+> **12 September 2026:** the application now runs elevated (one prompt on
+> the first run, a scheduled task after that), so the permission grant this
+> document describes is no longer what makes the readings possible - being
+> an administrator is. The mechanism is still documented below because the
+> grant is real, older installs have it, and the uninstall takes it back.
+> Two more things a clean machine gets offered: the PawnIO driver (for CPU
+> power; optional) and, from the wizard, a choice about starting with
+> Windows.
+
 ## What the application actually depends on
 
 | What it needs | Where that comes from | Needs vendor software? |
