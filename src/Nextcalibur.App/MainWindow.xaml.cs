@@ -550,6 +550,14 @@ public partial class MainWindow : Window
     /// <summary>Exit from the tray menu: the same question, then the same close.</summary>
     private void Exit()
     {
+        // The question is the window's own dialogue; bring the window up to ask it.
+        if (!IsVisible || WindowState == WindowState.Minimized)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Activate();
+        }
+
         var pending = _gpuPendingRestart is { } mode
             ? $"A graphics mode change to {mode} is waiting for a restart and is applied by Nextcalibur as the " +
               "session ends - if Nextcalibur is not running, it will not happen." + Environment.NewLine + Environment.NewLine
