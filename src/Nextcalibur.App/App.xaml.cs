@@ -38,6 +38,9 @@ public partial class App : Application
     /// <summary>With <see cref="CleanUpArgument"/>: take the tasks and the permission, leave the power repair.</summary>
     public const string KeepRepairArgument = "--keep-repair";
 
+    /// <summary>With <see cref="CleanUpArgument"/>: also uninstall the dependencies the person agreed to remove (PawnIO).</summary>
+    public const string RemoveDependenciesArgument = "--remove-dependencies";
+
     /// <summary>
     /// Velopack runs this executable with one of its own switches for the
     /// install, update and uninstall hooks. Those runs must not elevate:
@@ -77,6 +80,9 @@ public partial class App : Application
         if (args.Contains(CleanUpArgument))
         {
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
+            if (args.Contains(RemoveDependenciesArgument))
+                foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
+                    if (dependency.InstalledVersion() is not null) dependency.Uninstall();
             FinishUninstall(self);
             Environment.Exit(0);
             return;
@@ -317,12 +323,28 @@ public partial class App : Application
 
         if (removeKeepable) Footprint.RemoveOwnPowerPlans();
 
-        var needsElevation = ours.Any(t => t.NeedsElevation) || (removeKeepable && keepable.Any(t => t.NeedsElevation));
+        // The dependencies, one question of their own: a driver another
+        // program may be using is not removed on a nod.
+        var installedDependencies = Nextcalibur.Core.Dependencies.DependencyManager.All
+            .Where(d => d.InstalledVersion() is not null).ToList();
+        var removeDependencies = installedDependencies.Count > 0 && Dialogs.Ask("Nextcalibur - the things it installed",
+            "Nextcalibur installed these for its own use:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, installedDependencies.Select(d => $"    - {d.Name} ({d.Purpose})")) +
+            Environment.NewLine + Environment.NewLine +
+            "Other programs may use them too - LibreHardwareMonitor and FanControl read through the same driver. " +
+            "Remove them as well? If unsure, keep them; they do nothing on their own.",
+            defaultNo: true);
+
+        var needsElevation = ours.Any(t => t.NeedsElevation) || (removeKeepable && keepable.Any(t => t.NeedsElevation)) || removeDependencies;
         if (!needsElevation) return;
 
         if (MailboxAccess.IsElevated())
         {
             Footprint.RemoveMachineTraces(removeRepair: removeKeepable);
+            if (removeDependencies)
+                foreach (var dependency in installedDependencies) dependency.Uninstall();
+            FinishUninstall(Environment.ProcessPath);
             return;
         }
 
@@ -333,7 +355,12 @@ public partial class App : Application
             using var elevated = Process.Start(new ProcessStartInfo
             {
                 FileName = self,
-                Arguments = removeKeepable ? CleanUpArgument : $"{CleanUpArgument} {KeepRepairArgument}",
+                Arguments = string.Join(' ', new[]
+                {
+                    CleanUpArgument,
+                    removeKeepable ? null : KeepRepairArgument,
+                    removeDependencies ? RemoveDependenciesArgument : null,
+                }.Where(a => a is not null)),
                 UseShellExecute = true,
                 Verb = "runas",
             });

@@ -13,6 +13,7 @@ public sealed class PawnIoDependency : Dependency
     public override string Id => "pawnio";
     public override string Name => "PawnIO driver";
     public override string Purpose => "reads the processor's power draw";
+    public override string UninstallKey => "PawnIO";
 
     public override Version? InstalledVersion()
     {

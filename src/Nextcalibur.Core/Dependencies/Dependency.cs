@@ -43,6 +43,66 @@ public abstract class Dependency
     /// <summary>Arguments that make the installer run without a wizard.</summary>
     public abstract string SilentInstallArguments { get; }
 
+    /// <summary>The name of its key under Windows' Uninstall registry key, where its version and uninstaller are.</summary>
+    public abstract string UninstallKey { get; }
+
+    /// <summary>
+    /// Removes it, quietly, through the uninstaller it registered. Elevated
+    /// only. True when it reported success or was already gone. Offered at
+    /// this application's own uninstall, and only on a yes: another program
+    /// may be using it.
+    /// </summary>
+    public bool Uninstall()
+    {
+        string? command;
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + UninstallKey);
+            if (key is null) return true;
+            command = key.GetValue("QuietUninstallString") as string ?? key.GetValue("UninstallString") as string;
+        }
+        catch (Exception ex) when (ex is System.Security.SecurityException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(command)) return false;
+
+        // "C:\...\uninstall.exe" -uninstall -silent : the file, then its arguments.
+        string file, arguments;
+        if (command.StartsWith('"'))
+        {
+            var close = command.IndexOf('"', 1);
+            if (close < 0) return false;
+            file = command[1..close];
+            arguments = command[(close + 1)..].Trim();
+        }
+        else
+        {
+            var space = command.IndexOf(' ');
+            file = space < 0 ? command : command[..space];
+            arguments = space < 0 ? string.Empty : command[(space + 1)..].Trim();
+        }
+
+        try
+        {
+            using var process = Process.Start(new ProcessStartInfo
+            {
+                FileName = file,
+                Arguments = arguments,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            });
+            if (process is null) return false;
+            process.WaitForExit(5 * 60 * 1000);
+            return process.HasExited && process.ExitCode == 0;
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
     /// <summary>
     /// Verifies the file's signature against <see cref="ExpectedSigner"/>.
     /// The chain has to be valid too; a self-signed certificate with the

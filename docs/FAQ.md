@@ -118,7 +118,9 @@ Nothing of its own: settings, logs, both scheduled tasks and the folder
 protection are removed without asking. It asks about two things you might
 want to keep: the power plans it created, and the power-overlay repair -
 undoing the repair puts the vendor's fault back, so the default answer is to
-keep it. Removing the tasks needs one administrator prompt, which Windows
+keep it. A third question covers what it installed for its own use - the
+PawnIO driver - which other programs may be using too, so the default is
+to keep it. Removing the tasks needs one administrator prompt, which Windows
 shows during the uninstall.
 
 **Can I run it alongside the vendor's software?**
