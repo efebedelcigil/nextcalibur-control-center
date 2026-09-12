@@ -1,0 +1,20 @@
+# Dependabot: pull requests for NuGet packages and for the actions the
+# workflows pin, weekly, grouped so one PR carries the small bumps.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      nuget:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,118 @@
+name: Release
+
+# A tag vX.Y.Z builds the packages the way build.ps1 does on the development
+# machine - Velopack package and plain Setup, then the Inno wizard - attests
+# their provenance, and publishes a GitHub release with the notes from
+# docs/releases/X.Y.Z.md. Signing happens here too, once the certificate
+# secrets exist (see docs/RELEASING.md); without them the step is skipped
+# and the packages are unsigned, as they are today.
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Version from the tag
+        id: version
+        shell: pwsh
+        run: |
+          $v = "${{ github.ref_name }}".TrimStart('v')
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Inno Setup 6
+        run: choco install innosetup --no-progress -y
+
+      - name: Previous releases (for the delta)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force releases | Out-Null
+          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" download github --repoUrl https://github.com/${{ github.repository }} -o releases
+        continue-on-error: true
+
+      - name: Build and test
+        run: |
+          dotnet build Nextcalibur.sln -c Release --nologo /p:Version=${{ steps.version.outputs.version }}
+          dotnet test Nextcalibur.sln -c Release --no-build --nologo
+
+      - name: Publish
+        run: dotnet publish src/Nextcalibur.App/Nextcalibur.App.csproj -c Release -o publish --nologo /p:Version=${{ steps.version.outputs.version }}
+
+      - name: Sign the executable
+        if: ${{ env.SIGNING_CERT_PFX_BASE64 != '' }}
+        env:
+          SIGNING_CERT_PFX_BASE64: ${{ secrets.SIGNING_CERT_PFX_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        shell: pwsh
+        run: |
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", [Convert]::FromBase64String($env:SIGNING_CERT_PFX_BASE64))
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          & $signtool.FullName sign /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com /f "$env:RUNNER_TEMP\cert.pfx" /p $env:SIGNING_CERT_PASSWORD publish\Nextcalibur.exe
+          Remove-Item "$env:RUNNER_TEMP\cert.pfx"
+
+      - name: Package (Velopack)
+        shell: pwsh
+        run: |
+          Remove-Item publish\*.pdb, publish\*.xml -ErrorAction SilentlyContinue
+          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack --packId Nextcalibur --packVersion ${{ steps.version.outputs.version }} --packDir publish --mainExe Nextcalibur.exe --packTitle "Nextcalibur Control Center" --packAuthors "Efe Bedelcigil" --icon src\Nextcalibur.App\Assets\app.ico -o releases
+
+      - name: Package (wizard)
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.version }}" installer\Nextcalibur.iss'
+        shell: pwsh
+
+      - name: Sign the installers
+        if: ${{ env.SIGNING_CERT_PFX_BASE64 != '' }}
+        env:
+          SIGNING_CERT_PFX_BASE64: ${{ secrets.SIGNING_CERT_PFX_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        shell: pwsh
+        run: |
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", [Convert]::FromBase64String($env:SIGNING_CERT_PFX_BASE64))
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          foreach ($f in @("releases\Nextcalibur-win-Setup.exe", "installer\output\Nextcalibur-Setup-${{ steps.version.outputs.version }}.exe")) {
+            & $signtool.FullName sign /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com /f "$env:RUNNER_TEMP\cert.pfx" /p $env:SIGNING_CERT_PASSWORD $f
+          }
+          Remove-Item "$env:RUNNER_TEMP\cert.pfx"
+
+      - name: Attest provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            installer/output/Nextcalibur-Setup-*.exe
+            releases/Nextcalibur-win-Setup.exe
+            releases/Nextcalibur-*.nupkg
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          $notes = "docs/releases/$v.md"
+          if (-not (Test-Path $notes)) { "Nextcalibur $v" | Set-Content $notes }
+          gh release create "v$v" --title "Nextcalibur $v" --notes-file $notes `
+            "installer/output/Nextcalibur-Setup-$v.exe" `
+            releases/Nextcalibur-win-Setup.exe releases/Nextcalibur-win-Portable.zip `
+            "releases/Nextcalibur-$v-full.nupkg" "releases/Nextcalibur-$v-delta.nupkg" `
+            releases/RELEASES releases/releases.win.json
