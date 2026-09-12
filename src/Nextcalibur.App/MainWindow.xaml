@@ -1337,6 +1337,69 @@
                     <Grid x:Name="PageSettings" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed">
                         <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel HorizontalAlignment="Stretch">
+                                <!-- Section 0: Tools (§21a) -->
+                                <TextBlock Text="Tools" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="1" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="1" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- 1. WinUtil -->
+                                        <Grid Grid.Column="0" Margin="0,0,14,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="Windows debloat and tweaks" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Grid.Row="1" Text="Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur."
+                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
+                                            <Button x:Name="SettingWinUtilButton" Grid.Row="2" Content="Open WinUtil"
+                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        </Grid>
+
+                                        <Border Grid.Column="1" Background="{DynamicResource Line}" />
+
+                                        <!-- 2. Drivers -->
+                                        <Grid Grid.Column="2" Margin="14,0,14,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="Drivers" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Grid.Row="1" Text="The laptop maker's own driver download page, in your browser."
+                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
+                                            <Button x:Name="SettingDriversButton" Grid.Row="2" Content="Driver downloads"
+                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        </Grid>
+
+                                        <Border Grid.Column="3" Background="{DynamicResource Line}" />
+
+                                        <!-- 3. Issues -->
+                                        <Grid Grid.Column="4" Margin="14,0,0,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="Report a problem" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Grid.Row="1" Text="The project's issues page on GitHub. Attach the day's log."
+                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
+                                            <Button x:Name="SettingReportButton" Grid.Row="2" Content="Open issues"
+                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+
                                 <!-- Section 1: Behaviour -->
                                 <TextBlock Text="Behaviour" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
