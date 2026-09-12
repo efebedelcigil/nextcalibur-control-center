@@ -73,9 +73,22 @@ en.Installing=Installing Nextcalibur...
 tr.Installing=Nextcalibur kuruluyor...
 en.StartWithWindows=Start Nextcalibur with Windows (in the notification area)
 tr.StartWithWindows=Nextcalibur Windows ile başlasın (bildirim alanında)
+en.InstallPawnIO=Install the PawnIO driver (reads the processor's power; signed, open source, from pawnio.eu)
+tr.InstallPawnIO=PawnIO sürücüsünü kur (işlemcinin güç tüketimini okur; imzalı, açık kaynak, pawnio.eu)
+en.DownloadingPawnIO=Downloading the PawnIO driver...
+tr.DownloadingPawnIO=PawnIO sürücüsü indiriliyor...
+en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur works without it; it will offer it again later.
+tr.PawnIOFailed=PawnIO sürücüsü şu an kurulamadı (%1). Nextcalibur onsuz da çalışır; daha sonra yeniden önerecek.
+en.PawnIOBadSignature=the download is not signed by namazso.eu
+tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
+en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
+tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
 
 [Tasks]
 Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce
+; Dependencies the application can use, installed with it when ticked. The
+; application offers the same ones later when they are missing or behind.
+Name: "pawnio"; Description: "{cm:InstallPawnIO}"; Flags: checkedonce; Check: not PawnIOInstalled
 
 [Files]
 ; The engine, carried inside and run once.
@@ -94,6 +107,71 @@ Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto "
 Filename: "{app}\Nextcalibur.exe"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
 
 [Code]
+var
+  DownloadPage: TDownloadWizardPage;
+
+function PawnIOInstalled(): Boolean;
+var
+  V: String;
+begin
+  Result := RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO', 'DisplayVersion', V);
+end;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  if Progress = ProgressMax then Log(Format('Downloaded %s', [FileName]));
+  Result := True;
+end;
+
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
+end;
+
+// The signature is checked the way the application checks it: Authenticode
+// valid, chain built, signed by PawnIO's author. PowerShell does the work;
+// a non-zero exit refuses the file.
+function PawnIOSignatureIsTrusted(const File: String): Boolean;
+var
+  Code: Integer;
+  Cmd: String;
+begin
+  Cmd := '-NoProfile -NonInteractive -Command "$s = Get-AuthenticodeSignature ''' + File + '''; ' +
+         'if ($s.Status -eq ''Valid'' -and $s.SignerCertificate.Subject -like ''*CN=namazso.eu*'') { exit 0 } else { exit 1 }"';
+  Result := Exec('powershell.exe', Cmd, '', SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
+end;
+
+// After the application is in place: fetch and install what was ticked.
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  File: String;
+  Code: Integer;
+begin
+  if (CurStep = ssPostInstall) and WizardIsTaskSelected('pawnio') and (not PawnIOInstalled) then
+  begin
+    DownloadPage.Clear;
+    DownloadPage.Add('https://github.com/namazso/PawnIO.Setup/releases/latest/download/PawnIO_setup.exe', 'PawnIO_setup.exe', '');
+    DownloadPage.Show;
+    try
+      try
+        DownloadPage.Download;
+        File := ExpandConstant('{tmp}\PawnIO_setup.exe');
+        if not PawnIOSignatureIsTrusted(File) then
+        begin
+          DeleteFile(File);
+          MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), [CustomMessage('PawnIOBadSignature')]), mbError, MB_OK);
+        end
+        else if not (Exec(File, '-install -silent', '', SW_HIDE, ewWaitUntilTerminated, Code) and ((Code = 0) or (Code = 183))) then
+          MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), ['exit ' + IntToStr(Code)]), mbError, MB_OK);
+      except
+        MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), [GetExceptionMessage]), mbError, MB_OK);
+      end;
+    finally
+      DownloadPage.Hide;
+    end;
+  end;
+end;
+
 function StartupChoice(Param: String): String;
 begin
   if WizardIsTaskSelected('startup') then Result := '1' else Result := '0';
@@ -103,11 +181,26 @@ end;
 // a second install elsewhere would take over the entry and orphan the first
 // folder, and two versions side by side is exactly what the owner ruled out.
 // The installed copy updates itself; there is nothing for a second Setup to do.
+// nvml.dll comes with the NVIDIA display driver and cannot be installed on
+// its own; without it the graphics card cannot be read. The owner's rule:
+// no driver, no install.
+function NvidiaDriverPresent(): Boolean;
+begin
+  Result := FileExists(ExpandConstant('{sys}\nvml.dll'))
+         or FileExists(ExpandConstant('{commonpf}\NVIDIA Corporation\NVSMI\nvml.dll'));
+end;
+
 function InitializeSetup(): Boolean;
 var
   Where, Version: String;
 begin
   Result := True;
+  if not NvidiaDriverPresent then
+  begin
+    MsgBox(CustomMessage('NoNvidiaDriver'), mbError, MB_OK);
+    Result := False;
+    exit;
+  end;
   if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
   begin
     RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);

@@ -104,6 +104,15 @@ public partial class App : Application
         if (self is not null) Elevation.RegisterOpenTask(self);
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
+
+        // The wizard's install: Velopack's Setup ran silently and never
+        // launched us, so its first-run hook never fires. The wizard leaves
+        // a marker beside the executable instead; that is the first run.
+        if (self is not null && FirstRunMarker(self) is { } marker && File.Exists(marker))
+        {
+            Log.Info("first-run", "Marker from the installer found");
+            FirstRun();
+        }
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             Log.Error("crash", "Unhandled exception; the process is ending", e.ExceptionObject as Exception);
         TaskScheduler.UnobservedTaskException += (_, e) =>
@@ -303,9 +312,24 @@ public partial class App : Application
     /// </summary>
     private static void FirstRun()
     {
-        if (MailboxAccess.Check() == MailboxAvailability.NotSupported) return;
+        if (MailboxAccess.Check() == MailboxAvailability.NotSupported)
+        {
+            // Nothing on a machine this does not understand - not even a
+            // start-up task. The marker still goes, so this is not repeated.
+            if (Environment.ProcessPath is { } exe && FirstRunMarker(exe) is { } m)
+                try { File.Delete(m); } catch (IOException) { }
+            return;
+        }
         StartWithWindowsOnFirstRun();
         RepairPowerOverlayOnFirstRun();
+    }
+
+    /// <summary>The wizard's one-line file beside the install root: {app}irst-run.ini.</summary>
+    private static string? FirstRunMarker(string executablePath)
+    {
+        var root = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(executablePath))
+                   ?? System.IO.Path.GetDirectoryName(executablePath);
+        return root is null ? null : System.IO.Path.Combine(root, "first-run.ini");
     }
 
     /// <summary>
@@ -325,8 +349,7 @@ public partial class App : Application
             // beside the executable, read once and removed. No file - the
             // plain Velopack Setup, which asks nothing - means yes, as before.
             var wanted = true;
-            var root = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(self)) ?? System.IO.Path.GetDirectoryName(self);
-            var marker = root is null ? null : System.IO.Path.Combine(root, "first-run.ini");
+            var marker = FirstRunMarker(self);
             if (marker is not null && File.Exists(marker))
             {
                 wanted = !File.ReadAllText(marker).Contains("StartWithWindows=0", StringComparison.OrdinalIgnoreCase);
