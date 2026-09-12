@@ -67,6 +67,25 @@ Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto "
 Filename: "{app}\Nextcalibur.exe"; Description: "Start Nextcalibur now"; Flags: postinstall nowait skipifsilent
 
 [Code]
+// One copy per machine. Velopack registers the installed copy under this key;
+// a second install elsewhere would take over the entry and orphan the first
+// folder, and two versions side by side is exactly what the owner ruled out.
+// The installed copy updates itself; there is nothing for a second Setup to do.
+function InitializeSetup(): Boolean;
+var
+  Where, Version: String;
+begin
+  Result := True;
+  if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
+  begin
+    RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
+    MsgBox('Nextcalibur ' + Version + ' is already installed in' + #13#10 + Where + #13#10#13#10 +
+           'Only one copy can be installed. It updates itself - open it and use "Check for updates now" in the tray menu. ' +
+           'To move it, remove it first from Settings > Apps.', mbInformation, MB_OK);
+    Result := False;
+  end;
+end;
+
 // A folder the account cannot write to would install today and fail to
 // update tomorrow. Say so before the wizard goes on.
 function NextButtonClick(CurPageID: Integer): Boolean;
