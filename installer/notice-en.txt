@@ -1,0 +1,18 @@
+﻿Please read before installing.
+
+Nextcalibur Control Center is free, open-source software, developed and
+tested on one laptop: a Casper Excalibur G870 (Tongfang JS970). It talks to
+your laptop's firmware to read temperatures and fan speeds, set the keyboard
+lighting, and switch power and graphics modes. Switching the graphics mode
+changes what the TPM measures at startup; the Windows PIN has to be set up
+again afterwards, and if BitLocker is on, the next start can ask for the
+recovery key.
+
+On a machine that does not have the same firmware interface, Nextcalibur
+locks itself and does nothing.
+
+You use this program at your own risk. It comes with no warranty of any
+kind, and its authors are not responsible for any damage, data loss or cost
+that results from using it. If you do not accept this, do not install.
+
+Source code and details: github.com/efebedelcigil/nextcalibur-control-center

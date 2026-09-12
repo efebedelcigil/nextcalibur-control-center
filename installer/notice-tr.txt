@@ -1,0 +1,19 @@
+﻿Lütfen kurmadan önce okuyun.
+
+Nextcalibur Control Center ücretsiz ve açık kaynaklı bir yazılımdır; tek
+bir dizüstü bilgisayarda geliştirilmiş ve test edilmiştir: Casper Excalibur
+G870 (Tongfang JS970). Sıcaklıkları ve fan hızlarını okumak, klavye
+aydınlatmasını ayarlamak, güç ve grafik modlarını değiştirmek için
+bilgisayarınızın kendi donanım yazılımıyla (firmware) konuşur. Grafik
+modunu değiştirmek TPM'in açılışta ölçtüğü değerleri değiştirir; sonrasında
+Windows PIN'inin yeniden kurulması gerekir ve BitLocker açıksa bir sonraki
+açılış kurtarma anahtarı isteyebilir.
+
+Aynı donanım yazılımı arayüzüne sahip olmayan bir makinede Nextcalibur
+kendini kilitler ve hiçbir şey yapmaz.
+
+Bu programı kullanma sorumluluğu tamamen size aittir. Hiçbir garanti
+verilmez; kullanımından doğabilecek herhangi bir hasar, veri kaybı veya
+maliyetten yazarları sorumlu tutulamaz. Kabul etmiyorsanız kurmayın.
+
+Kaynak kodu ve ayrıntılar: github.com/efebedelcigil/nextcalibur-control-center
