@@ -1032,7 +1032,13 @@ public partial class MainWindow : Window
     {
         UpdateNowButton.Visibility = Visibility.Visible;
         UpdateNowButton.Content = $"Update to {version}";
-        if (!_checkingByHand)
+        if (_checkingByHand) return;
+
+        // A toast with an "Update now" button; the balloon when a toast
+        // cannot be shown. Either way a click brings the window and the
+        // question, and the answer is the person's.
+        if (!Toasts.TryShow($"Nextcalibur {version} is available", "Download it and restart into it?", "Update now",
+                () => { _tray?.ShowWindowFromOutside(); OfferUpdate(); }))
             _tray?.ShowMessage($"Nextcalibur {version} is available", "Click here to update.");
     }
 

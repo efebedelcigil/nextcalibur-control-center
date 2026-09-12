@@ -647,6 +647,18 @@ leaving a registry value behind.
     the installer work, when the application's identity on the machine is
     being decided anyway.
 
+    **Built 12 September 2026, without the toolkit.** The application now
+    has one identity (`AppIdentity`, for the taskbar) stamped on its own
+    Start-menu shortcut, and that is all a classic application needs to
+    raise a toast through `Windows.UI.Notifications` directly - the
+    project targets the Windows 10 SDK now. The button comes back as an
+    in-process event, which is enough because the application is always
+    running; so no COM activator and no class keys, nothing new for the
+    uninstall. Where a toast cannot be shown (a build with no shortcut,
+    notifications off) the balloon is used as before. Seen for real at the
+    first release after 0.5.2, since the shortcut is stamped by 0.5.2's
+    first run.
+
 0. **A proper installer, set 11 September 2026.** The owner wants what Inno
    Setup gives: a wizard that asks where to install, shows what it is doing,
    and looks like a product rather than a progress bar. Velopack stays for
