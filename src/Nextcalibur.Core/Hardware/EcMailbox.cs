@@ -277,8 +277,8 @@ public sealed class EcMailbox : IDisposable
             // use the data block, and telling somebody to close software they
             // do not have sends them nowhere.
             var reason = MailboxAccess.Check() == MailboxAvailability.AccessNotGranted
-                ? "This account is not allowed to use the firmware interface. " +
-                  "Run 'nextcalibur access --grant' from an elevated prompt, once."
+                ? "This account may not use the firmware interface unelevated. " +
+                  "Run from an elevated prompt."
                 : "Another application may be using the mailbox - close the vendor Control Center and retry.";
 
             throw new EcMailboxUnavailableException(

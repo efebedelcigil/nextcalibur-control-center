@@ -19,3 +19,4 @@ notes/
 
 # Working notes and forensic scratch for the bug hunt; the findings live in docs/ROADMAP.md.
 bughunt.md
+nc-*.txt
