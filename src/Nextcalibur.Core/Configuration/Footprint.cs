@@ -57,6 +57,11 @@ public static class Footprint
                 CardSwitchTasks.Registered(),
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
+            new("The install folder's protection against the account",
+                Environment.ProcessPath is { } exe && InstallFolderGuard.RootOf(exe) is { } root
+                    && (InstallFolderGuard.IsUnderProgramFiles(root) || InstallFolderGuard.IsHardened(root)),
+                NeedsElevation: true,
+                KeepingIsReasonable: false),
             new("The power plans it created",
                 SystemModeService.EnumeratePlans().Keys.Any(n => n.StartsWith("Nextcalibur ", StringComparison.Ordinal)),
                 NeedsElevation: false,
@@ -134,6 +139,14 @@ public static class Footprint
 
         CardSwitchTasks.Unregister();
         Elevation.RemoveTasks();
+
+        // So the uninstaller, which runs as the account, can delete the files.
+        try
+        {
+            if (Environment.ProcessPath is { } exe && InstallFolderGuard.RootOf(exe) is { } root)
+                InstallFolderGuard.Release(root);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException) { }
 
         if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }

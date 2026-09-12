@@ -129,6 +129,22 @@ public partial class App : Application
                 CardSwitchTasks.Unregister();
                 Log.Info("tasks", "Removed the card-switch tasks of an earlier version; not needed elevated");
             }
+
+            // An installed copy in the profile (the earlier versions' place)
+            // is put out of the account's reach; see InstallFolderGuard. Only
+            // an installed copy - a development build's output folder must
+            // stay writable to the person building it.
+            try
+            {
+                if (InstallFolderGuard.RootOf(self) is { } root
+                    && File.Exists(System.IO.Path.Combine(root, "Update.exe"))
+                    && InstallFolderGuard.Harden(root))
+                    Log.Info("install", $"Protected the install folder against the account: {root}");
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException)
+            {
+                Log.Warn("install", "Could not protect the install folder: " + ex.Message);
+            }
         }
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");

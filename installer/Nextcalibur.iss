@@ -25,13 +25,17 @@ AppVersion={#AppVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#Url}
 AppSupportURL={#Url}
-DefaultDirName={localappdata}\Nextcalibur
+DefaultDirName={autopf}\Nextcalibur
 DisableDirPage=no
 DirExistsWarning=no
 DisableProgramGroupPage=yes
-; Per-user, no elevation: the application updates itself without administrator,
-; which it can only do in a folder the account owns.
-PrivilegesRequired=lowest
+; Elevated, and into Program Files: the application runs as administrator and
+; is started without a prompt by a scheduled task, so the files it runs from
+; must be somewhere only administrators can write - otherwise anything
+; running as the account could replace the executable and be run elevated at
+; the next start. Program Files is that place, and the elevated application
+; updates itself there without trouble.
+PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=
 ; Velopack registers the uninstaller; a second entry would be one too many.
 Uninstallable=no
@@ -53,22 +57,22 @@ Name: "en"; MessagesFile: "compiler:Default.isl"; InfoBeforeFile: "notice-en.txt
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"; InfoBeforeFile: "notice-tr.txt"
 
 [Messages]
-tr.WelcomeLabel2=Bu sihirbaz [name/ver] uygulamasını bilgisayarınıza kuracak.%n%nNextcalibur, Casper Excalibur Control Center'ın yerini alır: sıcaklıklar, fanlar, klavye aydınlatması, güç modları ve grafik modu, bilgisayarın kendi donanım yazılımı arayüzünden. Sürücü kurmaz ve yönetici hakları olmadan çalışır.
+tr.WelcomeLabel2=Bu sihirbaz [name/ver] uygulamasını bilgisayarınıza kuracak.%n%nNextcalibur, Casper Excalibur Control Center'ın yerini alır: sıcaklıklar, fanlar, klavye aydınlatması, güç modları ve grafik modu, bilgisayarın kendi donanım yazılımı arayüzünden. Kendi sürücüsü yoktur; Casper'ın yazılımı gibi yönetici olarak çalışır ve bir kez sorduktan sonra bir daha sormaz.
 tr.SelectDirDesc=[name] nereye kurulsun?
-tr.SelectDirLabel3=Kurulum [name] uygulamasını aşağıdaki klasöre kuracak. Güncellemeler daha sonra yönetici hakkı istemeden buraya kurulur; bu yüzden hesabınızın yazabildiği bir klasör seçin.
+tr.SelectDirLabel3=Kurulum [name] uygulamasını aşağıdaki klasöre kuracak. Program Files önerilir: uygulama yönetici olarak başlatıldığı için dosyaları yalnızca yöneticilerin yazabildiği bir yerde durmalıdır.
 tr.FinishedLabelNoIcons=Kurulum [name] uygulamasını bilgisayarınıza kurdu.
 tr.FinishedLabel=Kurulum [name] uygulamasını bilgisayarınıza kurdu. Windows ile birlikte başlar ve bildirim alanında yaşar; pencere bir çift tıklama uzağınızda.
-en.WelcomeLabel2=This will install [name/ver] on your computer.%n%nNextcalibur replaces the Casper Excalibur Control Center: temperatures, fans, keyboard lighting, power modes and graphics mode, from the laptop's own firmware interface. It installs no driver and runs without administrator rights.
+en.WelcomeLabel2=This will install [name/ver] on your computer.%n%nNextcalibur replaces the Casper Excalibur Control Center: temperatures, fans, keyboard lighting, power modes and graphics mode, from the laptop's own firmware interface. It installs no driver of its own; like Casper's software it runs as administrator, asking once and not again.
 en.SelectDirDesc=Where should [name] be installed?
-en.SelectDirLabel3=Setup will install [name] into the following folder. Updates install themselves here later without asking for administrator rights, so choose a folder your account can write to.
+en.SelectDirLabel3=Setup will install [name] into the following folder. Program Files is recommended: the application is started as administrator, so its files should sit where only administrators can write.
 en.FinishedLabelNoIcons=Setup has finished installing [name] on your computer.
 en.FinishedLabel=Setup has finished installing [name] on your computer. It starts with Windows and lives in the notification area; the window is a double-click away.
 
 [CustomMessages]
 en.AlreadyInstalled=Nextcalibur %1 is already installed in%n%2%n%nOnly one copy can be installed. It updates itself - open it and use "Check for updates now" in the tray menu. To move it, remove it first from Settings > Apps.
 tr.AlreadyInstalled=Nextcalibur %1 zaten şurada kurulu:%n%2%n%nYalnızca bir kopya kurulabilir. Kendini günceller - açın ve bildirim alanı menüsünden "Check for updates now" seçin. Taşımak için önce Ayarlar > Uygulamalar'dan kaldırın.
-en.CannotWrite=Nextcalibur cannot write to that folder. Choose one your account can write to - updates install there later without administrator rights.
-tr.CannotWrite=Nextcalibur bu klasöre yazamıyor. Hesabınızın yazabildiği bir klasör seçin - güncellemeler daha sonra yönetici hakkı istemeden oraya kurulur.
+en.CannotWrite=Nextcalibur cannot write to that folder. Choose another.
+tr.CannotWrite=Nextcalibur bu klasöre yazamıyor. Başka bir klasör seçin.
 en.Installing=Installing Nextcalibur...
 tr.Installing=Nextcalibur kuruluyor...
 en.StartWithWindows=Start Nextcalibur with Windows (in the notification area)
@@ -256,8 +260,8 @@ begin
   end;
 end;
 
-// A folder the account cannot write to would install today and fail to
-// update tomorrow. Say so before the wizard goes on.
+// A folder Setup cannot write to is no place to install; say so before the
+// wizard goes on.
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   Dir, Probe: String;

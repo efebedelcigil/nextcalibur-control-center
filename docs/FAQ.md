@@ -29,6 +29,13 @@ way. You are asked once, on the first run; after that a scheduled task starts
 it with those rights and no prompt - from the Start menu, a pin, or at
 sign-in.
 
+Starting elevated without a prompt is safe only if the executable cannot be
+swapped by something running as your account, which is why the wizard
+installs under Program Files and why a copy in the profile is made read-only
+to the account. Everything the window opens for you - the browser, the log
+folder, Settings - is opened as you, not as administrator; only WinUtil is
+deliberately elevated.
+
 **What does it change on my machine?**
 Three kinds of thing, all of them in the open:
 - *Windows power settings*: a power plan per mode (the vendor's plans are
@@ -39,9 +46,12 @@ Three kinds of thing, all of them in the open:
 - *Firmware*: the thermal profile that goes with each mode - the same write
   the vendor makes - and, only when you ask for it and confirm, the graphics
   mode.
-- *Its own footprint*: settings and a log under `%AppData%\Nextcalibur`, two
-  scheduled tasks (start elevated, start with Windows), and a permission on
-  the firmware interface so the application can reach it.
+- *Its own footprint*: settings and a log under `%AppData%\Nextcalibur`, and
+  two scheduled tasks (start elevated, start with Windows). The files
+  themselves live under Program Files, or - for a copy installed into the
+  profile by the plain installer or an earlier version - in a folder the
+  application has made read-only to the account, so that the executable the
+  task starts as administrator cannot be swapped by anything running as you.
 
 **What does switching the graphics mode do to my PIN?**
 Switching between Hybrid and Discrete changes what the TPM measures at
@@ -104,10 +114,12 @@ is in the corner of the window. Attach the day's file when reporting a
 problem.
 
 **What does uninstalling leave behind?**
-Nothing of its own: settings, logs, both scheduled tasks and the firmware
-permission are removed. It asks first about two things you might want to
-keep: the power plans it created, and the power-overlay repair - undoing the
-repair puts the vendor's fault back, so the default answer is to keep it.
+Nothing of its own: settings, logs, both scheduled tasks and the folder
+protection are removed without asking. It asks about two things you might
+want to keep: the power plans it created, and the power-overlay repair -
+undoing the repair puts the vendor's fault back, so the default answer is to
+keep it. Removing the tasks needs one administrator prompt, which Windows
+shows during the uninstall.
 
 **Can I run it alongside the vendor's software?**
 Yes, though it recommends against it. Both use the same firmware interface
