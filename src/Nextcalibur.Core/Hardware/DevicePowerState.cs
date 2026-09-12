@@ -68,4 +68,26 @@ public static class DevicePowerState
 
     /// <summary>True when the device is recorded as anything but fully on.</summary>
     public static bool IsAsleep(string deviceInstanceId) => MostRecent(deviceInstanceId) is { } s && s > D0;
+
+    [DllImport("cfgmgr32.dll")]
+    private static extern int CM_Get_DevNode_Status(out uint status, out uint problem, uint devInst, uint flags);
+
+    private const uint DnHasProblem = 0x00000400;
+    private const uint CmProbDisabled = 22;
+
+    /// <summary>
+    /// Whether the device is switched off in Device Manager - what UMA leaves
+    /// behind. The PnP manager's own status word, a microsecond to read;
+    /// the WMI query that used to answer this every five seconds cost tens
+    /// of milliseconds each time. Null when the device cannot be found.
+    /// </summary>
+    public static bool? IsDisabled(string deviceInstanceId)
+    {
+        if (CM_Locate_DevNodeW(out var node, deviceInstanceId, CmLocateDevNodePhantom) != 0) return null;
+        if (CM_Get_DevNode_Status(out var status, out var problem, node, 0) != 0) return null;
+        return (status & DnHasProblem) != 0 && problem == CmProbDisabled;
+    }
+
+    /// <summary>A disabled device is still a devnode, but only if asked for with this flag.</summary>
+    private const uint CmLocateDevNodePhantom = 0x00000001;
 }
