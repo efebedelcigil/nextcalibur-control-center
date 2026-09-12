@@ -658,7 +658,19 @@ leaving a registry value behind.
    To settle before building: whether a Velopack copy outside
    `%LOCALAPPDATA%` still updates itself without elevation (it will, if the
    chosen directory is writable by the user; a Program Files choice needs an
-   answer), and that the two do not leave two Add/Remove entries. Inno Setup is free
+   answer), and that the two do not leave two Add/Remove entries.
+
+   **Built 12 September 2026.** `installer/Nextcalibur.iss`; `build.ps1`
+   compiles it when Inno Setup 6 is on the machine (it is, per-user, from
+   the jrsoftware GitHub release). Tried in a clean sandbox by hand with a
+   folder of the person's choosing: the wizard, the folder holding
+   `Nextcalibur.exe`, `Update.exe`, `current\` and `packages\`, the
+   shortcuts, one Add/Remove entry (Velopack's, so the clean-up hook still
+   runs), the application up. Program Files is refused before install with
+   the reason. The wizard is the download from 0.5.2 on; Velopack's own
+   Setup stays in the release assets for anyone who wants the plain one.
+   Left to see: a custom-folder copy taking an update unelevated - the
+   sandbox can show that, since updates need no mailbox. Inno Setup is free
    and its licence permits this; the script goes in `installer/`.
 
 
