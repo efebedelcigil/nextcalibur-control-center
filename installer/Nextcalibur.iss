@@ -36,6 +36,12 @@ DisableProgramGroupPage=yes
 ; the next start. Program Files is that place, and the elevated application
 ; updates itself there without trouble.
 PrivilegesRequired=admin
+; The application is x64 only, and the wizard must run in 64-bit mode: a
+; 32-bit Setup sees SysWOW64 as {sys}, where there is no nvml.dll, and
+; Program Files (x86) as {autopf}. Found on the real machine, 12 September
+; 2026, as "NVIDIA driver not found" on a laptop with the driver installed.
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequiredOverridesAllowed=
 ; Velopack registers the uninstaller; a second entry would be one too many.
 Uninstallable=no
