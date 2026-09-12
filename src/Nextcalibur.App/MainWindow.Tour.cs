@@ -164,6 +164,8 @@ public partial class MainWindow
             "Sends the saved lighting to the keyboard again - useful if something else reset it.", "Lighting"),
 
         // ---- Settings page
+        new TourStep("SettingWinUtilButton", TourPage.Settings, "WinUtil",
+            "Opens Chris Titus Tech's WinUtil - a Windows debloat and tweak tool - in an administrator PowerShell, downloaded from its author's site. It is not part of Nextcalibur; you are asked before it opens.", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "Start with Windows",
             "Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.", "Settings"),
         new TourStep("SettingOfficeOnBattery", TourPage.Settings, "Office mode on battery",

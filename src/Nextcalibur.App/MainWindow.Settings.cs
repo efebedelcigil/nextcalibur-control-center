@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -22,7 +23,7 @@ public partial class MainWindow
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
-    private Button? _settingCheckNowButton;
+    private Button? _settingCheckNowButton, _settingWinUtilButton;
     private bool _settingsPageWired;
     private bool _settingsPageLoading;
 
@@ -40,6 +41,7 @@ public partial class MainWindow
         _settingAutoCheckUpdates = FindName("SettingAutoCheckUpdates") as ToggleButton;
         _settingAutoInstallUpdates = FindName("SettingAutoInstallUpdates") as ToggleButton;
         _settingCheckNowButton = FindName("SettingCheckNowButton") as Button;
+        _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
         foreach (var ms in new[] { 1000, 2000, 5000, 10000 })
             if (FindName($"SettingInterval{ms / 1000}") is RadioButton button)
                 _settingIntervals.Add((button, ms));
@@ -68,6 +70,8 @@ public partial class MainWindow
             button.Checked += (_, _) => ChangeSetting(() => _settings.PollIntervalMs = ms);
         if (_settingCheckNowButton is not null)
             _settingCheckNowButton.Click += (_, _) => CheckForUpdatesByHand();
+        if (_settingWinUtilButton is not null)
+            _settingWinUtilButton.Click += (_, _) => OpenWinUtil();
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -121,6 +125,39 @@ public partial class MainWindow
         finally
         {
             _settingsPageLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Chris Titus Tech's WinUtil, the owner's ask (12 September 2026): a
+    /// Windows debloat and tweak script, run the way its author documents -
+    /// downloaded from christitus.com into an administrator PowerShell.
+    /// Nothing of it is shipped or vetted here, and the dialogue says so;
+    /// the PowerShell inherits this process's elevation, so no second
+    /// prompt. What is done inside it is the person's.
+    /// </summary>
+    private void OpenWinUtil()
+    {
+        if (!Dialogs.Ask("Open WinUtil?",
+                "This opens Chris Titus Tech's WinUtil in an administrator PowerShell window: the script is " +
+                "downloaded from christitus.com and run. It is not part of Nextcalibur and nothing here checks " +
+                "it; what you change there - services, apps, settings - is between you and it." +
+                Environment.NewLine + Environment.NewLine + "Continue?",
+                defaultNo: true))
+            return;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo("powershell.exe",
+                "-NoProfile -ExecutionPolicy Bypass -Command \"irm https://christitus.com/win | iex\"")
+            {
+                UseShellExecute = true,
+            });
+            Log.Info("winutil", "Opened WinUtil in an administrator PowerShell");
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Dialogs.Warn("Nextcalibur", "PowerShell could not be started: " + ex.Message);
         }
     }
 
