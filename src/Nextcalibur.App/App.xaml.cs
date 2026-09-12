@@ -37,6 +37,10 @@ public partial class App : Application
     [STAThread]
     public static void Main(string[] args)
     {
+        // One taskbar identity, claimed before anything can create a window -
+        // Velopack's hooks included, since they may show one.
+        AppIdentity.Claim();
+
         // Before anything else, including Velopack: this is a short-lived
         // elevated copy of the application doing one registry write and exiting.
         // It must not run installer hooks, take the single-instance mutex, or

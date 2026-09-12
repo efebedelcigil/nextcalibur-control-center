@@ -1536,9 +1536,32 @@ public partial class MainWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        if (System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle) is { } source)
+        var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+        if (System.Windows.Interop.HwndSource.FromHwnd(hwnd) is { } source)
             source.AddHook(OnWindowMessage);
+
+        // A frameless window has no minimise box in its style, and without
+        // that bit a click on its taskbar button only ever brings it forward;
+        // Windows minimises on the second click only for windows that say
+        // they can be minimised. Our own caption button already does this;
+        // this makes the taskbar agree.
+        var style = GetWindowLong(hwnd, GwlStyle);
+        SetWindowLong(hwnd, GwlStyle, style | WsMinimizeBox);
+
+        // Our shortcuts carry the same identity as this process, so the
+        // pinned icon and the running window are one button. Off the
+        // interface thread; it touches a few files.
+        Task.Run(AppIdentity.StampShortcuts);
     }
+
+    private const int GwlStyle = -16;
+    private const int WsMinimizeBox = 0x00020000;
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+    private static extern int GetWindowLong(IntPtr hwnd, int index);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+    private static extern int SetWindowLong(IntPtr hwnd, int index, int value);
 
     private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
@@ -1909,17 +1932,20 @@ public partial class MainWindow : Window
         }
     }
 
-    private async Task WatchForTheCardBeingSwitched()
+    /// <summary>
+    /// Notices the card being switched off or on behind our back - the
+    /// vendor's software, Device Manager - and re-reads the page. Through
+    /// the PnP status word, not WMI: this runs every five seconds on
+    /// screen, and a WMI query at that rate was the dearest thing here.
+    /// </summary>
+    private Task WatchForTheCardBeingSwitched()
     {
-        bool enabled;
-        try
-        {
-            enabled = await Task.Run(GpuModeService.DiscreteAdapterEnabled);
-        }
-        catch (Exception ex) when (ex is not OutOfMemoryException)
-        {
-            return;
-        }
+        if (!_discreteIdLooked) { _discreteId = GpuModeService.DiscreteAdapterInstanceId(); _discreteIdLooked = true; }
+        if (_discreteId is null) return Task.CompletedTask;
+
+        var disabled = DevicePowerState.IsDisabled(_discreteId);
+        if (disabled is null) return Task.CompletedTask;
+        var enabled = !disabled.Value;
 
         if (_discreteWasEnabled is { } was && was != enabled)
         {
@@ -1928,7 +1954,10 @@ public partial class MainWindow : Window
         }
 
         _discreteWasEnabled = enabled;
+        return Task.CompletedTask;
     }
+
+    private DateTime _registryLookedAt = DateTime.MinValue;
 
     private void StartSlowTimer()
     {
@@ -1951,18 +1980,18 @@ public partial class MainWindow : Window
                 await WatchForTheCardBeingSwitched();
             }
 
-            // Hidden or not: a registry read, no firmware. The vendor's
-            // uninstaller takes its plans with it; the mode this borrowed one
-            // for must not stay gone until the next start.
-            KeepTheModesPlanAlive();
-
-            // Same registry, other direction: the vendor can be installed
-            // while this is running, and the recommendation is meant for the
-            // moment it appears, not the next start.
-            if (_support.Level != SupportLevel.Unsupported)
+            // Hidden or not, but once a minute, not every tick: two registry
+            // scans for things that change once in a machine's life - the
+            // vendor's plans going, the vendor's software coming or going.
+            if (DateTime.UtcNow - _registryLookedAt >= TimeSpan.FromMinutes(1))
             {
-                RecommendRemovingVendorSoftwareOnce();
-                WatchTheVendorComingAndGoing();
+                _registryLookedAt = DateTime.UtcNow;
+                KeepTheModesPlanAlive();
+                if (_support.Level != SupportLevel.Unsupported)
+                {
+                    RecommendRemovingVendorSoftwareOnce();
+                    WatchTheVendorComingAndGoing();
+                }
             }
 
             // The overheat warning is the one thing worth a firmware read while
