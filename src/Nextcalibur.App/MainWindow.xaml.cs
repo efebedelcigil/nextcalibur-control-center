@@ -17,6 +17,9 @@ public partial class MainWindow : Window
     private readonly PowerOverlayService _power = new();
     private readonly SystemModeService _modes = new();
 
+    /// <summary>Package power through PawnIO; reads nothing when it cannot.</summary>
+    private readonly CpuPowerReader _cpuPower = new();
+
     /// <summary>What to do with the mode when the charger comes and goes.</summary>
     private readonly BatteryModePolicy _battery = new();
 
@@ -704,6 +707,7 @@ public partial class MainWindow : Window
             _mailbox?.Dispose();
             _cpuClock.Dispose();
             _gpuClock.Dispose();
+            _cpuPower.Dispose();
             _settings.Save();
 
             // Last, and after everything else is released: this hands a staged
@@ -1892,7 +1896,14 @@ public partial class MainWindow : Window
     /// </summary>
     private void RefreshClocks()
     {
-        CpuClock.Text = _cpuClock.ReadGhz() is { } cpu ? $"{cpu:N2} GHz" : string.Empty;
+        // The CPU's draw comes through PawnIO when it is installed and the
+        // process is elevated; otherwise the clock stands alone.
+        CpuClock.Text = (_cpuClock.ReadGhz(), _cpuPower.ReadWatts()) switch
+        {
+            ({ } ghz, { } watts) => $"{ghz:N2} GHz · {watts:0.0} W",
+            ({ } ghz, null) => $"{ghz:N2} GHz",
+            _ => string.Empty,
+        };
         // Clock and draw together, beside the temperature the panel already
         // shows: the card's whole state on one line, in every mode.
         GpuClock.Text = !CardIsAwakeNow() ? "asleep"

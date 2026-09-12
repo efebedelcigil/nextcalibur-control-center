@@ -44,7 +44,11 @@ public static class Footprint
         var traces = new List<Trace>
         {
             new("Your settings", SettingsExist(), NeedsElevation: false, KeepingIsReasonable: false),
-            new("The start-with-Windows entry", StartupRegistration.IsEnabled, NeedsElevation: false, KeepingIsReasonable: false),
+            new("The start-with-Windows task", StartupRegistration.IsEnabled, NeedsElevation: true, KeepingIsReasonable: false),
+            new("The task that starts Nextcalibur without a prompt",
+                Environment.ProcessPath is { } self && CardSwitchTasks.SchtasksOutput($"/query /tn \"{Elevation.OpenTask}\"") is not null,
+                NeedsElevation: true,
+                KeepingIsReasonable: false),
             new("Permission to read the sensors",
                 MailboxAccess.Check() == MailboxAvailability.Available,
                 NeedsElevation: true,
@@ -124,6 +128,7 @@ public static class Footprint
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
 
         CardSwitchTasks.Unregister();
+        Elevation.RemoveTasks();
 
         try { new PowerOverlayService().RemoveGuard(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
