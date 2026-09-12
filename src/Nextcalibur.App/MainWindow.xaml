@@ -1337,7 +1337,7 @@
                     <Grid x:Name="PageSettings" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed">
                         <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel HorizontalAlignment="Stretch">
-                                <!-- Section 0: Tools (§21a) -->
+                                <!-- Section 0: Tools (§21a, §21b) -->
                                 <TextBlock Text="Tools" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,10">
                                     <Grid>
@@ -1345,57 +1345,84 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="1" />
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="1" />
-                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="1" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
-                                        <!-- 1. WinUtil -->
-                                        <Grid Grid.Column="0" Margin="0,0,14,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="Windows debloat and tweaks" FontSize="12" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource Ink}" />
-                                            <TextBlock Grid.Row="1" Text="Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur."
-                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
-                                            <Button x:Name="SettingWinUtilButton" Grid.Row="2" Content="Open WinUtil"
-                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        <!-- Row 0, Col 0: 1. WinUtil -->
+                                        <Grid Grid.Row="0" Grid.Column="0" Margin="0,4,16,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Windows debloat and tweaks" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur."
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingWinUtilButton" Grid.Column="1" Content="Open WinUtil"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
 
-                                        <Border Grid.Column="1" Background="{DynamicResource Line}" />
+                                        <!-- Row 0, Col 1: Vertical Divider Top -->
+                                        <Border Grid.Row="0" Grid.Column="1" Background="{DynamicResource Line}" />
 
-                                        <!-- 2. Drivers -->
-                                        <Grid Grid.Column="2" Margin="14,0,14,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="Drivers" FontSize="12" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource Ink}" />
-                                            <TextBlock Grid.Row="1" Text="The laptop maker's own driver download page, in your browser."
-                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
-                                            <Button x:Name="SettingDriversButton" Grid.Row="2" Content="Driver downloads"
-                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        <!-- Row 0, Col 2: 2. Drivers -->
+                                        <Grid Grid.Row="0" Grid.Column="2" Margin="16,4,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Drivers" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="The laptop maker's own driver download page, in your browser."
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingDriversButton" Grid.Column="1" Content="Driver downloads"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
 
-                                        <Border Grid.Column="3" Background="{DynamicResource Line}" />
+                                        <!-- Row 1, Col 0-2: Horizontal Divider -->
+                                        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="{DynamicResource Line}" Margin="0,4" />
 
-                                        <!-- 3. Issues -->
-                                        <Grid Grid.Column="4" Margin="14,0,0,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="Report a problem" FontSize="12" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource Ink}" />
-                                            <TextBlock Grid.Row="1" Text="The project's issues page on GitHub. Attach the day's log."
-                                                       Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,3,0,8" LineHeight="15" />
-                                            <Button x:Name="SettingReportButton" Grid.Row="2" Content="Open issues"
-                                                    MinWidth="90" Height="26" HorizontalAlignment="Left" />
+                                        <!-- Row 2, Col 0: 3. Issues -->
+                                        <Grid Grid.Row="2" Grid.Column="0" Margin="0,6,16,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Report a problem" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="The project's issues page on GitHub. Attach the day's log."
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingReportButton" Grid.Column="1" Content="Open issues"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <!-- Row 2, Col 1: Vertical Divider Bottom -->
+                                        <Border Grid.Row="2" Grid.Column="1" Background="{DynamicResource Line}" />
+
+                                        <!-- Row 2, Col 2: 4. Privacy (§21b) -->
+                                        <Grid Grid.Row="2" Grid.Column="2" Margin="16,6,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Privacy" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="What Nextcalibur does with data: nothing collected, nothing sent about you."
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingPrivacyButton" Grid.Column="1" Content="Privacy"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
                                     </Grid>
                                 </Border>
