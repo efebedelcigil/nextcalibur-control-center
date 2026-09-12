@@ -54,7 +54,7 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add("Check for updates now", null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
         menu.Items.Add("Open the log folder", null, (_, _) =>
         {
-            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", Log.Folder) { UseShellExecute = true }); }
+            try { Unelevated.Open(Log.Folder); }
             catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { }
         });
         menu.Items.Add(new Forms.ToolStripSeparator());

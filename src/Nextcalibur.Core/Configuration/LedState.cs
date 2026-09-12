@@ -162,7 +162,12 @@ public sealed class LedState
         try
         {
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Path)!);
-            File.WriteAllText(Path, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+            // Written beside and moved into place, so a write cut short - the
+            // battery giving out, a forced power-off - leaves the previous file
+            // whole rather than a truncated one that loads as defaults.
+            var temporary = Path + ".tmp";
+            File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+            File.Move(temporary, Path, overwrite: true);
         }
         catch
         {

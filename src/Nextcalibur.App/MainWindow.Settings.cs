@@ -181,7 +181,7 @@ public partial class MainWindow
     {
         try
         {
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            Unelevated.Open(url);   // the browser as the person, not as administrator
             Log.Info(category, logLine);
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)

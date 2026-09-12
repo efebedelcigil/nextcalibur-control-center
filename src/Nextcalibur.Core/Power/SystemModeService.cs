@@ -184,7 +184,14 @@ public sealed class SystemModeService
         var match = System.Text.RegularExpressions.Regex.Match(output, @"([0-9a-fA-F-]{36})");
         if (!match.Success || !Guid.TryParse(match.Value, out var created)) return null;
 
-        RunPowercfg($"/changename {created:D} \"{name}\" \"Created by Nextcalibur\"");
+        // A copy that could not be named would not be recognised at the next
+        // start, and the next start would make another: a new plan per
+        // start, forever. Better no plan than a nameless one each time.
+        if (RunPowercfg($"/changename {created:D} \"{name}\" \"Created by Nextcalibur\"") is null)
+        {
+            RunPowercfg($"/delete {created:D}");
+            return null;
+        }
         return created;
     }
 

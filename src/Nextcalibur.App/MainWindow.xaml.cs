@@ -421,7 +421,7 @@ public partial class MainWindow : Window
 
         try
         {
-            Process.Start(new ProcessStartInfo("ms-settings:appsfeatures") { UseShellExecute = true });
+            Unelevated.Open("ms-settings:appsfeatures");
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
@@ -470,7 +470,7 @@ public partial class MainWindow : Window
         {
             try
             {
-                Process.Start(new ProcessStartInfo("ms-settings:appsfeatures") { UseShellExecute = true });
+                Unelevated.Open("ms-settings:appsfeatures");
             }
             catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
             {
@@ -739,6 +739,7 @@ public partial class MainWindow : Window
             _exitRoute ??= "the close button";
         }
 
+        if (_settingsSaveDelay is { IsEnabled: true }) { _settingsSaveDelay.Stop(); _settings.Save(); }
         Log.Info("exit", _sessionEnding ? "Windows is ending the session" : $"Exit confirmed from {_exitRoute ?? "the update restart"}");
 
         {
@@ -1177,7 +1178,7 @@ public partial class MainWindow : Window
 
     private void OnOpenLogClick(object sender, RoutedEventArgs e)
     {
-        try { Process.Start(new ProcessStartInfo("explorer.exe", Log.Folder) { UseShellExecute = true }); }
+        try { Unelevated.Open(Log.Folder); }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException) { }
     }
 
@@ -1189,11 +1190,17 @@ public partial class MainWindow : Window
         if (_updating || _updates.Available is null) return;
 
         var version = _updates.AvailableVersion ?? "a new version";
+        var pending = _gpuPendingRestart is { } mode
+            ? $"A graphics mode change to {mode} is waiting for a restart of Windows. Updating restarts " +
+              "Nextcalibur, not Windows, and the pending change is dropped: choose it again afterwards, or restart Windows first." +
+              Environment.NewLine + Environment.NewLine
+            : string.Empty;
         if (!Dialogs.Ask($"Update to {version}?",
+                pending +
                 $"Nextcalibur {version} is ready to download from GitHub. It will be installed and the " +
                 "application will restart itself; your settings stay as they are." +
                 Environment.NewLine + Environment.NewLine + "Update now?",
-                defaultNo: false))
+                defaultNo: _gpuPendingRestart is not null))
         {
             // Declined: the corner button stays, nothing else will ask.
             return;
@@ -1460,9 +1467,27 @@ public partial class MainWindow : Window
         if (!readout.IsKeyboardFocused) readout.Text = $"{celsius} °C";
         if (!_thresholdsReady) return;
         store(celsius);
-        _settings.Save();
+        SaveSettingsSoon();
         // A new limit is a new question: let the next hot reading warn again.
         _overheatNotified = false;
+    }
+
+    /// <summary>
+    /// A slider fires for every pixel of a drag; writing the settings file
+    /// for each was dozens of writes a second. One write, half a second
+    /// after the last change.
+    /// </summary>
+    private DispatcherTimer? _settingsSaveDelay;
+
+    private void SaveSettingsSoon()
+    {
+        if (_settingsSaveDelay is null)
+        {
+            _settingsSaveDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            _settingsSaveDelay.Tick += (_, _) => { _settingsSaveDelay.Stop(); _settings.Save(); };
+        }
+        _settingsSaveDelay.Stop();
+        _settingsSaveDelay.Start();
     }
 
     private static void WireTypedThreshold(System.Windows.Controls.TextBox box, Slider slider)
@@ -2552,8 +2577,35 @@ public partial class MainWindow : Window
         if (!_ledUiReady || _led is null) return;
 
         var target = SelectAll.IsChecked == true ? LedZone.AllKeyboard : SelectedZone;
-        RunLighting(() => _led.SetColour(target, colour.R, colour.G, colour.B));
+        QueueLighting(() => _led.SetColour(target, colour.R, colour.G, colour.B));
         RefreshPreview();
+    }
+
+    /// <summary>
+    /// A drag on the wheel or the brightness slider raises an event per
+    /// pixel, and each used to be a firmware write - two mailbox calls and
+    /// a 30 ms wait on the interface thread - and a settings file written.
+    /// A drag hammered the controller and stuttered. Now the latest value
+    /// is kept and written at most every 120 ms; the last one always lands.
+    /// </summary>
+    private DispatcherTimer? _lightingThrottle;
+    private Action? _pendingLighting;
+
+    private void QueueLighting(Action action)
+    {
+        _pendingLighting = action;
+        if (_lightingThrottle is null)
+        {
+            _lightingThrottle = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+            _lightingThrottle.Tick += (_, _) =>
+            {
+                var pending = _pendingLighting;
+                _pendingLighting = null;
+                if (pending is null) { _lightingThrottle.Stop(); return; }
+                RunLighting(pending);
+            };
+        }
+        if (!_lightingThrottle.IsEnabled) _lightingThrottle.Start();
     }
 
     private void OnEffectChecked(object sender, RoutedEventArgs e)
@@ -2570,7 +2622,7 @@ public partial class MainWindow : Window
         var percent = (int)Math.Round(e.NewValue);
         if (BrightnessValue is not null) BrightnessValue.Text = $"{percent}%";
         if (!_ledUiReady || _led is null) return;
-        RunLighting(() => _led.SetBrightness(percent));
+        QueueLighting(() => _led.SetBrightness(percent));
     }
 
     private void OnLedPowerToggled(object sender, RoutedEventArgs e)

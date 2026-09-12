@@ -33,11 +33,7 @@ public static class Log
         {
             Directory.CreateDirectory(Folder);
             _folderReady = true;
-            foreach (var old in Directory.EnumerateFiles(Folder, "nextcalibur-*.log"))
-            {
-                if (File.GetLastWriteTime(old) < DateTime.Now.AddDays(-KeepDays))
-                    try { File.Delete(old); } catch (IOException) { }
-            }
+            Prune();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -51,6 +47,24 @@ public static class Log
     public static void Warn(string category, string message) => Write("WARN ", category, message);
     public static void Error(string category, string message, Exception? ex = null) =>
         Write("ERROR", category, ex is null ? message : $"{message}: {ex.GetType().Name}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+
+    /// <summary>Deletes files older than the kept window. At start, and again each time the day turns.</summary>
+    private static void Prune()
+    {
+        try
+        {
+            foreach (var old in Directory.EnumerateFiles(Folder, "nextcalibur-*.log"))
+            {
+                if (File.GetLastWriteTime(old) < DateTime.Now.AddDays(-KeepDays))
+                    try { File.Delete(old); } catch (IOException) { }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+    }
+
+    private static string? _currentFile;
 
     private static void Write(string level, string category, string message)
     {
@@ -66,6 +80,13 @@ public static class Log
                 // across midnight starts the next day's file rather than
                 // growing yesterday's.
                 var file = Path.Combine(Folder, $"nextcalibur-{DateTime.Now:yyyyMMdd}.log");
+                if (file != _currentFile)
+                {
+                    // A process that runs for weeks would otherwise keep every
+                    // day's file until its next start.
+                    if (_currentFile is not null) Prune();
+                    _currentFile = file;
+                }
                 using var writer = new StreamWriter(file, append: true, Encoding.UTF8);
                 writer.WriteLine(line);
             }

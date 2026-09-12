@@ -127,15 +127,31 @@ public partial class App : Application
 
         var app = new App();
         app.InitializeComponent();
+        var faultsThisMinute = 0;
+        var faultMinute = DateTime.MinValue;
         app.DispatcherUnhandledException += (_, e) =>
         {
             // On the interface thread a fault is logged and shown, and the
             // application goes on: one bad click must not take the tray
             // icon and the temperature warning with it.
-            Log.Error("ui", "Unhandled exception on the interface thread", e.Exception);
-            Dialogs.Warn("Nextcalibur - something went wrong",
-                "An error was recorded in the log and the application is still running." +
-                Environment.NewLine + Environment.NewLine + e.Exception.Message);
+            //
+            // But a timer that faults every tick would raise a dialogue every
+            // tick and fill the log for as long as the machine is up. So:
+            // the dialogue once a minute, the log line for the first few in a
+            // minute and one saying how many were dropped.
+            var minute = DateTime.UtcNow.Date.AddMinutes((int)DateTime.UtcNow.TimeOfDay.TotalMinutes);
+            if (minute != faultMinute) { faultMinute = minute; faultsThisMinute = 0; }
+            faultsThisMinute++;
+
+            if (faultsThisMinute <= 5)
+                Log.Error("ui", "Unhandled exception on the interface thread", e.Exception);
+            else if (faultsThisMinute == 6)
+                Log.Error("ui", "More of the same this minute; not logging each");
+
+            if (faultsThisMinute == 1)
+                Dialogs.Warn("Nextcalibur - something went wrong",
+                    "An error was recorded in the log and the application is still running." +
+                    Environment.NewLine + Environment.NewLine + e.Exception.Message);
             e.Handled = true;
         };
         ListenForWakeRequests(app);

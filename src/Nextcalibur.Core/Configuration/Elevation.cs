@@ -50,8 +50,16 @@ public static class Elevation
 
         var tray = args.Contains("--tray", StringComparer.OrdinalIgnoreCase);
 
+        // Started by the task and still not elevated: the task cannot give
+        // more than the account has (a demoted account, a policy). Running
+        // the task again from here would start another copy that finds the
+        // same thing and runs it again - a chain of processes with no end,
+        // at every logon. So from here it is the prompt or nothing.
+        var viaTask = args.Contains(ViaTaskArgument, StringComparer.OrdinalIgnoreCase);
+
         // The prompt-free way, when the tasks exist and point at this copy.
-        if (TaskPointsAt(tray ? StartupTask : OpenTask, executablePath)
+        if (!viaTask
+            && TaskPointsAt(tray ? StartupTask : OpenTask, executablePath)
             && CardSwitchTasks.Schtasks($"/run /tn \"{(tray ? StartupTask : OpenTask)}\"") == 0)
             return false;
 
@@ -62,7 +70,8 @@ public static class Elevation
             Process.Start(new ProcessStartInfo
             {
                 FileName = executablePath,
-                Arguments = string.Join(' ', args.Select(a => a.Contains(' ') ? $"\"{a}\"" : a)),
+                Arguments = string.Join(' ', args.Where(a => !a.Equals(ViaTaskArgument, StringComparison.OrdinalIgnoreCase))
+                    .Select(a => a.Contains(' ') ? $"\"{a}\"" : a)),
                 UseShellExecute = true,
                 Verb = "runas",
             });
