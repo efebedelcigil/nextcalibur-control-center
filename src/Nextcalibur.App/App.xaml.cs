@@ -38,8 +38,12 @@ public partial class App : Application
     /// <summary>With <see cref="CleanUpArgument"/>: take the tasks and the permission, leave the power repair.</summary>
     public const string KeepRepairArgument = "--keep-repair";
 
-    /// <summary>With <see cref="CleanUpArgument"/>: also uninstall the dependencies the person agreed to remove (PawnIO).</summary>
-    public const string RemoveDependenciesArgument = "--remove-dependencies";
+    /// <summary>
+    /// With <see cref="CleanUpArgument"/>: also uninstall one dependency, named
+    /// by its <see cref="Nextcalibur.Core.Dependencies.Dependency.Id"/> in the
+    /// next argument. Repeated once per dependency the person agreed to remove.
+    /// </summary>
+    public const string RemoveDependencyArgument = "--remove-dependency";
 
     /// <summary>
     /// Velopack runs this executable with one of its own switches for the
@@ -80,9 +84,13 @@ public partial class App : Application
         if (args.Contains(CleanUpArgument))
         {
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
-            if (args.Contains(RemoveDependenciesArgument))
+            for (var i = 0; i + 1 < args.Length; i++)
+            {
+                if (args[i] != RemoveDependencyArgument) continue;
+                var id = args[i + 1];
                 foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
-                    if (dependency.InstalledVersion() is not null) dependency.Uninstall();
+                    if (dependency.Id == id && dependency.InstalledVersion() is not null) dependency.Uninstall();
+            }
             FinishUninstall(self);
             Environment.Exit(0);
             return;
@@ -323,27 +331,27 @@ public partial class App : Application
 
         if (removeKeepable) Footprint.RemoveOwnPowerPlans();
 
-        // The dependencies, one question of their own: a driver another
-        // program may be using is not removed on a nod.
-        var installedDependencies = Nextcalibur.Core.Dependencies.DependencyManager.All
-            .Where(d => d.InstalledVersion() is not null).ToList();
-        var removeDependencies = installedDependencies.Count > 0 && Dialogs.Ask("Nextcalibur - the things it installed",
-            "Nextcalibur installed these for its own use:" +
-            Environment.NewLine +
-            string.Join(Environment.NewLine, installedDependencies.Select(d => $"    - {d.Name} ({d.Purpose})")) +
-            Environment.NewLine + Environment.NewLine +
-            "Other programs may use them too - LibreHardwareMonitor and FanControl read through the same driver. " +
-            "Remove them as well? If unsure, keep them; they do nothing on their own.",
-            defaultNo: true);
+        // The dependencies, a question each: a driver another program may be
+        // using is not removed on a nod, and there may be several one day.
+        var dependenciesToRemove = new List<Nextcalibur.Core.Dependencies.Dependency>();
+        foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
+        {
+            if (dependency.InstalledVersion() is null) continue;
+            if (Dialogs.Ask($"Nextcalibur - {dependency.Name}",
+                    $"Nextcalibur installed {dependency.Name} for its own use: it {dependency.Purpose}." +
+                    Environment.NewLine + Environment.NewLine +
+                    "Other programs may use it too. Remove it as well? If unsure, keep it; it does nothing on its own.",
+                    defaultNo: true))
+                dependenciesToRemove.Add(dependency);
+        }
 
-        var needsElevation = ours.Any(t => t.NeedsElevation) || (removeKeepable && keepable.Any(t => t.NeedsElevation)) || removeDependencies;
+        var needsElevation = ours.Any(t => t.NeedsElevation) || (removeKeepable && keepable.Any(t => t.NeedsElevation)) || dependenciesToRemove.Count > 0;
         if (!needsElevation) return;
 
         if (MailboxAccess.IsElevated())
         {
             Footprint.RemoveMachineTraces(removeRepair: removeKeepable);
-            if (removeDependencies)
-                foreach (var dependency in installedDependencies) dependency.Uninstall();
+            foreach (var dependency in dependenciesToRemove) dependency.Uninstall();
             FinishUninstall(Environment.ProcessPath);
             return;
         }
@@ -356,11 +364,12 @@ public partial class App : Application
             {
                 FileName = self,
                 Arguments = string.Join(' ', new[]
-                {
-                    CleanUpArgument,
-                    removeKeepable ? null : KeepRepairArgument,
-                    removeDependencies ? RemoveDependenciesArgument : null,
-                }.Where(a => a is not null)),
+                    {
+                        CleanUpArgument,
+                        removeKeepable ? null : KeepRepairArgument,
+                    }
+                    .Concat(dependenciesToRemove.Select(d => $"{RemoveDependencyArgument} {d.Id}"))
+                    .Where(a => a is not null)),
                 UseShellExecute = true,
                 Verb = "runas",
             });

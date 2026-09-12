@@ -88,6 +88,18 @@ public static class DevicePowerState
         return (status & DnHasProblem) != 0 && problem == CmProbDisabled;
     }
 
+    /// <summary>
+    /// The PnP manager's problem code for the device, 0 when it has none;
+    /// null when the device cannot be found. 28 is CM_PROB_FAILED_INSTALL -
+    /// what a card looks like after its driver has been removed.
+    /// </summary>
+    public static uint? ProblemCode(string deviceInstanceId)
+    {
+        if (CM_Locate_DevNodeW(out var node, deviceInstanceId, CmLocateDevNodePhantom) != 0) return null;
+        if (CM_Get_DevNode_Status(out var status, out var problem, node, 0) != 0) return null;
+        return (status & DnHasProblem) != 0 ? problem : 0;
+    }
+
     /// <summary>A disabled device is still a devnode, but only if asked for with this flag.</summary>
     private const uint CmLocateDevNodePhantom = 0x00000001;
 }

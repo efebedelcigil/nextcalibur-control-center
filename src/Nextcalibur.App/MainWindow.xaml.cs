@@ -244,6 +244,7 @@ public partial class MainWindow : Window
         LoadDeviceNames();
         LoadGpuMode();
         RefreshStorage();
+        WatchTheEssentialDrivers();
         RefreshBanner();
         StartSlowTimer();
         Microsoft.Win32.SystemEvents.PowerModeChanged += OnPowerSourceMayHaveChanged;
@@ -2185,7 +2186,8 @@ public partial class MainWindow : Window
         };
         // Clock and draw together, beside the temperature the panel already
         // shows: the card's whole state on one line, in every mode.
-        GpuClock.Text = !CardIsAwakeNow() ? "asleep"
+        GpuClock.Text = _nvidiaDriver == NvidiaDriverState.Missing ? "--"
+            : !CardIsAwakeNow() ? "asleep"
             : (_gpuClock.ReadGhz(), _gpuClock.ReadLoad()) switch
             {
                 ({ } ghz, { } load) => $"{ghz:N2} GHz · {load.Watts:0.0} W",
@@ -2311,6 +2313,7 @@ public partial class MainWindow : Window
                 {
                     RecommendRemovingVendorSoftwareOnce();
                     WatchTheVendorComingAndGoing();
+                    WatchTheEssentialDrivers();
                 }
             }
 
@@ -2725,6 +2728,41 @@ public partial class MainWindow : Window
         _timer.Interval = TimeSpan.FromMilliseconds(ms);
     }
 
+    private NvidiaDriverState _nvidiaDriver = NvidiaDriverState.Present;
+
+    /// <summary>
+    /// The drivers the application cannot do without, at start and once a
+    /// minute. The NVIDIA driver can be removed while this runs or between
+    /// starts; when it is, the Display page is locked, the card's readings
+    /// read "--", the banner says why, and the process stops calling into
+    /// a library whose driver is gone. When it returns, everything comes
+    /// back. Two cheap calls: a PCI device list and a file's existence.
+    /// </summary>
+    private void WatchTheEssentialDrivers()
+    {
+        var state = EssentialDrivers.Nvidia();
+        if (state == _nvidiaDriver) return;
+        var was = _nvidiaDriver;
+        _nvidiaDriver = state;
+        Log.Info("drivers", $"NVIDIA driver: {was} -> {state}");
+
+        var usable = state != NvidiaDriverState.Missing && _support.AllowsReads;
+        NavDisplay.IsEnabled = usable && _support.Level != SupportLevel.Unsupported;
+        if (!usable)
+        {
+            if (NavDisplay.IsChecked == true) NavSystem.IsChecked = true;
+            _gpuClock.Reset();
+            GpuClock.Text = "--";
+        }
+        else if (was == NvidiaDriverState.Missing)
+        {
+            _gpuClock.Reset();
+            _discreteIdLooked = false;   // the id is looked up again with the driver back
+            LoadGpuMode();
+        }
+        RefreshBanner();
+    }
+
     private void RefreshBanner()
     {
         if (_mailboxFailed || !_mailboxSupported)
@@ -2749,6 +2787,16 @@ public partial class MainWindow : Window
                 "Nextcalibur can't find the sensors and lighting on this machine, so those " +
                 "pages won't work. Power settings still do.",
                 (SolidColorBrush)FindResource("Bad"));
+            return;
+        }
+
+        if (_nvidiaDriver == NvidiaDriverState.Missing)
+        {
+            ShowBanner(
+                "The NVIDIA driver is not installed",
+                "The graphics card is there but its driver is not, so the Display page and the card's readings are " +
+                "unavailable until it is back. The laptop maker's driver page is under Settings.",
+                (SolidColorBrush)FindResource("Warn"));
             return;
         }
 
