@@ -181,13 +181,7 @@ public partial class MainWindow : Window
         _updates.UpdateFound += (_, version) => OnUpdateFound(version);
         _updates.DependencyFound += (_, status) => OfferDependency(status);
         _tray.BalloonClicked += (_, _) => { if (_updates.Available is not null) OfferUpdate(); };
-        _tray.CheckForUpdatesRequested += async (_, _) =>
-        {
-            _checkingByHand = true;
-            try { await _updates.CheckNowAsync(); }
-            finally { _checkingByHand = false; }
-            if (_updates.Available is not null) OfferUpdate();
-        };
+        _tray.CheckForUpdatesRequested += (_, _) => CheckForUpdatesByHand();
         _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
 
         // The window's switch and the tray's menu are two faces of one setting.
@@ -197,6 +191,7 @@ public partial class MainWindow : Window
         _tray.OverheatSettingChanged += (_, _) => Dispatcher.BeginInvoke(() =>
             OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled);
         LoadOverheatThresholds();
+        WireSettingsPage();
         VersionText.Text = RunningVersion();
         _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
         _updates.Start();
@@ -381,6 +376,7 @@ public partial class MainWindow : Window
                     nav.IsEnabled = false;
                 foreach (var page in new[] { PageSystem, PagePower, PageDisplay, PageLighting })
                     page.IsEnabled = false;
+                LockSettingsPage();
                 // The readings panel sits outside the pages since 0.5.1, so
                 // its controls need locking on their own - and its numbers
                 // are settings for a warning that will never fire here.
@@ -845,6 +841,7 @@ public partial class MainWindow : Window
         PagePower.Visibility = NavPower.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PageDisplay.Visibility = NavDisplay.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PageLighting.Visibility = NavLighting.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        ShowSettingsPageIfChosen();
 
         // Both pages describe state that other software can change while we are
         // running, so re-read it when the page comes into view rather than
@@ -1090,6 +1087,17 @@ public partial class MainWindow : Window
         UpdateNowButton.Content = $"Update to {version}";
         if (_checkingByHand) return;
 
+        // Installing without asking is a setting of its own, off by default,
+        // and it steps aside while a graphics change waits for a restart:
+        // that restart is the person's to time.
+        if (_settings.AutoInstallUpdates && _gpuPendingRestart is null)
+        {
+            Log.Info("update", $"{version} found; installing automatically (the setting is on)");
+            _tray?.ShowMessage($"Updating to Nextcalibur {version}", "Installing automatically; the application will restart.");
+            _ = InstallUpdateAsync(version);
+            return;
+        }
+
         // A toast with an "Update now" button; the balloon when a toast
         // cannot be shown. Either way a click brings the window and the
         // question, and the answer is the person's.
@@ -1100,6 +1108,16 @@ public partial class MainWindow : Window
 
     /// <summary>Set while a check the person asked for runs, so the offer comes as a dialogue rather than a balloon.</summary>
     private bool _checkingByHand;
+
+    /// <summary>A check the person asked for, from the tray or the Settings page: the answer is a dialogue either way.</summary>
+    private async void CheckForUpdatesByHand()
+    {
+        if (_checkingByHand) return;
+        _checkingByHand = true;
+        try { await _updates.CheckNowAsync(); }
+        finally { _checkingByHand = false; }
+        if (_updates.Available is not null) OfferUpdate();
+    }
 
     private void OnUpdateNowClick(object sender, RoutedEventArgs e) => OfferUpdate();
 
@@ -1127,8 +1145,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        _updating = true;
         Log.Info("update", $"Accepted {version}; downloading");
+        await InstallUpdateAsync(version);
+    }
+
+    /// <summary>The work, after the question or instead of it: download in front of them, restart into the new version.</summary>
+    private async Task InstallUpdateAsync(string version)
+    {
+        if (_updating) return;
+        _updating = true;
         try
         {
             ShowProgress($"Updating to {version}", "Downloading...");
@@ -1282,6 +1307,7 @@ public partial class MainWindow : Window
         _settings.OverheatWarningEnabled = on;
         _settings.Save();
         _tray?.SyncOverheatMenu();
+        LoadSettingsPage();
     }
 
     /// <summary>The version of this copy, as the package carries it - "0.5.1", without the commit hash.</summary>

@@ -30,6 +30,15 @@ public sealed class AppSettings
     public bool AutoCheckForUpdates { get; set; } = true;
 
     /// <summary>
+    /// Go further than checking: when a release is found, download it,
+    /// verify it and restart into it without asking. Off by default - the
+    /// ask-first flow is the default - and it never runs while a graphics
+    /// change is waiting for a restart, since that restart is the person's
+    /// to time. Meaningless with <see cref="AutoCheckForUpdates"/> off.
+    /// </summary>
+    public bool AutoInstallUpdates { get; set; }
+
+    /// <summary>
     /// The mode the person last chose, put back at the next start. Windows
     /// comes up on Balanced after a restart whatever plan was active before,
     /// so without this a chosen mode lasted one session.

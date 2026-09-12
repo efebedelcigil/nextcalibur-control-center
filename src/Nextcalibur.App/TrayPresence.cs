@@ -50,6 +50,7 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(ReadingIntervalMenu());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(AutoUpdateItem());
+        menu.Items.Add(AutoInstallItem());
         menu.Items.Add("Check for updates now", null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
         menu.Items.Add("Open the log folder", null, (_, _) =>
         {
@@ -73,6 +74,40 @@ public sealed class TrayPresence : IDisposable
     /// <summary>Raised when the user chooses Exit.</summary>
     public event EventHandler? ExitRequested;
 
+    /// <summary>
+    /// Raised after any setting is changed from this menu, so the window's
+    /// settings page can re-read. The reverse direction is
+    /// <see cref="SyncFromSettings"/>. Both surfaces write the one
+    /// <see cref="AppSettings"/>; neither caches.
+    /// </summary>
+    public event EventHandler? SettingsChanged;
+
+    private Forms.ToolStripMenuItem? _quietItem, _autoCheckItem, _autoInstallItem;
+    private readonly List<(Forms.ToolStripMenuItem Item, int Ms)> _intervalItems = new();
+
+    /// <summary>Re-ticks every item from the settings, for when the window changed one.</summary>
+    public void SyncFromSettings()
+    {
+        if (_disposed) return;
+        Quietly(_startupItem, OnStartupToggled, StartupRegistration.IsEnabled);
+        if (_quietItem is not null) Quietly(_quietItem, OnQuietToggled, _settings.QuietOnBattery);
+        if (_autoCheckItem is not null) Quietly(_autoCheckItem, OnAutoCheckToggled, _settings.AutoCheckForUpdates);
+        if (_autoInstallItem is not null)
+        {
+            Quietly(_autoInstallItem, OnAutoInstallToggled, _settings.AutoInstallUpdates);
+            _autoInstallItem.Enabled = _settings.AutoCheckForUpdates;
+        }
+        foreach (var (item, ms) in _intervalItems) item.Checked = _settings.PollIntervalMs == ms;
+        SyncOverheatMenu();
+    }
+
+    private static void Quietly(Forms.ToolStripMenuItem item, EventHandler handler, bool value)
+    {
+        item.CheckedChanged -= handler;
+        item.Checked = value;
+        item.CheckedChanged += handler;
+    }
+
     // ------------------------------------------------------------- settings
     //
     // These three settings were honoured by the application and reachable only
@@ -90,36 +125,59 @@ public sealed class TrayPresence : IDisposable
 
     private Forms.ToolStripMenuItem AutoUpdateItem()
     {
-        var item = new Forms.ToolStripMenuItem("Check for updates automatically")
+        _autoCheckItem = new Forms.ToolStripMenuItem("Check for updates automatically")
         {
             CheckOnClick = true,
             Checked = _settings.AutoCheckForUpdates,
         };
+        _autoCheckItem.CheckedChanged += OnAutoCheckToggled;
+        return _autoCheckItem;
+    }
 
-        item.CheckedChanged += (_, _) =>
+    private void OnAutoCheckToggled(object? sender, EventArgs e)
+    {
+        _settings.AutoCheckForUpdates = _autoCheckItem!.Checked;
+        if (_autoInstallItem is not null) _autoInstallItem.Enabled = _autoCheckItem.Checked;
+        _settings.Save();
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Install without asking - a step beyond checking, and only meaningful with checking on.</summary>
+    private Forms.ToolStripMenuItem AutoInstallItem()
+    {
+        _autoInstallItem = new Forms.ToolStripMenuItem("Install updates automatically")
         {
-            _settings.AutoCheckForUpdates = item.Checked;
-            _settings.Save();
+            CheckOnClick = true,
+            Checked = _settings.AutoInstallUpdates,
+            Enabled = _settings.AutoCheckForUpdates,
         };
+        _autoInstallItem.CheckedChanged += OnAutoInstallToggled;
+        return _autoInstallItem;
+    }
 
-        return item;
+    private void OnAutoInstallToggled(object? sender, EventArgs e)
+    {
+        _settings.AutoInstallUpdates = _autoInstallItem!.Checked;
+        _settings.Save();
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private Forms.ToolStripMenuItem QuietOnBatteryItem()
     {
-        var item = new Forms.ToolStripMenuItem("Office mode on battery")
+        _quietItem = new Forms.ToolStripMenuItem("Office mode on battery")
         {
             CheckOnClick = true,
             Checked = _settings.QuietOnBattery,
         };
+        _quietItem.CheckedChanged += OnQuietToggled;
+        return _quietItem;
+    }
 
-        item.CheckedChanged += (_, _) =>
-        {
-            _settings.QuietOnBattery = item.Checked;
-            _settings.Save();
-        };
-
-        return item;
+    private void OnQuietToggled(object? sender, EventArgs e)
+    {
+        _settings.QuietOnBattery = _quietItem!.Checked;
+        _settings.Save();
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private Forms.ToolStripMenuItem? _overheatItem;
@@ -153,6 +211,7 @@ public sealed class TrayPresence : IDisposable
         _settings.OverheatWarningEnabled = _overheatItem!.Checked;
         _settings.Save();
         OverheatSettingChanged?.Invoke(this, EventArgs.Empty);
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private Forms.ToolStripMenuItem ReadingIntervalMenu()
@@ -175,9 +234,11 @@ public sealed class TrayPresence : IDisposable
                 _settings.PollIntervalMs = ms;
                 _settings.Save();
                 Tick(menu, choice);
+                SettingsChanged?.Invoke(this, EventArgs.Empty);
             };
 
             menu.DropDownItems.Add(choice);
+            _intervalItems.Add((choice, ms));
         }
 
         return menu;
@@ -237,6 +298,7 @@ public sealed class TrayPresence : IDisposable
             StartupRegistration.Set(_startupItem.Checked, exe);
             _settings.StartMinimised = _startupItem.Checked;
             _settings.Save();
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {

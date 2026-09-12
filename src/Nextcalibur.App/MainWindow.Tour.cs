@@ -19,7 +19,7 @@ namespace Nextcalibur.App;
 /// </summary>
 public partial class MainWindow
 {
-    private enum TourPage { Any, System, Power, Display, Lighting }
+    private enum TourPage { Any, System, Power, Display, Lighting, Settings }
 
     /// <param name="Target">x:Name of the control to spotlight; null for a step with no spotlight.</param>
     /// <param name="Section">The part of the interface the step belongs to; "Skip section" jumps to the next one.</param>
@@ -83,6 +83,8 @@ public partial class MainWindow
             "Which graphics card drives the screen: the NVIDIA card alone, both together, or the processor's own.", "The rail"),
         new TourStep("NavLighting", TourPage.Any, "Lighting",
             "The keyboard backlight: colour per zone, effects, brightness, and saved profiles.", "The rail"),
+        new TourStep("NavSettings", TourPage.Any, "Settings",
+            "Every preference in one place - the same ones the tray menu has, kept in step with it.", "The rail"),
         new TourStep("UpdateNowButton", TourPage.Any, "Updates",
             "Reads \"Up to date\" until a newer release is found - the check happens quietly in the background if you let it. " +
             "When there is one, the button names it; press it and the update is downloaded, verified and applied, and the application reopens as the new version.", "The rail"),
@@ -161,7 +163,23 @@ public partial class MainWindow
         new TourStep("ReloadButton", TourPage.Lighting, "Reload",
             "Sends the saved lighting to the keyboard again - useful if something else reset it.", "Lighting"),
 
-        // ---- the readings panel (every page but Lighting)
+        // ---- Settings page
+        new TourStep("SettingStartWithWindows", TourPage.Settings, "Start with Windows",
+            "Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.", "Settings"),
+        new TourStep("SettingOfficeOnBattery", TourPage.Settings, "Office mode on battery",
+            "When the charger comes out, drop to Office; when it goes back in, return to the mode you had. On by default, as the original software did it.", "Settings"),
+        new TourStep("SettingOverheatWarning", TourPage.Settings, "Overheat warning",
+            "The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.", "Settings"),
+        new TourStep("SettingInterval2", TourPage.Settings, "How often to read the sensors",
+            "One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.", "Settings"),
+        new TourStep("SettingAutoCheckUpdates", TourPage.Settings, "Check for updates automatically",
+            "A minute after start and every six hours, one small request to GitHub. A release found is offered, never installed on its own - unless the next switch is on.", "Settings"),
+        new TourStep("SettingAutoInstallUpdates", TourPage.Settings, "Install updates automatically",
+            "Goes one step further: a release found is downloaded, verified and installed without asking, and the application restarts into it. Off by default. It waits while a graphics change is pending a restart, since that restart is yours to time.", "Settings"),
+        new TourStep("SettingCheckNowButton", TourPage.Settings, "Check now",
+            "Asks GitHub right away and tells you the answer either way.", "Settings"),
+
+        // ---- the readings panel (every page but Lighting and Settings)
         new TourStep("CpuClock", TourPage.System, "The processor, live",
             "Its clock in gigahertz and, on Intel machines with the PawnIO driver installed, its package power in watts. Read every few seconds; the interval is a tray setting.", "Readings"),
         new TourStep("CpuTemp", TourPage.System, "Processor temperature",
@@ -188,7 +206,7 @@ public partial class MainWindow
             "Nextcalibur lives in the notification area by the clock; its menu has just been opened there. " +
             "Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. " +
             "Office mode on battery is the automatic switch when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. " +
-            "Read the sensors every sets how often the numbers refresh. Check for updates automatically and Check for updates now are what they say. " +
+            "Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. " +
             "Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. " +
             "That is the whole of it. Enjoy the machine.", "The tray"),
     };
@@ -370,6 +388,7 @@ public partial class MainWindow
             TourPage.Power => NavPower,
             TourPage.Display => NavDisplay,
             TourPage.Lighting => NavLighting,
+            TourPage.Settings => FindName("NavSettings") as RadioButton,
             _ => null,
         };
         if (nav is not null && nav.IsChecked != true) nav.IsChecked = true;
