@@ -140,7 +140,15 @@ public partial class MainWindow : Window
 
         // Not StateChanged: closing to the tray hides the window rather than
         // minimising it, so the state never changes and the handler never runs.
-        IsVisibleChanged += (_, e) => { if (e.NewValue is true) RefreshLightingFromHardware(); };
+        IsVisibleChanged += (_, e) =>
+        {
+            if (e.NewValue is true) RefreshLightingFromHardware();
+            // Hide-to-tray stops the sampling; Show from the tray leaves the
+            // window state where it was, so StateChanged never fires and the
+            // readings stayed frozen until the next minimise (found 12
+            // September 2026). Visibility is the other half of the same rule.
+            SyncSamplingToScreen();
+        };
         Closing += OnClosing;
         DriveList.ItemsSource = _drives;
         Application.Current.SessionEnding += (_, _) => _sessionEnding = true;
@@ -179,8 +187,12 @@ public partial class MainWindow : Window
         // Said once, through the tray, because that is where this application
         // lives when it has something to say and no window on screen.
         _updates.UpdateFound += (_, version) => OnUpdateFound(version);
-        _updates.DependencyFound += (_, status) => OfferDependency(status);
-        _tray.BalloonClicked += (_, _) => { if (_updates.Available is not null) OfferUpdate(); };
+        _updates.DependencyFound += (_, status) => AnnounceDependency(status);
+        _tray.BalloonClicked += (_, _) =>
+        {
+            if (_pendingDependency is { } dependency) { _pendingDependency = null; OfferDependency(dependency); }
+            else if (_updates.Available is not null) OfferUpdate();
+        };
         _tray.CheckForUpdatesRequested += (_, _) => CheckForUpdatesByHand();
         _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
 
@@ -634,16 +646,26 @@ public partial class MainWindow : Window
     private void OnStateChanged(object? sender, EventArgs e)
     {
         KeepMinimiseBox();
-        // Sampling costs a firmware round trip. There is nothing to update while
-        // the window is not on screen, so stop rather than burn the mailbox.
-        if (WindowState == WindowState.Minimized)
+        SyncSamplingToScreen();
+    }
+
+    /// <summary>
+    /// Sampling costs a firmware round trip and there is nothing to update
+    /// while the window is not on screen, so it runs exactly when the window
+    /// is visible and not minimised - whichever of the two just changed.
+    /// </summary>
+    private void SyncSamplingToScreen()
+    {
+        var onScreen = IsVisible && WindowState != WindowState.Minimized;
+        if (!onScreen)
         {
             _timer.Stop();
             TrimWorkingSet();
         }
-        else if (_thermal is not null)
+        else if (_thermal is not null && !_timer.IsEnabled)
         {
             _timer.Start();
+            Sample();   // now, not two seconds from now
         }
     }
 
@@ -749,9 +771,7 @@ public partial class MainWindow : Window
     private void HideToTray()
     {
         if (_tray is null) { WindowState = WindowState.Minimized; return; }
-        Hide();
-        _timer.Stop();
-        TrimWorkingSet();
+        Hide();   // IsVisibleChanged stops the sampling and trims
     }
 
     // ------------------------------------------------------------ window chrome
@@ -846,7 +866,7 @@ public partial class MainWindow : Window
         // Both pages describe state that other software can change while we are
         // running, so re-read it when the page comes into view rather than
         // showing whatever was true at startup.
-        if (NavPower.IsChecked == true) RefreshOverlay();
+        if (NavPower.IsChecked == true) { RefreshOverlay(); LoadPowerModes(); }
         if (NavDisplay.IsChecked == true) LoadGpuMode();
     }
 
@@ -883,7 +903,15 @@ public partial class MainWindow : Window
         var target = _onBattery && _settings.QuietOnBattery
             ? _battery.OnUnplugged(last) ?? BatteryModePolicy.QuietMode
             : last;
-        if (_currentMode == target) return;
+        if (_currentMode == target)
+        {
+            // Windows already has the plan and the overlay; the firmware may
+            // not have the profile - a cold boot can leave the controller on
+            // its own default while Windows restores the plan. One read, and
+            // a write only when they disagree.
+            EnsureFirmwareProfile(target);
+            return;
+        }
 
         try
         {
@@ -905,6 +933,20 @@ public partial class MainWindow : Window
     /// fans on whatever curve they had, which is the state the machine was
     /// in a moment ago.
     /// </summary>
+    private void EnsureFirmwareProfile(SystemMode mode)
+    {
+        if (_mailbox is null || !_support.AllowsWrites) return;
+        try
+        {
+            if (ThermalProfile.Read(_mailbox) == mode) return;
+            ThermalProfile.Write(_mailbox, mode);
+            Log.Info("mode", $"Firmware profile put back to {mode} at start");
+        }
+        catch (EcMailboxUnavailableException)
+        {
+        }
+    }
+
     private void ApplyMode(SystemMode mode)
     {
         _modes.Apply(mode);
@@ -970,6 +1012,9 @@ public partial class MainWindow : Window
             _settings.Save();
             RefreshModeStatus(mode);
             RefreshOverlay();
+            // The Power Mode cards' range follows the mode; without this the
+            // page kept the previous mode's cards until the next full reload.
+            LoadPowerModes();
         }
         catch (Exception ex)
         {
@@ -1065,8 +1110,17 @@ public partial class MainWindow : Window
         GpuRestartPending.Visibility = _gpuPendingRestart is null ? Visibility.Collapsed : Visibility.Visible;
 
         if (config.Mode is not { } mode) return;
+
+        // Showing the machine's state is not the person asking to change it;
+        // the Checked handler must not take it for a click (the same guard
+        // the mode tabs and the lighting page have).
+        _gpuUiReady = false;
         GpuButtonFor(mode).IsChecked = true;
+        _gpuUiReady = true;
     }
+
+    /// <summary>False while the graphics buttons are being set from a reading rather than by a click.</summary>
+    private bool _gpuUiReady = true;
 
     // ------------------------------------------------------------- updates
 
@@ -1187,6 +1241,31 @@ public partial class MainWindow : Window
     /// the window's own dialogue. No downloads the "no"; the next start asks
     /// again, the checks in between do not.
     /// </summary>
+    /// <summary>A dependency found by the timer while the window is away, waiting for the click that brings it back.</summary>
+    private Nextcalibur.Core.Dependencies.DependencyStatus? _pendingDependency;
+
+    /// <summary>
+    /// A dependency is missing or behind. With the window on screen, the
+    /// question is asked there; with the window away, a question would be
+    /// Windows' own box floating out of nowhere (the tray's Exit had the
+    /// same fault), so it is a notification instead, and the click brings
+    /// the window and the question together.
+    /// </summary>
+    private void AnnounceDependency(Nextcalibur.Core.Dependencies.DependencyStatus status)
+    {
+        if (IsVisible && WindowState != WindowState.Minimized && HasRendered)
+        {
+            OfferDependency(status);
+            return;
+        }
+
+        var verb = status.Missing ? "Install" : "Update";
+        _pendingDependency = status;
+        if (!Toasts.TryShow($"{status.Dependency.Name}: {verb.ToLowerInvariant()} available", status.Describe(), verb,
+                () => { _tray?.ShowWindowFromOutside(); _pendingDependency = null; OfferDependency(status); }))
+            _tray?.ShowMessage($"{status.Dependency.Name}: {verb.ToLowerInvariant()} available", "Click here to " + verb.ToLowerInvariant() + " it.");
+    }
+
     private async void OfferDependency(Nextcalibur.Core.Dependencies.DependencyStatus status)
     {
         if (_updating) return;
@@ -1216,6 +1295,14 @@ public partial class MainWindow : Window
             HideProgress();
             if (ok) Dialogs.Tell("Nextcalibur - dependencies", message);
             else Dialogs.Warn("Nextcalibur - dependencies", message);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // Whatever the installer did, the progress panel must not be left
+            // over the window with no button: it takes every click.
+            Log.Error("dependency", "Install failed", ex);
+            HideProgress();
+            Dialogs.Warn("Nextcalibur - dependencies", $"{status.Dependency.Name} could not be installed: {ex.Message}");
         }
         finally
         {
@@ -1268,6 +1355,19 @@ public partial class MainWindow : Window
         DialogButtonPrimary.Visibility = Visibility.Visible;
         DialogProgress.Visibility = Visibility.Collapsed;
 
+        // One at a time. A second question raised while the first is up - a
+        // timer's dependency offer landing on the exit question, say - would
+        // share the same buttons, and one click would answer both: the
+        // second with the click meant for it, the first with a click never
+        // meant for it. The later question gets its safe answer and is
+        // logged; whatever raised it asks again in its own time.
+        if (_dialogOpen)
+        {
+            Log.Warn("ui", $"A dialogue was raised over another and answered with its default: {title}");
+            return fallback;
+        }
+        _dialogOpen = true;
+
         var result = fallback;
         var frame = new DispatcherFrame();
 
@@ -1295,10 +1395,13 @@ public partial class MainWindow : Window
             DialogButtonSecondary.Click -= Secondary;
             ModalDialogOverlay.PreviewKeyDown -= Key;
             ModalDialogOverlay.Visibility = Visibility.Collapsed;
+            _dialogOpen = false;
         }
 
         return result;
     }
+
+    private bool _dialogOpen;
 
     private void SetOverheatWarning(bool on)
     {
@@ -1493,10 +1596,16 @@ public partial class MainWindow : Window
 
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
-        var config = _gpu.Detect();
-        GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
+        if (!_gpuUiReady) return;
 
-        if (config.Mode is not { } current) return;
+        // The running mode is what the last detection said; asking WMI again
+        // here cost a stall on the interface thread for an answer that had
+        // not changed. A click before the first answer is put back.
+        if (_currentGpuMode is not { } current)
+        {
+            LoadGpuMode();
+            return;
+        }
         if (sender is not RadioButton button || ReferenceEquals(button, GpuButtonFor(current))) return;
         if (button.Tag is not string tag || !Enum.TryParse<GpuMode>(tag, out var target)) return;
 
@@ -1886,8 +1995,8 @@ public partial class MainWindow : Window
         var cpu = SystemInfo.ProcessorName();
         var gpu = SystemInfo.GraphicsName();
 
-        CpuName.Text = cpu ?? string.Empty;
-        GpuName.Text = gpu ?? string.Empty;
+        CpuName.Text = cpu ?? "--";
+        GpuName.Text = gpu ?? "--";
         CpuName.ToolTip = cpu;
         GpuName.ToolTip = gpu;
     }
@@ -2047,7 +2156,7 @@ public partial class MainWindow : Window
         {
             ({ } ghz, { } watts) => $"{ghz:N2} GHz · {watts:0.0} W",
             ({ } ghz, null) => $"{ghz:N2} GHz",
-            _ => string.Empty,
+            _ => "--",   // a failed measurement is a dash, never a blank
         };
         // Clock and draw together, beside the temperature the panel already
         // shows: the card's whole state on one line, in every mode.
@@ -2056,7 +2165,7 @@ public partial class MainWindow : Window
             {
                 ({ } ghz, { } load) => $"{ghz:N2} GHz · {load.Watts:0.0} W",
                 ({ } ghz, null) => $"{ghz:N2} GHz",
-                _ => string.Empty,
+                _ => "--",
             };
     }
 

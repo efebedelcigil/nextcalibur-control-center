@@ -192,7 +192,7 @@ public sealed class SystemModeService
     {
         try
         {
-            var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = "powercfg.exe",
                 Arguments = arguments,
@@ -299,20 +299,17 @@ public sealed class SystemModeService
 
     private static void SetActivePlan(Guid plan)
     {
-        // powercfg is the supported way in; writing ActivePowerScheme in the
-        // registry sets the value but does not make Windows apply it.
-        var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = "powercfg.exe",
-            Arguments = $"/setactive {plan:D}",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        }) ?? throw new InvalidOperationException("Could not start powercfg.");
-
-        process.WaitForExit(5000);
-        if (process.ExitCode != 0)
-            throw new InvalidOperationException($"powercfg refused the change (code {process.ExitCode}).");
+        // The API powercfg /setactive calls itself. Writing ActivePowerScheme
+        // in the registry sets the value but does not make Windows apply it;
+        // this does, and spawns nothing - a mode change on every charger
+        // event used to start a process for it.
+        var result = PowerSetActiveScheme(IntPtr.Zero, ref plan);
+        if (result != 0)
+            throw new InvalidOperationException($"Windows refused the plan change (error {result}).");
     }
+
+    [System.Runtime.InteropServices.DllImport("powrprof.dll")]
+    private static extern uint PowerSetActiveScheme(IntPtr rootKey, ref Guid scheme);
 }
 
 /// <summary>

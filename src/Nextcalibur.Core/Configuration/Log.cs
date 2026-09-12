@@ -20,7 +20,7 @@ public static class Log
 {
     private static readonly object Gate = new();
     private static readonly int KeepDays = 7;
-    private static string? _file;
+    private static bool _folderReady;
 
     /// <summary>Where the files live: %AppData%\Nextcalibur\logs.</summary>
     public static string Folder { get; } = Path.Combine(
@@ -32,7 +32,7 @@ public static class Log
         try
         {
             Directory.CreateDirectory(Folder);
-            _file = Path.Combine(Folder, $"nextcalibur-{DateTime.Now:yyyyMMdd}.log");
+            _folderReady = true;
             foreach (var old in Directory.EnumerateFiles(Folder, "nextcalibur-*.log"))
             {
                 if (File.GetLastWriteTime(old) < DateTime.Now.AddDays(-KeepDays))
@@ -41,7 +41,7 @@ public static class Log
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _file = null;
+            _folderReady = false;
         }
 
         Info("start", $"{application} {version}; pid {Environment.ProcessId}; elevated {Elevation.IsElevated()}; args: {string.Join(' ', Environment.GetCommandLineArgs().Skip(1))}");
@@ -56,13 +56,17 @@ public static class Log
     {
         var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {level} [{Environment.CurrentManagedThreadId,3}] {category}: {message}";
         Debug.WriteLine(line);
-        if (_file is null) return;
+        if (!_folderReady) return;
 
         lock (Gate)
         {
             try
             {
-                using var writer = new StreamWriter(_file, append: true, Encoding.UTF8);
+                // Named per write, not once at start: a process that runs
+                // across midnight starts the next day's file rather than
+                // growing yesterday's.
+                var file = Path.Combine(Folder, $"nextcalibur-{DateTime.Now:yyyyMMdd}.log");
+                using var writer = new StreamWriter(file, append: true, Encoding.UTF8);
                 writer.WriteLine(line);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

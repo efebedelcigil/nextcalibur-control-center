@@ -107,8 +107,18 @@ public static class Elevation
     private static bool TaskPointsAt(string task, string executablePath)
     {
         var xml = CardSwitchTasks.SchtasksOutput($"/query /tn \"{task}\" /xml");
-        return xml is not null && xml.Contains($"<Command>{executablePath}</Command>", StringComparison.OrdinalIgnoreCase);
+        // schtasks writes the path XML-escaped; compare like with like, or a
+        // folder with an ampersand in its name never matches and every
+        // start asks for elevation again.
+        return xml is not null && xml.Contains($"<Command>{Xml(executablePath)}</Command>", StringComparison.OrdinalIgnoreCase);
     }
+
+    /// <summary>
+    /// The three characters a text node cannot carry, escaped - a path can
+    /// have an ampersand. Only those three: schtasks writes quotes and
+    /// apostrophes back as they are, and the comparison must match its output.
+    /// </summary>
+    private static string Xml(string text) => text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 
     private static bool Create(string task, string executablePath, string arguments, bool logon)
     {
@@ -151,9 +161,9 @@ public static class Elevation
               </Settings>
               <Actions Context="Author">
                 <Exec>
-                  <Command>{executablePath}</Command>
-                  <Arguments>{arguments}</Arguments>
-                  <WorkingDirectory>{Path.GetDirectoryName(executablePath)}</WorkingDirectory>
+                  <Command>{Xml(executablePath)}</Command>
+                  <Arguments>{Xml(arguments)}</Arguments>
+                  <WorkingDirectory>{Xml(Path.GetDirectoryName(executablePath) ?? string.Empty)}</WorkingDirectory>
                 </Exec>
               </Actions>
             </Task>
