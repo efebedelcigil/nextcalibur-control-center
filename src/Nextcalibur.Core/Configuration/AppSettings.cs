@@ -176,6 +176,26 @@ public static class StartupRegistration
         return Elevation.SetStartWithWindows(enabled, executablePath);
     }
 
+    /// <summary>
+    /// A copy updated from a version that started through the Run entry:
+    /// that entry cannot start an elevated program, so the choice it
+    /// recorded is carried over to the logon task and the entry removed.
+    /// Nothing happens when there is no entry.
+    /// </summary>
+    public static void MigrateRunEntry(string executablePath)
+    {
+        try
+        {
+            using var run = Registry.CurrentUser.OpenSubKey(RunKey);
+            if (run?.GetValue(ValueName) is null) return;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            return;
+        }
+        Set(true, executablePath);
+    }
+
     private static void RemoveOldRunEntry()
     {
         try

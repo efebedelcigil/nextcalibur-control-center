@@ -101,7 +101,11 @@ public partial class App : Application
 
         // Elevated now. The on-demand task is what makes the next start
         // prompt-free; registering it is idempotent and costs a schtasks call.
-        if (self is not null) Elevation.RegisterOpenTask(self);
+        if (self is not null)
+        {
+            Elevation.RegisterOpenTask(self);
+            StartupRegistration.MigrateRunEntry(self);
+        }
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
 
