@@ -79,6 +79,8 @@ en.AlreadyInstalled=Nextcalibur %1 is already installed in%n%2%n%nOnly one copy 
 tr.AlreadyInstalled=Nextcalibur %1 zaten şurada kurulu:%n%2%n%nYalnızca bir kopya kurulabilir. Kendini günceller - açın ve bildirim alanı menüsünden "Check for updates now" seçin. Taşımak için önce Ayarlar > Uygulamalar'dan kaldırın.
 en.CannotWrite=Nextcalibur cannot write to that folder. Choose another.
 tr.CannotWrite=Nextcalibur bu klasöre yazamıyor. Başka bir klasör seçin.
+en.MustBeProgramFiles=Nextcalibur has to be installed under Program Files.%n%nIt is started as administrator without a prompt, so its files must sit where only administrators can write - otherwise anything running as an ordinary account could replace them. Choose a folder under%n%1
+tr.MustBeProgramFiles=Nextcalibur, Program Files altına kurulmalıdır.%n%nUygulama sorulmadan yönetici olarak başlatılır; bu yüzden dosyaları yalnızca yöneticilerin yazabildiği bir yerde durmalıdır - aksi hâlde sıradan bir hesapla çalışan herhangi bir şey onları değiştirebilir. Şunun altında bir klasör seçin:%n%1
 en.Installing=Installing Nextcalibur...
 tr.Installing=Nextcalibur kuruluyor...
 en.StartWithWindows=Start Nextcalibur with Windows (in the notification area)
@@ -266,6 +268,20 @@ begin
   end;
 end;
 
+// Under Program Files only. The application is started elevated without a
+// prompt by a scheduled task, so the folder it runs from must be one an
+// ordinary account cannot write to; Program Files is that folder, and any
+// subfolder of it will do.
+function UnderProgramFiles(const Dir: String): Boolean;
+var
+  D, PF, PF32: String;
+begin
+  D := AddBackslash(Lowercase(Dir));
+  PF := AddBackslash(Lowercase(ExpandConstant('{commonpf}')));
+  PF32 := AddBackslash(Lowercase(ExpandConstant('{commonpf32}')));
+  Result := (Pos(PF, D) = 1) or (Pos(PF32, D) = 1);
+end;
+
 // A folder Setup cannot write to is no place to install; say so before the
 // wizard goes on.
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -276,6 +292,12 @@ begin
   if CurPageID = wpSelectDir then
   begin
     Dir := WizardDirValue;
+    if not UnderProgramFiles(Dir) then
+    begin
+      MsgBox(FmtMessage(CustomMessage('MustBeProgramFiles'), [ExpandConstant('{commonpf}')]), mbError, MB_OK);
+      Result := False;
+      exit;
+    end;
     if not DirExists(Dir) then
     begin
       if not ForceDirectories(Dir) then
