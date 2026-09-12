@@ -113,18 +113,19 @@ jobs:
           if (-not (Test-Path $notes)) { "Nextcalibur $v" | Set-Content $notes }
           # The plain Velopack Setup is not published: it installs where the wizard
           # will not, and the wizard drives it anyway.
-          # Names that say what they are, in the order GitHub sorts them (ASCII):
-          #   Nextcalibur-1.2.3-Installer.exe   the wizard - what to download
-          #   Nextcalibur-1.2.3-Portable.zip    no install, prompted at every start
+          # Names that say what they are, numbered so GitHub's case-insensitive sort
+          # puts the two choices first (a digit sorts before a letter):
+          #   Nextcalibur-1.2.3-1-Installer.exe   the wizard - what to download
+          #   Nextcalibur-1.2.3-2-Portable.zip    no install, prompted at every start
           #   Nextcalibur-1.2.3-delta.nupkg     } the updater's, fixed names
           #   Nextcalibur-1.2.3-full.nupkg      }
           #   RELEASES, releases.win.json       }
-          Copy-Item "installer/output/Nextcalibur-Setup-$v.exe" "releases/Nextcalibur-$v-Installer.exe"
-          Copy-Item releases/Nextcalibur-win-Portable.zip "releases/Nextcalibur-$v-Portable.zip"
-          $head = "**Download ``Nextcalibur-$v-Installer.exe``** and run it. ``Nextcalibur-$v-Portable.zip`` runs without installing (and asks for administrator rights at every start, since a portable copy cannot be started without a prompt safely). The remaining files are read by the application's own updater; you do not need them.`n`n"
+          Copy-Item "installer/output/Nextcalibur-Setup-$v.exe" "releases/Nextcalibur-$v-1-Installer.exe"
+          Copy-Item releases/Nextcalibur-win-Portable.zip "releases/Nextcalibur-$v-2-Portable.zip"
+          $head = "**Download ``Nextcalibur-$v-1-Installer.exe``** and run it. ``Nextcalibur-$v-2-Portable.zip`` runs without installing (and asks for administrator rights at every start, since a portable copy cannot be started without a prompt safely). The remaining files are read by the application's own updater; you do not need them.`n`n"
           $body = Join-Path $env:RUNNER_TEMP notes.md
           ($head + (Get-Content $notes -Raw)) | Set-Content $body -Encoding utf8
           gh release create "v$v" --title "Nextcalibur $v" --notes-file $body `
-            "releases/Nextcalibur-$v-Installer.exe" "releases/Nextcalibur-$v-Portable.zip" `
+            "releases/Nextcalibur-$v-1-Installer.exe" "releases/Nextcalibur-$v-2-Portable.zip" `
             "releases/Nextcalibur-$v-full.nupkg" "releases/Nextcalibur-$v-delta.nupkg" `
             releases/RELEASES releases/releases.win.json
