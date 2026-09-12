@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="po"
-        Title="Nextcalibur Control Center"
+        Title="{DynamicResource S.Caption.Title}"
         Icon="/Assets/app.ico"
         Width="1024" Height="556"
         ResizeMode="NoResize" SizeToContent="Manual"
@@ -558,7 +558,7 @@
                     <Image Source="/Assets/logo-96.png" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,10,0"
                            UseLayoutRounding="True"
                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="NEXTCALIBUR CONTROL CENTER"
+                    <TextBlock Text="{DynamicResource S.Caption.Wordmark}"
                                Style="{DynamicResource WordmarkTextStyle}" />
                 </StackPanel>
 
@@ -582,19 +582,19 @@
                         CornerRadius="4" Padding="2" VerticalAlignment="Center" Margin="0,0,10,0">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton x:Name="ThemeDark" Style="{DynamicResource ThemeToggleButtonStyle}"
-                                     GroupName="Theme" Tag="Dark" Checked="OnThemeChanged" ToolTip="Dark theme">
+                                     GroupName="Theme" Tag="Dark" Checked="OnThemeChanged" ToolTip="{DynamicResource S.Caption.ThemeDark}">
                             <Path Data="{DynamicResource IconThemeDark}" Width="12" Height="12" Stretch="Uniform"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </RadioButton>
                         <RadioButton x:Name="ThemeLight" Style="{DynamicResource ThemeToggleButtonStyle}"
-                                     GroupName="Theme" Tag="Light" Checked="OnThemeChanged" ToolTip="Light theme">
+                                     GroupName="Theme" Tag="Light" Checked="OnThemeChanged" ToolTip="{DynamicResource S.Caption.ThemeLight}">
                             <Path Data="{DynamicResource IconThemeLight}" Width="12" Height="12" Stretch="Uniform"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                   StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                         </RadioButton>
                         <RadioButton x:Name="ThemeSystem" Style="{DynamicResource ThemeToggleButtonStyle}"
-                                     GroupName="Theme" Tag="System" Checked="OnThemeChanged" ToolTip="Follow Windows theme">
+                                     GroupName="Theme" Tag="System" Checked="OnThemeChanged" ToolTip="{DynamicResource S.Caption.ThemeSystem}">
                             <Path Data="{DynamicResource IconThemeSystem}" Width="12" Height="12" Stretch="Uniform"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </RadioButton>
@@ -604,13 +604,13 @@
                 <!-- Right: Caption Buttons (Tour, Minimise, Hide to Tray, Close) (§20) -->
                 <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Top">
                     <Button x:Name="TourButton" Style="{DynamicResource CaptionButton}" Click="OnTourClick"
-                            Tag="{DynamicResource IconTour}" ToolTip="Take the tour" />
+                            Tag="{DynamicResource IconTour}" ToolTip="{DynamicResource S.Caption.Tour}" />
                     <Button x:Name="MinimiseButton" Style="{DynamicResource CaptionButton}" Click="OnMinimiseClick"
-                            Tag="{DynamicResource IconMinimise}" ToolTip="Minimise" />
+                            Tag="{DynamicResource IconMinimise}" ToolTip="{DynamicResource S.Caption.Minimise}" />
                     <Button x:Name="HideToTrayButton" Style="{DynamicResource CaptionButton}" Click="OnMinimiseToTrayClick"
-                            Tag="{DynamicResource IconMinimiseToTray}" ToolTip="Hide to tray" />
+                            Tag="{DynamicResource IconMinimiseToTray}" ToolTip="{DynamicResource S.Caption.HideToTray}" />
                     <Button x:Name="CloseButton" Style="{DynamicResource CloseButton}" Click="OnCloseClick"
-                            Tag="{DynamicResource IconClose}" ToolTip="Close" />
+                            Tag="{DynamicResource IconClose}" ToolTip="{DynamicResource S.Caption.Close}" />
                 </StackPanel>
             </Grid>
 
@@ -642,7 +642,7 @@
                         <!-- Navigation Items Stack -->
                         <StackPanel Grid.Row="1" VerticalAlignment="Top">
                             <!-- 1. System Dashboard -->
-                            <RadioButton x:Name="NavSystem" Style="{DynamicResource NavItem}" Tag="System"
+                            <RadioButton x:Name="NavSystem" Style="{DynamicResource NavItem}" Tag="{DynamicResource S.Nav.System}"
                                          GroupName="Nav" IsChecked="True" Checked="OnNavChanged">
                                 <Path Data="{DynamicResource IconNavSystem}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -653,7 +653,7 @@
                             <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
 
                             <!-- 2. Power Mode -->
-                            <RadioButton x:Name="NavPower" Style="{DynamicResource NavItem}" Tag="Power Mode"
+                            <RadioButton x:Name="NavPower" Style="{DynamicResource NavItem}" Tag="{DynamicResource S.Nav.Power}"
                                          GroupName="Nav" Checked="OnNavChanged">
                                 <Path Data="{DynamicResource IconNavPower}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -664,7 +664,7 @@
                             <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
 
                             <!-- 3. Display Mode -->
-                            <RadioButton x:Name="NavDisplay" Style="{DynamicResource NavItem}" Tag="Display Mode"
+                            <RadioButton x:Name="NavDisplay" Style="{DynamicResource NavItem}" Tag="{DynamicResource S.Nav.Display}"
                                          GroupName="Nav" Checked="OnNavChanged">
                                 <Path Data="{DynamicResource IconNavDisplay}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -675,7 +675,7 @@
                             <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
 
                             <!-- 4. LED / Lighting Control -->
-                            <RadioButton x:Name="NavLighting" Style="{DynamicResource NavItem}" Tag="Lighting"
+                            <RadioButton x:Name="NavLighting" Style="{DynamicResource NavItem}" Tag="{DynamicResource S.Nav.Lighting}"
                                          GroupName="Nav" Checked="OnNavChanged">
                                 <Path Data="{DynamicResource IconNavLighting}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -686,7 +686,7 @@
                             <Border Height="1" Background="{DynamicResource Line}" Margin="15,0" />
 
                             <!-- 5. Settings -->
-                            <RadioButton x:Name="NavSettings" Style="{DynamicResource NavItem}" Tag="Settings"
+                            <RadioButton x:Name="NavSettings" Style="{DynamicResource NavItem}" Tag="{DynamicResource S.Nav.Settings}"
                                          GroupName="Nav" Checked="OnNavChanged">
                                 <Path Data="{DynamicResource IconNavSettings}" Width="24" Height="22" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -698,21 +698,26 @@
                         <StackPanel Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="5,0,5,12">
                             <Button x:Name="UpdateNowButton" Click="OnUpdateNowClick"
                                     IsEnabled="False"
-                                    Content="Up to date"
+                                    Content="{DynamicResource S.Corner.UpToDate}"
                                     Style="{StaticResource RailUpdateButtonStyle}"
                                     Margin="0,0,0,5"
-                                    ToolTip="A newer version will appear here when available" />
+                                    ToolTip="{DynamicResource S.Corner.UpdateTooltip}" />
 
                             <Button x:Name="OpenLogButton" Click="OnOpenLogClick"
-                                    Content="Open log"
+                                    Content="{DynamicResource S.Corner.OpenLog}"
                                     Style="{StaticResource RailSecondaryButtonStyle}"
                                     Margin="0,0,0,8"
-                                    ToolTip="Open application log folder" />
+                                    ToolTip="{DynamicResource S.Corner.OpenLogTooltip}" />
 
                             <TextBlock x:Name="VersionText"
                                        Style="{DynamicResource StatusTextStyle}"
                                        FontSize="10.5"
                                        HorizontalAlignment="Center" />
+
+                            <Button x:Name="LanguageButton" Click="OnLanguageClick"
+                                    Content="{DynamicResource S.Corner.Language}"
+                                    Style="{StaticResource RailSecondaryButtonStyle}"
+                                    Margin="0,6,0,0" />
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -742,7 +747,7 @@
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
                                               VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="Office" FontSize="13" FontWeight="SemiBold"
+                                        <TextBlock Text="{DynamicResource S.System.Office}" FontSize="13" FontWeight="SemiBold"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
@@ -756,7 +761,7 @@
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
                                               VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="Gaming" FontSize="13" FontWeight="SemiBold"
+                                        <TextBlock Text="{DynamicResource S.System.Gaming}" FontSize="13" FontWeight="SemiBold"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
@@ -770,7 +775,7 @@
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
                                               VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="Performance" FontSize="13" FontWeight="SemiBold"
+                                        <TextBlock Text="{DynamicResource S.System.Performance}" FontSize="13" FontWeight="SemiBold"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
@@ -792,10 +797,10 @@
 
                             <!-- Status Subtitle (Keeps title and subtitle line as requested in §15) -->
                             <StackPanel Grid.Row="0" VerticalAlignment="Center" Margin="0,0,0,10">
-                                <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold"
+                                <TextBlock Text="{DynamicResource S.System.HardwareMonitoring}" FontSize="16" FontWeight="SemiBold"
                                            Foreground="{DynamicResource Ink}" />
                                 <TextBlock x:Name="SubtitleText" Style="{DynamicResource StatusTextStyle}"
-                                           Text="Real-time thermal and cooling telemetry" Margin="0,3,0,0"
+                                           Text="{DynamicResource S.System.SubtitlePlaceholder}" Margin="0,3,0,0"
                                            TextTrimming="CharacterEllipsis" />
                             </StackPanel>
 
@@ -832,7 +837,7 @@
                                                 <TextBlock x:Name="CpuFan" Text="--"
                                                            Style="{DynamicResource Value}" FontSize="17"
                                                            Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
-                                                <TextBlock Text="CPU FAN" Style="{DynamicResource Label}" FontSize="10"
+                                                <TextBlock Text="{DynamicResource S.System.CpuFan}" Style="{DynamicResource Label}" FontSize="10"
                                                            HorizontalAlignment="Center" Margin="0,2,0,0" />
                                             </StackPanel>
                                         </c:FanGauge>
@@ -841,7 +846,7 @@
                                                 BorderBrush="{DynamicResource Line}" BorderThickness="1"
                                                 CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
                                             <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock Text="CPU TEMPERATURE" Style="{DynamicResource Label}"
+                                                <TextBlock Text="{DynamicResource S.System.CpuTemp}" Style="{DynamicResource Label}"
                                                            HorizontalAlignment="Center" />
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
                                                     <TextBlock Text="{Binding Text, ElementName=CpuTemp}"
@@ -877,7 +882,7 @@
                                                 <TextBlock x:Name="GpuFan" Text="--"
                                                            Style="{DynamicResource Value}" FontSize="17"
                                                            Foreground="{DynamicResource Ink}" HorizontalAlignment="Center" />
-                                                <TextBlock Text="GPU FAN" Style="{DynamicResource Label}" FontSize="10"
+                                                <TextBlock Text="{DynamicResource S.System.GpuFan}" Style="{DynamicResource Label}" FontSize="10"
                                                            HorizontalAlignment="Center" Margin="0,2,0,0" />
                                             </StackPanel>
                                         </c:FanGauge>
@@ -886,7 +891,7 @@
                                                 BorderBrush="{DynamicResource Line}" BorderThickness="1"
                                                 CornerRadius="4" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Center" MinWidth="150">
                                             <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock Text="GPU TEMPERATURE" Style="{DynamicResource Label}"
+                                                <TextBlock Text="{DynamicResource S.System.GpuTemp}" Style="{DynamicResource Label}"
                                                            HorizontalAlignment="Center" />
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0">
                                                     <TextBlock Text="{Binding Text, ElementName=GpuTemp}"
@@ -919,7 +924,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Header -->
-                        <TextBlock Grid.Row="0" Text="Power Mode" FontSize="19" FontWeight="SemiBold"
+                        <TextBlock Grid.Row="0" Text="{DynamicResource S.Power.Title}" FontSize="19" FontWeight="SemiBold"
                                    Foreground="{DynamicResource Ink}" Margin="0,0,0,16" />
 
                         <!-- Four Windows Power Overlay Cards in a Row (None checked by default) -->
@@ -940,7 +945,7 @@
                                     <Path Data="{DynamicResource IconPowerSaver}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Power Saver" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Power.Efficiency}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeEfficiencyText"
@@ -959,7 +964,7 @@
                                     <Path Data="{DynamicResource IconPowerBalanced}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Balanced" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Power.Balanced}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBalancedText"
@@ -978,7 +983,7 @@
                                     <Path Data="{DynamicResource IconPowerPerformance}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Performance" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Power.Better}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBetterText"
@@ -997,7 +1002,7 @@
                                     <Path Data="{DynamicResource IconPowerBest}" Width="46" Height="46" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Ultimate" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Power.Best}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,12,0,0" />
                                     <TextBlock x:Name="PowerModeBestText"
@@ -1017,15 +1022,15 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="CURRENT MODE" Style="{DynamicResource Label}" />
+                                    <TextBlock Text="{DynamicResource S.Power.CurrentMode}" Style="{DynamicResource Label}" />
                                     <TextBlock x:Name="OverlayState" Foreground="{DynamicResource Good}"
                                                FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0"
-                                               Text="Checking..." />
+                                               Text="{DynamicResource S.Power.Checking}" />
                                     <TextBlock x:Name="OverlayDetail" Style="{DynamicResource StatusTextStyle}"
                                                Margin="0,6,16,0" TextWrapping="Wrap" LineHeight="17" />
                                 </StackPanel>
 
-                                <Button x:Name="FixButton" Grid.Column="1" Content="Repair"
+                                <Button x:Name="FixButton" Grid.Column="1" Content="{DynamicResource S.Power.Repair}"
                                         VerticalAlignment="Center" Visibility="Collapsed"
                                         Click="OnRepairClick" Padding="18,8" />
                             </Grid>
@@ -1041,7 +1046,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Header -->
-                        <TextBlock Grid.Row="0" Text="Display Mode" FontSize="19" FontWeight="SemiBold"
+                        <TextBlock Grid.Row="0" Text="{DynamicResource S.Display.Title}" FontSize="19" FontWeight="SemiBold"
                                    Foreground="{DynamicResource Ink}" Margin="0,0,0,20" />
 
                         <!-- Three GPU Mode Option Cards in a Row (None checked by default) -->
@@ -1054,12 +1059,12 @@
                                     <Path Data="{DynamicResource IconGpuDiscrete}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Discrete GPU" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Display.Discrete}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,14,0,0" />
-                                    <TextBlock Text="Dedicated graphics only" TextWrapping="Wrap" TextAlignment="Center"
+                                    <TextBlock Text="{DynamicResource S.Display.DiscreteDesc}" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
-                                    <TextBlock x:Name="ModeDiscreteNote" Text="Not directly reachable from UMA"
+                                    <TextBlock x:Name="ModeDiscreteNote" Text="{DynamicResource S.Display.DiscreteFromUmaNote}"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
                                                HorizontalAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed" />
                                 </StackPanel>
@@ -1073,10 +1078,10 @@
                                     <Path Data="{DynamicResource IconGpuHybrid}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="MS Hybrid" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Display.Hybrid}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,14,0,0" />
-                                    <TextBlock Text="Dynamic graphics switching" TextWrapping="Wrap" TextAlignment="Center"
+                                    <TextBlock Text="{DynamicResource S.Display.HybridDesc}" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                     <TextBlock x:Name="ModeHybridNote"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
@@ -1092,12 +1097,12 @@
                                     <Path Data="{DynamicResource IconGpuUma}" Width="64" Height="64" Stretch="Uniform"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                           StrokeThickness="1.5" HorizontalAlignment="Center" />
-                                    <TextBlock Text="UMA Mode" FontSize="14" FontWeight="Bold"
+                                    <TextBlock Text="{DynamicResource S.Display.Uma}" FontSize="14" FontWeight="Bold"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                HorizontalAlignment="Center" Margin="0,14,0,0" />
-                                    <TextBlock Text="Integrated graphics only" TextWrapping="Wrap" TextAlignment="Center"
+                                    <TextBlock Text="{DynamicResource S.Display.UmaDesc}" TextWrapping="Wrap" TextAlignment="Center"
                                                Style="{DynamicResource StatusTextStyle}" HorizontalAlignment="Center" Margin="0,6,0,0" />
-                                    <TextBlock x:Name="ModeUmaNote" Text="Not directly reachable from Discrete"
+                                    <TextBlock x:Name="ModeUmaNote" Text="{DynamicResource S.Display.UmaFromDiscreteNote}"
                                                Style="{DynamicResource StatusTextStyle}" FontSize="11" Foreground="{DynamicResource Muted}"
                                                HorizontalAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed" />
                                 </StackPanel>
@@ -1141,11 +1146,11 @@
 
                             <!-- Zone Selection Tabs -->
                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                <RadioButton x:Name="TabZoneA" Style="{DynamicResource ZoneTab}" Content="Zone A"
+                                <RadioButton x:Name="TabZoneA" Style="{DynamicResource ZoneTab}" Content="{DynamicResource S.Lighting.ZoneA}"
                                              GroupName="Zone" Checked="OnZoneTabChanged" Tag="Left" />
-                                <RadioButton x:Name="TabZoneB" Style="{DynamicResource ZoneTab}" Content="Zone B"
+                                <RadioButton x:Name="TabZoneB" Style="{DynamicResource ZoneTab}" Content="{DynamicResource S.Lighting.ZoneB}"
                                              GroupName="Zone" Checked="OnZoneTabChanged" Tag="Middle" />
-                                <RadioButton x:Name="TabZoneC" Style="{DynamicResource ZoneTab}" Content="Zone C"
+                                <RadioButton x:Name="TabZoneC" Style="{DynamicResource ZoneTab}" Content="{DynamicResource S.Lighting.ZoneC}"
                                              GroupName="Zone" Checked="OnZoneTabChanged" Tag="Right" />
                             </StackPanel>
 
@@ -1218,13 +1223,13 @@
                             <!-- Bottom: Lighting Profile Buttons (Office, Gaming, Performance, User Define) -->
                             <StackPanel x:Name="ProfileRow" Grid.Row="2" Orientation="Horizontal"
                                         HorizontalAlignment="Center" Margin="0,10,0,0">
-                                <RadioButton x:Name="ProfOffice" Style="{DynamicResource ProfileButton}" Content="Office"
+                                <RadioButton x:Name="ProfOffice" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfOffice}"
                                              Tag="Office" GroupName="Profile" Checked="OnProfileChecked" />
-                                <RadioButton x:Name="ProfGaming" Style="{DynamicResource ProfileButton}" Content="Gaming"
+                                <RadioButton x:Name="ProfGaming" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfGaming}"
                                              Tag="Gaming" GroupName="Profile" Checked="OnProfileChecked" />
-                                <RadioButton x:Name="ProfPerformance" Style="{DynamicResource ProfileButton}" Content="Performance"
+                                <RadioButton x:Name="ProfPerformance" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfPerformance}"
                                              Tag="Performance" GroupName="Profile" Checked="OnProfileChecked" />
-                                <RadioButton x:Name="ProfUser" Style="{DynamicResource ProfileButton}" Content="User Define"
+                                <RadioButton x:Name="ProfUser" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfUser}"
                                              Tag="UserDefine" GroupName="Profile" Checked="OnProfileChecked" />
                             </StackPanel>
                         </Grid>
@@ -1251,7 +1256,7 @@
                                     <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                                         <ToggleButton x:Name="LedPower" Style="{DynamicResource Pill}"
                                                       Click="OnLedPowerToggled" />
-                                        <TextBlock Text="LED on/off" Style="{DynamicResource Label}" Margin="0,5,0,0"
+                                        <TextBlock Text="{DynamicResource S.Lighting.LedPower}" Style="{DynamicResource Label}" Margin="0,5,0,0"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
 
@@ -1259,40 +1264,40 @@
                                     <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                                         <ToggleButton x:Name="SelectAll" Style="{DynamicResource Pill}"
                                                       Click="OnSelectAllToggled" />
-                                        <TextBlock Text="Select all" Style="{DynamicResource Label}" Margin="0,5,0,0"
+                                        <TextBlock Text="{DynamicResource S.Lighting.SelectAll}" Style="{DynamicResource Label}" Margin="0,5,0,0"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
 
                                     <!-- Reload Button -->
                                     <Button x:Name="ReloadButton" Grid.Column="2" Click="OnReloadClick"
-                                            VerticalAlignment="Top" Margin="0,2,4,0" ToolTip="Reload settings">
+                                            VerticalAlignment="Top" Margin="0,2,4,0" ToolTip="{DynamicResource S.Lighting.Reload}">
                                         <Path Data="{DynamicResource IconReload}" Width="16" Height="16" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                               StrokeThickness="1.5" StrokeEndLineCap="Round" />
                                     </Button>
-                                </Grid>
+                                 </Grid>
 
                                 <!-- Divider -->
                                 <Border Grid.Row="1" Height="1" Background="{DynamicResource Line}" Margin="0,6,0,10" />
 
                                 <!-- 2. Lighting Effect Selection (Static, Breathing, Blink, Heartbeat, Cycle, Wave) -->
                                 <UniformGrid x:Name="EffectPanel" Grid.Row="2" Columns="3" Margin="0,0,0,6">
-                                    <RadioButton x:Name="FxStatic" Style="{DynamicResource EffectButton}" Content="Static"
+                                    <RadioButton x:Name="FxStatic" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectStatic}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxStatic}" />
-                                    <RadioButton x:Name="FxBreathing" Style="{DynamicResource EffectButton}" Content="Breathing"
+                                    <RadioButton x:Name="FxBreathing" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectBreathing}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxBreathing}" />
-                                    <RadioButton x:Name="FxBlink" Style="{DynamicResource EffectButton}" Content="Blink"
+                                    <RadioButton x:Name="FxBlink" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectBlink}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxBlink}" />
-                                    <RadioButton x:Name="FxHeartbeat" Style="{DynamicResource EffectButton}" Content="Heartbeat"
+                                    <RadioButton x:Name="FxHeartbeat" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectHeartbeat}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxHeartbeat}" />
-                                    <RadioButton x:Name="FxCycle" Style="{DynamicResource EffectButton}" Content="Colour cycle"
+                                    <RadioButton x:Name="FxCycle" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectCycle}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxCycle}" />
-                                    <RadioButton x:Name="FxWave" Style="{DynamicResource EffectButton}" Content="Wave"
+                                    <RadioButton x:Name="FxWave" Style="{DynamicResource EffectButton}" Content="{DynamicResource S.Lighting.EffectWave}"
                                                  GroupName="Fx" Checked="OnEffectChecked"
                                                  Tag="{DynamicResource IconFxWave}" />
                                 </UniformGrid>
@@ -1309,7 +1314,7 @@
                                         <c:ColourWheel x:Name="Wheel" Width="140" Height="140"
                                                        ColourPicked="OnColourPicked" />
                                         <TextBlock x:Name="WheelHint" Style="{DynamicResource Label}" Margin="0,4,0,0"
-                                                   Text="Fixed colour cycle" Foreground="{DynamicResource Muted}"
+                                                   Text="{DynamicResource S.Lighting.FixedCycleHint}" Foreground="{DynamicResource Muted}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                                    Visibility="Collapsed" />
                                     </Grid>
@@ -1317,7 +1322,7 @@
                                     <!-- Brightness Slider & Readout -->
                                     <StackPanel Grid.Row="1" Margin="6,6,6,0">
                                         <Grid Margin="0,0,0,4">
-                                            <TextBlock Text="Brightness" Style="{DynamicResource Label}"
+                                            <TextBlock Text="{DynamicResource S.Lighting.Brightness}" Style="{DynamicResource Label}"
                                                        VerticalAlignment="Center" />
                                             <TextBlock x:Name="BrightnessValue" Text="100%"
                                                        Style="{DynamicResource Value}" FontSize="13"
@@ -1338,7 +1343,7 @@
                         <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel HorizontalAlignment="Stretch">
                                 <!-- Section 0: Tools (§21a, §21b) -->
-                                <TextBlock Text="Tools" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <TextBlock Text="{DynamicResource S.Settings.GroupTools}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,10">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1359,12 +1364,12 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="Windows debloat and tweaks" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.WinUtilTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur."
+                                                <TextBlock Text="{DynamicResource S.Settings.WinUtilDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
                                             </StackPanel>
-                                            <Button x:Name="SettingWinUtilButton" Grid.Column="1" Content="Open WinUtil"
+                                            <Button x:Name="SettingWinUtilButton" Grid.Column="1" Content="{DynamicResource S.Settings.WinUtilButton}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
 
@@ -1378,12 +1383,12 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="Drivers" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.DriversTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="The laptop maker's own driver download page, in your browser."
+                                                <TextBlock Text="{DynamicResource S.Settings.DriversDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
                                             </StackPanel>
-                                            <Button x:Name="SettingDriversButton" Grid.Column="1" Content="Driver downloads"
+                                            <Button x:Name="SettingDriversButton" Grid.Column="1" Content="{DynamicResource S.Settings.DriversButton}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
 
@@ -1397,12 +1402,12 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="Report a problem" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.ReportTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="The project's issues page on GitHub. Attach the day's log."
+                                                <TextBlock Text="{DynamicResource S.Settings.ReportDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
                                             </StackPanel>
-                                            <Button x:Name="SettingReportButton" Grid.Column="1" Content="Open issues"
+                                            <Button x:Name="SettingReportButton" Grid.Column="1" Content="{DynamicResource S.Settings.ReportButton}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
 
@@ -1416,19 +1421,19 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                <TextBlock Text="Privacy" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.PrivacyTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="What Nextcalibur does with data: nothing collected, nothing sent about you."
+                                                <TextBlock Text="{DynamicResource S.Settings.PrivacyDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
                                             </StackPanel>
-                                            <Button x:Name="SettingPrivacyButton" Grid.Column="1" Content="Privacy"
+                                            <Button x:Name="SettingPrivacyButton" Grid.Column="1" Content="{DynamicResource S.Settings.PrivacyButton}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
                                     </Grid>
                                 </Border>
 
                                 <!-- Section 1: Behaviour -->
-                                <TextBlock Text="Behaviour" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <TextBlock Text="{DynamicResource S.Settings.GroupBehaviour}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
                                         <!-- SettingStartWithWindows -->
@@ -1438,9 +1443,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Start with Windows" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.StartWithWindowsTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="Starts at sign-in, elevated, without a prompt."
+                                                <TextBlock Text="{DynamicResource S.Settings.StartWithWindowsDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingStartWithWindows" Grid.Column="1"
@@ -1456,9 +1461,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Office mode on battery" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.OfficeOnBatteryTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="Drop to Office when the charger comes out; back to your mode when it returns."
+                                                <TextBlock Text="{DynamicResource S.Settings.OfficeOnBatteryDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingOfficeOnBattery" Grid.Column="1"
@@ -1468,7 +1473,7 @@
                                 </Border>
 
                                 <!-- Section 2: Readings -->
-                                <TextBlock Text="Readings" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <TextBlock Text="{DynamicResource S.Settings.GroupReadings}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
                                         <!-- SettingOverheatWarning -->
@@ -1478,9 +1483,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Warn when the CPU or GPU runs hot" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.OverheatWarningTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="The thresholds are beside the temperatures."
+                                                <TextBlock Text="{DynamicResource S.Settings.OverheatWarningDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingOverheatWarning" Grid.Column="1"
@@ -1496,9 +1501,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Read the sensors every" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.IntervalTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="How often to poll the temperatures, fans and clocks."
+                                                <TextBlock Text="{DynamicResource S.Settings.IntervalDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <Border Grid.Column="1" Background="{DynamicResource CardBackground}"
@@ -1506,13 +1511,13 @@
                                                     CornerRadius="4" Padding="2" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
                                                     <RadioButton x:Name="SettingInterval1" Style="{DynamicResource SegmentedRadioButtonStyle}"
-                                                                 GroupName="Interval" Content="1 s" />
+                                                                 GroupName="Interval" Content="{DynamicResource S.Settings.Interval1}" />
                                                     <RadioButton x:Name="SettingInterval2" Style="{DynamicResource SegmentedRadioButtonStyle}"
-                                                                 GroupName="Interval" Content="2 s" />
+                                                                 GroupName="Interval" Content="{DynamicResource S.Settings.Interval2}" />
                                                     <RadioButton x:Name="SettingInterval5" Style="{DynamicResource SegmentedRadioButtonStyle}"
-                                                                 GroupName="Interval" Content="5 s" />
+                                                                 GroupName="Interval" Content="{DynamicResource S.Settings.Interval5}" />
                                                     <RadioButton x:Name="SettingInterval10" Style="{DynamicResource SegmentedRadioButtonStyle}"
-                                                                 GroupName="Interval" Content="10 s" />
+                                                                 GroupName="Interval" Content="{DynamicResource S.Settings.Interval10}" />
                                                 </StackPanel>
                                             </Border>
                                         </Grid>
@@ -1520,7 +1525,7 @@
                                 </Border>
 
                                 <!-- Section 3: Updates -->
-                                <TextBlock Text="Updates" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <TextBlock Text="{DynamicResource S.Settings.GroupUpdates}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
                                         <!-- SettingAutoCheckUpdates -->
@@ -1530,9 +1535,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Check for updates automatically" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoCheckTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="A minute after start, then every six hours; one small request."
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoCheckDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingAutoCheckUpdates" Grid.Column="1"
@@ -1548,9 +1553,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Install updates automatically" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoInstallTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="Download, verify and restart into it without asking. Waits while a graphics change is pending."
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoInstallDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingAutoInstallUpdates" Grid.Column="1"
@@ -1566,13 +1571,13 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="Check for updates now" FontSize="12" FontWeight="SemiBold"
+                                                <TextBlock Text="{DynamicResource S.Settings.CheckNowTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="Asks GitHub right away and tells you the answer either way."
+                                                <TextBlock Text="{DynamicResource S.Settings.CheckNowDesc}"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <Button x:Name="SettingCheckNowButton" Grid.Column="1"
-                                                    Content="Check now" MinWidth="90" Height="28"
+                                                    Content="{DynamicResource S.Settings.CheckNowButton}" MinWidth="90" Height="28"
                                                     VerticalAlignment="Center" />
                                         </Grid>
                                     </StackPanel>
@@ -1614,7 +1619,7 @@
                                     BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
                                     HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
                                     CornerRadius="4,12,0,0">
-                                <TextBlock Text="CPU &amp; GPU" Style="{DynamicResource PanelHeaderTextStyle}" />
+                                <TextBlock Text="{DynamicResource S.Readings.HeaderCpuGpu}" Style="{DynamicResource PanelHeaderTextStyle}" />
                             </Border>
 
                             <!-- Panel Card -->
@@ -1629,7 +1634,7 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
-                                            <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Text="{DynamicResource S.Readings.Cpu}" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
                                         </StackPanel>
                                         <TextBlock x:Name="CpuClock" Grid.Column="1" Style="{DynamicResource Label}"
                                                    Foreground="{DynamicResource Accent}" FontWeight="SemiBold"
@@ -1653,7 +1658,7 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Ellipse Width="8" Height="8" Fill="{DynamicResource Good}" Margin="0,0,8,0" />
-                                            <TextBlock Text="GPU" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Text="{DynamicResource S.Readings.Gpu}" FontWeight="SemiBold" Foreground="{DynamicResource Ink}" />
                                         </StackPanel>
                                         <TextBlock x:Name="GpuClock" Grid.Column="1" Style="{DynamicResource Label}"
                                                    Foreground="{DynamicResource Accent}" FontWeight="SemiBold"
@@ -1678,17 +1683,17 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock Text="Overheat alert" Style="{DynamicResource Label}"
+                                            <TextBlock Text="{DynamicResource S.Readings.OverheatAlert}" Style="{DynamicResource Label}"
                                                        VerticalAlignment="Center" Margin="0,0,8,0" />
                                             <ToggleButton x:Name="OverheatWarningToggle" Style="{DynamicResource Pill}"
                                                           VerticalAlignment="Center"
-                                                          ToolTip="Warn when temperatures exceed safety threshold" />
+                                                          ToolTip="{DynamicResource S.Readings.OverheatAlertTooltip}" />
                                         </StackPanel>
-                                        <Button x:Name="OverheatResetButton" Grid.Column="1" Content="Reset"
+                                        <Button x:Name="OverheatResetButton" Grid.Column="1" Content="{DynamicResource S.Readings.Reset}"
                                                 Style="{StaticResource WarnResetButtonStyle}"
                                                 IsEnabled="{Binding IsChecked, ElementName=OverheatWarningToggle}"
                                                 VerticalAlignment="Center"
-                                                ToolTip="Reset thresholds to default" />
+                                                ToolTip="{DynamicResource S.Readings.ResetTooltip}" />
                                     </Grid>
 
                                     <!-- Dual Threshold Sliders (CPU & GPU) -->
@@ -1710,7 +1715,7 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="CPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                            <TextBlock Text="{DynamicResource S.Readings.Cpu}" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                             <Slider x:Name="CpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                     TickFrequency="1" IsSnapToTickEnabled="True"
                                                     VerticalAlignment="Center" Margin="4,0" />
@@ -1725,7 +1730,7 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="GPU" Style="{DynamicResource Label}" VerticalAlignment="Center" />
+                                            <TextBlock Text="{DynamicResource S.Readings.Gpu}" Style="{DynamicResource Label}" VerticalAlignment="Center" />
                                             <Slider x:Name="GpuWarnSlider" Grid.Column="1" Minimum="60" Maximum="105"
                                                     TickFrequency="1" IsSnapToTickEnabled="True"
                                                     VerticalAlignment="Center" Margin="4,0" />
@@ -1749,7 +1754,7 @@
                                     BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,0"
                                     HorizontalAlignment="Left" Padding="14,0,24,0" Height="24"
                                     CornerRadius="4,12,0,0">
-                                <TextBlock Text="Memory &amp; Disk" Style="{DynamicResource PanelHeaderTextStyle}" />
+                                <TextBlock Text="{DynamicResource S.Readings.HeaderMemoryDisk}" Style="{DynamicResource PanelHeaderTextStyle}" />
                             </Border>
 
                             <!-- Donut Gauges Card with Stacked RAM & SSD Rows -->
@@ -1772,7 +1777,7 @@
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
                                             <StackPanel Orientation="Horizontal">
                                                 <Ellipse Width="6" Height="6" Fill="#FF7700" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                <TextBlock Text="RAM" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
+                                                <TextBlock Text="{DynamicResource S.Readings.Ram}" Style="{DynamicResource Label}" Foreground="{DynamicResource Ink}"
                                                            FontWeight="Bold" FontSize="11" />
                                             </StackPanel>
                                             <TextBlock x:Name="RamPercent" Text="--" Style="{DynamicResource Value}" FontSize="22"
@@ -1898,11 +1903,11 @@
                             <Button x:Name="DialogButtonSecondary"
                                     Style="{DynamicResource DialogSecondaryButton}"
                                     Margin="0,0,10,0" Padding="16,6"
-                                    Content="Cancel" Visibility="Collapsed" />
+                                    Content="{DynamicResource S.Dialog.Cancel}" Visibility="Collapsed" />
                             <Button x:Name="DialogButtonPrimary"
                                     Style="{DynamicResource DialogPrimaryButton}"
                                     Padding="16,6"
-                                    Content="OK" />
+                                    Content="{DynamicResource S.Dialog.OK}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -1939,7 +1944,7 @@
                             <DockPanel LastChildFill="False">
                                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                                     <Button x:Name="TourSkip"
-                                            Content="Skip"
+                                            Content="{DynamicResource S.Tour.Skip}"
                                             Style="{StaticResource TourLinkButtonStyle}"
                                             Margin="0,0,6,0" />
                                     <Button x:Name="TourSkipSection"
@@ -1947,11 +1952,11 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                                     <Button x:Name="TourBack"
-                                            Content="Back"
+                                            Content="{DynamicResource S.Tour.Back}"
                                             Style="{StaticResource TourBackButtonStyle}"
                                             Margin="0,0,6,0" />
                                     <Button x:Name="TourNext"
-                                            Content="Next"
+                                            Content="{DynamicResource S.Tour.Next}"
                                             Style="{DynamicResource DialogPrimaryButton}"
                                             FontSize="11.5"
                                             Padding="12,4"

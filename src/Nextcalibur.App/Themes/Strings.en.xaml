@@ -38,7 +38,9 @@
     <!-- The corner -->
     <sys:String x:Key="S.Corner.UpToDate">Up to date</sys:String>
     <sys:String x:Key="S.Corner.UpdateTo">Update to {0}</sys:String>
+    <sys:String x:Key="S.Corner.UpdateTooltip">A newer version will appear here when available</sys:String>
     <sys:String x:Key="S.Corner.OpenLog">Open log</sys:String>
+    <sys:String x:Key="S.Corner.OpenLogTooltip">Open application log folder</sys:String>
     <sys:String x:Key="S.Corner.Language">Türkçe</sys:String>
 
     <!-- The status line -->
@@ -57,4 +59,127 @@
 
     <!-- The language switch -->
     <sys:String x:Key="S.Language.Name">English</sys:String>
+
+    <!-- Caption -->
+    <sys:String x:Key="S.Caption.Title">Nextcalibur Control Center</sys:String>
+    <sys:String x:Key="S.Caption.Wordmark">NEXTCALIBUR CONTROL CENTER</sys:String>
+    <sys:String x:Key="S.Caption.ThemeDark">Dark theme</sys:String>
+    <sys:String x:Key="S.Caption.ThemeLight">Light theme</sys:String>
+    <sys:String x:Key="S.Caption.ThemeSystem">Follow Windows theme</sys:String>
+    <sys:String x:Key="S.Caption.Tour">Take the tour</sys:String>
+    <sys:String x:Key="S.Caption.Minimise">Minimise</sys:String>
+    <sys:String x:Key="S.Caption.HideToTray">Hide to tray</sys:String>
+    <sys:String x:Key="S.Caption.Close">Close</sys:String>
+
+    <!-- Navigation rail -->
+    <sys:String x:Key="S.Nav.System">System</sys:String>
+    <sys:String x:Key="S.Nav.Power">Power Mode</sys:String>
+    <sys:String x:Key="S.Nav.Display">Display Mode</sys:String>
+    <sys:String x:Key="S.Nav.Lighting">Lighting</sys:String>
+    <sys:String x:Key="S.Nav.Settings">Settings</sys:String>
+
+    <!-- System page -->
+    <sys:String x:Key="S.System.Office">Office</sys:String>
+    <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
+    <sys:String x:Key="S.System.Performance">Performance</sys:String>
+    <sys:String x:Key="S.System.HardwareMonitoring">Hardware Monitoring</sys:String>
+    <sys:String x:Key="S.System.SubtitlePlaceholder">Real-time thermal and cooling telemetry</sys:String>
+    <sys:String x:Key="S.System.CpuFan">CPU FAN</sys:String>
+    <sys:String x:Key="S.System.CpuTemp">CPU TEMPERATURE</sys:String>
+    <sys:String x:Key="S.System.GpuFan">GPU FAN</sys:String>
+    <sys:String x:Key="S.System.GpuTemp">GPU TEMPERATURE</sys:String>
+
+    <!-- Power Mode page -->
+    <sys:String x:Key="S.Power.Title">Power Mode</sys:String>
+    <sys:String x:Key="S.Power.Efficiency">Power Saver</sys:String>
+    <sys:String x:Key="S.Power.Balanced">Balanced</sys:String>
+    <sys:String x:Key="S.Power.Better">Performance</sys:String>
+    <sys:String x:Key="S.Power.Best">Ultimate</sys:String>
+    <sys:String x:Key="S.Power.CurrentMode">CURRENT MODE</sys:String>
+    <sys:String x:Key="S.Power.Checking">Checking...</sys:String>
+    <sys:String x:Key="S.Power.Repair">Repair</sys:String>
+
+    <!-- Display Mode page -->
+    <sys:String x:Key="S.Display.Title">Display Mode</sys:String>
+    <sys:String x:Key="S.Display.Discrete">Discrete GPU</sys:String>
+    <sys:String x:Key="S.Display.DiscreteDesc">Dedicated graphics only</sys:String>
+    <sys:String x:Key="S.Display.DiscreteFromUmaNote">Not directly reachable from UMA</sys:String>
+    <sys:String x:Key="S.Display.Hybrid">MS Hybrid</sys:String>
+    <sys:String x:Key="S.Display.HybridDesc">Dynamic graphics switching</sys:String>
+    <sys:String x:Key="S.Display.Uma">UMA Mode</sys:String>
+    <sys:String x:Key="S.Display.UmaDesc">Integrated graphics only</sys:String>
+    <sys:String x:Key="S.Display.UmaFromDiscreteNote">Not directly reachable from Discrete</sys:String>
+
+    <!-- Lighting page -->
+    <sys:String x:Key="S.Lighting.ZoneA">Zone A</sys:String>
+    <sys:String x:Key="S.Lighting.ZoneB">Zone B</sys:String>
+    <sys:String x:Key="S.Lighting.ZoneC">Zone C</sys:String>
+    <sys:String x:Key="S.Lighting.ProfOffice">Office</sys:String>
+    <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
+    <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
+    <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
+    <sys:String x:Key="S.Lighting.LedPower">LED on/off</sys:String>
+    <sys:String x:Key="S.Lighting.SelectAll">Select all</sys:String>
+    <sys:String x:Key="S.Lighting.Reload">Reload settings</sys:String>
+    <sys:String x:Key="S.Lighting.EffectStatic">Static</sys:String>
+    <sys:String x:Key="S.Lighting.EffectBreathing">Breathing</sys:String>
+    <sys:String x:Key="S.Lighting.EffectBlink">Blink</sys:String>
+    <sys:String x:Key="S.Lighting.EffectHeartbeat">Heartbeat</sys:String>
+    <sys:String x:Key="S.Lighting.EffectCycle">Colour cycle</sys:String>
+    <sys:String x:Key="S.Lighting.EffectWave">Wave</sys:String>
+    <sys:String x:Key="S.Lighting.FixedCycleHint">Fixed colour cycle</sys:String>
+    <sys:String x:Key="S.Lighting.Brightness">Brightness</sys:String>
+
+    <!-- Settings page -->
+    <sys:String x:Key="S.Settings.GroupTools">Tools</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur.</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>
+    <sys:String x:Key="S.Settings.DriversTitle">Drivers</sys:String>
+    <sys:String x:Key="S.Settings.DriversDesc">The laptop maker's own driver download page, in your browser.</sys:String>
+    <sys:String x:Key="S.Settings.DriversButton">Driver downloads</sys:String>
+    <sys:String x:Key="S.Settings.ReportTitle">Report a problem</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">The project's issues page on GitHub. Attach the day's log.</sys:String>
+    <sys:String x:Key="S.Settings.ReportButton">Open issues</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyTitle">Privacy</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">What Nextcalibur does with data: nothing collected, nothing sent about you.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyButton">Privacy</sys:String>
+    <sys:String x:Key="S.Settings.GroupBehaviour">Behaviour</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsTitle">Start with Windows</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, elevated, without a prompt.</sys:String>
+    <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Office mode on battery</sys:String>
+    <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Drop to Office when the charger comes out; back to your mode when it returns.</sys:String>
+    <sys:String x:Key="S.Settings.GroupReadings">Readings</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningTitle">Warn when the CPU or GPU runs hot</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningDesc">The thresholds are beside the temperatures.</sys:String>
+    <sys:String x:Key="S.Settings.IntervalTitle">Read the sensors every</sys:String>
+    <sys:String x:Key="S.Settings.IntervalDesc">How often to poll the temperatures, fans and clocks.</sys:String>
+    <sys:String x:Key="S.Settings.Interval1">1 s</sys:String>
+    <sys:String x:Key="S.Settings.Interval2">2 s</sys:String>
+    <sys:String x:Key="S.Settings.Interval5">5 s</sys:String>
+    <sys:String x:Key="S.Settings.Interval10">10 s</sys:String>
+    <sys:String x:Key="S.Settings.GroupUpdates">Updates</sys:String>
+    <sys:String x:Key="S.Settings.AutoCheckTitle">Check for updates automatically</sys:String>
+    <sys:String x:Key="S.Settings.AutoCheckDesc">A minute after start, then every six hours; one small request.</sys:String>
+    <sys:String x:Key="S.Settings.AutoInstallTitle">Install updates automatically</sys:String>
+    <sys:String x:Key="S.Settings.AutoInstallDesc">Download, verify and restart into it without asking. Waits while a graphics change is pending.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowTitle">Check for updates now</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowDesc">Asks GitHub right away and tells you the answer either way.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowButton">Check now</sys:String>
+
+    <!-- Readings panel -->
+    <sys:String x:Key="S.Readings.HeaderCpuGpu">CPU &amp; GPU</sys:String>
+    <sys:String x:Key="S.Readings.Cpu">CPU</sys:String>
+    <sys:String x:Key="S.Readings.Gpu">GPU</sys:String>
+    <sys:String x:Key="S.Readings.OverheatAlert">Overheat alert</sys:String>
+    <sys:String x:Key="S.Readings.OverheatAlertTooltip">Warn when temperatures exceed safety threshold</sys:String>
+    <sys:String x:Key="S.Readings.Reset">Reset</sys:String>
+    <sys:String x:Key="S.Readings.ResetTooltip">Reset thresholds to default</sys:String>
+    <sys:String x:Key="S.Readings.HeaderMemoryDisk">Memory &amp; Disk</sys:String>
+    <sys:String x:Key="S.Readings.Ram">RAM</sys:String>
+
+    <!-- Tour overlay -->
+    <sys:String x:Key="S.Tour.Skip">Skip</sys:String>
+    <sys:String x:Key="S.Tour.Back">Back</sys:String>
+    <sys:String x:Key="S.Tour.Next">Next</sys:String>
 </ResourceDictionary>

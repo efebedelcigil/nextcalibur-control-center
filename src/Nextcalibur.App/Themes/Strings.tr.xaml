@@ -36,7 +36,9 @@
     <!-- Köşe -->
     <sys:String x:Key="S.Corner.UpToDate">Güncel</sys:String>
     <sys:String x:Key="S.Corner.UpdateTo">{0} sürümüne güncelle</sys:String>
+    <sys:String x:Key="S.Corner.UpdateTooltip">Yeni bir sürüm çıktığında burada görünür</sys:String>
     <sys:String x:Key="S.Corner.OpenLog">Günlüğü aç</sys:String>
+    <sys:String x:Key="S.Corner.OpenLogTooltip">Uygulama günlük klasörünü aç</sys:String>
     <sys:String x:Key="S.Corner.Language">English</sys:String>
 
     <!-- Durum satırı -->
@@ -55,4 +57,127 @@
 
     <!-- Dil düğmesi -->
     <sys:String x:Key="S.Language.Name">Türkçe</sys:String>
+
+    <!-- Başlık çubuğu -->
+    <sys:String x:Key="S.Caption.Title">Nextcalibur Kontrol Merkezi</sys:String>
+    <sys:String x:Key="S.Caption.Wordmark">NEXTCALIBUR CONTROL CENTER</sys:String>
+    <sys:String x:Key="S.Caption.ThemeDark">Koyu tema</sys:String>
+    <sys:String x:Key="S.Caption.ThemeLight">Açık tema</sys:String>
+    <sys:String x:Key="S.Caption.ThemeSystem">Windows temasını izle</sys:String>
+    <sys:String x:Key="S.Caption.Tour">Tanıtımı başlat</sys:String>
+    <sys:String x:Key="S.Caption.Minimise">Simge durumuna küçült</sys:String>
+    <sys:String x:Key="S.Caption.HideToTray">Tepsiye gizle</sys:String>
+    <sys:String x:Key="S.Caption.Close">Kapat</sys:String>
+
+    <!-- Gezinme çubuğu -->
+    <sys:String x:Key="S.Nav.System">Sistem</sys:String>
+    <sys:String x:Key="S.Nav.Power">Güç Modu</sys:String>
+    <sys:String x:Key="S.Nav.Display">Ekran Modu</sys:String>
+    <sys:String x:Key="S.Nav.Lighting">Aydınlatma</sys:String>
+    <sys:String x:Key="S.Nav.Settings">Ayarlar</sys:String>
+
+    <!-- Sistem sayfası -->
+    <sys:String x:Key="S.System.Office">Office</sys:String>
+    <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
+    <sys:String x:Key="S.System.Performance">Performance</sys:String>
+    <sys:String x:Key="S.System.HardwareMonitoring">Donanım İzleme</sys:String>
+    <sys:String x:Key="S.System.SubtitlePlaceholder">Gerçek zamanlı sıcaklık ve soğutma verileri</sys:String>
+    <sys:String x:Key="S.System.CpuFan">CPU FANI</sys:String>
+    <sys:String x:Key="S.System.CpuTemp">CPU SICAKLIĞI</sys:String>
+    <sys:String x:Key="S.System.GpuFan">GPU FANI</sys:String>
+    <sys:String x:Key="S.System.GpuTemp">GPU SICAKLIĞI</sys:String>
+
+    <!-- Güç Modu sayfası -->
+    <sys:String x:Key="S.Power.Title">Güç Modu</sys:String>
+    <sys:String x:Key="S.Power.Efficiency">Power Saver</sys:String>
+    <sys:String x:Key="S.Power.Balanced">Balanced</sys:String>
+    <sys:String x:Key="S.Power.Better">Performance</sys:String>
+    <sys:String x:Key="S.Power.Best">Ultimate</sys:String>
+    <sys:String x:Key="S.Power.CurrentMode">ETKİN MOD</sys:String>
+    <sys:String x:Key="S.Power.Checking">Denetleniyor...</sys:String>
+    <sys:String x:Key="S.Power.Repair">Onar</sys:String>
+
+    <!-- Ekran Modu sayfası -->
+    <sys:String x:Key="S.Display.Title">Ekran Modu</sys:String>
+    <sys:String x:Key="S.Display.Discrete">Discrete GPU</sys:String>
+    <sys:String x:Key="S.Display.DiscreteDesc">Yalnızca harici grafik</sys:String>
+    <sys:String x:Key="S.Display.DiscreteFromUmaNote">Doğrudan UMA modundan geçilemez</sys:String>
+    <sys:String x:Key="S.Display.Hybrid">MS Hybrid</sys:String>
+    <sys:String x:Key="S.Display.HybridDesc">Dinamik grafik geçişi</sys:String>
+    <sys:String x:Key="S.Display.Uma">UMA Mode</sys:String>
+    <sys:String x:Key="S.Display.UmaDesc">Yalnızca dahili grafik</sys:String>
+    <sys:String x:Key="S.Display.UmaFromDiscreteNote">Doğrudan Discrete modundan geçilemez</sys:String>
+
+    <!-- Aydınlatma sayfası -->
+    <sys:String x:Key="S.Lighting.ZoneA">Bölge A</sys:String>
+    <sys:String x:Key="S.Lighting.ZoneB">Bölge B</sys:String>
+    <sys:String x:Key="S.Lighting.ZoneC">Bölge C</sys:String>
+    <sys:String x:Key="S.Lighting.ProfOffice">Office</sys:String>
+    <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
+    <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
+    <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
+    <sys:String x:Key="S.Lighting.LedPower">LED açık/kapalı</sys:String>
+    <sys:String x:Key="S.Lighting.SelectAll">Tümünü seç</sys:String>
+    <sys:String x:Key="S.Lighting.Reload">Ayarları yeniden yükle</sys:String>
+    <sys:String x:Key="S.Lighting.EffectStatic">Sabit</sys:String>
+    <sys:String x:Key="S.Lighting.EffectBreathing">Nefes alma</sys:String>
+    <sys:String x:Key="S.Lighting.EffectBlink">Yanıp sönme</sys:String>
+    <sys:String x:Key="S.Lighting.EffectHeartbeat">Kalp atışı</sys:String>
+    <sys:String x:Key="S.Lighting.EffectCycle">Renk döngüsü</sys:String>
+    <sys:String x:Key="S.Lighting.EffectWave">Dalga</sys:String>
+    <sys:String x:Key="S.Lighting.FixedCycleHint">Sabit renk döngüsü</sys:String>
+    <sys:String x:Key="S.Lighting.Brightness">Parlaklık</sys:String>
+
+    <!-- Ayarlar sayfası -->
+    <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilTitle">Windows hafifletme ve ince ayarlar</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>
+    <sys:String x:Key="S.Settings.DriversTitle">Sürücüler</sys:String>
+    <sys:String x:Key="S.Settings.DriversDesc">Tarayıcınızda dizüstü bilgisayar üreticisinin kendi sürücü indirme sayfası.</sys:String>
+    <sys:String x:Key="S.Settings.DriversButton">Sürücü indirmeleri</sys:String>
+    <sys:String x:Key="S.Settings.ReportTitle">Sorun bildir</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">GitHub'daki proje sorunları sayfası. Günün günlüğünü ekleyin.</sys:String>
+    <sys:String x:Key="S.Settings.ReportButton">Sorunları aç</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyTitle">Gizlilik</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur verilerle ne yapar: hiçbir şey toplanmaz, hakkınızda hiçbir şey gönderilmez.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyButton">Gizlilik</sys:String>
+    <sys:String x:Key="S.Settings.GroupBehaviour">Davranış</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsTitle">Windows ile başlat</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açıldığında yetki yükseltilmiş olarak sormadan başlar.</sys:String>
+    <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Pilde Office modu</sys:String>
+    <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Şarj kablosu çıktığında Office moduna geç; takıldığında önceki moda dön.</sys:String>
+    <sys:String x:Key="S.Settings.GroupReadings">Sensörler</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningTitle">CPU veya GPU ısınınca uyar</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningDesc">Eşik değerleri sıcaklıkların yanındadır.</sys:String>
+    <sys:String x:Key="S.Settings.IntervalTitle">Sensörleri okuma sıklığı</sys:String>
+    <sys:String x:Key="S.Settings.IntervalDesc">Sıcaklık, fan ve saat hızlarının ne sıklıkla sorgulanacağı.</sys:String>
+    <sys:String x:Key="S.Settings.Interval1">1 sn</sys:String>
+    <sys:String x:Key="S.Settings.Interval2">2 sn</sys:String>
+    <sys:String x:Key="S.Settings.Interval5">5 sn</sys:String>
+    <sys:String x:Key="S.Settings.Interval10">10 sn</sys:String>
+    <sys:String x:Key="S.Settings.GroupUpdates">Güncellemeler</sys:String>
+    <sys:String x:Key="S.Settings.AutoCheckTitle">Güncellemeleri otomatik denetle</sys:String>
+    <sys:String x:Key="S.Settings.AutoCheckDesc">Başlangıçtan bir dakika sonra, ardından her altı saatte bir; küçük bir istek.</sys:String>
+    <sys:String x:Key="S.Settings.AutoInstallTitle">Güncellemeleri otomatik kur</sys:String>
+    <sys:String x:Key="S.Settings.AutoInstallDesc">Sormadan indir, doğrula ve yeniden başlatıp kur. Grafik modu değişikliği beklenirken bekler.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowTitle">Güncellemeleri şimdi denetle</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve her durumda sonucu bildirir.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowButton">Şimdi denetle</sys:String>
+
+    <!-- Okuma paneli -->
+    <sys:String x:Key="S.Readings.HeaderCpuGpu">CPU ve GPU</sys:String>
+    <sys:String x:Key="S.Readings.Cpu">CPU</sys:String>
+    <sys:String x:Key="S.Readings.Gpu">GPU</sys:String>
+    <sys:String x:Key="S.Readings.OverheatAlert">Aşırı ısınma uyarısı</sys:String>
+    <sys:String x:Key="S.Readings.OverheatAlertTooltip">Sıcaklıklar güvenlik eşiğini aştığında uyar</sys:String>
+    <sys:String x:Key="S.Readings.Reset">Sıfırla</sys:String>
+    <sys:String x:Key="S.Readings.ResetTooltip">Eşikleri varsayılana sıfırla</sys:String>
+    <sys:String x:Key="S.Readings.HeaderMemoryDisk">Bellek ve Disk</sys:String>
+    <sys:String x:Key="S.Readings.Ram">RAM</sys:String>
+
+    <!-- Tanıtım katmanı -->
+    <sys:String x:Key="S.Tour.Skip">Atla</sys:String>
+    <sys:String x:Key="S.Tour.Back">Geri</sys:String>
+    <sys:String x:Key="S.Tour.Next">İleri</sys:String>
 </ResourceDictionary>

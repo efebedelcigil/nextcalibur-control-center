@@ -22,8 +22,13 @@ Say ("elevated: " + ([Security.Principal.WindowsPrincipal][Security.Principal.Wi
 
 function Window() {
   $root = [System.Windows.Automation.AutomationElement]::RootElement
-  $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::NameProperty, 'Nextcalibur Control Center')
-  $w = $root.FindFirst([System.Windows.Automation.TreeScope]::Children, $cond)
+  # By process, not by title: the title follows the language now.
+  $w = $null
+  foreach ($p in (Get-Process Nextcalibur -ErrorAction SilentlyContinue)) {
+    $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $p.Id)
+    $found = $root.FindFirst([System.Windows.Automation.TreeScope]::Children, $cond)
+    if ($null -ne $found) { $w = $found }
+  }
   if ($null -eq $w) {
     $procs = Get-Process Nextcalibur -ErrorAction SilentlyContinue
     foreach ($p in $procs) { if ($p.MainWindowHandle -ne 0) { $w = [System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle) } }
@@ -113,8 +118,14 @@ function Say($s) { ("{0} {1}" -f (Get-Date -Format HH:mm:ss.fff), $s) | Out-File
 "" | Out-File $Out -Encoding utf8
 function Window() {
   $root = [System.Windows.Automation.AutomationElement]::RootElement
-  $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::NameProperty, 'Nextcalibur Control Center')
-  return $root.FindFirst([System.Windows.Automation.TreeScope]::Children, $cond)
+  # By process, not by title: the title follows the language now.
+  $w = $null
+  foreach ($p in (Get-Process Nextcalibur -ErrorAction SilentlyContinue)) {
+    $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $p.Id)
+    $found = $root.FindFirst([System.Windows.Automation.TreeScope]::Children, $cond)
+    if ($null -ne $found) { $w = $found }
+  }
+  return $w
 }
 function Find($w, $id) { $c = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $id); return $w.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $c) }
 function Invoke($w, $id) {
