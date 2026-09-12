@@ -383,7 +383,7 @@ public partial class MainWindow : Window
                 // The readings panel sits outside the pages since 0.5.1, so
                 // its controls need locking on their own - and its numbers
                 // are settings for a warning that will never fire here.
-                foreach (var control in new UIElement[] { OverheatWarningToggle, CpuWarnSlider, GpuWarnSlider, CpuWarnValue, GpuWarnValue, OverheatResetButton })
+                foreach (var control in new UIElement[] { OverheatWarningToggle, CpuWarnSlider, GpuWarnSlider, CpuWarnValue, GpuWarnValue, OverheatResetButton, UpdateNowButton, OpenLogButton })
                     control.IsEnabled = false;
                 OverheatWarningToggle.IsChecked = false;
                 CpuWarnValue.Text = GpuWarnValue.Text = "--";
@@ -1055,7 +1055,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void OnUpdateFound(string version)
     {
-        UpdateNowButton.Visibility = Visibility.Visible;
+        UpdateNowButton.IsEnabled = true;
         UpdateNowButton.Content = $"Update to {version}";
         if (_checkingByHand) return;
 
@@ -1071,6 +1071,12 @@ public partial class MainWindow : Window
     private bool _checkingByHand;
 
     private void OnUpdateNowClick(object sender, RoutedEventArgs e) => OfferUpdate();
+
+    private void OnOpenLogClick(object sender, RoutedEventArgs e)
+    {
+        try { Process.Start(new ProcessStartInfo("explorer.exe", Log.Folder) { UseShellExecute = true }); }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException) { }
+    }
 
     private bool _updating;
 
