@@ -203,6 +203,21 @@ public sealed class TrayPresence : IDisposable
     public void ShowMessage(string title, string body) =>
         _icon.ShowBalloonTip(5000, title, body, Forms.ToolTipIcon.Warning);
 
+    /// <summary>
+    /// The tour's last step: a balloon so the person finds the icon, and the
+    /// menu opened where the notification area is, so every item can be
+    /// read while the card describes it. Windows keeps the icon's exact
+    /// position to itself; the corner of the working area is where the
+    /// menu would open from it anyway.
+    /// </summary>
+    public void ShowMenuForTour()
+    {
+        if (_disposed) return;
+        _icon.ShowBalloonTip(8000, "This is Nextcalibur's tray icon", "Right-click it for the menu; double-click to open the window.", Forms.ToolTipIcon.Info);
+        var area = Forms.Screen.PrimaryScreen?.WorkingArea ?? Forms.SystemInformation.WorkingArea;
+        _icon.ContextMenuStrip?.Show(new System.Drawing.Point(area.Right - 8, area.Bottom - 8), Forms.ToolStripDropDownDirection.AboveLeft);
+    }
+
     /// <summary>Brings the window up for something that is not the tray icon - a toast, say.</summary>
     public void ShowWindowFromOutside() => ShowWindow();
 
