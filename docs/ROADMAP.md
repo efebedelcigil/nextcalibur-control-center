@@ -618,6 +618,16 @@ leaving a registry value behind.
       one mailbox call and takes 60 ms; the session-end grace is seconds.
       Hooked through `HwndSource.AddHook` on the main window.
 
+      **Built 12 September 2026**, exactly so. `Switch` no longer writes for
+      Hybrid/Discrete; it reports a change pending. "Restart now" calls
+      `ExitWindowsEx(EWX_REBOOT)` unforced; the window answers
+      `WM_QUERYENDSESSION` yes and writes the register on `WM_ENDSESSION`
+      true - whichever restart or shutdown that turns out to be, ours or
+      the person's own. "No" leaves it pending for their next restart, and
+      Exit warns that a pending change dies with the process. Untested on
+      the machine until the next PIN-costing round; the message flow is
+      Windows' documented one.
+
 00000. **Nothing added may cost anything.** A standing check, written down
        12 September after the GPU clock was found waking the card every two
        seconds for weeks: every reading and every timer added since 0.5.0
@@ -695,6 +705,17 @@ order that would matter to somebody who installed this.
 
 4. **A switch for the overheat notification, in the window.** Done in
    0.5.1, with a threshold per chip beside it - sliders, typeable, a reset.
+
+5. **Turkish and English, live.** Set 12 September 2026, and placed last
+   on purpose: everything above ships first. A language button directly
+   under the version label; two languages; switching is immediate, no
+   restart; every string follows - window, dialogues, tray menu and its
+   balloons, the overheat warning, the update flow, the banner, the
+   uninstall question - in proper Turkish with the right characters, not a
+   machine's. Design: one resource dictionary per language, the texts as
+   `DynamicResource` keys in the markup and a `Strings` lookup in the
+   code-behind, the choice in settings. The earlier decision to drop the
+   bilingual interface (11 September) is reversed by this.
 
 ## The graphics-mode question is answered
 
