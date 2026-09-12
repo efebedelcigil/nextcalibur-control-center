@@ -53,24 +53,33 @@ stalled silently on a clean machine; sixty megabytes was the price of an
 installer that finishes.
 
 The installer is unsigned, so SmartScreen will warn: choose *More info* → *Run
-anyway*. On first run the app repairs the power-overlay fault described above and
-tells you what it changed.
+anyway*. The wizard is in English and Turkish, shows a notice you have to
+accept, and asks whether to start with Windows. One copy per machine: a
+second install is refused until the first is removed.
 
-Nextcalibur installs **no kernel driver**, and after setup it runs as an
-ordinary user. It does need administrator twice, once each, and says so when it
-asks:
+**It runs as administrator**, the way the vendor's software does. That is what
+reading the firmware, switching the graphics card, and reading the
+processor's power all need. You are asked once, on the first run; after that
+a scheduled task starts it with those rights and no prompt - from the Start
+menu, a pin, or at sign-in. On first run it also repairs the power-overlay
+fault described above and tells you what it changed.
 
-- **To read the sensors and hear the keyboard's backlight key.** The firmware
-  data block every reading comes from, and the event class Fn+Space reports
-  on, are administrators-only until access is granted — two registry values,
-  written once, in one prompt. On the same prompt it registers the scheduled
-  task that lets the graphics card be switched off and on later without
-  another one.
-- **To make the power-overlay repair permanent.** Clearing a stuck overlay works
-  unelevated; writing the guard that stops it coming back does not.
+Nextcalibur installs **no kernel driver of its own**. One reading - the
+processor's power draw - is only possible through a driver, and for that it
+uses [PawnIO](https://pawnio.eu), a Microsoft-signed, open-source driver
+that is the person's to install. Without it the number reads `--` and
+nothing else changes. When PawnIO is missing or behind, the application
+offers it: downloaded from its own releases, signature checked, installed
+quietly, on a yes.
 
-Neither is asked for again. Uninstalling removes all of it, and asks first about
-the two things you might want to keep.
+Updates work the same way: found quietly, offered once through a
+notification with an *Update now* button, downloaded with a progress bar,
+and the application restarts into the new version. Both can be turned off
+in the tray menu.
+
+Uninstalling removes everything it put on the machine - settings, logs,
+the scheduled tasks, its permissions - and asks first about the two things
+you might want to keep: the power plans and the power-overlay repair.
 
 ## What it does
 
@@ -82,24 +91,29 @@ the two things you might want to keep.
 | Temperatures, fan speeds, clock speeds | working |
 | Memory and disk gauges, device names | working, read at runtime |
 | Keyboard lighting — three zones, colour, six effects, brightness | working |
-| Notification-area icon, start with Windows, overheat warning | working |
-| Dark / light / follow-system theme | working |
-| Coexistence with the vendor software | working |
-| Graphics mode | **reports only — it does not switch** |
+| Graphics mode — Hybrid, Discrete, UMA — switched from the firmware | working; a restart you can cancel |
+| The card's clock and draw, without waking it when it sleeps | working |
+| CPU package power, through PawnIO | working when PawnIO is installed |
+| Office mode on battery, your mode back on the charger and after a restart | working |
+| Overheat warning with a threshold per chip | working |
+| Notification-area icon, start with Windows, self-update, dependency update | working |
+| Dark / light / follow-system theme, its own dialogues | working |
+| Coexistence with the vendor software, and surviving its removal | working |
+| A log of its own | `%AppData%\Nextcalibur\logs` |
 | Fan control | **deliberately not implemented** |
 
-Idle cost on the development machine: **0.029%** CPU with the window open,
-**0.002%** in the notification area.
+Fan control is left out on purpose, and [docs/ROADMAP.md](docs/ROADMAP.md)
+explains why: the vendor offers none, and a curve is only safe relative to how
+clean the cooling is, which a program cannot check. What the vendor does do
+with the fans - a thermal profile written with each mode - is copied exactly.
 
-Graphics-mode switching and fan control are both left out on purpose, and
-[docs/ROADMAP.md](docs/ROADMAP.md) explains why. Not for want of looking: the
-graphics modes were traced on hardware through every transition, and the answer
-is that switching the display path needs an undocumented call into the vendor's
-kernel driver, which this application does not ship and will not install. The
-third mode, UMA, needs no driver — it is an ordinary device disable — and may yet
-be worth doing. Fan control is a different kind of
-no: the vendor's curves are documented here, but a curve is only safe relative
-to how clean the cooling is, and that is not something a program can check.
+The graphics switch was traced on hardware through every transition: Hybrid
+and Discrete are one write to the firmware mailbox and a restart, UMA is the
+card switched off as a device. Nothing is written until Windows says the
+session is really ending, so cancelling the restart leaves the machine as it
+was. Switching changes what the TPM measures at startup: the Windows PIN has
+to be set up again, and BitLocker, if on, will ask for its recovery key. The
+application says so before it does anything.
 
 [docs/PROTOCOL.md](docs/PROTOCOL.md) documents the hardware interface, with the
 evidence behind each claim, and [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md)
@@ -107,8 +121,8 @@ audits what the application needs on a machine that has never had the vendor
 software on it - which is the point of replacing it rather than sitting beside it.
 
 There is also a command line, `nextcalibur`, built alongside: `sensors`,
-`watch`, `clocks`, `info`, `overlay`, and `led` for colour, effect and
-brightness.
+`watch`, `clocks`, `info`, `overlay`, `gpu`, `access`, and `led` for colour,
+effect and brightness.
 
 ## Hardware
 
@@ -141,12 +155,15 @@ dotnet build Nextcalibur.sln -c Release
 dotnet test Nextcalibur.sln -c Release
 ```
 
-To produce the installer as well, you also need the Velopack CLI
-(`dotnet tool install -g vpk`), then:
+To produce the installers as well, you also need the Velopack CLI
+(`dotnet tool install -g vpk`) and, for the wizard, Inno Setup 6; then:
 
 ```
 .\build.ps1
 ```
+
+`releases\` gets the Velopack package and its plain Setup; `installer\output\`
+gets the wizard. Without Inno Setup the plain Setup is still built.
 
 ## Safety
 
@@ -155,7 +172,11 @@ This software talks to your laptop's embedded controller. Read
 
 - Never send an EC command whose meaning is not documented.
 - Read commands (`0xFA00`) before write commands (`0xFB00`).
-- Fan control must always have a firmware-auto fallback.
+- Nothing the vendor's software does not do to the fans.
+- A machine that does not answer like the reference machine gets nothing
+  to click: the check is on its answers, not its model name.
+- Nothing on screen is invented: no reading, no default number where a
+  measurement failed. `--` is the honest value.
 
 ## Legal
 
@@ -169,3 +190,12 @@ source code, binaries, or assets are reproduced or redistributed by this project
 
 `nvml.dll` is loaded from the installed NVIDIA driver at runtime and is not
 redistributed.
+
+The PawnIO driver is not redistributed either; the application offers to
+download it from its own releases. The one file of PawnIO's shipped here is
+the `IntelMSR` module (`src/Nextcalibur.Core/Resources/PawnIO/`), which is
+LGPL-2.1 and travels with its licence; it is loaded into the driver through
+its documented device interface and nothing of it is linked into this code.
+
+Inno Setup, used for the installer wizard, is free software under its own
+licence and is not part of the repository.
