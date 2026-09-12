@@ -1,11 +1,11 @@
-# build.ps1 - build, publish and package Nextcalibur into a Setup.exe
+﻿# build.ps1 - build, publish and package Nextcalibur into a Setup.exe
 #
 #   .\build.ps1                 build + package
 #   .\build.ps1 -Version 0.2.0  package a specific version
 #
 # Requires: .NET 8 SDK, and the Velopack CLI (dotnet tool install -g vpk)
 
-param([string]$Version = "0.5.1")
+param([string]$Version = "0.5.2")
 
 $ErrorActionPreference = 'Stop'
 $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
