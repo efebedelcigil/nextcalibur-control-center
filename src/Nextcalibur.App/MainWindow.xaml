@@ -519,13 +519,22 @@
                             </RadioButton>
                         </StackPanel>
 
-                        <!-- Rail Version Label (Code-behind writes running version) -->
-                        <TextBlock x:Name="VersionText" Grid.Row="1"
-                                   Style="{DynamicResource StatusTextStyle}"
-                                   FontSize="10.5"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Bottom"
-                                   Margin="0,0,0,12" />
+                        <!-- Rail Bottom: Update Notification Button + Version Label (§17) -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="6,0,6,12">
+                            <Button x:Name="UpdateNowButton" Click="OnUpdateNowClick"
+                                    Visibility="Collapsed"
+                                    Style="{DynamicResource DialogPrimaryButton}"
+                                    FontSize="10.5" FontWeight="SemiBold"
+                                    Padding="4,5" Margin="0,0,0,8"
+                                    MinWidth="0"
+                                    HorizontalAlignment="Stretch"
+                                    ToolTip="A newer version is ready to install" />
+
+                            <TextBlock x:Name="VersionText"
+                                       Style="{DynamicResource StatusTextStyle}"
+                                       FontSize="10.5"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -1389,6 +1398,13 @@
                                    Foreground="{DynamicResource Ink}" Margin="0,0,0,10" />
                         <TextBlock x:Name="DialogBodyText" Style="{DynamicResource StatusTextStyle}"
                                    FontSize="13" LineHeight="19" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <!-- Progress Bar (§17) -->
+                        <ProgressBar x:Name="DialogProgress" Minimum="0" Maximum="100" Height="6"
+                                     Foreground="{DynamicResource Accent}"
+                                     Background="{DynamicResource GaugeTrackBrush}"
+                                     BorderThickness="0"
+                                     Margin="0,0,0,20"
+                                     Visibility="Collapsed" />
                         <StackPanel x:Name="DialogActions" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button x:Name="DialogButtonSecondary"
                                     Style="{DynamicResource DialogSecondaryButton}"
