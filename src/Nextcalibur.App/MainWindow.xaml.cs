@@ -618,6 +618,7 @@ public partial class MainWindow : Window
 
     private void OnStateChanged(object? sender, EventArgs e)
     {
+        KeepMinimiseBox();
         // Sampling costs a firmware round trip. There is nothing to update while
         // the window is not on screen, so stop rather than burn the mailbox.
         if (WindowState == WindowState.Minimized)
@@ -1545,13 +1546,26 @@ public partial class MainWindow : Window
         // Windows minimises on the second click only for windows that say
         // they can be minimised. Our own caption button already does this;
         // this makes the taskbar agree.
-        var style = GetWindowLong(hwnd, GwlStyle);
-        SetWindowLong(hwnd, GwlStyle, style | WsMinimizeBox);
+        KeepMinimiseBox();
 
         // Our shortcuts carry the same identity as this process, so the
         // pinned icon and the running window are one button. Off the
         // interface thread; it touches a few files.
         Task.Run(AppIdentity.StampShortcuts);
+    }
+
+    /// <summary>
+    /// WPF rewrites a frameless window's style on every state change, and the
+    /// minimise bit goes with it - so after our own minimise and the taskbar's
+    /// restore, the next taskbar click no longer minimised. Put it back each
+    /// time the state changes.
+    /// </summary>
+    private void KeepMinimiseBox()
+    {
+        var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+        if (hwnd == IntPtr.Zero) return;
+        var style = GetWindowLong(hwnd, GwlStyle);
+        if ((style & WsMinimizeBox) == 0) SetWindowLong(hwnd, GwlStyle, style | WsMinimizeBox);
     }
 
     private const int GwlStyle = -16;
