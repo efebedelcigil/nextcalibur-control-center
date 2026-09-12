@@ -1,0 +1,36 @@
+name: CodeQL
+
+# Static analysis of the C# on every push to main, every pull request, and
+# weekly. Findings land in the repository's Security tab.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '*.md', 'notes/**']
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '25 4 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          build-mode: manual
+      - run: dotnet build Nextcalibur.sln -c Release --nologo
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:csharp'
