@@ -1,4 +1,4 @@
-<Window x:Class="Nextcalibur.App.MainWindow"
+﻿<Window x:Class="Nextcalibur.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Nextcalibur.App.Controls"
@@ -27,6 +27,9 @@
 
         <!-- Window Caption Icon: Hide to Tray (Chevron down into bar) -->
         <StreamGeometry x:Key="IconMinimiseToTray" po:Freeze="True">M 1,2 L 5,6 L 9,2 M 0,9 H 10</StreamGeometry>
+
+        <!-- Window Caption Icon: Tour (?) (§20) -->
+        <StreamGeometry x:Key="IconTour" po:Freeze="True">M 2,3.5 A 3,3 0 0 1 8,3.5 C 8,5.2 5,5.2 5,6.8 M 5,9.2 L 5,9.21</StreamGeometry>
 
         <!-- Keyboard Zone Elevation & Lighting Styles (Zero-Shader, Vector-Preserved, Whole Keycaps) -->
         <Style x:Key="ZoneStyleA" TargetType="RadioButton">
@@ -457,6 +460,74 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Tour Navigation Button Styles (§20) -->
+        <Style x:Key="TourBackButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource CardBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="10,3" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverSurface}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SelectedSurface}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TourLinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Padding" Value="2,4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <!-- Outer Window Border with Square Corners (0px) -->
@@ -506,7 +577,7 @@
                 </Viewbox>
 
                 <!-- Three-way Theme Setting: Dark / Light / Follow-System -->
-                <Border Grid.Column="3" Background="{DynamicResource CardBackground}"
+                <Border x:Name="ThemeSwitch" Grid.Column="3" Background="{DynamicResource CardBackground}"
                         BorderBrush="{DynamicResource Line}" BorderThickness="1"
                         CornerRadius="4" Padding="2" VerticalAlignment="Center" Margin="0,0,10,0">
                     <StackPanel Orientation="Horizontal">
@@ -530,13 +601,15 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Right: Caption Buttons (Minimise, Hide to Tray, Close) -->
+                <!-- Right: Caption Buttons (Tour, Minimise, Hide to Tray, Close) (§20) -->
                 <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Top">
-                    <Button Style="{DynamicResource CaptionButton}" Click="OnMinimiseClick"
+                    <Button x:Name="TourButton" Style="{DynamicResource CaptionButton}" Click="OnTourClick"
+                            Tag="{DynamicResource IconTour}" ToolTip="Take the tour" />
+                    <Button x:Name="MinimiseButton" Style="{DynamicResource CaptionButton}" Click="OnMinimiseClick"
                             Tag="{DynamicResource IconMinimise}" ToolTip="Minimise" />
-                    <Button Style="{DynamicResource CaptionButton}" Click="OnMinimiseToTrayClick"
+                    <Button x:Name="HideToTrayButton" Style="{DynamicResource CaptionButton}" Click="OnMinimiseToTrayClick"
                             Tag="{DynamicResource IconMinimiseToTray}" ToolTip="Hide to tray" />
-                    <Button Style="{DynamicResource CloseButton}" Click="OnCloseClick"
+                    <Button x:Name="CloseButton" Style="{DynamicResource CloseButton}" Click="OnCloseClick"
                             Tag="{DynamicResource IconClose}" ToolTip="Close" />
                 </StackPanel>
             </Grid>
@@ -1571,6 +1644,61 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
+            </Grid>
+
+            <!-- Guided Tour Overlay (§20) -->
+            <Grid x:Name="TourOverlay" Grid.RowSpan="2" Panel.ZIndex="900"
+                  Background="Transparent" Visibility="Collapsed">
+                <Path x:Name="TourShade" Fill="#99000000" />
+                <Canvas x:Name="TourCanvas">
+                    <Border x:Name="TourCard"
+                            Style="{DynamicResource Card}"
+                            BorderBrush="{DynamicResource Accent}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="14,12">
+                        <StackPanel>
+                            <TextBlock x:Name="TourTitle"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Ink}"
+                                       Margin="0,0,0,6" />
+                            <TextBlock x:Name="TourBody"
+                                       Style="{DynamicResource StatusTextStyle}"
+                                       FontSize="13"
+                                       LineHeight="19"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,12" />
+                            <TextBlock x:Name="TourCounter"
+                                       Style="{DynamicResource StatusTextStyle}"
+                                       Foreground="{DynamicResource Muted}"
+                                       FontSize="11"
+                                       Margin="0,0,0,10" />
+                            <DockPanel LastChildFill="False">
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                                    <Button x:Name="TourSkip"
+                                            Content="Skip"
+                                            Style="{StaticResource TourLinkButtonStyle}"
+                                            Margin="0,0,6,0" />
+                                    <Button x:Name="TourSkipSection"
+                                            Style="{StaticResource TourLinkButtonStyle}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                    <Button x:Name="TourBack"
+                                            Content="Back"
+                                            Style="{StaticResource TourBackButtonStyle}"
+                                            Margin="0,0,6,0" />
+                                    <Button x:Name="TourNext"
+                                            Content="Next"
+                                            Style="{DynamicResource DialogPrimaryButton}"
+                                            FontSize="11.5"
+                                            Padding="12,4"
+                                            MinWidth="56" />
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                </Canvas>
             </Grid>
         </Grid>
     </Border>

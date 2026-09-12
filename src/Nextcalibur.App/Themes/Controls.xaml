@@ -288,7 +288,7 @@
                     <Border x:Name="Bg" Background="Transparent">
                         <Path Data="{TemplateBinding Tag}" Width="11" Height="11"
                               Stretch="Uniform" Stroke="{TemplateBinding Foreground}"
-                              StrokeThickness="1.5" StrokeEndLineCap="Round"
+                              StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                               HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -310,7 +310,7 @@
                     <Border x:Name="Bg" Background="Transparent">
                         <Path Data="{TemplateBinding Tag}" Width="10" Height="10"
                               Stretch="Uniform" Stroke="{TemplateBinding Foreground}"
-                              StrokeThickness="1.5" StrokeEndLineCap="Round"
+                              StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                               HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>

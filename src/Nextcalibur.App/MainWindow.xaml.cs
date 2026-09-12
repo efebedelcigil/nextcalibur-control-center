@@ -75,6 +75,7 @@ public partial class MainWindow : Window
 
     private int _consecutiveFailures;
     private bool _exiting;
+    private string? _exitRoute;   // for the one exit line in the log, whichever way it was asked
 
     /// <summary>
     /// True while a firmware read is in flight. The read now happens off the
@@ -570,9 +571,12 @@ public partial class MainWindow : Window
                 "This closes Nextcalibur completely: no temperature warning, no mode switch " +
                 "when the charger moves, until it is started again.",
                 defaultNo: true))
+        {
+            _exitRoute = null;
             return;
+        }
         _exiting = true;
-        Log.Info("exit", "Exit from the tray menu");
+        _exitRoute ??= "the tray menu";
         Close();
     }
 
@@ -698,6 +702,7 @@ public partial class MainWindow : Window
             if (!IsVisible || WindowState == WindowState.Minimized)
             {
                 e.Cancel = true;
+                _exitRoute ??= "the taskbar";
                 Dispatcher.BeginInvoke(Exit);
                 return;
             }
@@ -713,7 +718,10 @@ public partial class MainWindow : Window
                 return;
             }
             _exiting = true;
+            _exitRoute ??= "the close button";
         }
+
+        Log.Info("exit", _sessionEnding ? "Windows is ending the session" : $"Exit confirmed from {_exitRoute ?? "the update restart"}");
 
         {
             _timer.Stop();
@@ -1015,11 +1023,34 @@ public partial class MainWindow : Window
 
     // ------------------------------------------------------------ graphics
 
+    /// <summary>
+    /// Detection is a WMI query of the video controllers, and that takes
+    /// long enough to be felt as a stall when it runs on the interface
+    /// thread - it did, every time the Display page was opened, and it
+    /// leaked a handle a call from the STA thread besides. So it runs on
+    /// the pool and the page is filled in when it answers; an answer
+    /// overtaken by a newer request is dropped.
+    /// </summary>
+    private int _gpuDetectSequence;
+
     private void LoadGpuMode()
     {
-        var config = _gpu.Detect();
+        var sequence = ++_gpuDetectSequence;
+        Task.Run(() =>
+        {
+            var config = _gpu.Detect();
+            return (config, load: IdleWatts(config));
+        }).ContinueWith(t =>
+        {
+            if (t.IsFaulted || sequence != _gpuDetectSequence) return;
+            ApplyGpuMode(t.Result.config, t.Result.load);
+        }, TaskScheduler.FromCurrentSynchronizationContext());
+    }
+
+    private void ApplyGpuMode(GpuConfiguration config, GpuLoad? load)
+    {
         _currentGpuMode = config.Mode;
-        GpuModeDetail.Text = GpuModeService.Describe(config, IdleWatts(config), _lastThermal);
+        GpuModeDetail.Text = GpuModeService.Describe(config, load, _lastThermal);
 
         // The transitions the firmware refuses, said on the card rather than
         // on click: UMA is a switched-off card and Discrete hands it the
@@ -1369,10 +1400,9 @@ public partial class MainWindow : Window
     /// </summary>
     private bool CardIsAwake(GpuConfiguration config)
     {
-        _currentGpuMode = config.Mode;
         if (config.Mode == GpuMode.Discrete) return true;
         if (config.Mode == GpuMode.Uma || !config.DiscretePresent) return false;
-        var id = GpuModeService.DiscreteAdapterInstanceId();
+        var id = DiscreteId();
         return id is not null && DevicePowerState.MostRecent(id) == DevicePowerState.D0;
     }
 
@@ -1958,8 +1988,19 @@ public partial class MainWindow : Window
     {
         if (_currentGpuMode == GpuMode.Discrete) return true;
         if (_currentGpuMode == GpuMode.Uma) return false;
-        if (!_discreteIdLooked) { _discreteId = GpuModeService.DiscreteAdapterInstanceId(); _discreteIdLooked = true; }
-        return _discreteId is not null && DevicePowerState.MostRecent(_discreteId) == DevicePowerState.D0;
+        var id = DiscreteId();
+        return id is not null && DevicePowerState.MostRecent(id) == DevicePowerState.D0;
+    }
+
+    /// <summary>The one WMI lookup of the adapter's id, from whichever thread asks first.</summary>
+    private string? DiscreteId()
+    {
+        if (!_discreteIdLooked)
+        {
+            _discreteId = GpuModeService.DiscreteAdapterInstanceId();
+            _discreteIdLooked = true;
+        }
+        return _discreteId;
     }
 
     /// <summary>The mode as last detected, so the two-second tick need not ask WMI again.</summary>
@@ -2060,10 +2101,9 @@ public partial class MainWindow : Window
     /// </summary>
     private Task WatchForTheCardBeingSwitched()
     {
-        if (!_discreteIdLooked) { _discreteId = GpuModeService.DiscreteAdapterInstanceId(); _discreteIdLooked = true; }
-        if (_discreteId is null) return Task.CompletedTask;
+        if (DiscreteId() is not { } id) return Task.CompletedTask;
 
-        var disabled = DevicePowerState.IsDisabled(_discreteId);
+        var disabled = DevicePowerState.IsDisabled(id);
         if (disabled is null) return Task.CompletedTask;
         var enabled = !disabled.Value;
 
