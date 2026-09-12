@@ -27,24 +27,29 @@ in [BRIEF.md](BRIEF.md); the naming contract it must satisfy is in
 |---|---|
 | Firmware mailbox transport | done, verified on hardware |
 | Temperature and fan readings | done |
-| Keyboard lighting — colour, effects, brightness | done, protocol fully mapped |
+| Keyboard lighting — colour, effects, brightness; Fn+Space respected | done, protocol fully mapped |
 | Power-mode overlay diagnosis and repair | done |
-| System modes (Office / Gaming / Performance) | done |
-| Windows power modes as choice cards | done |
-| Dark / light / follow-system theme | done |
-| Tray, autostart, overheat warning | done |
-| Coexistence with the vendor software | done |
-| Installer (Velopack, ~6 MB) | done |
-| RAM and disk gauges | done, fed from the system |
-| Device names and clock speeds | done, read at runtime |
-| Keyboard illustration | outlined keycaps in live zone colours; 0.033% CPU |
-| Zone selection | dimmed live colour plus a lift; verified on screen |
-| Keyboard hover | stationary, with continuous hit regions; no flicker |
+| System modes (Office / Gaming / Performance) — plan, overlay and firmware profile | done |
+| Windows power modes as cards, within the system mode | done |
+| Office on battery, the mode back on the charger and after a restart | done |
+| Graphics mode switching — Hybrid, Discrete, UMA | **done, from the firmware**; restart the Windows way, cancellable |
+| Card's clock and draw without waking it; CPU package power through PawnIO | done |
+| Overheat warning, a threshold per chip, typeable | done |
+| Every fixed drive | done |
+| Dark / light / follow-system theme; the application's own dialogues | done |
+| Tray, start with Windows, self-update, dependency update, toast | done |
+| Runs elevated after one prompt, through a scheduled task | done |
+| Installer: Inno wizard over Velopack, English and Turkish, one copy per machine | done |
+| Unsupported machines get nothing to click | done, tested in a clean sandbox |
+| Coexistence with the vendor software, and surviving its removal | done |
+| A log of its own | done |
+| Clean uninstall, asking about what may be worth keeping | done |
+| Keyboard illustration, zone selection, hover | done |
 | One copy at a time | done — a second launch wakes the first |
-| Backing off while in the tray | **verified on hardware** — 19× cheaper; see below |
-| Handle leak | **fixed** — WMI from the interface thread; see below |
-| Graphics mode switching | **reports only, by decision** — mechanism traced on hardware; see below |
+| Handle leak | fixed — WMI from the interface thread; see below |
 | Fan control | **out of scope** — the vendor has no fan control either; see below |
+| Turkish and English in the application | planned, last |
+| Codebase tidy-up | planned, before 1.0 |
 
 ## What the original does that we do not
 
@@ -628,6 +633,28 @@ leaving a registry value behind.
       the machine until the next PIN-costing round; the message flow is
       Windows' documented one.
 
+000000. **CPU package power, after all.** Set 12 September 2026, reversing
+        the decision of the same morning: the owner wants the number, and
+        PawnIO is the honest way to it - Microsoft-signed, open source,
+        maintained (driver 2.2.0 March 2026, modules monthly, used by
+        LibreHardwareMonitor and FanControl), modules signed by its author,
+        loaded through a documented device interface. Built the same day:
+        `CpuPowerReader` reads the RAPL unit and package-energy registers
+        through the `IntelMSR` module (shipped, LGPL-2.1) and shows watts
+        beside the CPU's clock; Intel only, `--` everywhere it cannot. The
+        driver's device is administrators-only, which is what made the
+        application elevated (see "Administrator").
+
+0000000. **Dependencies kept current, the same way as the application.** Set
+         12 September 2026, built the same day. A `Dependency` describes
+         itself - installed version, latest release, expected signer, quiet
+         install switch - and `DependencyManager` checks them all with the
+         update check, offers what is missing or behind in the window's own
+         dialogue, downloads with progress, verifies the Authenticode
+         signature and chain, installs quietly. PawnIO is the first; adding
+         another is one class and one list entry. Declined for the session,
+         asked again at the next start.
+
 00000. **Nothing added may cost anything.** A standing check, written down
        12 September after the GPU clock was found waking the card every two
        seconds for weeks: every reading and every timer added since 0.5.0
@@ -636,6 +663,16 @@ leaving a registry value behind.
        keeping asleep. The tools are the ones already in `tools/` (the
        handle and CPU measurements) plus `DEVPKEY_Device_PowerData` for the
        card. Result goes in "What things cost".
+
+       First numbers, 12 September: with the window open the process used
+       1.5-3.5 % of a core - not the 0.029 % of the table - and 0.13 % in
+       the tray; 0.4.0 and 0.5.0 measure the same, so the regression is
+       older than this week. Two things found and fixed on the way: the
+       GPU clock read through NVML every two seconds (kept the card awake;
+       now gated on its power state) and a WMI query for the card's state
+       every five seconds (now a PnP status word). What remains is measured
+       from inside the assistant's sandbox, which may itself inflate it;
+       the honest figure needs a copy the person started. Open.
 
 0-. **An "Update now" button on the notification itself.** Set 12
     September 2026. The tray balloon is a Windows Forms balloon and cannot
@@ -1337,9 +1374,23 @@ laptop was found holding.
 So this project ran for weeks through a door somebody else had propped open, and
 found out when the vendor software was uninstalled and every reading stopped.
 
-So the shape is: **elevation once, ordinary use thereafter.** Granting is a
-single registry value; `tools/Grant-MailboxAccess.ps1` writes it and `-Revoke`
-puts back exactly what was there. Two things about that grant are deliberate:
+**Superseded on 12 September 2026: the application runs elevated.** The
+owner decided it the way the vendor's software does it, for one reason the
+grant could never cover - the CPU's power counters are behind PawnIO, whose
+device is administrators-only - and the rest followed: no permission grant to
+write or take back, no card-switch helper tasks, no elevated helper copies.
+The prompt is asked once, on the first run; from then on a scheduled task
+(`\Nextcalibur\Open`, highest available, on demand) starts the executable
+and an unelevated start hands over to it and exits. Start with Windows is a
+second task with a logon trigger, since `Run` cannot start an elevated
+program. Both are removed by the uninstall. The grant machinery below stays
+in the code because machines that had it need it taken back cleanly, and
+because the CLI still runs as the user.
+
+The shape before that was: **elevation once, ordinary use thereafter.**
+Granting was a single registry value; `tools/Grant-MailboxAccess.ps1` writes
+it and `-Revoke` puts back exactly what was there. Two things about that grant
+were deliberate:
 
 - It goes to **one account**, not to `BU` as the vendor's does. The block takes
   writes as well as reads - it is how the keyboard is lit - so widening it to
