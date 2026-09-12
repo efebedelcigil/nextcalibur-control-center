@@ -366,6 +366,97 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Rail Update Button Style (§19) -->
+        <Style x:Key="RailUpdateButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="9.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="2,4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{DynamicResource DialogPrimaryBackground}"
+                                BorderBrush="{DynamicResource DialogPrimaryBackground}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <TextBlock Text="{TemplateBinding Content}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       TextAlignment="Center" TextWrapping="Wrap"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Enabled Hover & Pressed -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource DialogPrimaryHover}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource DialogPrimaryHover}" />
+                                <Setter Property="Foreground" Value="{DynamicResource DialogPrimaryForeground}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource DialogPrimaryPressed}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource DialogPrimaryPressed}" />
+                            </Trigger>
+                            <!-- Disabled look (§19): reads as "nothing to update", not as broken -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource CardBackground}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Line}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource DialogPrimaryForeground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Rail Secondary Button Style (Open Log, etc.) (§19) -->
+        <Style x:Key="RailSecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource CardBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="2,4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverSurface}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SelectedSurface}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource SelectedTabBorder}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <!-- Outer Window Border with Square Corners (0px) -->
@@ -519,16 +610,20 @@
                             </RadioButton>
                         </StackPanel>
 
-                        <!-- Rail Bottom: Update Notification Button + Version Label (§17) -->
-                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="6,0,6,12">
+                        <!-- Rail Bottom: Update & Log Buttons + Version Label (§19) -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="5,0,5,12">
                             <Button x:Name="UpdateNowButton" Click="OnUpdateNowClick"
-                                    Visibility="Collapsed"
-                                    Style="{DynamicResource DialogPrimaryButton}"
-                                    FontSize="10.5" FontWeight="SemiBold"
-                                    Padding="4,5" Margin="0,0,0,8"
-                                    MinWidth="0"
-                                    HorizontalAlignment="Stretch"
-                                    ToolTip="A newer version is ready to install" />
+                                    IsEnabled="False"
+                                    Content="Up to date"
+                                    Style="{StaticResource RailUpdateButtonStyle}"
+                                    Margin="0,0,0,5"
+                                    ToolTip="A newer version will appear here when available" />
+
+                            <Button x:Name="OpenLogButton" Click="OnOpenLogClick"
+                                    Content="Open log"
+                                    Style="{StaticResource RailSecondaryButtonStyle}"
+                                    Margin="0,0,0,8"
+                                    ToolTip="Open application log folder" />
 
                             <TextBlock x:Name="VersionText"
                                        Style="{DynamicResource StatusTextStyle}"
