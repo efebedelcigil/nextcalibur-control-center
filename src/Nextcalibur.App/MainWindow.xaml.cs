@@ -158,9 +158,6 @@ public partial class MainWindow : Window
         RamGauge.Value = 0;
         RamPercent.Text = "--";
         RamDetail.Text = "--";
-        SsdGauge.Value = 0;
-        SsdPercent.Text = "--";
-        SsdDetail.Text = "--";
         CpuFan.Text = "-- rpm";
         GpuFan.Text = "-- rpm";
     }
@@ -1715,6 +1712,10 @@ public partial class MainWindow : Window
         // Every fixed drive, the Windows one first. Rows are kept and
         // updated, not rebuilt, so the gauges do not restart each refresh;
         // a drive that appears or disappears changes the list's length only.
+        // Read once a minute, not every tick: disk use moves by megabytes an
+        // hour, and enumerating volumes is the dearest call on this timer.
+        if (DateTime.UtcNow - _drivesReadAt < TimeSpan.FromMinutes(1) && _drives.Count > 0) return;
+        _drivesReadAt = DateTime.UtcNow;
         var drives = SystemInfo.FixedDrives();
         while (_drives.Count > drives.Count) _drives.RemoveAt(_drives.Count - 1);
         while (_drives.Count < drives.Count) _drives.Add(new DriveRow());
@@ -1727,6 +1728,8 @@ public partial class MainWindow : Window
             row.Detail = drives[i].Use.Describe();
         }
     }
+
+    private DateTime _drivesReadAt = DateTime.MinValue;
 
     /// <summary>The drives as shown; <c>DriveList</c> binds to this.</summary>
     private readonly System.Collections.ObjectModel.ObservableCollection<DriveRow> _drives = new();
