@@ -35,7 +35,12 @@
     <RootNamespace>Nextcalibur.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Nextcalibur Control Center</Product>
-    <Company>Nextcalibur</Company>
+    <!-- What the file's Details tab shows. The name a UAC or SmartScreen
+         prompt shows comes from a code-signing certificate instead; without
+         one it says "Unknown" whatever is written here (docs/RELEASING.md). -->
+    <Company>Efe Bedelcigil</Company>
+    <Authors>Efe Bedelcigil</Authors>
+    <Copyright>Efe Bedelcigil, MIT licence</Copyright>
     <Version>0.5.2</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
