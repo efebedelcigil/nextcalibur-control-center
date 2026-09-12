@@ -672,6 +672,17 @@ public partial class MainWindow : Window
     {
         if (!_exiting && !_sessionEnding)
         {
+            // The question is the window's own dialogue, so the window has
+            // to be on screen to ask it: a close from the taskbar's menu
+            // arrives with the window minimised, and Windows' box is not
+            // the look this application has.
+            if (!IsVisible || WindowState == WindowState.Minimized)
+            {
+                Show();
+                WindowState = WindowState.Normal;
+                Activate();
+            }
+
             if (!Dialogs.Ask("Exit Nextcalibur?",
                     "This closes Nextcalibur completely: no temperature warning, no mode switch " +
                     "when the charger moves, until it is started again." +
