@@ -14,8 +14,8 @@ public sealed record DependencyStatus(Dependency Dependency, Version? Installed,
 
     /// <summary>"PawnIO driver 2.3.0 is available (you have 2.2.0)" or "... is not installed".</summary>
     public string Describe() => Missing
-        ? $"{Dependency.Name} {Latest.Version} is not installed. It {Dependency.Purpose}."
-        : $"{Dependency.Name} {Latest.Version} is available (you have {Installed}). It {Dependency.Purpose}.";
+        ? Words.Get("S.Core.Dependency.NotInstalled", "{0} {1} is not installed. It {2}.", Dependency.Name, Latest.Version, Dependency.Purpose)
+        : Words.Get("S.Core.Dependency.Available", "{0} {1} is available (you have {2}). It {3}.", Dependency.Name, Latest.Version, Installed!, Dependency.Purpose);
 }
 
 /// <summary>
@@ -83,15 +83,15 @@ public sealed class DependencyManager
             progress.Report(100);
 
             if (!status.Dependency.SignatureIsTrusted(file))
-                return (false, $"The {status.Dependency.Name} download is not signed by {status.Dependency.ExpectedSigner}; it was not installed.");
+                return (false, Words.Get("S.Core.Dependency.Unsigned", "The {0} download is not signed by {1}; it was not installed.", status.Dependency.Name, status.Dependency.ExpectedSigner));
 
             return status.Dependency.Install(file)
-                ? (true, $"{status.Dependency.Name} {status.Latest.Version} is installed.")
-                : (false, $"The {status.Dependency.Name} installer did not finish successfully.");
+                ? (true, Words.Get("S.Core.Dependency.Installed", "{0} {1} is installed.", status.Dependency.Name, status.Latest.Version))
+                : (false, Words.Get("S.Core.Dependency.InstallerFailed", "The {0} installer did not finish successfully.", status.Dependency.Name));
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException)
         {
-            return (false, $"Could not fetch {status.Dependency.Name}: {ex.Message}");
+            return (false, Words.Get("S.Core.Dependency.FetchFailed", "Could not fetch {0}: {1}", status.Dependency.Name, ex.Message));
         }
         finally
         {

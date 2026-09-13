@@ -52,7 +52,7 @@ public static class HardwareSupport
         var access = MailboxAccess.Check();
         if (access == MailboxAvailability.NotSupported)
         {
-            reasons.Add("No firmware mailbox (RW_GMWMI) - this laptop does not expose the interface.");
+            reasons.Add(Words.Get("S.Core.Support.NoMailbox", "No firmware mailbox (RW_GMWMI) - this laptop does not expose the interface."));
             return new SupportVerdict(SupportLevel.Unsupported, reasons);
         }
 
@@ -61,11 +61,11 @@ public static class HardwareSupport
             // Present but not yet readable by this account. That is a
             // permission question, answered elsewhere, not a hardware verdict -
             // so it is neither Unsupported nor proven. Read-only until granted.
-            reasons.Add("The mailbox is present but this account cannot read it yet.");
+            reasons.Add(Words.Get("S.Core.Support.NoAccess", "The mailbox is present but this account cannot read it yet."));
             return new SupportVerdict(SupportLevel.ReadOnly, reasons);
         }
 
-        reasons.Add("Firmware mailbox present.");
+        reasons.Add(Words.Get("S.Core.Support.MailboxPresent", "Firmware mailbox present."));
 
         ThermalSample thermal;
         try
@@ -73,7 +73,7 @@ public static class HardwareSupport
             using var mailbox = new EcMailbox();
             if (!new ThermalReader(mailbox).TryRead(out thermal))
             {
-                reasons.Add("The mailbox did not answer a thermal read.");
+                reasons.Add(Words.Get("S.Core.Support.NoThermal", "The mailbox did not answer a thermal read."));
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
 
@@ -86,24 +86,24 @@ public static class HardwareSupport
             var mode = GpuModeService.ReadFirmwareMode(mailbox);
             if (mode.Mode is null)
             {
-                reasons.Add("The display-mode register did not read as 1 or 2.");
+                reasons.Add(Words.Get("S.Core.Support.DisplayRegisterOdd", "The display-mode register did not read as 1 or 2."));
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
-            reasons.Add($"Display-mode register reads {mode.Mode}.");
+            reasons.Add(Words.Get("S.Core.Support.DisplayRegister", "Display-mode register reads {0}.", mode.Mode));
 
             // The other register a mode writes. Same argument: a machine whose
             // profile register holds a value never seen is not this machine.
             var profile = ThermalProfile.Read(mailbox);
             if (profile is null)
             {
-                reasons.Add("The thermal-profile register did not read as 0, 1 or 2.");
+                reasons.Add(Words.Get("S.Core.Support.ProfileRegisterOdd", "The thermal-profile register did not read as 0, 1 or 2."));
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
-            reasons.Add($"Thermal-profile register reads {profile}.");
+            reasons.Add(Words.Get("S.Core.Support.ProfileRegister", "Thermal-profile register reads {0}.", profile));
         }
         catch (EcMailboxUnavailableException ex)
         {
-            reasons.Add($"The mailbox could not be used: {ex.Message}");
+            reasons.Add(Words.Get("S.Core.Support.MailboxFailed", "The mailbox could not be used: {0}", ex.Message));
             return new SupportVerdict(SupportLevel.ReadOnly, reasons);
         }
 
@@ -127,27 +127,27 @@ public static class HardwareSupport
 
         if (sample.CpuTemperatureC is < 5 or > 125)
         {
-            reasons?.Add($"CPU temperature {sample.CpuTemperatureC} °C is not a number a laptop reports.");
+            reasons?.Add(Words.Get("S.Core.Support.CpuTempOdd", "CPU temperature {0} °C is not a number a laptop reports.", sample.CpuTemperatureC));
             plausible = false;
         }
         if (sample.GpuTemperatureC is < 0 or > 125)
         {
-            reasons?.Add($"GPU temperature {sample.GpuTemperatureC} °C is not a number a laptop reports.");
+            reasons?.Add(Words.Get("S.Core.Support.GpuTempOdd", "GPU temperature {0} °C is not a number a laptop reports.", sample.GpuTemperatureC));
             plausible = false;
         }
         if (sample.CpuFanRpm is < 0 or > 12000 || sample.GpuFanRpm is < 0 or > 12000)
         {
-            reasons?.Add($"Fan speeds {sample.CpuFanRpm} / {sample.GpuFanRpm} rpm are outside anything a laptop fan does.");
+            reasons?.Add(Words.Get("S.Core.Support.FansOdd", "Fan speeds {0} / {1} rpm are outside anything a laptop fan does.", sample.CpuFanRpm, sample.GpuFanRpm));
             plausible = false;
         }
         if (sample.CpuTemperatureC == 0 && sample.GpuTemperatureC == 0 && sample.CpuFanRpm == 0 && sample.GpuFanRpm == 0)
         {
-            reasons?.Add("Every reading is zero, which is what a mailbox that is not this protocol tends to say.");
+            reasons?.Add(Words.Get("S.Core.Support.AllZero", "Every reading is zero, which is what a mailbox that is not this protocol tends to say."));
             plausible = false;
         }
 
         if (plausible)
-            reasons?.Add($"Thermal read is plausible: CPU {sample.CpuTemperatureC} °C, GPU {sample.GpuTemperatureC} °C.");
+            reasons?.Add(Words.Get("S.Core.Support.Plausible", "Thermal read is plausible: CPU {0} °C, GPU {1} °C.", sample.CpuTemperatureC, sample.GpuTemperatureC));
 
         return plausible;
     }

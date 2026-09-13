@@ -43,33 +43,33 @@ public static class Footprint
     {
         var traces = new List<Trace>
         {
-            new("Your settings", SettingsExist(), NeedsElevation: false, KeepingIsReasonable: false),
-            new("The start-with-Windows task", StartupRegistration.IsEnabled, NeedsElevation: true, KeepingIsReasonable: false),
-            new("The task that starts Nextcalibur without a prompt",
+            new(Words.Get("S.Core.Trace.Settings", "Your settings"), SettingsExist(), NeedsElevation: false, KeepingIsReasonable: false),
+            new(Words.Get("S.Core.Trace.StartupTask", "The start-with-Windows task"), StartupRegistration.IsEnabled, NeedsElevation: true, KeepingIsReasonable: false),
+            new(Words.Get("S.Core.Trace.OpenTask", "The task that starts Nextcalibur without a prompt"),
                 Environment.ProcessPath is { } self && CardSwitchTasks.SchtasksOutput($"/query /tn \"{Elevation.OpenTask}\"") is not null,
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
-            new("Permission to read the sensors",
+            new(Words.Get("S.Core.Trace.Permission", "Permission to read the sensors"),
                 MailboxAccess.Check() == MailboxAvailability.Available,
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
-            new("The tasks that switch the graphics card without a prompt",
+            new(Words.Get("S.Core.Trace.CardTasks", "The tasks that switch the graphics card without a prompt"),
                 CardSwitchTasks.Registered(),
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
-            new("The install folder's protection against the account",
+            new(Words.Get("S.Core.Trace.FolderGuard", "The install folder's protection against the account"),
                 Environment.ProcessPath is { } exe && InstallFolderGuard.RootOf(exe) is { } root
                     && (InstallFolderGuard.IsUnderProgramFiles(root) || InstallFolderGuard.IsHardened(root)),
                 NeedsElevation: true,
                 KeepingIsReasonable: false),
-            new("The power plans it created",
+            new(Words.Get("S.Core.Trace.PowerPlans", "The power plans it created"),
                 SystemModeService.EnumeratePlans().Keys.Any(n => n.StartsWith("Nextcalibur ", StringComparison.Ordinal)),
                 NeedsElevation: false,
                 // Ours, but somebody may have tuned them and want them left -
                 // and unlike settings they are visible in Windows' own power
                 // options, so removing them silently would be a surprise.
                 KeepingIsReasonable: true),
-            new("The Windows power-mode repair",
+            new(Words.Get("S.Core.Trace.Repair", "The Windows power-mode repair"),
                 !new PowerOverlayService().Diagnose().GuardMissing,
                 NeedsElevation: true,
                 // A repair to Windows rather than a part of this application.

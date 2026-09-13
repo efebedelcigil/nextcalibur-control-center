@@ -24,31 +24,27 @@ public static class PowerOverlays
 
     public static string Describe(Guid overlay)
     {
-        if (overlay == None) return "Balanced";
-        if (overlay == BetterBattery) return "Best power efficiency";
-        if (overlay == HighPerformance) return "Better performance";
-        if (overlay == MaxPerformance) return "Best performance";
-        return "Unrecognised";
+        if (overlay == None) return Words.Get("S.Core.Overlay.Balanced", "Balanced");
+        if (overlay == BetterBattery) return Words.Get("S.Core.Overlay.Efficiency", "Best power efficiency");
+        if (overlay == HighPerformance) return Words.Get("S.Core.Overlay.Better", "Better performance");
+        if (overlay == MaxPerformance) return Words.Get("S.Core.Overlay.Best", "Best performance");
+        return Words.Get("S.Core.Overlay.Unknown", "Unrecognised");
     }
 
     /// <summary>The four power modes Windows offers, in order from coolest to fastest.</summary>
-    public static IReadOnlyList<PowerModeOption> All { get; } =
+    public static IReadOnlyList<PowerModeOption> All =>
     [
-        new(BetterBattery, "Best power efficiency",
-            "Longest battery life and the quietest fans. The processor is held back, so " +
-            "heavy work takes longer."),
+        new(BetterBattery, Describe(BetterBattery),
+            Words.Get("S.Core.Overlay.EfficiencyDesc", "Longest battery life and the quietest fans. The processor is held back, so heavy work takes longer.")),
 
-        new(None, "Balanced",
-            "Windows decides. Speeds up when you need it and settles down when you don't. " +
-            "The right choice for most of the time."),
+        new(None, Describe(None),
+            Words.Get("S.Core.Overlay.BalancedDesc", "Windows decides. Speeds up when you need it and settles down when you don't. The right choice for most of the time.")),
 
-        new(HighPerformance, "Better performance",
-            "Leans towards speed. Slightly warmer and noisier than Balanced, with quicker " +
-            "responses under load."),
+        new(HighPerformance, Describe(HighPerformance),
+            Words.Get("S.Core.Overlay.BetterDesc", "Leans towards speed. Slightly warmer and noisier than Balanced, with quicker responses under load.")),
 
-        new(MaxPerformance, "Best performance",
-            "Everything the machine has. Expect noticeably more heat, louder fans and " +
-            "shorter battery life."),
+        new(MaxPerformance, Describe(MaxPerformance),
+            Words.Get("S.Core.Overlay.BestDesc", "Everything the machine has. Expect noticeably more heat, louder fans and shorter battery life.")),
     ];
 }
 
@@ -184,7 +180,7 @@ public sealed class PowerOverlayService
         if (before.OverlayIsStuck)
         {
             SetActiveOverlay(PowerOverlays.None);
-            actions.Add("Cleared the stuck Best-performance overlay (power mode is now Balanced).");
+            actions.Add(Words.Get("S.Core.Repair.Cleared", "Cleared the stuck Best-performance overlay (power mode is now Balanced)."));
         }
 
         if (before.GuardMissing)
@@ -195,11 +191,10 @@ public sealed class PowerOverlayService
                 // precedence over it, so this is reversible by deleting one value.
                 using var key = Registry.LocalMachine.CreateSubKey(MinProcessorStateKey, writable: true)
                     ?? throw new InvalidOperationException(
-                        "Could not open the overlay setting key for writing.");
+                        Words.Get("S.Core.Repair.KeyClosed", "Could not open the overlay setting key for writing."));
                 key.SetValue(OverrideValue, SafeMinProcessorState, RegistryValueKind.DWord);
-                actions.Add(
-                    $"Set the Best-performance overlay's minimum processor state to {SafeMinProcessorState}% " +
-                    "so it can no longer pin the CPU if re-activated.");
+                actions.Add(Words.Get("S.Core.Repair.Guarded",
+                    "Set the Best-performance overlay's minimum processor state to {0}% so it can no longer pin the CPU if re-activated.", SafeMinProcessorState));
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
             {
@@ -207,11 +202,8 @@ public sealed class PowerOverlayService
                 // layer does not. Without it the machine is repaired now but
                 // not protected against the overlay being re-activated later,
                 // and that difference is what the caller has to be told.
-                blocked =
-                    "The lasting part of the fix needs administrator rights, so it was not applied. " +
-                    "Windows can pin the processor again if something re-activates the " +
-                    "Best-performance power mode. Running Nextcalibur as administrator once " +
-                    "is enough to make it permanent.";
+                blocked = Words.Get("S.Core.Repair.Blocked",
+                    "The lasting part of the fix needs administrator rights, so it was not applied. Windows can pin the processor again if something re-activates the Best-performance power mode. Running Nextcalibur as administrator once is enough to make it permanent.");
             }
         }
 

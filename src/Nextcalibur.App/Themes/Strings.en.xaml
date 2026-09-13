@@ -57,7 +57,7 @@
     <!-- Exit -->
     <sys:String x:Key="S.Exit.Title">Exit Nextcalibur?</sys:String>
     <sys:String x:Key="S.Exit.Body">This closes Nextcalibur completely: no temperature warning, no mode switch when the charger moves, until it is started again.</sys:String>
-    <sys:String x:Key="S.Exit.BodyFromClose">This closes Nextcalibur completely: no temperature warning, no mode switch when the charger moves, until it is started again.&#10;&#10;To keep it running out of the way, use the tray button instead.</sys:String>
+    <sys:String x:Key="S.Exit.BodyFromClose" xml:space="preserve">This closes Nextcalibur completely: no temperature warning, no mode switch when the charger moves, until it is started again.&#10;&#10;To keep it running out of the way, use the tray button instead.</sys:String>
     <sys:String x:Key="S.Exit.PendingGraphics">A graphics mode change to {0} is waiting for a restart and is applied by Nextcalibur as the session ends - if Nextcalibur is not running, it will not happen.</sys:String>
 
     <!-- The language switch -->
@@ -189,4 +189,391 @@
     <sys:String x:Key="S.Tour.Skip">Skip</sys:String>
     <sys:String x:Key="S.Tour.Back">Back</sys:String>
     <sys:String x:Key="S.Tour.Next">Next</sys:String>
+
+    <!-- Words the code writes: dialogues, banners, balloons -->
+
+    <!-- Something went wrong (the fault dialogue) -->
+    <sys:String x:Key="S.Fault.Title">Nextcalibur - something went wrong</sys:String>
+    <sys:String x:Key="S.Fault.Body">An error was recorded in the log and the application is still running.</sys:String>
+
+    <!-- The uninstall's questions -->
+    <sys:String x:Key="S.Uninstall.KeepTitle">Nextcalibur - keep or remove?</sys:String>
+    <sys:String x:Key="S.Uninstall.KeepBody" xml:space="preserve">Nextcalibur has removed its own files, settings and scheduled tasks.&#10;&#10;Two things it did to Windows can stay or go:&#10;{0}&#10;&#10;The power repair fixes a Windows fault and works whether or not Nextcalibur is installed; the plans are yours to keep using.&#10;&#10;Remove them as well?</sys:String>
+    <sys:String x:Key="S.Uninstall.DependencyTitle">Nextcalibur - {0}</sys:String>
+    <sys:String x:Key="S.Uninstall.DependencyBody" xml:space="preserve">Nextcalibur installed {0} for its own use: it {1}.&#10;&#10;Other programs may use it too. Remove it as well? If unsure, keep it; it does nothing on its own.</sys:String>
+
+    <!-- The first run's power repair -->
+    <sys:String x:Key="S.FirstRun.Repaired">Nextcalibur found and repaired a Windows power configuration fault:</sys:String>
+    <sys:String x:Key="S.FirstRun.Found">Nextcalibur found a Windows power configuration fault.</sys:String>
+    <sys:String x:Key="S.FirstRun.Undo">Your CPU can now idle down properly. You can undo this at any time from the Power Mode panel.</sys:String>
+    <sys:String x:Key="S.FirstRun.RepairedTitle">Nextcalibur - power fault repaired</sys:String>
+    <sys:String x:Key="S.FirstRun.PartlyTitle">Nextcalibur - power fault partly repaired</sys:String>
+    <sys:String x:Key="S.FirstRun.Failed">Nextcalibur could not repair the Windows power overlay automatically:</sys:String>
+    <sys:String x:Key="S.FirstRun.Retry">You can retry from the Power Mode panel.</sys:String>
+
+    <!-- Settings page: the tools' dialogues -->
+    <sys:String x:Key="S.WinUtil.Title">Open WinUtil?</sys:String>
+    <sys:String x:Key="S.WinUtil.Body" xml:space="preserve">This opens Chris Titus Tech's WinUtil in an administrator PowerShell window: the script is downloaded from christitus.com and run. It is not part of Nextcalibur and nothing here checks it; what you change there - services, apps, settings - is between you and it.&#10;&#10;Continue?</sys:String>
+    <sys:String x:Key="S.WinUtil.Failed">PowerShell could not be started:</sys:String>
+    <sys:String x:Key="S.Link.Failed">The browser could not be opened:</sys:String>
+    <sys:String x:Key="S.Privacy.Title">Privacy</sys:String>
+    <sys:String x:Key="S.Privacy.Body" xml:space="preserve">Nextcalibur collects nothing about you and sends nothing about you anywhere.&#10;&#10;The only requests it makes are to GitHub, to find its own updates and PawnIO's - and none at all with automatic checks off - and they carry nothing of yours beyond what any download does. Settings and the log stay in your profile; nothing is uploaded unless you attach it to a report yourself. No account, no telemetry, no analytics.&#10;&#10;Open the full policy, with the list of every request, in your browser?</sys:String>
+
+    <!-- Updates -->
+    <sys:String x:Key="S.Update.Title">Nextcalibur - updates</sys:String>
+    <sys:String x:Key="S.Update.ANewVersion">a new version</sys:String>
+    <sys:String x:Key="S.Update.PortableCurrent">This copy was not installed by Setup, so it cannot update itself; the things it depends on are current.</sys:String>
+    <sys:String x:Key="S.Update.Latest">You have the latest version, and so do the things it depends on.</sys:String>
+    <sys:String x:Key="S.Update.Unreachable">Could not reach GitHub to check:</sys:String>
+    <sys:String x:Key="S.Update.AutoTitle">Updating to Nextcalibur {0}</sys:String>
+    <sys:String x:Key="S.Update.AutoBody">Installing automatically; the application will restart.</sys:String>
+    <sys:String x:Key="S.Update.AvailableTitle">Nextcalibur {0} is available</sys:String>
+    <sys:String x:Key="S.Update.AvailableToast">Download it and restart into it?</sys:String>
+    <sys:String x:Key="S.Update.AvailableBalloon">Click here to update.</sys:String>
+    <sys:String x:Key="S.Update.Now">Update now</sys:String>
+    <sys:String x:Key="S.Update.PendingGraphics">A graphics mode change to {0} is waiting for a restart of Windows. Updating restarts Nextcalibur, not Windows, and the pending change is dropped: choose it again afterwards, or restart Windows first.</sys:String>
+    <sys:String x:Key="S.Update.OfferTitle">Update to {0}?</sys:String>
+    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} is ready to download from GitHub. It will be installed and the application will restart itself; your settings stay as they are.&#10;&#10;Update now?</sys:String>
+    <sys:String x:Key="S.Update.Progress">Updating to {0}</sys:String>
+    <sys:String x:Key="S.Update.InstallingRestarting">Installing and restarting...</sys:String>
+    <sys:String x:Key="S.Update.NoRestart">The update was downloaded but the application could not restart into it. Close and reopen Nextcalibur to finish.</sys:String>
+    <sys:String x:Key="S.Update.Failed">The update could not be installed:</sys:String>
+
+    <!-- Progress panel -->
+    <sys:String x:Key="S.Progress.Downloading">Downloading...</sys:String>
+    <sys:String x:Key="S.Progress.DownloadingPercent">Downloading... {0}%</sys:String>
+    <sys:String x:Key="S.Progress.Installing">Installing...</sys:String>
+
+    <!-- Dependencies (the PawnIO driver) -->
+    <sys:String x:Key="S.Dependency.Title">Nextcalibur - dependencies</sys:String>
+    <sys:String x:Key="S.Dependency.InstallAvailable">{0}: install available</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateAvailable">{0}: update available</sys:String>
+    <sys:String x:Key="S.Dependency.Install">Install</sys:String>
+    <sys:String x:Key="S.Dependency.Update">Update</sys:String>
+    <sys:String x:Key="S.Dependency.ClickToInstall">Click here to install it.</sys:String>
+    <sys:String x:Key="S.Dependency.ClickToUpdate">Click here to update it.</sys:String>
+    <sys:String x:Key="S.Dependency.InstallTitle">Install {0}?</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateTitle">Update {0}?</sys:String>
+    <sys:String x:Key="S.Dependency.How">It is downloaded from its own releases, its signature is checked, and it installs quietly.</sys:String>
+    <sys:String x:Key="S.Dependency.InstallNow">Install now?</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateNow">Update now?</sys:String>
+    <sys:String x:Key="S.Dependency.Installing">Installing {0}</sys:String>
+    <sys:String x:Key="S.Dependency.Updating">Updating {0}</sys:String>
+    <sys:String x:Key="S.Dependency.Failed">{0} could not be installed:</sys:String>
+
+    <!-- Banners on the System page -->
+    <sys:String x:Key="S.Banner.ReadOnlyTitle">Readings only on this laptop</sys:String>
+    <sys:String x:Key="S.Banner.ReadOnlyBody">The firmware interface is there, but it did not answer the way the machine this was built against does, so nothing that writes to it is offered:</sys:String>
+    <sys:String x:Key="S.Banner.UnsupportedTitle">This laptop isn't supported</sys:String>
+    <sys:String x:Key="S.Banner.UnsupportedBody">Nextcalibur was built for a specific firmware interface and this machine does not have it. Nothing has been changed, and nothing here will do anything.</sys:String>
+    <sys:String x:Key="S.Banner.NoAccessTitle">The firmware interface could not be reached</sys:String>
+    <sys:String x:Key="S.Banner.NoAccessBody">This laptop has the interface Nextcalibur reads, but Windows did not let this process use it. Reopen Nextcalibur as administrator.</sys:String>
+    <sys:String x:Key="S.Banner.NoSensorsBody">Nextcalibur can't find the sensors and lighting on this machine, so those pages won't work. Power settings still do.</sys:String>
+    <sys:String x:Key="S.Banner.NoDriverTitle">The NVIDIA driver is not installed</sys:String>
+    <sys:String x:Key="S.Banner.NoDriverBody">The graphics card is there but its driver is not, so the Display page and the card's readings are unavailable until it is back. The laptop maker's driver page is under Settings.</sys:String>
+    <sys:String x:Key="S.Banner.VendorOpenTitle">Casper's Control Center is open</sys:String>
+    <sys:String x:Key="S.Banner.VendorOpenBody">Both apps are talking to the same hardware, so readings may stall and lighting changes may not stick. Close it and this message will clear itself.</sys:String>
+
+    <!-- Unsupported machine, the vendor's software -->
+    <sys:String x:Key="S.Unsupported.Title">Nextcalibur - not supported here</sys:String>
+    <sys:String x:Key="S.Unsupported.Body" xml:space="preserve">This laptop does not have the firmware interface Nextcalibur was built for.&#10;&#10;Nothing has been changed on your machine, and to keep it that way, nothing in this window will respond. There is no reason to keep it installed.&#10;&#10;Open Windows' list of installed apps so you can remove it?</sys:String>
+    <sys:String x:Key="S.Vendor.Title">Nextcalibur - two applications, one interface</sys:String>
+    <sys:String x:Key="S.Vendor.Body" xml:space="preserve">{0} is installed on this machine.&#10;&#10;Both it and Nextcalibur talk to the same interface in your laptop's firmware, and it can only handle one request at a time. With both installed, readings stall and lighting changes sometimes fail to apply - in either application.&#10;&#10;Removing it is recommended. Nextcalibur will not do that for you, and it works either way.&#10;&#10;Open Windows' list of installed apps now?&#10;&#10;Choosing No keeps it, and this message will not come back.</sys:String>
+
+    <!-- Modes -->
+    <sys:String x:Key="S.Mode.ChangeFailed">Could not change the mode</sys:String>
+    <sys:String x:Key="S.Power.NotInMode">Not available in {0} mode. Change the mode on the System page first.</sys:String>
+
+    <!-- Graphics mode -->
+    <sys:String x:Key="S.Gpu.Title">Graphics mode</sys:String>
+    <sys:String x:Key="S.Gpu.RestartPending">Restart to switch to {0}. Until then the machine runs as shown.</sys:String>
+    <sys:String x:Key="S.Gpu.Settling">Letting the change settle - the modes unlock in {0} seconds.</sys:String>
+    <sys:String x:Key="S.Gpu.SettlingOne">Letting the change settle - the modes unlock in {0} second.</sys:String>
+    <sys:String x:Key="S.Gpu.NoMailbox">The firmware interface is not available, so the mode cannot be changed from here.</sys:String>
+    <sys:String x:Key="S.Gpu.ReadOnly">This laptop has not shown it speaks the protocol Nextcalibur was built against, so nothing that writes to it is offered. Readings only.</sys:String>
+    <sys:String x:Key="S.Gpu.NotFromHere">Not from here</sys:String>
+    <sys:String x:Key="S.Gpu.ConfirmSwitch" xml:space="preserve">Switch to {0}?&#10;&#10;This changes which chip drives your screen, and takes effect at the next restart.&#10;&#10;Two things happen because of it, and Casper's own software warns about neither:&#10;    - Your Windows PIN will stop working and need setting up again.&#10;    - If BitLocker is on, the next boot can ask for your 48-digit recovery key. Without it the drive does not open. Find it first - it is in your Microsoft account at aka.ms/myrecoverykey, or wherever you saved it.&#10;&#10;Both happen because the change alters what the TPM measures when the machine starts.&#10;&#10;Go ahead?</sys:String>
+    <sys:String x:Key="S.Gpu.RestartNow" xml:space="preserve">Restart now? Windows will first ask any application that is holding unsaved work; if you cancel there, nothing changes.&#10;&#10;No keeps the change waiting for whenever you next restart, as long as Nextcalibur is running.</sys:String>
+    <sys:String x:Key="S.Gpu.RestartRefused">Windows did not start the restart. Restart the machine yourself; the change is applied as the session ends.</sys:String>
+
+    <!-- Readings and the overheat warning -->
+    <sys:String x:Key="S.Readings.Asleep">asleep</sys:String>
+    <sys:String x:Key="S.Heat.Cpu">CPU at {0} °C</sys:String>
+    <sys:String x:Key="S.Heat.Gpu">GPU at {0} °C</sys:String>
+    <sys:String x:Key="S.Heat.Body">Sustained temperatures this high usually mean the heatsink needs cleaning.</sys:String>
+
+    <!-- The power overlay check and repair -->
+    <sys:String x:Key="S.Overlay.Fine">Your chosen mode is in charge, and Nextcalibur has made sure the fastest mode can no longer hold the processor at full speed while the laptop is idle.</sys:String>
+    <sys:String x:Key="S.Overlay.Stuck">Windows is set to Best performance, and it is holding your processor at full speed even when the laptop is doing nothing. That is why changing modes seems to have no effect.</sys:String>
+    <sys:String x:Key="S.Overlay.GuardMissing">Nothing is stopping another application from switching to that mode and holding the processor at full speed again.</sys:String>
+    <sys:String x:Key="S.Overlay.NothingToDo">Nothing needed changing.</sys:String>
+    <sys:String x:Key="S.Overlay.Fixed">Fixed</sys:String>
+    <sys:String x:Key="S.Overlay.PartlyFixed">Partly fixed</sys:String>
+    <sys:String x:Key="S.Overlay.FixFailed">Could not fix it</sys:String>
+
+    <!-- Lighting -->
+    <sys:String x:Key="S.Lighting.Title">Lighting</sys:String>
+    <sys:String x:Key="S.Lighting.NoResponse">The keyboard lighting did not respond. If Casper's Control Center is open, close it and try again.</sys:String>
+
+    <!-- Words the library says (Nextcalibur.Core.Words); the English here must match the English in the code, and a test checks it -->
+
+    <!-- From the library: starting with Windows -->
+    <sys:String x:Key="S.Core.Startup.NotInstalled">Start with Windows is for an installed copy. This one runs from a folder any program could write to, and starting it elevated at sign-in without a prompt would let such a program run as administrator. Install Nextcalibur with its installer to start it with Windows.</sys:String>
+
+    <!-- From the library: what the uninstall finds -->
+    <sys:String x:Key="S.Core.Trace.Settings">Your settings</sys:String>
+    <sys:String x:Key="S.Core.Trace.StartupTask">The start-with-Windows task</sys:String>
+    <sys:String x:Key="S.Core.Trace.OpenTask">The task that starts Nextcalibur without a prompt</sys:String>
+    <sys:String x:Key="S.Core.Trace.Permission">Permission to read the sensors</sys:String>
+    <sys:String x:Key="S.Core.Trace.CardTasks">The tasks that switch the graphics card without a prompt</sys:String>
+    <sys:String x:Key="S.Core.Trace.FolderGuard">The install folder's protection against the account</sys:String>
+    <sys:String x:Key="S.Core.Trace.PowerPlans">The power plans it created</sys:String>
+    <sys:String x:Key="S.Core.Trace.Repair">The Windows power-mode repair</sys:String>
+
+    <!-- From the library: the PawnIO driver -->
+    <sys:String x:Key="S.Core.PawnIo.Name">PawnIO driver</sys:String>
+    <sys:String x:Key="S.Core.PawnIo.Purpose">reads the processor's power draw</sys:String>
+    <sys:String x:Key="S.Core.Dependency.NotInstalled">{0} {1} is not installed. It {2}.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Available">{0} {1} is available (you have {2}). It {3}.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Unsigned">The {0} download is not signed by {1}; it was not installed.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Installed">{0} {1} is installed.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.InstallerFailed">The {0} installer did not finish successfully.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.FetchFailed">Could not fetch {0}: {1}</sys:String>
+
+    <!-- From the library: the firmware mailbox -->
+    <sys:String x:Key="S.Core.Mailbox.NoConnection">Could not connect to {0}. This machine may not expose the interface.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.AccessDenied">Access denied writing to the mailbox. Try running elevated.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.NotAllowed">This account may not use the firmware interface unelevated. Run from an elevated prompt.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.Busy">Another application may be using the mailbox - close the vendor Control Center and retry.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.NoResponse">No valid response after {0} attempts.</sys:String>
+
+    <!-- From the library: the support verdict's reasons -->
+    <sys:String x:Key="S.Core.Support.NoMailbox">No firmware mailbox (RW_GMWMI) - this laptop does not expose the interface.</sys:String>
+    <sys:String x:Key="S.Core.Support.NoAccess">The mailbox is present but this account cannot read it yet.</sys:String>
+    <sys:String x:Key="S.Core.Support.MailboxPresent">Firmware mailbox present.</sys:String>
+    <sys:String x:Key="S.Core.Support.NoThermal">The mailbox did not answer a thermal read.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegisterOdd">The display-mode register did not read as 1 or 2.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegister">Display-mode register reads {0}.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegisterOdd">The thermal-profile register did not read as 0, 1 or 2.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegister">Thermal-profile register reads {0}.</sys:String>
+    <sys:String x:Key="S.Core.Support.MailboxFailed">The mailbox could not be used: {0}</sys:String>
+    <sys:String x:Key="S.Core.Support.CpuTempOdd">CPU temperature {0} °C is not a number a laptop reports.</sys:String>
+    <sys:String x:Key="S.Core.Support.GpuTempOdd">GPU temperature {0} °C is not a number a laptop reports.</sys:String>
+    <sys:String x:Key="S.Core.Support.FansOdd">Fan speeds {0} / {1} rpm are outside anything a laptop fan does.</sys:String>
+    <sys:String x:Key="S.Core.Support.AllZero">Every reading is zero, which is what a mailbox that is not this protocol tends to say.</sys:String>
+    <sys:String x:Key="S.Core.Support.Plausible">Thermal read is plausible: CPU {0} °C, GPU {1} °C.</sys:String>
+
+    <!-- From the library: the system modes and their plans -->
+    <sys:String x:Key="S.Core.Plan.Unnamed">an unnamed plan</sys:String>
+    <sys:String x:Key="S.Core.Plan.Current">{0} plan, {1}</sys:String>
+    <sys:String x:Key="S.Core.Plan.Missing">No power plan on this machine matches {0}, and one could not be created.</sys:String>
+    <sys:String x:Key="S.Core.Plan.Refused">Windows refused the plan change (error {0}).</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeTitle">Performance mode is not safe on this machine yet.</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeWhy">It switches Windows to the Best-performance power mode, which on this machine pins the processor at full speed even when nothing is running - the fault Nextcalibur exists to repair.</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeWhat">Run the repair from the Power Mode panel first. It needs administrator rights once, and after that this mode is safe to use.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Office">Quiet and cool. The processor drops to low speeds when idle.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Gaming">Balanced for games. The processor stays responsive under load.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Performance">Maximum speed. Expect more heat and louder fans.</sys:String>
+
+    <!-- From the library: Windows' power modes and the repair -->
+    <sys:String x:Key="S.Core.Overlay.Balanced">Balanced</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Efficiency">Best power efficiency</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Better">Better performance</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Best">Best performance</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Unknown">Unrecognised</sys:String>
+    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">Longest battery life and the quietest fans. The processor is held back, so heavy work takes longer.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows decides. Speeds up when you need it and settles down when you don't. The right choice for most of the time.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BetterDesc">Leans towards speed. Slightly warmer and noisier than Balanced, with quicker responses under load.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BestDesc">Everything the machine has. Expect noticeably more heat, louder fans and shorter battery life.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Cleared">Cleared the stuck Best-performance overlay (power mode is now Balanced).</sys:String>
+    <sys:String x:Key="S.Core.Repair.KeyClosed">Could not open the overlay setting key for writing.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Guarded">Set the Best-performance overlay's minimum processor state to {0}% so it can no longer pin the CPU if re-activated.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Blocked">The lasting part of the fix needs administrator rights, so it was not applied. Windows can pin the processor again if something re-activates the Best-performance power mode. Running Nextcalibur as administrator once is enough to make it permanent.</sys:String>
+
+    <!-- From the library: the graphics modes -->
+    <sys:String x:Key="S.Core.Gpu.CardOff">The graphics card is switched off (UMA). Turn it back on first - handing the screen to a card Windows will not start leaves the next boot dark.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.CardDrivesScreen">The graphics card is driving your screen right now. Switch to Hybrid first, restart, and then it can be turned off.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NoCard">No discrete graphics card was found.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.AlreadyIn">Already in {0}.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NotSwitchedOff">Windows did not switch the card off.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SwitchedOff">The graphics card is switched off. No restart needed.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NotSwitchedOn">Windows did not switch the card back on.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SwitchedOn">The graphics card is back on. No restart needed.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridFirst">Switch to Hybrid first. The card has to be on before the screen can be handed to it.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.AtRestart">The screen will be handed to {0} at the next restart. Nothing is changed until the restart begins.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.TheCard">graphics card</sys:String>
+    <sys:String x:Key="S.Core.Gpu.DiscreteDesc">Your screen is driven by the {0} directly. This gives the best performance in games, but the card never powers down, so the laptop runs hotter and the battery drains faster.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.DiscreteWarning">You can change this below. Before you do: find your BitLocker recovery key. Switching which chip drives the screen changes what the TPM measures at startup, and the next boot can ask for that key - without it the drive does not open. Your Windows PIN will need setting up again as well. Casper's own Control Center makes the same change without mentioning either.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridDesc">Your screen is driven by the built-in graphics, and the graphics card wakes only when an application needs it. This is the best setting for battery life and running cool.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.UmaDesc">Only the built-in graphics are in use. The coolest and quietest setting, but games will run considerably slower.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.Unknown">Nextcalibur could not work out how your graphics are currently set up.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.Drawing">drawing {0:N1} W</sys:String>
+    <sys:String x:Key="S.Core.Gpu.WithFan">with its fan at {0} rpm</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SittingAt">sitting at {0} °C</sys:String>
+    <sys:String x:Key="S.Core.Gpu.IdleCost">Right now it is {0}. In this mode the card draws your desktop as well, so it never reaches its low-power states - that is battery spent whether or not anything needs the card, and heat the fans have to move.</sys:String>
+
+    <!-- The tour: the card's words, one step after another -->
+    <sys:String x:Key="S.Tour.Finish">Finish</sys:String>
+    <sys:String x:Key="S.Tour.SkipTo">Skip to {0}</sys:String>
+    <sys:String x:Key="S.Tour.Section.Window">The window</sys:String>
+    <sys:String x:Key="S.Tour.Section.Rail">The rail</sys:String>
+    <sys:String x:Key="S.Tour.Section.System">System</sys:String>
+    <sys:String x:Key="S.Tour.Section.Power">Power Mode</sys:String>
+    <sys:String x:Key="S.Tour.Section.Display">Display Mode</sys:String>
+    <sys:String x:Key="S.Tour.Section.Lighting">Lighting</sys:String>
+    <sys:String x:Key="S.Tour.Section.Settings">Settings</sys:String>
+    <sys:String x:Key="S.Tour.Section.Readings">Readings</sys:String>
+    <sys:String x:Key="S.Tour.Section.Tray">The tray</sys:String>
+
+    <!-- The window -->
+    <sys:String x:Key="S.Tour.Step.TourButton.Title">Welcome to Nextcalibur</sys:String>
+    <sys:String x:Key="S.Tour.Step.TourButton.Body">This is the tour. It walks through every page and every control, one at a time, and finishes at the tray icon. Nothing is changed while it runs - it only points. Use Next and Back, press Escape or Skip to leave at any time; this button starts it again whenever you want.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TitleBar.Title">The title bar</sys:String>
+    <sys:String x:Key="S.Tour.Step.TitleBar.Body">Drag anywhere on it to move the window. The window has one fixed size, so there is nothing to resize.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ThemeSwitch.Title">Dark, light, or Windows' choice</sys:String>
+    <sys:String x:Key="S.Tour.Step.ThemeSwitch.Body">Three looks: dark, light, or follow whatever Windows is set to. The choice is remembered.</sys:String>
+    <sys:String x:Key="S.Tour.Step.MinimiseButton.Title">Minimise</sys:String>
+    <sys:String x:Key="S.Tour.Step.MinimiseButton.Body">Sends the window to the taskbar. Nextcalibur keeps running exactly as before; click the taskbar button to bring it back.</sys:String>
+    <sys:String x:Key="S.Tour.Step.HideToTrayButton.Title">Hide to the tray</sys:String>
+    <sys:String x:Key="S.Tour.Step.HideToTrayButton.Body">Takes the window off the taskbar altogether. The application stays in the notification area by the clock, still reading the sensors and keeping your mode; double-click the tray icon to open it again.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CloseButton.Title">Close</sys:String>
+    <sys:String x:Key="S.Tour.Step.CloseButton.Body">Asks whether you mean to exit. Exiting stops Nextcalibur completely: no readings, no overheat warning, and no mode change when the charger comes and goes - until it is started again. If you only want it out of the way, hide it to the tray instead.</sys:String>
+
+    <!-- The rail -->
+    <sys:String x:Key="S.Tour.Step.NavSystem.Title">System</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSystem.Body">The first page: the system mode, the fans, and the two chips. It is the page the application opens on.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavPower.Title">Power Mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavPower.Body">Windows' own power modes, shown as cards, and a check that Windows is honouring the mode you chose.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavDisplay.Title">Display Mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavDisplay.Body">Which graphics card drives the screen: the NVIDIA card alone, both together, or the processor's own.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavLighting.Title">Lighting</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavLighting.Body">The keyboard backlight: colour per zone, effects, brightness, and saved profiles.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSettings.Title">Settings</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSettings.Body">Every preference in one place - the same ones the tray menu has, kept in step with it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.UpdateNowButton.Title">Updates</sys:String>
+    <sys:String x:Key="S.Tour.Step.UpdateNowButton.Body">Reads "Up to date" until a newer release is found - the check happens quietly in the background if you let it. When there is one, the button names it; press it and the update is downloaded, verified and applied, and the application reopens as the new version.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OpenLogButton.Title">Open log</sys:String>
+    <sys:String x:Key="S.Tour.Step.OpenLogButton.Body">Opens the folder with Nextcalibur's own log: one file a day, seven days kept, events only - starts, mode changes, graphics switches, updates, anything that went wrong. Attach one when reporting a problem.</sys:String>
+    <sys:String x:Key="S.Tour.Step.VersionText.Title">Version</sys:String>
+    <sys:String x:Key="S.Tour.Step.VersionText.Body">The version you are running. Mention it in any report.</sys:String>
+
+    <!-- System -->
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Office mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">Quiet and cool: the power plan, Windows' power mode and the firmware's own profile are all set for light work. Nextcalibur switches to Office on its own when the charger is unplugged, if you let it (a tray setting), and returns to your mode when it is plugged back in.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">The everyday fast mode. The firmware runs its Gaming profile, Windows gets its Balanced or Better-performance mode, and the processor is allowed to idle down between bursts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Everything on: the firmware's Performance profile and Windows' fastest modes. Louder and hotter; for when the fans are worth it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SystemModeNote.Title">What the mode means</sys:String>
+    <sys:String x:Key="S.Tour.Step.SystemModeNote.Body">A line under the cards explains what the chosen mode is doing right now. If Windows has been moved to a mode none of the cards match, it says so here instead of guessing.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SubtitleText.Title">The status line</sys:String>
+    <sys:String x:Key="S.Tour.Step.SubtitleText.Body">The active mode, whether the laptop is on the charger or the battery, and the time of the last sensor reading. If a reading fails, the number shows as "--" rather than a made-up value.</sys:String>
+    <sys:String x:Key="S.Tour.Step.Banner.Title">The banner</sys:String>
+    <sys:String x:Key="S.Tour.Step.Banner.Body">Appears only when something needs saying: the laptop is not supported, the firmware answered oddly, or the vendor's software is installed alongside. Otherwise it stays out of the way.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuFanGauge.Title">The processor's fan</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuFanGauge.Body">Fan speed in revolutions per minute, read from the firmware. Nextcalibur does not set fan curves - the firmware profile chosen by the mode decides them, exactly as the original software did.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuName.Title">The processor</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuName.Body">Read from the machine, never assumed.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuFanGauge.Title">The graphics card's fan</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuFanGauge.Body">The second fan, same source. When the card is asleep or switched off, the fan is simply stopped.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuName.Title">The graphics card</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuName.Body">Likewise read from the machine. In UMA mode the card is disabled and this still names it.</sys:String>
+
+    <!-- Power Mode -->
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Title">Best power efficiency</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows' battery-saving mode. Only offered while the system mode is Office - the cards outside your mode's range are greyed so a fast mode cannot be paired with a slow profile, or the reverse.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Title">Balanced</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows' default. Available in Office and Gaming.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Title">Better performance</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Available in Gaming and Performance. Choosing a system mode always picks that mode's own default here; these cards let you lean one step either way.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBest.Title">Best performance</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBest.Body">Windows' fastest mode, for Performance only. Nextcalibur keeps a guard on it so that, when a laptop is idle, this mode can no longer hold the processor at full speed - the fault the original software left behind.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayState.Title">Is Windows honouring the mode?</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayState.Body">A check of Windows' power overlay against your chosen mode. Green means all is well.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayDetail.Title">What it found</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayDetail.Body">The explanation in plain words - what Windows is doing and why it matters.</sys:String>
+    <sys:String x:Key="S.Tour.Step.FixButton.Title">Repair</sys:String>
+    <sys:String x:Key="S.Tour.Step.FixButton.Body">Shown only when the check finds a problem. Pressing it puts the power settings right; nothing else is touched.</sys:String>
+
+    <!-- Display Mode -->
+    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Title">Discrete</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Body">The NVIDIA card drives the screen alone: the most performance, the most power. Changing graphics mode needs a restart, and the switch is written to the firmware only as Windows is actually restarting - cancel the restart and nothing has changed.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeHybrid.Title">Hybrid</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeHybrid.Body">Both: the processor's graphics drive the screen and the NVIDIA card wakes for games and heavy work, sleeping in between. The usual choice.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeUma.Title">UMA</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeUma.Body">The processor's graphics only; the NVIDIA card is switched off entirely for the longest battery life. Unlike the other two this takes effect at once, no restart.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Title">A change is waiting</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Body">After choosing Discrete or Hybrid this line stays until the restart. Exiting Nextcalibur before restarting drops the pending change.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuModeDetail.Title">What the card is doing</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuModeDetail.Body">The card's clock and power draw when it is awake, and "asleep" when Windows has powered it down. Nextcalibur checks the sleep state from Windows' own records so that looking never wakes the card.</sys:String>
+
+    <!-- Lighting -->
+    <sys:String x:Key="S.Tour.Step.LedPower.Title">Lighting on or off</sys:String>
+    <sys:String x:Key="S.Tour.Step.LedPower.Body">Turns the keyboard backlight off completely, or back on with everything as it was. Fn+Space on the keyboard still steps the brightness, and the page follows it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TabZoneA.Title">Zones</sys:String>
+    <sys:String x:Key="S.Tour.Step.TabZoneA.Body">The keyboard lights in three zones, left to right. Pick a tab to colour that zone; the drawing above it shows what is set.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SelectAll.Title">All zones at once</sys:String>
+    <sys:String x:Key="S.Tour.Step.SelectAll.Body">Tick it and the colour and effect you choose go to all three zones together.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Title">Profiles</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Four saved sets of lighting - Office, Gaming, Performance and one of your own. Choosing a profile applies it; whatever you change afterwards is saved into it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.EffectPanel.Title">Effects</sys:String>
+    <sys:String x:Key="S.Tour.Step.EffectPanel.Body">Static, breathing, blink, heartbeat, colour cycle and wave. The last two make their own colours, so the wheel is greyed while they are chosen.</sys:String>
+    <sys:String x:Key="S.Tour.Step.Wheel.Title">The colour wheel</sys:String>
+    <sys:String x:Key="S.Tour.Step.Wheel.Body">Click or drag to pick a colour for the selected zone. The change is sent to the keyboard as you release.</sys:String>
+    <sys:String x:Key="S.Tour.Step.BrightnessSlider.Title">Brightness</sys:String>
+    <sys:String x:Key="S.Tour.Step.BrightnessSlider.Body">Dims the chosen colours. Fn+Space steps the hardware's own three levels; both are shown here as one percentage.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ReloadButton.Title">Reload</sys:String>
+    <sys:String x:Key="S.Tour.Step.ReloadButton.Body">Sends the saved lighting to the keyboard again - useful if something else reset it.</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="S.Tour.Step.SettingWinUtilButton.Title">WinUtil</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingWinUtilButton.Body">Opens Chris Titus Tech's WinUtil - a Windows debloat and tweak tool - in an administrator PowerShell, downloaded from its author's site. It is not part of Nextcalibur; you are asked before it opens.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDriversButton.Title">Drivers</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDriversButton.Body">Opens the laptop maker's own driver download page in your browser - the place for the firmware, chipset and keyboard drivers Nextcalibur does not ship.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingReportButton.Title">Report a problem</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingReportButton.Body">Opens the project's issues page on GitHub. Attach the day's log (Open log, bottom-left) and say which version you run; the version is under the buttons.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Title">Privacy</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Body">What the application does with data, in its own words: nothing collected, nothing sent about you; the only requests are to GitHub for updates, and none with automatic checks off. The full policy is one click further.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Title">Start with Windows</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Office mode on battery</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">When the charger comes out, drop to Office; when it goes back in, return to the mode you had. On by default, as the original software did it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Overheat warning</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">How often to read the sensors</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Title">Check for updates automatically</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Body">A minute after start and every six hours, one small request to GitHub. A release found is offered, never installed on its own - unless the next switch is on.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Title">Install updates automatically</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Body">Goes one step further: a release found is downloaded, verified and installed without asking, and the application restarts into it. Off by default. It waits while a graphics change is pending a restart, since that restart is yours to time.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Language</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Check now</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Body">Asks GitHub right away and tells you the answer either way.</sys:String>
+
+    <!-- Readings -->
+    <sys:String x:Key="S.Tour.Step.CpuClock.Title">The processor, live</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuClock.Body">Its clock in gigahertz and, on Intel machines with the PawnIO driver installed, its package power in watts. Read every few seconds; the interval is a tray setting.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuTemp.Title">Processor temperature</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuTemp.Body">From the firmware's own sensor - the same one the fans answer to.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuClock.Title">The graphics card, live</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuClock.Body">Clock and watts while the card is awake; "asleep" while it is not. Nextcalibur never wakes the card to ask.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuTemp.Title">Graphics card temperature</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuTemp.Body">From the firmware, so it is available even when the card's own driver is not.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatWarningToggle.Title">Overheat alert</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatWarningToggle.Body">When on, a warning appears from the tray if either chip crosses its threshold. It is a warning only; Nextcalibur never throttles anything.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuWarnSlider.Title">Processor threshold</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuWarnSlider.Body">Drag the slider or type a whole number in the box. Out-of-range values are refused, not clamped.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuWarnSlider.Title">Graphics card threshold</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuWarnSlider.Body">The same for the card. The defaults are safe values for laptops of this class.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatResetButton.Title">Reset</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatResetButton.Body">Puts both thresholds back to their defaults.</sys:String>
+    <sys:String x:Key="S.Tour.Step.RamGauge.Title">Memory</sys:String>
+    <sys:String x:Key="S.Tour.Step.RamGauge.Body">How much of the installed memory is in use, read from Windows once a second.</sys:String>
+    <sys:String x:Key="S.Tour.Step.DriveList.Title">Drives</sys:String>
+    <sys:String x:Key="S.Tour.Step.DriveList.Body">Every fixed drive in the machine, each with its own gauge. Read once a minute - a drive's use does not change faster than that.</sys:String>
+
+    <!-- The tray -->
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Title">The tray icon</sys:String>
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur lives in the notification area by the clock; its menu has just been opened there. Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. Office mode on battery is the automatic switch when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. That is the whole of it. Enjoy the machine.</sys:String>
 </ResourceDictionary>

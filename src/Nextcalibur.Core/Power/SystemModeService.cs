@@ -246,8 +246,9 @@ public sealed class SystemModeService
     public static string DescribeCurrent()
     {
         var active = GetActivePlan();
-        var plan = EnumeratePlans(includeBuiltIn: true).FirstOrDefault(p => p.Value == active).Key ?? "an unnamed plan";
-        return $"{plan} plan, {PowerOverlays.Describe(PowerOverlayService.GetActiveOverlay())}";
+        var plan = EnumeratePlans(includeBuiltIn: true).FirstOrDefault(p => p.Value == active).Key
+            ?? Words.Get("S.Core.Plan.Unnamed", "an unnamed plan");
+        return Words.Get("S.Core.Plan.Current", "{0} plan, {1}", plan, PowerOverlays.Describe(PowerOverlayService.GetActiveOverlay()));
     }
 
     /// <summary>
@@ -268,12 +269,9 @@ public sealed class SystemModeService
         {
             var gap = Environment.NewLine + Environment.NewLine;
             throw new UnsafeModeException(
-                "Performance mode is not safe on this machine yet." + gap +
-                "It switches Windows to the Best-performance power mode, which on this " +
-                "machine pins the processor at full speed even when nothing is running - " +
-                "the fault Nextcalibur exists to repair." + gap +
-                "Run the repair from the Power Mode panel first. It needs administrator " +
-                "rights once, and after that this mode is safe to use.");
+                Words.Get("S.Core.Mode.UnsafeTitle", "Performance mode is not safe on this machine yet.") + gap +
+                Words.Get("S.Core.Mode.UnsafeWhy", "It switches Windows to the Best-performance power mode, which on this machine pins the processor at full speed even when nothing is running - the fault Nextcalibur exists to repair.") + gap +
+                Words.Get("S.Core.Mode.UnsafeWhat", "Run the repair from the Power Mode panel first. It needs administrator rights once, and after that this mode is safe to use."));
         }
 
         // The plan can have gone since start: the vendor's uninstaller takes
@@ -283,16 +281,16 @@ public sealed class SystemModeService
         if (!HasPlanFor(mode)) EnsurePlansExist();
         var plan = ResolvePlan(mode)
             ?? throw new InvalidOperationException(
-                $"No power plan on this machine matches {mode}, and one could not be created.");
+                Words.Get("S.Core.Plan.Missing", "No power plan on this machine matches {0}, and one could not be created.", mode));
 
         SetActivePlan(plan);
         PowerOverlayService.SetActiveOverlay(Overlays[mode]);
 
         return mode switch
         {
-            SystemMode.Office => "Quiet and cool. The processor drops to low speeds when idle.",
-            SystemMode.Gaming => "Balanced for games. The processor stays responsive under load.",
-            _ => "Maximum speed. Expect more heat and louder fans.",
+            SystemMode.Office => Words.Get("S.Core.Mode.Office", "Quiet and cool. The processor drops to low speeds when idle."),
+            SystemMode.Gaming => Words.Get("S.Core.Mode.Gaming", "Balanced for games. The processor stays responsive under load."),
+            _ => Words.Get("S.Core.Mode.Performance", "Maximum speed. Expect more heat and louder fans."),
         };
     }
 
@@ -312,7 +310,7 @@ public sealed class SystemModeService
         // event used to start a process for it.
         var result = PowerSetActiveScheme(IntPtr.Zero, ref plan);
         if (result != 0)
-            throw new InvalidOperationException($"Windows refused the plan change (error {result}).");
+            throw new InvalidOperationException(Words.Get("S.Core.Plan.Refused", "Windows refused the plan change (error {0}).", result));
     }
 
     /// <summary>Activates a plan, saying only whether it worked.</summary>

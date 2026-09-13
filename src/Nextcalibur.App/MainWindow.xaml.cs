@@ -210,7 +210,7 @@ public partial class MainWindow : Window
         LoadOverheatThresholds();
         WireSettingsPage();
         VersionText.Text = RunningVersion();
-        _updates.CheckedByHand += (_, what) => Dialogs.Tell("Nextcalibur - updates", what);
+        _updates.CheckedByHand += (_, what) => Dialogs.Tell(Strings.Get("S.Update.Title"), what);
         _updates.Start();
 
         if (_settings.StartMinimised &&
@@ -222,11 +222,6 @@ public partial class MainWindow : Window
         // Said before anything is read, because it explains readings that are
         // about to look unreliable.
         RecommendRemovingVendorSoftwareOnce();
-
-        // Before deciding the machine is unsupported, rule out the far more
-        // likely explanation: this account has not been allowed to use the
-        // interface yet.
-        AskForMailboxAccessIfNeeded();
 
         // The gate. Everything below is allowed or not by what the machine has
         // just said about itself, and an unsupported one is locked before a
@@ -315,19 +310,9 @@ public partial class MainWindow : Window
         if (!removed) return;
         Log.Info("vendor", "The vendor's software was removed while running");
 
-        if (MailboxAccess.Check() == MailboxAvailability.AccessNotGranted)
-        {
-            var granted = AskForMailboxAccessIfNeeded(
-                "Casper's Control Center has just been removed, and its uninstaller took " +
-                "Nextcalibur's access to the firmware with it.");
-            if (granted)
-            {
-                _support = HardwareSupport.Check();
-                ApplySupportVerdict();
-                if (ConnectToMailbox()) { Sample(); LoadLightingUi(); }
-            }
-        }
-
+        // Its uninstaller narrows the firmware permission back to
+        // administrators, which an elevated process does not notice; only the
+        // dropped mode needs putting back.
         if (_currentMode is { } mode)
         {
             try
@@ -383,9 +368,8 @@ public partial class MainWindow : Window
                 foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
                     button.IsEnabled = false;
                 ShowBanner(
-                    "Readings only on this laptop",
-                    "The firmware interface is there, but it did not answer the way the machine this was " +
-                    "built against does, so nothing that writes to it is offered: " + string.Join(" ", _support.Reasons),
+                    Strings.Get("S.Banner.ReadOnlyTitle"),
+                    Strings.Get("S.Banner.ReadOnlyBody") + " " + string.Join(" ", _support.Reasons),
                     (SolidColorBrush)FindResource("Warn"));
                 return;
 
@@ -403,9 +387,8 @@ public partial class MainWindow : Window
                 OverheatWarningToggle.IsChecked = false;
                 CpuWarnValue.Text = GpuWarnValue.Text = "--";
                 ShowBanner(
-                    "This laptop isn't supported",
-                    "Nextcalibur was built for a specific firmware interface and this machine does not have it. " +
-                    "Nothing has been changed, and nothing here will do anything. " + string.Join(" ", _support.Reasons),
+                    Strings.Get("S.Banner.UnsupportedTitle"),
+                    Strings.Get("S.Banner.UnsupportedBody") + " " + string.Join(" ", _support.Reasons),
                     (SolidColorBrush)FindResource("Bad"));
                 OfferRemovalOnUnsupportedMachine();
                 return;
@@ -414,14 +397,7 @@ public partial class MainWindow : Window
 
     private void OfferRemovalOnUnsupportedMachine()
     {
-        var remove = Dialogs.Ask("Nextcalibur - not supported here",
-            "This laptop does not have the firmware interface Nextcalibur was built for." +
-            Environment.NewLine + Environment.NewLine +
-            "Nothing has been changed on your machine, and to keep it that way, nothing in this " +
-            "window will respond. There is no reason to keep it installed." +
-            Environment.NewLine + Environment.NewLine +
-            "Open Windows' list of installed apps so you can remove it?",
-            defaultNo: false);
+        var remove = Dialogs.Ask(Strings.Get("S.Unsupported.Title"), Strings.Get("S.Unsupported.Body"), defaultNo: false);
 
         if (!remove) return;
 
@@ -456,21 +432,7 @@ public partial class MainWindow : Window
         if (_settings.AcceptedVendorSoftware) return;
         _vendorRecommended = true;
 
-        var body =
-            $"{vendor.Name} is installed on this machine." +
-            Environment.NewLine + Environment.NewLine +
-            "Both it and Nextcalibur talk to the same interface in your laptop's firmware, " +
-            "and it can only handle one request at a time. With both installed, readings " +
-            "stall and lighting changes sometimes fail to apply - in either application." +
-            Environment.NewLine + Environment.NewLine +
-            "Removing it is recommended. Nextcalibur will not do that for you, and it works " +
-            "either way." +
-            Environment.NewLine + Environment.NewLine +
-            "Open Windows' list of installed apps now?" +
-            Environment.NewLine + Environment.NewLine +
-            "Choosing No keeps it, and this message will not come back.";
-
-        var open = Dialogs.Ask("Nextcalibur - two applications, one interface", body, defaultNo: false);
+        var open = Dialogs.Ask(Strings.Get("S.Vendor.Title"), Strings.Get("S.Vendor.Body", vendor.Name), defaultNo: false);
 
         if (open)
         {
@@ -490,79 +452,6 @@ public partial class MainWindow : Window
 
         _settings.AcceptedVendorSoftware = true;
         _settings.Save();
-    }
-
-    /// <summary>
-    /// Offers to grant this account access to the firmware mailbox, once.
-    ///
-    /// Every reading comes through one ACPI data block, and a kernel-WMI block
-    /// grants the administrators group alone until somebody widens it. The
-    /// vendor's software widens it at install time; on a machine that never had
-    /// it - or that has had it removed - an ordinary account sees nothing at
-    /// all, which used to surface as "readings have stalled" and a suggestion to
-    /// close software that is not running.
-    ///
-    /// Asked only while access is missing. Once granted, the application never
-    /// needs elevation again, which is the difference between this and the
-    /// vendor software prompting at every startup.
-    /// </summary>
-    /// <returns>True when a grant was made just now.</returns>
-    private bool AskForMailboxAccessIfNeeded(string? because = null)
-    {
-        var access = MailboxAccess.Check();
-        if (access == MailboxAvailability.NotSupported) return false;
-
-        // Two permissions, one prompt. On a fresh machine neither is there. On
-        // one that already had the sensors - a copy from before Fn+Space was
-        // heard - only the second is missing, and the wording says so.
-        var needsSensors = access == MailboxAvailability.AccessNotGranted;
-        var needsKey = !needsSensors && !MailboxAccess.CanHearEvents();
-        if (!needsSensors && !needsKey) return false;
-
-        var proceed = Dialogs.Confirm("Nextcalibur - one-time permission",
-            (because is null ? string.Empty : because + Environment.NewLine + Environment.NewLine) +
-            (needsSensors
-                ? "Nextcalibur needs permission to read this machine's sensors." +
-                  Environment.NewLine + Environment.NewLine +
-                  "Temperatures, fan speeds and the keyboard lighting all come from one " +
-                  "interface built into your laptop's firmware, and Windows keeps it closed " +
-                  "to ordinary accounts until it is opened once."
-                : "Nextcalibur needs permission to hear the keyboard's backlight key." +
-                  Environment.NewLine + Environment.NewLine +
-                  "Fn+Space changes the backlight in firmware. Without this, the next " +
-                  "lighting change from here would put the backlight back to full.") +
-            Environment.NewLine + Environment.NewLine +
-            "Windows will ask you to confirm. This happens once - afterwards " +
-            "Nextcalibur runs without any special privileges.");
-
-        if (!proceed) return false;
-
-        try
-        {
-            var self = Environment.ProcessPath;
-            if (self is null) return false;
-
-            // A second, short-lived copy of this same executable: it writes one
-            // registry value and exits. Shipping a script instead would mean
-            // depending on the execution policy of a machine we have just
-            // established we know nothing about.
-            using var elevated = Process.Start(new ProcessStartInfo
-            {
-                FileName = self,
-                Arguments = App.GrantAccessArgument,
-                UseShellExecute = true,
-                Verb = "runas",
-            });
-
-            elevated?.WaitForExit();
-            return elevated?.ExitCode == 0;
-        }
-        catch (Win32Exception)
-        {
-            // The user dismissed the prompt. Nothing was changed and nothing
-            // more needs saying: the banner already explains what is missing.
-            return false;
-        }
     }
 
     /// <summary>Exit from the tray menu: the same question, then the same close.</summary>
@@ -1007,6 +896,7 @@ public partial class MainWindow : Window
         OpenLogButton.Content = Strings.Get("S.Corner.OpenLog");
         _tray?.RebuildMenu();
         LoadSettingsPage();
+        if (_tourActive) PlaceTourStep();   // the card's words, in the new language
         Log.Info("language", $"Switched to {Strings.Current}");
     }
 
@@ -1039,7 +929,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Dialogs.Warn("Could not change mode", ex.Message);
+            Dialogs.Warn(Strings.Get("S.Mode.ChangeFailed"), ex.Message);
             LoadSystemMode();
         }
     }
@@ -1126,7 +1016,7 @@ public partial class MainWindow : Window
         // reads the running mode, so "pending" is the mode the person chose
         // and confirmed this session, not something read back.
         GpuRestartPending.Text = _gpuPendingRestart is { } pending
-            ? $"Restart to switch to {pending}. Until then the machine runs as shown."
+            ? Strings.Get("S.Gpu.RestartPending", pending)
             : string.Empty;
         GpuRestartPending.Visibility = _gpuPendingRestart is null ? Visibility.Collapsed : Visibility.Visible;
 
@@ -1168,7 +1058,7 @@ public partial class MainWindow : Window
         if (_settings.AutoInstallUpdates && _gpuPendingRestart is null)
         {
             Log.Info("update", $"{version} found; installing automatically (the setting is on)");
-            _tray?.ShowMessage($"Updating to Nextcalibur {version}", "Installing automatically; the application will restart.");
+            _tray?.ShowMessage(Strings.Get("S.Update.AutoTitle", version), Strings.Get("S.Update.AutoBody"));
             _ = InstallUpdateAsync(version);
             return;
         }
@@ -1176,9 +1066,9 @@ public partial class MainWindow : Window
         // A toast with an "Update now" button; the balloon when a toast
         // cannot be shown. Either way a click brings the window and the
         // question, and the answer is the person's.
-        if (!Toasts.TryShow($"Nextcalibur {version} is available", "Download it and restart into it?", "Update now",
+        if (!Toasts.TryShow(Strings.Get("S.Update.AvailableTitle", version), Strings.Get("S.Update.AvailableToast"), Strings.Get("S.Update.Now"),
                 () => { _tray?.ShowWindowFromOutside(); OfferUpdate(); }))
-            _tray?.ShowMessage($"Nextcalibur {version} is available", "Click here to update.");
+            _tray?.ShowMessage(Strings.Get("S.Update.AvailableTitle", version), Strings.Get("S.Update.AvailableBalloon"));
     }
 
     /// <summary>Set while a check the person asked for runs, so the offer comes as a dialogue rather than a balloon.</summary>
@@ -1209,17 +1099,12 @@ public partial class MainWindow : Window
     {
         if (_updating || _updates.Available is null) return;
 
-        var version = _updates.AvailableVersion ?? "a new version";
+        var version = _updates.AvailableVersion ?? Strings.Get("S.Update.ANewVersion");
         var pending = _gpuPendingRestart is { } mode
-            ? $"A graphics mode change to {mode} is waiting for a restart of Windows. Updating restarts " +
-              "Nextcalibur, not Windows, and the pending change is dropped: choose it again afterwards, or restart Windows first." +
-              Environment.NewLine + Environment.NewLine
+            ? Strings.Get("S.Update.PendingGraphics", mode) + Environment.NewLine + Environment.NewLine
             : string.Empty;
-        if (!Dialogs.Ask($"Update to {version}?",
-                pending +
-                $"Nextcalibur {version} is ready to download from GitHub. It will be installed and the " +
-                "application will restart itself; your settings stay as they are." +
-                Environment.NewLine + Environment.NewLine + "Update now?",
+        if (!Dialogs.Ask(Strings.Get("S.Update.OfferTitle", version),
+                pending + Strings.Get("S.Update.OfferBody", version),
                 defaultNo: _gpuPendingRestart is not null))
         {
             // Declined: the corner button stays, nothing else will ask.
@@ -1237,11 +1122,11 @@ public partial class MainWindow : Window
         _updating = true;
         try
         {
-            ShowProgress($"Updating to {version}", "Downloading...");
+            ShowProgress(Strings.Get("S.Update.Progress", version), Strings.Get("S.Progress.Downloading"));
             var progress = new Progress<int>(p =>
             {
                 DialogProgress.Value = p;
-                DialogBodyText.Text = p < 100 ? $"Downloading... {p}%" : "Installing and restarting...";
+                DialogBodyText.Text = p < 100 ? Strings.Get("S.Progress.DownloadingPercent", p) : Strings.Get("S.Update.InstallingRestarting");
             });
             _exiting = true;
             _settings.Save();
@@ -1249,13 +1134,13 @@ public partial class MainWindow : Window
             // Only reached if the restart did not happen.
             _exiting = false;
             HideProgress();
-            Dialogs.Warn("Nextcalibur - updates", "The update was downloaded but the application could not restart into it. Close and reopen Nextcalibur to finish.");
+            Dialogs.Warn(Strings.Get("S.Update.Title"), Strings.Get("S.Update.NoRestart"));
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
             _exiting = false;
             HideProgress();
-            Dialogs.Warn("Nextcalibur - updates", "The update could not be installed: " + ex.Message);
+            Dialogs.Warn(Strings.Get("S.Update.Title"), Strings.Get("S.Update.Failed") + " " + ex.Message);
         }
         finally
         {
@@ -1286,22 +1171,23 @@ public partial class MainWindow : Window
             return;
         }
 
-        var verb = status.Missing ? "Install" : "Update";
+        var install = status.Missing;
         _pendingDependency = status;
-        if (!Toasts.TryShow($"{status.Dependency.Name}: {verb.ToLowerInvariant()} available", status.Describe(), verb,
+        var title = Strings.Get(install ? "S.Dependency.InstallAvailable" : "S.Dependency.UpdateAvailable", status.Dependency.Name);
+        if (!Toasts.TryShow(title, status.Describe(), Strings.Get(install ? "S.Dependency.Install" : "S.Dependency.Update"),
                 () => { _tray?.ShowWindowFromOutside(); _pendingDependency = null; OfferDependency(status); }))
-            _tray?.ShowMessage($"{status.Dependency.Name}: {verb.ToLowerInvariant()} available", "Click here to " + verb.ToLowerInvariant() + " it.");
+            _tray?.ShowMessage(title, Strings.Get(install ? "S.Dependency.ClickToInstall" : "S.Dependency.ClickToUpdate"));
     }
 
     private async void OfferDependency(Nextcalibur.Core.Dependencies.DependencyStatus status)
     {
         if (_updating) return;
 
-        var verb = status.Missing ? "Install" : "Update";
-        if (!Dialogs.Ask($"{verb} {status.Dependency.Name}?",
+        var install = status.Missing;
+        if (!Dialogs.Ask(Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
                 status.Describe() + Environment.NewLine + Environment.NewLine +
-                "It is downloaded from its own releases, its signature is checked, and it installs quietly." +
-                Environment.NewLine + Environment.NewLine + $"{verb} now?",
+                Strings.Get("S.Dependency.How") +
+                Environment.NewLine + Environment.NewLine + Strings.Get(install ? "S.Dependency.InstallNow" : "S.Dependency.UpdateNow"),
                 defaultNo: false))
         {
             _updates.DeclineDependency(status);
@@ -1311,17 +1197,17 @@ public partial class MainWindow : Window
         _updating = true;
         try
         {
-            ShowProgress($"{verb}ing {status.Dependency.Name}", "Downloading...");
+            ShowProgress(Strings.Get(install ? "S.Dependency.Installing" : "S.Dependency.Updating", status.Dependency.Name), Strings.Get("S.Progress.Downloading"));
             var progress = new Progress<int>(p =>
             {
                 DialogProgress.Value = p;
-                DialogBodyText.Text = p < 100 ? $"Downloading... {p}%" : "Installing...";
+                DialogBodyText.Text = p < 100 ? Strings.Get("S.Progress.DownloadingPercent", p) : Strings.Get("S.Progress.Installing");
             });
             var (ok, message) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
             Log.Info("dependency", message);
             HideProgress();
-            if (ok) Dialogs.Tell("Nextcalibur - dependencies", message);
-            else Dialogs.Warn("Nextcalibur - dependencies", message);
+            if (ok) Dialogs.Tell(Strings.Get("S.Dependency.Title"), message);
+            else Dialogs.Warn(Strings.Get("S.Dependency.Title"), message);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
@@ -1329,7 +1215,7 @@ public partial class MainWindow : Window
             // over the window with no button: it takes every click.
             Log.Error("dependency", "Install failed", ex);
             HideProgress();
-            Dialogs.Warn("Nextcalibur - dependencies", $"{status.Dependency.Name} could not be installed: {ex.Message}");
+            Dialogs.Warn(Strings.Get("S.Dependency.Title"), Strings.Get("S.Dependency.Failed", status.Dependency.Name) + " " + ex.Message);
         }
         finally
         {
@@ -1637,7 +1523,7 @@ public partial class MainWindow : Window
     }
 
     private static string SettlingText(int seconds) =>
-        $"Letting the change settle - the modes unlock in {seconds} second{(seconds == 1 ? "" : "s")}.";
+        Strings.Get(seconds == 1 ? "S.Gpu.SettlingOne" : "S.Gpu.Settling", seconds);
 
     private void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
@@ -1656,11 +1542,8 @@ public partial class MainWindow : Window
 
         if (_mailbox is null || !_support.AllowsWrites)
         {
-            Dialogs.Warn("Graphics mode",
-                _support.AllowsWrites
-                    ? "The firmware interface is not available, so the mode cannot be changed from here."
-                    : "This laptop has not shown it speaks the protocol Nextcalibur was built against, " +
-                      "so nothing that writes to it is offered. Readings only.");
+            Dialogs.Warn(Strings.Get("S.Gpu.Title"),
+                Strings.Get(_support.AllowsWrites ? "S.Gpu.NoMailbox" : "S.Gpu.ReadOnly"));
             GpuButtonFor(current).IsChecked = true;
             return;
         }
@@ -1688,7 +1571,7 @@ public partial class MainWindow : Window
 
             if (!outcome.Changed)
             {
-                Dialogs.Warn("Graphics mode", outcome.Summary);
+                Dialogs.Warn(Strings.Get("S.Gpu.Title"), outcome.Summary);
                 LoadGpuMode();
                 return;
             }
@@ -1705,7 +1588,7 @@ public partial class MainWindow : Window
                 // Immediate changes deserve a word too. The first version said
                 // nothing after switching the card off, and the only sign that
                 // anything had happened was Windows' own elevation prompt.
-                Dialogs.Tell("Graphics mode", outcome.Summary);
+                Dialogs.Tell(Strings.Get("S.Gpu.Title"), outcome.Summary);
             }
 
             LoadGpuMode();
@@ -1719,12 +1602,12 @@ public partial class MainWindow : Window
         {
             // A transition the rules refuse: the card is driving the screen, or
             // it is switched off. Said as it is, and the selection put back.
-            Dialogs.Warn("Not from here", ex.Message);
+            Dialogs.Warn(Strings.Get("S.Gpu.NotFromHere"), ex.Message);
             GpuButtonFor(current).IsChecked = true;
         }
         catch (Exception ex) when (ex is EcMailboxUnavailableException or Win32Exception)
         {
-            Dialogs.Warn("Could not change the mode", ex.Message);
+            Dialogs.Warn(Strings.Get("S.Mode.ChangeFailed"), ex.Message);
             GpuButtonFor(current).IsChecked = true;
         }
         finally
@@ -1742,40 +1625,21 @@ public partial class MainWindow : Window
     /// </summary>
     private bool ConfirmFirmwareSwitch(GpuMode target)
     {
-        var answer = Dialogs.Ask("Graphics mode",
-            $"Switch to {target}?" +
-            Environment.NewLine + Environment.NewLine +
-            "This changes which chip drives your screen, and takes effect at the next restart." +
-            Environment.NewLine + Environment.NewLine +
-            "Two things happen because of it, and Casper's own software warns about neither:" +
-            Environment.NewLine +
-            "    - Your Windows PIN will stop working and need setting up again." +
-            Environment.NewLine +
-            "    - If BitLocker is on, the next boot can ask for your 48-digit recovery key. " +
-            "Without it the drive does not open. Find it first - it is in your Microsoft " +
-            "account at aka.ms/myrecoverykey, or wherever you saved it." +
-            Environment.NewLine + Environment.NewLine +
-            "Both happen because the change alters what the TPM measures when the machine starts." +
-            Environment.NewLine + Environment.NewLine +
-            "Go ahead?",
-            defaultNo: true);
+        var answer = Dialogs.Ask(Strings.Get("S.Gpu.Title"), Strings.Get("S.Gpu.ConfirmSwitch", target), defaultNo: true);
 
         return answer;
     }
 
     private void OfferRestart(string summary)
     {
-        var restart = Dialogs.Ask("Graphics mode",
-            summary + Environment.NewLine + Environment.NewLine +
-            "Restart now? Windows will first ask any application that is holding unsaved work; " +
-            "if you cancel there, nothing changes." + Environment.NewLine + Environment.NewLine +
-            "No keeps the change waiting for whenever you next restart, as long as Nextcalibur is running.",
+        var restart = Dialogs.Ask(Strings.Get("S.Gpu.Title"),
+            summary + Environment.NewLine + Environment.NewLine + Strings.Get("S.Gpu.RestartNow"),
             defaultNo: true);
 
         if (!restart) return;
 
         if (!RequestRestart())
-            Dialogs.Warn("Graphics mode", "Windows did not start the restart. Restart the machine yourself; the change is applied as the session ends.");
+            Dialogs.Warn(Strings.Get("S.Gpu.Title"), Strings.Get("S.Gpu.RestartRefused"));
     }
 
     // ----------------------------------------------------- restart, Windows' way
@@ -1926,7 +1790,7 @@ public partial class MainWindow : Window
             button.IsEnabled = allowed;
             text.Text = allowed
                 ? option.Description
-                : $"Not available in {mode} mode. Change the mode on the System page first.";
+                : Strings.Get("S.Power.NotInMode", mode!);
             if (option.Overlay == active) button.IsChecked = true;
         }
 
@@ -1962,7 +1826,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Dialogs.Warn("Could not change mode", ex.Message);
+            Dialogs.Warn(Strings.Get("S.Mode.ChangeFailed"), ex.Message);
             LoadPowerModes();
         }
     }
@@ -2206,7 +2070,7 @@ public partial class MainWindow : Window
         // Clock and draw together, beside the temperature the panel already
         // shows: the card's whole state on one line, in every mode.
         GpuClock.Text = _nvidiaDriver == NvidiaDriverState.Missing ? "--"
-            : !CardIsAwakeNow() ? "asleep"
+            : !CardIsAwakeNow() ? Strings.Get("S.Readings.Asleep")
             : (_gpuClock.ReadGhz(), _gpuClock.ReadLoad()) switch
             {
                 ({ } ghz, { } load) => $"{ghz:N2} GHz · {load.Watts:0.0} W",
@@ -2384,16 +2248,15 @@ public partial class MainWindow : Window
             // Each chip against its own threshold, one balloon at a time.
             var cpuLimit = _settings.CpuWarningTemperatureC;
             var gpuLimit = _settings.GpuWarningTemperatureC;
-            var hot = s.CpuTemperatureC >= cpuLimit ? $"CPU at {s.CpuTemperatureC} °C"
-                    : s.GpuTemperatureC >= gpuLimit ? $"GPU at {s.GpuTemperatureC} °C"
+            var hot = s.CpuTemperatureC >= cpuLimit ? Strings.Get("S.Heat.Cpu", s.CpuTemperatureC)
+                    : s.GpuTemperatureC >= gpuLimit ? Strings.Get("S.Heat.Gpu", s.GpuTemperatureC)
                     : null;
             if (_settings.WarnsAboutHeat && hot is not null)
             {
                 if (!_overheatNotified)
                 {
                     _overheatNotified = true;
-                    _tray?.ShowMessage(hot,
-                        "Sustained temperatures this high usually mean the heatsink needs cleaning.");
+                    _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
                 }
             }
             else if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
@@ -2414,9 +2277,7 @@ public partial class MainWindow : Window
 
         if (!d.NeedsRepair)
         {
-            OverlayDetail.Text =
-                "Your chosen mode is in charge, and Nextcalibur has made sure the fastest " +
-                "mode can no longer hold the processor at full speed while the laptop is idle.";
+            OverlayDetail.Text = Strings.Get("S.Overlay.Fine");
             OverlayState.Foreground = (SolidColorBrush)FindResource("Good");
             FixButton.Visibility = Visibility.Collapsed;
             return;
@@ -2424,13 +2285,9 @@ public partial class MainWindow : Window
 
         var problems = new List<string>();
         if (d.OverlayIsStuck)
-            problems.Add(
-                "Windows is set to Best performance, and it is holding your processor at full speed " +
-                "even when the laptop is doing nothing. That is why changing modes seems to have no effect.");
+            problems.Add(Strings.Get("S.Overlay.Stuck"));
         if (d.GuardMissing)
-            problems.Add(
-                "Nothing is stopping another application from switching to that mode and holding the " +
-                "processor at full speed again.");
+            problems.Add(Strings.Get("S.Overlay.GuardMissing"));
 
         OverlayDetail.Text = string.Join(" ", problems);
         OverlayState.Foreground = (SolidColorBrush)FindResource("Warn");
@@ -2446,15 +2303,15 @@ public partial class MainWindow : Window
 
             var body = outcome.Done.Count > 0
                 ? string.Join(Environment.NewLine + Environment.NewLine, outcome.Done)
-                : "Nothing needed changing.";
+                : Strings.Get("S.Overlay.NothingToDo");
             if (outcome.Blocked is { } blocked)
                 body += Environment.NewLine + Environment.NewLine + blocked;
 
-            Dialogs.Tell(outcome.Blocked is null ? "Fixed" : "Partly fixed", body);
+            Dialogs.Tell(Strings.Get(outcome.Blocked is null ? "S.Overlay.Fixed" : "S.Overlay.PartlyFixed"), body);
         }
         catch (Exception ex)
         {
-            Dialogs.Warn("Could not fix it", ex.Message);
+            Dialogs.Warn(Strings.Get("S.Overlay.FixFailed"), ex.Message);
         }
     }
 
@@ -2715,9 +2572,7 @@ public partial class MainWindow : Window
         {
             // The message deliberately names the likely cause rather than
             // repeating the exception, which talks about mailboxes and retries.
-            Dialogs.Warn("Lighting",
-                "The keyboard lighting did not respond. If Casper's Control Center is open, " +
-                "close it and try again.");
+            Dialogs.Warn(Strings.Get("S.Lighting.Title"), Strings.Get("S.Lighting.NoResponse"));
         }
         finally
         {
@@ -2793,18 +2648,15 @@ public partial class MainWindow : Window
             if (MailboxAccess.Check() == MailboxAvailability.AccessNotGranted)
             {
                 ShowBanner(
-                    "Sensors need permission",
-                    "This laptop has the interface Nextcalibur reads, but this account has not " +
-                    "been allowed to use it yet. Reopen Nextcalibur to be asked again - it takes " +
-                    "one confirmation, once.",
+                    Strings.Get("S.Banner.NoAccessTitle"),
+                    Strings.Get("S.Banner.NoAccessBody"),
                     (SolidColorBrush)FindResource("Warn"));
                 return;
             }
 
             ShowBanner(
-                "This laptop isn't supported",
-                "Nextcalibur can't find the sensors and lighting on this machine, so those " +
-                "pages won't work. Power settings still do.",
+                Strings.Get("S.Banner.UnsupportedTitle"),
+                Strings.Get("S.Banner.NoSensorsBody"),
                 (SolidColorBrush)FindResource("Bad"));
             return;
         }
@@ -2812,9 +2664,8 @@ public partial class MainWindow : Window
         if (_nvidiaDriver == NvidiaDriverState.Missing)
         {
             ShowBanner(
-                "The NVIDIA driver is not installed",
-                "The graphics card is there but its driver is not, so the Display page and the card's readings are " +
-                "unavailable until it is back. The laptop maker's driver page is under Settings.",
+                Strings.Get("S.Banner.NoDriverTitle"),
+                Strings.Get("S.Banner.NoDriverBody"),
                 (SolidColorBrush)FindResource("Warn"));
             return;
         }
@@ -2822,9 +2673,8 @@ public partial class MainWindow : Window
         if (VendorSoftware.IsRunning())
         {
             ShowBanner(
-                "Casper's Control Center is open",
-                "Both apps are talking to the same hardware, so readings may stall and " +
-                "lighting changes may not stick. Close it and this message will clear itself.",
+                Strings.Get("S.Banner.VendorOpenTitle"),
+                Strings.Get("S.Banner.VendorOpenBody"),
                 (SolidColorBrush)FindResource("Warn"));
             return;
         }

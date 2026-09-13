@@ -23,13 +23,6 @@ public partial class App : Application
     private static Mutex? _instanceLock;
 
     /// <summary>
-    /// Asks this process, elevated, to grant the current account access to the
-    /// firmware mailbox. Not a mode anybody runs by hand: the window relaunches
-    /// itself with this when it finds it cannot read the machine.
-    /// </summary>
-    public const string GrantAccessArgument = "--grant-sensor-access";
-
-    /// <summary>
     /// Asks this process, elevated, to undo the two machine-wide changes.
     /// Reached only from the uninstall hook, after the person has said yes.
     /// </summary>
@@ -66,21 +59,20 @@ public partial class App : Application
         // the scheduled task (no prompt) or to a relaunch (one prompt), and
         // exits. Helper modes below are already elevated when they run.
         var self = Environment.ProcessPath;
-        if (self is not null && !args.Contains(GrantAccessArgument) && !args.Contains(CleanUpArgument)
+        if (self is not null && !args.Contains(CleanUpArgument)
             && !args.Contains(CardSwitchTasks.Argument) && !IsVelopackHook(args)
             && !Elevation.EnsureElevated(args, self))
             return;
 
-        // Before anything else, including Velopack: this is a short-lived
-        // elevated copy of the application doing one registry write and exiting.
-        // It must not run installer hooks, take the single-instance mutex, or
-        // put a second icon in the notification area.
-        if (args.Contains(GrantAccessArgument))
-        {
-            Environment.Exit(GrantSensorAccess());
-            return;
-        }
+        // The words, before anything can show one: the uninstall hook and
+        // the first-run repair ask their questions before the window exists.
+        // Read before the uninstall removes the settings file.
+        Strings.Apply(Strings.Initial(AppSettings.Load()));
+        Nextcalibur.Core.Words.Resolver = Strings.TryGet;   // the library's words come from the same dictionaries
 
+        // A short-lived elevated copy of the application doing the uninstall's
+        // machine-wide work and exiting. It must not run installer hooks, take
+        // the single-instance mutex, or put a second icon in the notification area.
         if (args.Contains(CleanUpArgument))
         {
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
@@ -221,9 +213,8 @@ public partial class App : Application
                 Log.Error("ui", "More of the same this minute; not logging each");
 
             if (faultsThisMinute == 1)
-                Dialogs.Warn("Nextcalibur - something went wrong",
-                    "An error was recorded in the log and the application is still running." +
-                    Environment.NewLine + Environment.NewLine + e.Exception.Message);
+                Dialogs.Warn(Strings.Get("S.Fault.Title"),
+                    Strings.Get("S.Fault.Body") + Environment.NewLine + Environment.NewLine + e.Exception.Message);
             e.Handled = true;
         };
         ListenForWakeRequests(app);
@@ -316,17 +307,8 @@ public partial class App : Application
         // want to keep - the power plans, which show in Windows' own power
         // options, and the repair, which fixes a Windows fault whether or
         // not this is installed.
-        var removeKeepable = keepable.Count > 0 && Dialogs.Ask("Nextcalibur - keep or remove?",
-            "Nextcalibur has removed its own files, settings and scheduled tasks." +
-            Environment.NewLine + Environment.NewLine +
-            "Two things it did to Windows can stay or go:" +
-            Environment.NewLine +
-            string.Join(Environment.NewLine, keepable.Select(t => "    - " + t.Name)) +
-            Environment.NewLine + Environment.NewLine +
-            "The power repair fixes a Windows fault and works whether or not Nextcalibur is installed; " +
-            "the plans are yours to keep using." +
-            Environment.NewLine + Environment.NewLine +
-            "Remove them as well?",
+        var removeKeepable = keepable.Count > 0 && Dialogs.Ask(Strings.Get("S.Uninstall.KeepTitle"),
+            Strings.Get("S.Uninstall.KeepBody", string.Join(Environment.NewLine, keepable.Select(t => "    - " + t.Name))),
             defaultNo: true);
 
         if (removeKeepable) Footprint.RemoveOwnPowerPlans();
@@ -337,10 +319,8 @@ public partial class App : Application
         foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
         {
             if (dependency.InstalledVersion() is null) continue;
-            if (Dialogs.Ask($"Nextcalibur - {dependency.Name}",
-                    $"Nextcalibur installed {dependency.Name} for its own use: it {dependency.Purpose}." +
-                    Environment.NewLine + Environment.NewLine +
-                    "Other programs may use it too. Remove it as well? If unsure, keep it; it does nothing on its own.",
+            if (Dialogs.Ask(Strings.Get("S.Uninstall.DependencyTitle", dependency.Name),
+                    Strings.Get("S.Uninstall.DependencyBody", dependency.Name, dependency.Purpose),
                     defaultNo: true))
                 dependenciesToRemove.Add(dependency);
         }
@@ -425,23 +405,6 @@ public partial class App : Application
         catch (Exception ex) when (ex is IOException or Win32Exception or UnauthorizedAccessException)
         {
             Log.Warn("uninstall", "Could not schedule the folder's removal: " + ex.Message);
-        }
-    }
-
-    private static int GrantSensorAccess()
-    {
-        try
-        {
-            MailboxAccess.Grant();
-            return 0;
-        }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
-        {
-            return 2;
-        }
-        catch
-        {
-            return 3;
         }
     }
 
@@ -534,30 +497,26 @@ public partial class App : Application
             // Half a repair is still a repair, and saying so is the difference
             // between somebody knowing what state their machine is in and not.
             var body = outcome.Done.Count > 0
-                ? "Nextcalibur found and repaired a Windows power configuration fault:" +
+                ? Strings.Get("S.FirstRun.Repaired") +
                   Environment.NewLine + Environment.NewLine + string.Join(Environment.NewLine + Environment.NewLine, outcome.Done)
-                : "Nextcalibur found a Windows power configuration fault.";
+                : Strings.Get("S.FirstRun.Found");
 
             if (outcome.Blocked is { } blocked)
                 body += Environment.NewLine + Environment.NewLine + blocked;
             else
-                body += Environment.NewLine + Environment.NewLine +
-                        "Your CPU can now idle down properly. You can undo this at any time " +
-                        "from the Power Mode panel.";
+                body += Environment.NewLine + Environment.NewLine + Strings.Get("S.FirstRun.Undo");
 
             Dialogs.Tell(
-                outcome.Blocked is null
-                    ? "Nextcalibur - power fault repaired"
-                    : "Nextcalibur - power fault partly repaired",
+                Strings.Get(outcome.Blocked is null ? "S.FirstRun.RepairedTitle" : "S.FirstRun.PartlyTitle"),
                 body);
         }
         catch (Exception ex)
         {
             // Never let a failed repair block startup.
             Dialogs.Warn("Nextcalibur",
-                "Nextcalibur could not repair the Windows power overlay automatically:" +
+                Strings.Get("S.FirstRun.Failed") +
                 Environment.NewLine + Environment.NewLine + ex.Message +
-                Environment.NewLine + Environment.NewLine + "You can retry from the Power Mode panel.");
+                Environment.NewLine + Environment.NewLine + Strings.Get("S.FirstRun.Retry"));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows;
+using Nextcalibur.Core;
 using Nextcalibur.Core.Configuration;
 
 namespace Nextcalibur.App;
@@ -27,6 +28,10 @@ public static class Strings
     private const string TurkishSource = "Themes/Strings.tr.xaml";
 
     private static ResourceDictionary? _english;
+    // The chosen language's dictionary, loaded directly: it answers before
+    // the Application exists (the uninstall hook, the first-run repair) and
+    // whenever the application's resources are not the place to look.
+    private static ResourceDictionary? _active;
 
     /// <summary>The language on screen right now.</summary>
     public static UiLanguage Current { get; private set; } = UiLanguage.English;
@@ -41,20 +46,43 @@ public static class Strings
     public static void Apply(UiLanguage language)
     {
         var wanted = language == UiLanguage.Turkish ? TurkishSource : EnglishSource;
+        if (Current != language || _active is null)
+        {
+            try { _active = Load(wanted); }
+            catch (Exception ex) when (Application.Current is null)
+            {
+                // Before the Application exists the pack scheme can refuse;
+                // English from the code's own fallbacks is better than no start.
+                Log.Warn("language", "The dictionary could not be loaded this early: " + ex.Message);
+                _active = null;
+            }
+        }
+        Current = language;
+        if (Application.Current is null) return;   // before the window: Get still answers from _active
+
         var merged = Application.Current.Resources.MergedDictionaries;
         var index = -1;
         for (var i = 0; i < merged.Count; i++)
         {
             var source = merged[i].Source?.OriginalString;
             if (source is null || !source.Contains("Strings.", StringComparison.OrdinalIgnoreCase)) continue;
-            if (source.EndsWith(wanted, StringComparison.OrdinalIgnoreCase)) { Current = language; return; }
+            if (source.EndsWith(wanted, StringComparison.OrdinalIgnoreCase)) return;
             index = i;
         }
 
-        var dictionary = new ResourceDictionary { Source = new Uri(wanted, UriKind.Relative) };
+        var dictionary = Load(wanted);
         if (index >= 0) merged[index] = dictionary; else merged.Add(dictionary);
-        Current = language;
         Changed?.Invoke(null, EventArgs.Empty);
+    }
+
+    // An absolute pack URI: the relative form needs an Application to resolve
+    // against, and the uninstall hook runs before there is one.
+    private static ResourceDictionary Load(string source)
+    {
+        // The pack scheme is registered by the Application's constructor;
+        // before that, touching PackUriHelper registers it.
+        _ = System.IO.Packaging.PackUriHelper.UriSchemePack;
+        return new ResourceDictionary { Source = new Uri("pack://application:,,,/" + source, UriKind.Absolute) };
     }
 
     /// <summary>The text for a key in the current language, with <see cref="string.Format(string, object[])"/> arguments.</summary>
@@ -66,15 +94,17 @@ public static class Strings
         catch (FormatException) { return text; }
     }
 
-    private static string Lookup(string key)
+    /// <summary>The text for a key, or null when neither dictionary has it.</summary>
+    public static string? TryGet(string key)
     {
+        if (_active?[key] is string active) return active;
         if (Application.Current?.TryFindResource(key) is string found) return found;
 
-        _english ??= new ResourceDictionary { Source = new Uri(EnglishSource, UriKind.Relative) };
-        if (_english[key] is string english) return english;
-
-        return "[" + key + "]";
+        _english ??= Load(EnglishSource);
+        return _english[key] as string;
     }
+
+    private static string Lookup(string key) => TryGet(key) ?? "[" + key + "]";
 
     /// <summary>
     /// The language to start in: the one chosen, or - the first time - the

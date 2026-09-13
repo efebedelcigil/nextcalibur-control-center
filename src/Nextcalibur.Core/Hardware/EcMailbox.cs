@@ -145,7 +145,7 @@ public sealed class EcMailbox : IDisposable
         catch (Exception ex)
         {
             throw new EcMailboxUnavailableException(
-                $@"Could not connect to {Scope}. This machine may not expose the interface.", ex);
+                Words.Get("S.Core.Mailbox.NoConnection", "Could not connect to {0}. This machine may not expose the interface.", Scope), ex);
         }
     }
 
@@ -265,7 +265,7 @@ public sealed class EcMailbox : IDisposable
                 catch (UnauthorizedAccessException ex)
                 {
                     throw new EcMailboxUnavailableException(
-                        "Access denied writing to the mailbox. Try running elevated.", ex);
+                        Words.Get("S.Core.Mailbox.AccessDenied", "Access denied writing to the mailbox. Try running elevated."), ex);
                 }
 
                 Thread.Sleep(delayMs);
@@ -277,12 +277,11 @@ public sealed class EcMailbox : IDisposable
             // use the data block, and telling somebody to close software they
             // do not have sends them nowhere.
             var reason = MailboxAccess.Check() == MailboxAvailability.AccessNotGranted
-                ? "This account may not use the firmware interface unelevated. " +
-                  "Run from an elevated prompt."
-                : "Another application may be using the mailbox - close the vendor Control Center and retry.";
+                ? Words.Get("S.Core.Mailbox.NotAllowed", "This account may not use the firmware interface unelevated. Run from an elevated prompt.")
+                : Words.Get("S.Core.Mailbox.Busy", "Another application may be using the mailbox - close the vendor Control Center and retry.");
 
             throw new EcMailboxUnavailableException(
-                $"No valid response after {attempts} attempts. " + reason, last);
+                Words.Get("S.Core.Mailbox.NoResponse", "No valid response after {0} attempts.", attempts) + " " + reason, last);
         }
     }
 

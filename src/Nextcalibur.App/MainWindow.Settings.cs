@@ -159,12 +159,7 @@ public partial class MainWindow
     /// </summary>
     private void OpenWinUtil()
     {
-        if (!Dialogs.Ask("Open WinUtil?",
-                "This opens Chris Titus Tech's WinUtil in an administrator PowerShell window: the script is " +
-                "downloaded from christitus.com and run. It is not part of Nextcalibur and nothing here checks " +
-                "it; what you change there - services, apps, settings - is between you and it." +
-                Environment.NewLine + Environment.NewLine + "Continue?",
-                defaultNo: true))
+        if (!Dialogs.Ask(Strings.Get("S.WinUtil.Title"), Strings.Get("S.WinUtil.Body"), defaultNo: true))
             return;
 
         try
@@ -178,7 +173,7 @@ public partial class MainWindow
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            Dialogs.Warn("Nextcalibur", "PowerShell could not be started: " + ex.Message);
+            Dialogs.Warn("Nextcalibur", Strings.Get("S.WinUtil.Failed") + " " + ex.Message);
         }
     }
 
@@ -201,7 +196,7 @@ public partial class MainWindow
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            Dialogs.Warn("Nextcalibur", "The browser could not be opened: " + ex.Message);
+            Dialogs.Warn("Nextcalibur", Strings.Get("S.Link.Failed") + " " + ex.Message);
         }
     }
 
@@ -213,16 +208,7 @@ public partial class MainWindow
     /// </summary>
     private void ShowPrivacy()
     {
-        if (Dialogs.Ask("Privacy",
-                "Nextcalibur collects nothing about you and sends nothing about you anywhere." +
-                Environment.NewLine + Environment.NewLine +
-                "The only requests it makes are to GitHub, to find its own updates and PawnIO's - and none at all " +
-                "with automatic checks off - and they carry nothing of yours beyond what any download does. " +
-                "Settings and the log stay in your profile; nothing is uploaded unless you attach it to a report yourself. " +
-                "No account, no telemetry, no analytics." +
-                Environment.NewLine + Environment.NewLine +
-                "Open the full policy, with the list of every request, in your browser?",
-                defaultNo: true))
+        if (Dialogs.Ask(Strings.Get("S.Privacy.Title"), Strings.Get("S.Privacy.Body"), defaultNo: true))
             OpenLink(UpdateService.Repository + "/blob/main/docs/PRIVACY.md", "privacy", "Opened the privacy policy");
     }
 

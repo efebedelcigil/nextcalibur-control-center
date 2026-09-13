@@ -11,7 +11,7 @@ namespace Nextcalibur.App;
 
 /// <summary>
 /// The guided tour: every page, every control, one at a time, ending at the
-/// tray. The order and the words live here; the look lives in the markup
+/// tray. The order lives here, the words in the dictionaries; the look lives in the markup
 /// (`TourOverlay` and its parts, BRIEF §20). The parts are looked up by
 /// name when the tour starts, so this compiles and does nothing until the
 /// markup is there, and a renamed part is a skipped step rather than a
@@ -22,8 +22,14 @@ public partial class MainWindow
     private enum TourPage { Any, System, Power, Display, Lighting, Settings }
 
     /// <param name="Target">x:Name of the control to spotlight; null for a step with no spotlight.</param>
-    /// <param name="Section">The part of the interface the step belongs to; "Skip section" jumps to the next one.</param>
-    private sealed record TourStep(string? Target, TourPage Page, string Title, string Body, string Section = "");
+    /// <param name="Key">The step's name in the dictionaries: <c>S.Tour.Step.{Key}.Title</c> and <c>.Body</c>.</param>
+    /// <param name="Section">The part of the interface the step belongs to (<c>S.Tour.Section.{Section}</c>); "Skip section" jumps to the next one.</param>
+    private sealed record TourStep(string? Target, TourPage Page, string Key, string Section)
+    {
+        public string Title => Strings.Get($"S.Tour.Step.{Key}.Title");
+        public string Body => Strings.Get($"S.Tour.Step.{Key}.Body");
+        public string SectionName => Strings.Get($"S.Tour.Section.{Section}");
+    }
 
     private const double TourGap = 12;
     private const double TourCardWidth = 300;
@@ -56,169 +62,82 @@ public partial class MainWindow
 
     private static readonly IReadOnlyList<TourStep> TourSteps = new[]
     {
-        // ---- the window itself
-        new TourStep("TourButton", TourPage.Any, "Welcome to Nextcalibur",
-            "This is the tour. It walks through every page and every control, one at a time, and finishes at the tray icon. " +
-            "Nothing is changed while it runs - it only points. Use Next and Back, press Escape or Skip to leave at any time; " +
-            "this button starts it again whenever you want.", "The window"),
-        new TourStep("TitleBar", TourPage.Any, "The title bar",
-            "Drag anywhere on it to move the window. The window has one fixed size, so there is nothing to resize.", "The window"),
-        new TourStep("ThemeSwitch", TourPage.Any, "Dark, light, or Windows' choice",
-            "Three looks: dark, light, or follow whatever Windows is set to. The choice is remembered.", "The window"),
-        new TourStep("MinimiseButton", TourPage.Any, "Minimise",
-            "Sends the window to the taskbar. Nextcalibur keeps running exactly as before; click the taskbar button to bring it back.", "The window"),
-        new TourStep("HideToTrayButton", TourPage.Any, "Hide to the tray",
-            "Takes the window off the taskbar altogether. The application stays in the notification area by the clock, " +
-            "still reading the sensors and keeping your mode; double-click the tray icon to open it again.", "The window"),
-        new TourStep("CloseButton", TourPage.Any, "Close",
-            "Asks whether you mean to exit. Exiting stops Nextcalibur completely: no readings, no overheat warning, " +
-            "and no mode change when the charger comes and goes - until it is started again. If you only want it out of the way, hide it to the tray instead.", "The window"),
-
-        // ---- the rail
-        new TourStep("NavSystem", TourPage.System, "System",
-            "The first page: the system mode, the fans, and the two chips. It is the page the application opens on.", "The rail"),
-        new TourStep("NavPower", TourPage.Any, "Power Mode",
-            "Windows' own power modes, shown as cards, and a check that Windows is honouring the mode you chose.", "The rail"),
-        new TourStep("NavDisplay", TourPage.Any, "Display Mode",
-            "Which graphics card drives the screen: the NVIDIA card alone, both together, or the processor's own.", "The rail"),
-        new TourStep("NavLighting", TourPage.Any, "Lighting",
-            "The keyboard backlight: colour per zone, effects, brightness, and saved profiles.", "The rail"),
-        new TourStep("NavSettings", TourPage.Any, "Settings",
-            "Every preference in one place - the same ones the tray menu has, kept in step with it.", "The rail"),
-        new TourStep("UpdateNowButton", TourPage.Any, "Updates",
-            "Reads \"Up to date\" until a newer release is found - the check happens quietly in the background if you let it. " +
-            "When there is one, the button names it; press it and the update is downloaded, verified and applied, and the application reopens as the new version.", "The rail"),
-        new TourStep("OpenLogButton", TourPage.Any, "Open log",
-            "Opens the folder with Nextcalibur's own log: one file a day, seven days kept, events only - starts, mode changes, " +
-            "graphics switches, updates, anything that went wrong. Attach one when reporting a problem.", "The rail"),
-        new TourStep("VersionText", TourPage.Any, "Version",
-            "The version you are running. Mention it in any report.", "The rail"),
-
-        // ---- System page
-        new TourStep("ModeOffice", TourPage.System, "Office mode",
-            "Quiet and cool: the power plan, Windows' power mode and the firmware's own profile are all set for light work. " +
-            "Nextcalibur switches to Office on its own when the charger is unplugged, if you let it (a tray setting), and returns to your mode when it is plugged back in.", "System"),
-        new TourStep("ModeGaming", TourPage.System, "Gaming mode",
-            "The everyday fast mode. The firmware runs its Gaming profile, Windows gets its Balanced or Better-performance mode, and the processor is allowed to idle down between bursts.", "System"),
-        new TourStep("ModePerformance", TourPage.System, "Performance mode",
-            "Everything on: the firmware's Performance profile and Windows' fastest modes. Louder and hotter; for when the fans are worth it.", "System"),
-        new TourStep("SystemModeNote", TourPage.System, "What the mode means",
-            "A line under the cards explains what the chosen mode is doing right now. If Windows has been moved to a mode none of the cards match, it says so here instead of guessing.", "System"),
-        new TourStep("SubtitleText", TourPage.System, "The status line",
-            "The active mode, whether the laptop is on the charger or the battery, and the time of the last sensor reading. If a reading fails, the number shows as \"--\" rather than a made-up value.", "System"),
-        new TourStep("Banner", TourPage.System, "The banner",
-            "Appears only when something needs saying: the laptop is not supported, the firmware answered oddly, or the vendor's software is installed alongside. Otherwise it stays out of the way.", "System"),
-        new TourStep("CpuFanGauge", TourPage.System, "The processor's fan",
-            "Fan speed in revolutions per minute, read from the firmware. Nextcalibur does not set fan curves - the firmware profile chosen by the mode decides them, exactly as the original software did.", "System"),
-        new TourStep("CpuName", TourPage.System, "The processor",
-            "Read from the machine, never assumed.", "System"),
-        new TourStep("GpuFanGauge", TourPage.System, "The graphics card's fan",
-            "The second fan, same source. When the card is asleep or switched off, the fan is simply stopped.", "System"),
-        new TourStep("GpuName", TourPage.System, "The graphics card",
-            "Likewise read from the machine. In UMA mode the card is disabled and this still names it.", "System"),
-
-        // ---- Power page
-        new TourStep("PowerModeEfficiency", TourPage.Power, "Best power efficiency",
-            "Windows' battery-saving mode. Only offered while the system mode is Office - the cards outside your mode's range are greyed so a fast mode cannot be paired with a slow profile, or the reverse.", "Power Mode"),
-        new TourStep("PowerModeBalanced", TourPage.Power, "Balanced",
-            "Windows' default. Available in Office and Gaming.", "Power Mode"),
-        new TourStep("PowerModeBetter", TourPage.Power, "Better performance",
-            "Available in Gaming and Performance. Choosing a system mode always picks that mode's own default here; these cards let you lean one step either way.", "Power Mode"),
-        new TourStep("PowerModeBest", TourPage.Power, "Best performance",
-            "Windows' fastest mode, for Performance only. Nextcalibur keeps a guard on it so that, when a laptop is idle, this mode can no longer hold the processor at full speed - the fault the original software left behind.", "Power Mode"),
-        new TourStep("OverlayState", TourPage.Power, "Is Windows honouring the mode?",
-            "A check of Windows' power overlay against your chosen mode. Green means all is well.", "Power Mode"),
-        new TourStep("OverlayDetail", TourPage.Power, "What it found",
-            "The explanation in plain words - what Windows is doing and why it matters.", "Power Mode"),
-        new TourStep("FixButton", TourPage.Power, "Repair",
-            "Shown only when the check finds a problem. Pressing it puts the power settings right; nothing else is touched.", "Power Mode"),
-
-        // ---- Display page
-        new TourStep("ModeDiscrete", TourPage.Display, "Discrete",
-            "The NVIDIA card drives the screen alone: the most performance, the most power. Changing graphics mode needs a restart, and the switch is written to the firmware only as Windows is actually restarting - cancel the restart and nothing has changed.", "Display Mode"),
-        new TourStep("ModeHybrid", TourPage.Display, "Hybrid",
-            "Both: the processor's graphics drive the screen and the NVIDIA card wakes for games and heavy work, sleeping in between. The usual choice.", "Display Mode"),
-        new TourStep("ModeUma", TourPage.Display, "UMA",
-            "The processor's graphics only; the NVIDIA card is switched off entirely for the longest battery life. Unlike the other two this takes effect at once, no restart.", "Display Mode"),
-        new TourStep("GpuRestartPending", TourPage.Display, "A change is waiting",
-            "After choosing Discrete or Hybrid this line stays until the restart. Exiting Nextcalibur before restarting drops the pending change.", "Display Mode"),
-        new TourStep("GpuModeDetail", TourPage.Display, "What the card is doing",
-            "The card's clock and power draw when it is awake, and \"asleep\" when Windows has powered it down. Nextcalibur checks the sleep state from Windows' own records so that looking never wakes the card.", "Display Mode"),
-
-        // ---- Lighting page
-        new TourStep("LedPower", TourPage.Lighting, "Lighting on or off",
-            "Turns the keyboard backlight off completely, or back on with everything as it was. Fn+Space on the keyboard still steps the brightness, and the page follows it.", "Lighting"),
-        new TourStep("TabZoneA", TourPage.Lighting, "Zones",
-            "The keyboard lights in three zones, left to right. Pick a tab to colour that zone; the drawing above it shows what is set.", "Lighting"),
-        new TourStep("SelectAll", TourPage.Lighting, "All zones at once",
-            "Tick it and the colour and effect you choose go to all three zones together.", "Lighting"),
-        new TourStep("ProfileRow", TourPage.Lighting, "Profiles",
-            "Four saved sets of lighting - Office, Gaming, Performance and one of your own. Choosing a profile applies it; whatever you change afterwards is saved into it.", "Lighting"),
-        new TourStep("EffectPanel", TourPage.Lighting, "Effects",
-            "Static, breathing, blink, heartbeat, colour cycle and wave. The last two make their own colours, so the wheel is greyed while they are chosen.", "Lighting"),
-        new TourStep("Wheel", TourPage.Lighting, "The colour wheel",
-            "Click or drag to pick a colour for the selected zone. The change is sent to the keyboard as you release.", "Lighting"),
-        new TourStep("BrightnessSlider", TourPage.Lighting, "Brightness",
-            "Dims the chosen colours. Fn+Space steps the hardware's own three levels; both are shown here as one percentage.", "Lighting"),
-        new TourStep("ReloadButton", TourPage.Lighting, "Reload",
-            "Sends the saved lighting to the keyboard again - useful if something else reset it.", "Lighting"),
-
-        // ---- Settings page
-        new TourStep("SettingWinUtilButton", TourPage.Settings, "WinUtil",
-            "Opens Chris Titus Tech's WinUtil - a Windows debloat and tweak tool - in an administrator PowerShell, downloaded from its author's site. It is not part of Nextcalibur; you are asked before it opens.", "Settings"),
-        new TourStep("SettingDriversButton", TourPage.Settings, "Drivers",
-            "Opens the laptop maker's own driver download page in your browser - the place for the firmware, chipset and keyboard drivers Nextcalibur does not ship.", "Settings"),
-        new TourStep("SettingReportButton", TourPage.Settings, "Report a problem",
-            "Opens the project's issues page on GitHub. Attach the day's log (Open log, bottom-left) and say which version you run; the version is under the buttons.", "Settings"),
-        new TourStep("SettingPrivacyButton", TourPage.Settings, "Privacy",
-            "What the application does with data, in its own words: nothing collected, nothing sent about you; the only requests are to GitHub for updates, and none with automatic checks off. The full policy is one click further.", "Settings"),
-        new TourStep("SettingStartWithWindows", TourPage.Settings, "Start with Windows",
-            "Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.", "Settings"),
-        new TourStep("SettingOfficeOnBattery", TourPage.Settings, "Office mode on battery",
-            "When the charger comes out, drop to Office; when it goes back in, return to the mode you had. On by default, as the original software did it.", "Settings"),
-        new TourStep("SettingOverheatWarning", TourPage.Settings, "Overheat warning",
-            "The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.", "Settings"),
-        new TourStep("SettingInterval2", TourPage.Settings, "How often to read the sensors",
-            "One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.", "Settings"),
-        new TourStep("SettingAutoCheckUpdates", TourPage.Settings, "Check for updates automatically",
-            "A minute after start and every six hours, one small request to GitHub. A release found is offered, never installed on its own - unless the next switch is on.", "Settings"),
-        new TourStep("SettingAutoInstallUpdates", TourPage.Settings, "Install updates automatically",
-            "Goes one step further: a release found is downloaded, verified and installed without asking, and the application restarts into it. Off by default. It waits while a graphics change is pending a restart, since that restart is yours to time.", "Settings"),
-        new TourStep("SettingLanguageEnglish", TourPage.Settings, "Language",
-            "English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.", "Settings"),
-        new TourStep("SettingCheckNowButton", TourPage.Settings, "Check now",
-            "Asks GitHub right away and tells you the answer either way.", "Settings"),
-
-        // ---- the readings panel (every page but Lighting and Settings)
-        new TourStep("CpuClock", TourPage.System, "The processor, live",
-            "Its clock in gigahertz and, on Intel machines with the PawnIO driver installed, its package power in watts. Read every few seconds; the interval is a tray setting.", "Readings"),
-        new TourStep("CpuTemp", TourPage.System, "Processor temperature",
-            "From the firmware's own sensor - the same one the fans answer to.", "Readings"),
-        new TourStep("GpuClock", TourPage.System, "The graphics card, live",
-            "Clock and watts while the card is awake; \"asleep\" while it is not. Nextcalibur never wakes the card to ask.", "Readings"),
-        new TourStep("GpuTemp", TourPage.System, "Graphics card temperature",
-            "From the firmware, so it is available even when the card's own driver is not.", "Readings"),
-        new TourStep("OverheatWarningToggle", TourPage.System, "Overheat alert",
-            "When on, a warning appears from the tray if either chip crosses its threshold. It is a warning only; Nextcalibur never throttles anything.", "Readings"),
-        new TourStep("CpuWarnSlider", TourPage.System, "Processor threshold",
-            "Drag the slider or type a whole number in the box. Out-of-range values are refused, not clamped.", "Readings"),
-        new TourStep("GpuWarnSlider", TourPage.System, "Graphics card threshold",
-            "The same for the card. The defaults are safe values for laptops of this class.", "Readings"),
-        new TourStep("OverheatResetButton", TourPage.System, "Reset",
-            "Puts both thresholds back to their defaults.", "Readings"),
-        new TourStep("RamGauge", TourPage.System, "Memory",
-            "How much of the installed memory is in use, read from Windows once a second.", "Readings"),
-        new TourStep("DriveList", TourPage.System, "Drives",
-            "Every fixed drive in the machine, each with its own gauge. Read once a minute - a drive's use does not change faster than that.", "Readings"),
-
-        // ---- the tray
-        new TourStep(null, TourPage.Any, "The tray icon",
-            "Nextcalibur lives in the notification area by the clock; its menu has just been opened there. " +
-            "Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. " +
-            "Office mode on battery is the automatic switch when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. " +
-            "Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. " +
-            "Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. " +
-            "That is the whole of it. Enjoy the machine.", "The tray"),
+        // ---- The window
+        new TourStep("TourButton", TourPage.Any, "TourButton", "Window"),
+        new TourStep("TitleBar", TourPage.Any, "TitleBar", "Window"),
+        new TourStep("ThemeSwitch", TourPage.Any, "ThemeSwitch", "Window"),
+        new TourStep("MinimiseButton", TourPage.Any, "MinimiseButton", "Window"),
+        new TourStep("HideToTrayButton", TourPage.Any, "HideToTrayButton", "Window"),
+        new TourStep("CloseButton", TourPage.Any, "CloseButton", "Window"),
+        // ---- The rail
+        new TourStep("NavSystem", TourPage.System, "NavSystem", "Rail"),
+        new TourStep("NavPower", TourPage.Any, "NavPower", "Rail"),
+        new TourStep("NavDisplay", TourPage.Any, "NavDisplay", "Rail"),
+        new TourStep("NavLighting", TourPage.Any, "NavLighting", "Rail"),
+        new TourStep("NavSettings", TourPage.Any, "NavSettings", "Rail"),
+        new TourStep("UpdateNowButton", TourPage.Any, "UpdateNowButton", "Rail"),
+        new TourStep("OpenLogButton", TourPage.Any, "OpenLogButton", "Rail"),
+        new TourStep("VersionText", TourPage.Any, "VersionText", "Rail"),
+        // ---- System
+        new TourStep("ModeOffice", TourPage.System, "ModeOffice", "System"),
+        new TourStep("ModeGaming", TourPage.System, "ModeGaming", "System"),
+        new TourStep("ModePerformance", TourPage.System, "ModePerformance", "System"),
+        new TourStep("SystemModeNote", TourPage.System, "SystemModeNote", "System"),
+        new TourStep("SubtitleText", TourPage.System, "SubtitleText", "System"),
+        new TourStep("Banner", TourPage.System, "Banner", "System"),
+        new TourStep("CpuFanGauge", TourPage.System, "CpuFanGauge", "System"),
+        new TourStep("CpuName", TourPage.System, "CpuName", "System"),
+        new TourStep("GpuFanGauge", TourPage.System, "GpuFanGauge", "System"),
+        new TourStep("GpuName", TourPage.System, "GpuName", "System"),
+        // ---- Power Mode
+        new TourStep("PowerModeEfficiency", TourPage.Power, "PowerModeEfficiency", "Power"),
+        new TourStep("PowerModeBalanced", TourPage.Power, "PowerModeBalanced", "Power"),
+        new TourStep("PowerModeBetter", TourPage.Power, "PowerModeBetter", "Power"),
+        new TourStep("PowerModeBest", TourPage.Power, "PowerModeBest", "Power"),
+        new TourStep("OverlayState", TourPage.Power, "OverlayState", "Power"),
+        new TourStep("OverlayDetail", TourPage.Power, "OverlayDetail", "Power"),
+        new TourStep("FixButton", TourPage.Power, "FixButton", "Power"),
+        // ---- Display Mode
+        new TourStep("ModeDiscrete", TourPage.Display, "ModeDiscrete", "Display"),
+        new TourStep("ModeHybrid", TourPage.Display, "ModeHybrid", "Display"),
+        new TourStep("ModeUma", TourPage.Display, "ModeUma", "Display"),
+        new TourStep("GpuRestartPending", TourPage.Display, "GpuRestartPending", "Display"),
+        new TourStep("GpuModeDetail", TourPage.Display, "GpuModeDetail", "Display"),
+        // ---- Lighting
+        new TourStep("LedPower", TourPage.Lighting, "LedPower", "Lighting"),
+        new TourStep("TabZoneA", TourPage.Lighting, "TabZoneA", "Lighting"),
+        new TourStep("SelectAll", TourPage.Lighting, "SelectAll", "Lighting"),
+        new TourStep("ProfileRow", TourPage.Lighting, "ProfileRow", "Lighting"),
+        new TourStep("EffectPanel", TourPage.Lighting, "EffectPanel", "Lighting"),
+        new TourStep("Wheel", TourPage.Lighting, "Wheel", "Lighting"),
+        new TourStep("BrightnessSlider", TourPage.Lighting, "BrightnessSlider", "Lighting"),
+        new TourStep("ReloadButton", TourPage.Lighting, "ReloadButton", "Lighting"),
+        // ---- Settings
+        new TourStep("SettingWinUtilButton", TourPage.Settings, "SettingWinUtilButton", "Settings"),
+        new TourStep("SettingDriversButton", TourPage.Settings, "SettingDriversButton", "Settings"),
+        new TourStep("SettingReportButton", TourPage.Settings, "SettingReportButton", "Settings"),
+        new TourStep("SettingPrivacyButton", TourPage.Settings, "SettingPrivacyButton", "Settings"),
+        new TourStep("SettingStartWithWindows", TourPage.Settings, "SettingStartWithWindows", "Settings"),
+        new TourStep("SettingOfficeOnBattery", TourPage.Settings, "SettingOfficeOnBattery", "Settings"),
+        new TourStep("SettingOverheatWarning", TourPage.Settings, "SettingOverheatWarning", "Settings"),
+        new TourStep("SettingInterval2", TourPage.Settings, "SettingInterval2", "Settings"),
+        new TourStep("SettingAutoCheckUpdates", TourPage.Settings, "SettingAutoCheckUpdates", "Settings"),
+        new TourStep("SettingAutoInstallUpdates", TourPage.Settings, "SettingAutoInstallUpdates", "Settings"),
+        new TourStep("SettingLanguageEnglish", TourPage.Settings, "SettingLanguageEnglish", "Settings"),
+        new TourStep("SettingCheckNowButton", TourPage.Settings, "SettingCheckNowButton", "Settings"),
+        // ---- Readings
+        new TourStep("CpuClock", TourPage.System, "CpuClock", "Readings"),
+        new TourStep("CpuTemp", TourPage.System, "CpuTemp", "Readings"),
+        new TourStep("GpuClock", TourPage.System, "GpuClock", "Readings"),
+        new TourStep("GpuTemp", TourPage.System, "GpuTemp", "Readings"),
+        new TourStep("OverheatWarningToggle", TourPage.System, "OverheatWarningToggle", "Readings"),
+        new TourStep("CpuWarnSlider", TourPage.System, "CpuWarnSlider", "Readings"),
+        new TourStep("GpuWarnSlider", TourPage.System, "GpuWarnSlider", "Readings"),
+        new TourStep("OverheatResetButton", TourPage.System, "OverheatResetButton", "Readings"),
+        new TourStep("RamGauge", TourPage.System, "RamGauge", "Readings"),
+        new TourStep("DriveList", TourPage.System, "DriveList", "Readings"),
+        // ---- The tray
+        new TourStep(null, TourPage.Any, "TrayIcon", "Tray"),
     };
 
     // ------------------------------------------------------------- entry
@@ -422,14 +341,14 @@ public partial class MainWindow
 
         _tourTitle!.Text = step.Title;
         _tourBody!.Text = step.Body;
-        _tourCounter!.Text = $"{step.Section} · {_tourIndex + 1} / {TourSteps.Count}";
+        _tourCounter!.Text = $"{step.SectionName} · {_tourIndex + 1} / {TourSteps.Count}";
         if (_tourSkipSection is not null)
         {
             var next = NextSectionStart(_tourIndex);
-            _tourSkipSection.Content = next < 0 ? "Finish" : $"Skip to {TourSteps[next].Section}";
+            _tourSkipSection.Content = next < 0 ? Strings.Get("S.Tour.Finish") : Strings.Get("S.Tour.SkipTo", TourSteps[next].SectionName);
         }
         _tourBack!.IsEnabled = _tourIndex > 0;
-        _tourNext!.Content = _tourIndex == TourSteps.Count - 1 ? "Finish" : "Next";
+        _tourNext!.Content = _tourIndex == TourSteps.Count - 1 ? Strings.Get("S.Tour.Finish") : Strings.Get("S.Tour.Next");
 
         // Measure alone would hand back the previous step's size: new text
         // dirties only the TextBlock, and a parent whose own measure is

@@ -118,10 +118,10 @@ public static class Elevation
         if (enabled == StartsWithWindows(executablePath)) return false;
         if (!enabled) return CardSwitchTasks.Schtasks($"/delete /tn \"{StartupTask}\" /f") == 0;
         if (!IsInstalledCopy(executablePath))
-            throw new InvalidOperationException(
+            throw new InvalidOperationException(Words.Get("S.Core.Startup.NotInstalled",
                 "Start with Windows is for an installed copy. This one runs from a folder any program could " +
                 "write to, and starting it elevated at sign-in without a prompt would let such a program run as " +
-                "administrator. Install Nextcalibur with its installer to start it with Windows.");
+                "administrator. Install Nextcalibur with its installer to start it with Windows."));
         return Create(StartupTask, executablePath, $"--tray {ViaTaskArgument}", logon: true);
     }
 

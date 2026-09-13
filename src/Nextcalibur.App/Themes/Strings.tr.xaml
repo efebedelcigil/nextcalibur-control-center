@@ -55,7 +55,7 @@
     <!-- Çıkış -->
     <sys:String x:Key="S.Exit.Title">Nextcalibur'dan çıkılsın mı?</sys:String>
     <sys:String x:Key="S.Exit.Body">Bu, Nextcalibur'u tamamen kapatır: yeniden başlatılana kadar sıcaklık uyarısı da, şarj takılıp çıkarılınca mod değişimi de olmaz.</sys:String>
-    <sys:String x:Key="S.Exit.BodyFromClose">Bu, Nextcalibur'u tamamen kapatır: yeniden başlatılana kadar sıcaklık uyarısı da, şarj takılıp çıkarılınca mod değişimi de olmaz.&#10;&#10;Arka planda çalışmaya devam etmesi için bunun yerine tepsi düğmesini kullanın.</sys:String>
+    <sys:String x:Key="S.Exit.BodyFromClose" xml:space="preserve">Bu, Nextcalibur'u tamamen kapatır: yeniden başlatılana kadar sıcaklık uyarısı da, şarj takılıp çıkarılınca mod değişimi de olmaz.&#10;&#10;Arka planda çalışmaya devam etmesi için bunun yerine tepsi düğmesini kullanın.</sys:String>
     <sys:String x:Key="S.Exit.PendingGraphics">{0} grafik moduna geçiş yeniden başlatmayı bekliyor ve oturum kapanırken Nextcalibur tarafından uygulanır - Nextcalibur çalışmıyorsa uygulanmaz.</sys:String>
 
     <!-- Dil düğmesi -->
@@ -187,4 +187,391 @@
     <sys:String x:Key="S.Tour.Skip">Atla</sys:String>
     <sys:String x:Key="S.Tour.Back">Geri</sys:String>
     <sys:String x:Key="S.Tour.Next">İleri</sys:String>
+
+    <!-- Kodun yazdığı sözler: diyaloglar, şeritler, balonlar -->
+
+    <!-- Bir şeyler ters gitti (hata diyaloğu) -->
+    <sys:String x:Key="S.Fault.Title">Nextcalibur - bir şeyler ters gitti</sys:String>
+    <sys:String x:Key="S.Fault.Body">Bir hata günlüğe yazıldı; uygulama çalışmaya devam ediyor.</sys:String>
+
+    <!-- Kaldırmanın soruları -->
+    <sys:String x:Key="S.Uninstall.KeepTitle">Nextcalibur - kalsın mı, gitsin mi?</sys:String>
+    <sys:String x:Key="S.Uninstall.KeepBody" xml:space="preserve">Nextcalibur kendi dosyalarını, ayarlarını ve zamanlanmış görevlerini kaldırdı.&#10;&#10;Windows'a yaptığı iki şey kalabilir de gidebilir de:&#10;{0}&#10;&#10;Güç onarımı bir Windows kusurunu düzeltir ve Nextcalibur kurulu olsun olmasın işe yarar; planları kullanmaya devam edebilirsiniz.&#10;&#10;Bunlar da kaldırılsın mı?</sys:String>
+    <sys:String x:Key="S.Uninstall.DependencyTitle">Nextcalibur - {0}</sys:String>
+    <sys:String x:Key="S.Uninstall.DependencyBody" xml:space="preserve">Nextcalibur {0} bileşenini kendi kullanımı için kurdu: {1}.&#10;&#10;Başka programlar da kullanıyor olabilir. O da kaldırılsın mı? Emin değilseniz kalsın; tek başına hiçbir şey yapmaz.</sys:String>
+
+    <!-- İlk çalıştırmadaki güç onarımı -->
+    <sys:String x:Key="S.FirstRun.Repaired">Nextcalibur bir Windows güç yapılandırması kusuru buldu ve onardı:</sys:String>
+    <sys:String x:Key="S.FirstRun.Found">Nextcalibur bir Windows güç yapılandırması kusuru buldu.</sys:String>
+    <sys:String x:Key="S.FirstRun.Undo">İşlemciniz artık boşta düzgün yavaşlayabilir. Bunu istediğiniz zaman Güç Modu sayfasından geri alabilirsiniz.</sys:String>
+    <sys:String x:Key="S.FirstRun.RepairedTitle">Nextcalibur - güç kusuru onarıldı</sys:String>
+    <sys:String x:Key="S.FirstRun.PartlyTitle">Nextcalibur - güç kusuru kısmen onarıldı</sys:String>
+    <sys:String x:Key="S.FirstRun.Failed">Nextcalibur Windows güç katmanını kendiliğinden onaramadı:</sys:String>
+    <sys:String x:Key="S.FirstRun.Retry">Güç Modu sayfasından yeniden deneyebilirsiniz.</sys:String>
+
+    <!-- Ayarlar sayfası: araçların diyalogları -->
+    <sys:String x:Key="S.WinUtil.Title">WinUtil açılsın mı?</sys:String>
+    <sys:String x:Key="S.WinUtil.Body" xml:space="preserve">Bu, Chris Titus Tech'in WinUtil aracını yönetici PowerShell penceresinde açar: betik christitus.com'dan indirilir ve çalıştırılır. Nextcalibur'un parçası değildir ve burada hiçbir şey onu denetlemez; orada değiştirdikleriniz - hizmetler, uygulamalar, ayarlar - sizinle onun arasındadır.&#10;&#10;Devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.WinUtil.Failed">PowerShell başlatılamadı:</sys:String>
+    <sys:String x:Key="S.Link.Failed">Tarayıcı açılamadı:</sys:String>
+    <sys:String x:Key="S.Privacy.Title">Gizlilik</sys:String>
+    <sys:String x:Key="S.Privacy.Body" xml:space="preserve">Nextcalibur hakkınızda hiçbir şey toplamaz ve hiçbir yere hiçbir şey göndermez.&#10;&#10;Yaptığı tek istekler, kendi güncellemelerini ve PawnIO'nunkileri bulmak için GitHub'a gider - otomatik denetim kapalıyken hiç gitmez - ve herhangi bir indirmenin taşıdığından fazlasını taşımaz. Ayarlar ve günlük profilinizde kalır; siz bir bildirime eklemedikçe hiçbir şey yüklenmez. Hesap yok, telemetri yok, analitik yok.&#10;&#10;Her isteğin listesiyle tam metin tarayıcınızda açılsın mı?</sys:String>
+
+    <!-- Güncellemeler -->
+    <sys:String x:Key="S.Update.Title">Nextcalibur - güncellemeler</sys:String>
+    <sys:String x:Key="S.Update.ANewVersion">yeni bir sürüm</sys:String>
+    <sys:String x:Key="S.Update.PortableCurrent">Bu kopya kurulum sihirbazıyla kurulmadığından kendini güncelleyemez; bağımlı olduğu bileşenler güncel.</sys:String>
+    <sys:String x:Key="S.Update.Latest">En son sürüme sahipsiniz; bağımlı olduğu bileşenler de öyle.</sys:String>
+    <sys:String x:Key="S.Update.Unreachable">Denetlemek için GitHub'a ulaşılamadı:</sys:String>
+    <sys:String x:Key="S.Update.AutoTitle">Nextcalibur {0} sürümüne güncelleniyor</sys:String>
+    <sys:String x:Key="S.Update.AutoBody">Otomatik kuruluyor; uygulama yeniden başlayacak.</sys:String>
+    <sys:String x:Key="S.Update.AvailableTitle">Nextcalibur {0} hazır</sys:String>
+    <sys:String x:Key="S.Update.AvailableToast">İndirilip ona geçilsin mi?</sys:String>
+    <sys:String x:Key="S.Update.AvailableBalloon">Güncellemek için buraya tıklayın.</sys:String>
+    <sys:String x:Key="S.Update.Now">Şimdi güncelle</sys:String>
+    <sys:String x:Key="S.Update.PendingGraphics">{0} yönünde bir grafik modu değişikliği Windows'un yeniden başlatılmasını bekliyor. Güncelleme Windows'u değil Nextcalibur'u yeniden başlatır ve bekleyen değişiklik düşer: sonra yeniden seçin ya da önce Windows'u yeniden başlatın.</sys:String>
+    <sys:String x:Key="S.Update.OfferTitle">{0} sürümüne güncellensin mi?</sys:String>
+    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} GitHub'dan indirilmeye hazır. Kurulacak ve uygulama kendini yeniden başlatacak; ayarlarınız olduğu gibi kalır.&#10;&#10;Şimdi güncellensin mi?</sys:String>
+    <sys:String x:Key="S.Update.Progress">{0} sürümüne güncelleniyor</sys:String>
+    <sys:String x:Key="S.Update.InstallingRestarting">Kuruluyor ve yeniden başlatılıyor...</sys:String>
+    <sys:String x:Key="S.Update.NoRestart">Güncelleme indirildi ama uygulama ona geçemedi. Bitirmek için Nextcalibur'u kapatıp yeniden açın.</sys:String>
+    <sys:String x:Key="S.Update.Failed">Güncelleme kurulamadı:</sys:String>
+
+    <!-- İlerleme paneli -->
+    <sys:String x:Key="S.Progress.Downloading">İndiriliyor...</sys:String>
+    <sys:String x:Key="S.Progress.DownloadingPercent">İndiriliyor... %{0}</sys:String>
+    <sys:String x:Key="S.Progress.Installing">Kuruluyor...</sys:String>
+
+    <!-- Bağımlılıklar (PawnIO sürücüsü) -->
+    <sys:String x:Key="S.Dependency.Title">Nextcalibur - bağımlılıklar</sys:String>
+    <sys:String x:Key="S.Dependency.InstallAvailable">{0}: kurulabilir</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateAvailable">{0}: güncelleme var</sys:String>
+    <sys:String x:Key="S.Dependency.Install">Kur</sys:String>
+    <sys:String x:Key="S.Dependency.Update">Güncelle</sys:String>
+    <sys:String x:Key="S.Dependency.ClickToInstall">Kurmak için buraya tıklayın.</sys:String>
+    <sys:String x:Key="S.Dependency.ClickToUpdate">Güncellemek için buraya tıklayın.</sys:String>
+    <sys:String x:Key="S.Dependency.InstallTitle">{0} kurulsun mu?</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateTitle">{0} güncellensin mi?</sys:String>
+    <sys:String x:Key="S.Dependency.How">Kendi yayınlarından indirilir, imzası denetlenir ve sessizce kurulur.</sys:String>
+    <sys:String x:Key="S.Dependency.InstallNow">Şimdi kurulsun mu?</sys:String>
+    <sys:String x:Key="S.Dependency.UpdateNow">Şimdi güncellensin mi?</sys:String>
+    <sys:String x:Key="S.Dependency.Installing">{0} kuruluyor</sys:String>
+    <sys:String x:Key="S.Dependency.Updating">{0} güncelleniyor</sys:String>
+    <sys:String x:Key="S.Dependency.Failed">{0} kurulamadı:</sys:String>
+
+    <!-- Sistem sayfasındaki bildirim şeridi -->
+    <sys:String x:Key="S.Banner.ReadOnlyTitle">Bu dizüstünde yalnızca okuma</sys:String>
+    <sys:String x:Key="S.Banner.ReadOnlyBody">Donanım yazılımı arayüzü var ama bu uygulamanın geliştirildiği makine gibi yanıt vermedi; bu yüzden ona yazan hiçbir şey sunulmuyor:</sys:String>
+    <sys:String x:Key="S.Banner.UnsupportedTitle">Bu dizüstü desteklenmiyor</sys:String>
+    <sys:String x:Key="S.Banner.UnsupportedBody">Nextcalibur belirli bir donanım yazılımı arayüzü için geliştirildi ve bu makinede o yok. Hiçbir şey değiştirilmedi ve burada hiçbir şey çalışmayacak.</sys:String>
+    <sys:String x:Key="S.Banner.NoAccessTitle">Donanım yazılımı arayüzüne ulaşılamadı</sys:String>
+    <sys:String x:Key="S.Banner.NoAccessBody">Bu dizüstünde Nextcalibur'un okuduğu arayüz var ama Windows bu sürecin onu kullanmasına izin vermedi. Nextcalibur'u yönetici olarak yeniden açın.</sys:String>
+    <sys:String x:Key="S.Banner.NoSensorsBody">Nextcalibur bu makinede sensörleri ve aydınlatmayı bulamıyor; o sayfalar çalışmayacak. Güç ayarları çalışmaya devam eder.</sys:String>
+    <sys:String x:Key="S.Banner.NoDriverTitle">NVIDIA sürücüsü kurulu değil</sys:String>
+    <sys:String x:Key="S.Banner.NoDriverBody">Ekran kartı var ama sürücüsü yok; Ekran Modu sayfası ve kartın okumaları sürücü dönene kadar kullanılamaz. Üreticinin sürücü sayfası Ayarlar'da.</sys:String>
+    <sys:String x:Key="S.Banner.VendorOpenTitle">Casper'ın Control Center'ı açık</sys:String>
+    <sys:String x:Key="S.Banner.VendorOpenBody">İki uygulama da aynı donanımla konuşuyor; okumalar duraksayabilir ve aydınlatma değişiklikleri tutmayabilir. Onu kapatın, bu ileti kendiliğinden kalkar.</sys:String>
+
+    <!-- Desteklenmeyen makine, üreticinin yazılımı -->
+    <sys:String x:Key="S.Unsupported.Title">Nextcalibur - burada desteklenmiyor</sys:String>
+    <sys:String x:Key="S.Unsupported.Body" xml:space="preserve">Bu dizüstünde Nextcalibur'un geliştirildiği donanım yazılımı arayüzü yok.&#10;&#10;Makinenizde hiçbir şey değiştirilmedi ve öyle kalması için bu penceredeki hiçbir şey yanıt vermeyecek. Kurulu tutmanın bir anlamı yok.&#10;&#10;Kaldırabilmeniz için Windows'un yüklü uygulamalar listesi açılsın mı?</sys:String>
+    <sys:String x:Key="S.Vendor.Title">Nextcalibur - iki uygulama, tek arayüz</sys:String>
+    <sys:String x:Key="S.Vendor.Body" xml:space="preserve">Bu makinede {0} kurulu.&#10;&#10;O da Nextcalibur da dizüstünüzün donanım yazılımındaki aynı arayüzle konuşur ve arayüz bir seferde tek istek alabilir. İkisi birden kuruluyken okumalar duraksar ve aydınlatma değişiklikleri bazen uygulanmaz - iki uygulamada da.&#10;&#10;Kaldırılması önerilir. Nextcalibur bunu sizin yerinize yapmaz ve her iki durumda da çalışır.&#10;&#10;Windows'un yüklü uygulamalar listesi şimdi açılsın mı?&#10;&#10;Hayır derseniz kalır ve bu ileti bir daha gelmez.</sys:String>
+
+    <!-- Modlar -->
+    <sys:String x:Key="S.Mode.ChangeFailed">Mod değiştirilemedi</sys:String>
+    <sys:String x:Key="S.Power.NotInMode">{0} modunda kullanılamaz. Önce Sistem sayfasından modu değiştirin.</sys:String>
+
+    <!-- Grafik modu -->
+    <sys:String x:Key="S.Gpu.Title">Grafik modu</sys:String>
+    <sys:String x:Key="S.Gpu.RestartPending">{0} moduna geçmek için yeniden başlatın. O zamana kadar makine gösterildiği gibi çalışır.</sys:String>
+    <sys:String x:Key="S.Gpu.Settling">Değişikliğin oturması bekleniyor - modlar {0} saniye içinde açılır.</sys:String>
+    <sys:String x:Key="S.Gpu.SettlingOne">Değişikliğin oturması bekleniyor - modlar {0} saniye içinde açılır.</sys:String>
+    <sys:String x:Key="S.Gpu.NoMailbox">Donanım yazılımı arayüzü kullanılamıyor; mod buradan değiştirilemez.</sys:String>
+    <sys:String x:Key="S.Gpu.ReadOnly">Bu dizüstü Nextcalibur'un geliştirildiği protokolü konuştuğunu göstermedi; bu yüzden ona yazan hiçbir şey sunulmuyor. Yalnızca okuma.</sys:String>
+    <sys:String x:Key="S.Gpu.NotFromHere">Buradan olmaz</sys:String>
+    <sys:String x:Key="S.Gpu.ConfirmSwitch" xml:space="preserve">{0} moduna geçilsin mi?&#10;&#10;Bu, ekranınızı hangi çipin sürdüğünü değiştirir ve bir sonraki yeniden başlatmada etkili olur.&#10;&#10;Bunun iki sonucu olur ve Casper'ın kendi yazılımı ikisi için de uyarmaz:&#10;    - Windows PIN'iniz çalışmayı bırakır; yeniden ayarlamanız gerekir.&#10;    - BitLocker açıksa bir sonraki açılış 48 haneli kurtarma anahtarınızı isteyebilir. O olmadan disk açılmaz. Önce bulun - Microsoft hesabınızda aka.ms/myrecoverykey adresinde ya da kaydettiğiniz yerde.&#10;&#10;İkisi de değişikliğin, makine açılırken TPM'in ölçtüğü şeyi değiştirmesinden kaynaklanır.&#10;&#10;Devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.Gpu.RestartNow" xml:space="preserve">Şimdi yeniden başlatılsın mı? Windows önce kaydedilmemiş işi olan uygulamalara sorar; orada iptal ederseniz hiçbir şey değişmez.&#10;&#10;Hayır, değişikliği bir sonraki yeniden başlatmanıza kadar bekletir - Nextcalibur çalıştığı sürece.</sys:String>
+    <sys:String x:Key="S.Gpu.RestartRefused">Windows yeniden başlatmayı başlatmadı. Makineyi kendiniz yeniden başlatın; değişiklik oturum kapanırken uygulanır.</sys:String>
+
+    <!-- Okumalar ve aşırı ısınma uyarısı -->
+    <sys:String x:Key="S.Readings.Asleep">uykuda</sys:String>
+    <sys:String x:Key="S.Heat.Cpu">CPU {0} °C</sys:String>
+    <sys:String x:Key="S.Heat.Gpu">GPU {0} °C</sys:String>
+    <sys:String x:Key="S.Heat.Body">Bu kadar yüksek sıcaklıkların sürmesi genellikle soğutucunun temizlenmesi gerektiği anlamına gelir.</sys:String>
+
+    <!-- Güç katmanı denetimi ve onarımı -->
+    <sys:String x:Key="S.Overlay.Fine">Seçtiğiniz mod yönetimde; Nextcalibur en hızlı modun dizüstü boştayken işlemciyi artık tam hızda tutamamasını sağladı.</sys:String>
+    <sys:String x:Key="S.Overlay.Stuck">Windows En iyi performans'a ayarlı ve dizüstü hiçbir şey yapmazken bile işlemcinizi tam hızda tutuyor. Mod değiştirmenin etkisiz görünmesinin nedeni bu.</sys:String>
+    <sys:String x:Key="S.Overlay.GuardMissing">Başka bir uygulamanın o moda geçip işlemciyi yeniden tam hızda tutmasını engelleyen bir şey yok.</sys:String>
+    <sys:String x:Key="S.Overlay.NothingToDo">Değiştirilmesi gereken bir şey yoktu.</sys:String>
+    <sys:String x:Key="S.Overlay.Fixed">Onarıldı</sys:String>
+    <sys:String x:Key="S.Overlay.PartlyFixed">Kısmen onarıldı</sys:String>
+    <sys:String x:Key="S.Overlay.FixFailed">Onarılamadı</sys:String>
+
+    <!-- Aydınlatma -->
+    <sys:String x:Key="S.Lighting.Title">Aydınlatma</sys:String>
+    <sys:String x:Key="S.Lighting.NoResponse">Klavye aydınlatması yanıt vermedi. Casper'ın Control Center'ı açıksa kapatıp yeniden deneyin.</sys:String>
+
+    <!-- Kütüphanenin söyledikleri (Nextcalibur.Core.Words) -->
+
+    <!-- Kütüphaneden: Windows ile başlatma -->
+    <sys:String x:Key="S.Core.Startup.NotInstalled">Windows ile başlat kurulu kopya içindir. Bu kopya herhangi bir programın yazabileceği bir klasörden çalışıyor; oturum açılınca sormadan yönetici olarak başlatmak böyle bir programın yönetici olarak çalışmasına yol açardı. Windows ile başlatmak için Nextcalibur'u kurulum sihirbazıyla kurun.</sys:String>
+
+    <!-- Kütüphaneden: kaldırmanın bulduğu izler -->
+    <sys:String x:Key="S.Core.Trace.Settings">Ayarlarınız</sys:String>
+    <sys:String x:Key="S.Core.Trace.StartupTask">Windows ile başlatma görevi</sys:String>
+    <sys:String x:Key="S.Core.Trace.OpenTask">Nextcalibur'u sormadan başlatan görev</sys:String>
+    <sys:String x:Key="S.Core.Trace.Permission">Sensörleri okuma izni</sys:String>
+    <sys:String x:Key="S.Core.Trace.CardTasks">Ekran kartını sormadan açıp kapatan görevler</sys:String>
+    <sys:String x:Key="S.Core.Trace.FolderGuard">Kurulum klasörünün hesaba karşı koruması</sys:String>
+    <sys:String x:Key="S.Core.Trace.PowerPlans">Oluşturduğu güç planları</sys:String>
+    <sys:String x:Key="S.Core.Trace.Repair">Windows güç modu onarımı</sys:String>
+
+    <!-- Kütüphaneden: PawnIO sürücüsü -->
+    <sys:String x:Key="S.Core.PawnIo.Name">PawnIO sürücüsü</sys:String>
+    <sys:String x:Key="S.Core.PawnIo.Purpose">işlemcinin güç tüketimini okur</sys:String>
+    <sys:String x:Key="S.Core.Dependency.NotInstalled">{0} {1} kurulu değil; {2}.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Available">{0} {1} hazır (sizdeki {2}); {3}.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Unsigned">İndirilen {0} {1} tarafından imzalanmamış; kurulmadı.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.Installed">{0} {1} kuruldu.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.InstallerFailed">{0} kurulumu başarıyla bitmedi.</sys:String>
+    <sys:String x:Key="S.Core.Dependency.FetchFailed">{0} indirilemedi: {1}</sys:String>
+
+    <!-- Kütüphaneden: donanım yazılımı posta kutusu -->
+    <sys:String x:Key="S.Core.Mailbox.NoConnection">{0} bağlantısı kurulamadı. Bu makine arayüzü sunmuyor olabilir.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.AccessDenied">Posta kutusuna yazma erişimi reddedildi. Yönetici olarak çalıştırmayı deneyin.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.NotAllowed">Bu hesap donanım yazılımı arayüzünü yönetici olmadan kullanamaz. Yönetici olarak çalıştırın.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.Busy">Posta kutusunu başka bir uygulama kullanıyor olabilir - üreticinin Control Center'ını kapatıp yeniden deneyin.</sys:String>
+    <sys:String x:Key="S.Core.Mailbox.NoResponse">{0} denemeden sonra geçerli yanıt gelmedi.</sys:String>
+
+    <!-- Kütüphaneden: destek kararının gerekçeleri -->
+    <sys:String x:Key="S.Core.Support.NoMailbox">Donanım yazılımı posta kutusu yok (RW_GMWMI) - bu dizüstü arayüzü sunmuyor.</sys:String>
+    <sys:String x:Key="S.Core.Support.NoAccess">Posta kutusu var ama bu hesap henüz okuyamıyor.</sys:String>
+    <sys:String x:Key="S.Core.Support.MailboxPresent">Donanım yazılımı posta kutusu var.</sys:String>
+    <sys:String x:Key="S.Core.Support.NoThermal">Posta kutusu sıcaklık okumasına yanıt vermedi.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegisterOdd">Ekran modu register'ı 1 ya da 2 okunmadı.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegister">Ekran modu register'ı {0} okunuyor.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegisterOdd">Isıl profil register'ı 0, 1 ya da 2 okunmadı.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegister">Isıl profil register'ı {0} okunuyor.</sys:String>
+    <sys:String x:Key="S.Core.Support.MailboxFailed">Posta kutusu kullanılamadı: {0}</sys:String>
+    <sys:String x:Key="S.Core.Support.CpuTempOdd">CPU sıcaklığı {0} °C bir dizüstünün bildireceği bir sayı değil.</sys:String>
+    <sys:String x:Key="S.Core.Support.GpuTempOdd">GPU sıcaklığı {0} °C bir dizüstünün bildireceği bir sayı değil.</sys:String>
+    <sys:String x:Key="S.Core.Support.FansOdd">Fan hızları {0} / {1} rpm bir dizüstü fanının yapabileceğinin dışında.</sys:String>
+    <sys:String x:Key="S.Core.Support.AllZero">Her okuma sıfır; bu protokolü konuşmayan bir posta kutusu genellikle böyle der.</sys:String>
+    <sys:String x:Key="S.Core.Support.Plausible">Sıcaklık okuması makul: CPU {0} °C, GPU {1} °C.</sys:String>
+
+    <!-- Kütüphaneden: sistem modları ve planları -->
+    <sys:String x:Key="S.Core.Plan.Unnamed">adsız bir plan</sys:String>
+    <sys:String x:Key="S.Core.Plan.Current">{0} planı, {1}</sys:String>
+    <sys:String x:Key="S.Core.Plan.Missing">Bu makinede {0} moduna uyan güç planı yok ve oluşturulamadı.</sys:String>
+    <sys:String x:Key="S.Core.Plan.Refused">Windows plan değişikliğini reddetti (hata {0}).</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeTitle">Performance modu bu makinede henüz güvenli değil.</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeWhy">Windows'u En iyi performans güç moduna alır; bu mod bu makinede hiçbir şey çalışmazken bile işlemciyi tam hıza sabitler - Nextcalibur'un onarmak için var olduğu kusur budur.</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeWhat">Önce Güç Modu sayfasından onarımı çalıştırın. Bir kez yönetici hakkı ister; sonrasında bu mod güvenle kullanılabilir.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Office">Sessiz ve serin. İşlemci boştayken düşük hızlara iner.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Gaming">Oyunlar için dengeli. İşlemci yük altında tepkisel kalır.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Performance">En yüksek hız. Daha çok ısı ve daha gürültülü fan bekleyin.</sys:String>
+
+    <!-- Kütüphaneden: Windows güç modları ve onarım -->
+    <sys:String x:Key="S.Core.Overlay.Balanced">Dengeli</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Efficiency">En iyi güç verimliliği</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Better">Daha iyi performans</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Best">En iyi performans</sys:String>
+    <sys:String x:Key="S.Core.Overlay.Unknown">Tanınmayan</sys:String>
+    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">En uzun pil ömrü ve en sessiz fanlar. İşlemci geride tutulur; ağır işler daha uzun sürer.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows karar verir. Gerektiğinde hızlanır, gerekmediğinde yavaşlar. Çoğu zaman için doğru seçim.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BetterDesc">Hıza yaslanır. Dengeli'den biraz daha sıcak ve gürültülü; yük altında daha çabuk tepki verir.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BestDesc">Makinenin elindeki her şey. Belirgin biçimde daha çok ısı, daha gürültülü fan ve daha kısa pil ömrü bekleyin.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Cleared">Takılı kalan En iyi performans katmanı temizlendi (güç modu artık Dengeli).</sys:String>
+    <sys:String x:Key="S.Core.Repair.KeyClosed">Katman ayarı anahtarı yazmak için açılamadı.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Guarded">En iyi performans katmanının en düşük işlemci durumu %{0} yapıldı; yeniden etkinleşse bile CPU'yu artık sabitleyemez.</sys:String>
+    <sys:String x:Key="S.Core.Repair.Blocked">Onarımın kalıcı bölümü yönetici hakkı ister; bu yüzden uygulanmadı. Bir şey En iyi performans güç modunu yeniden etkinleştirirse Windows işlemciyi yine sabitleyebilir. Nextcalibur'u bir kez yönetici olarak çalıştırmak kalıcı kılmaya yeter.</sys:String>
+
+    <!-- Kütüphaneden: grafik modları -->
+    <sys:String x:Key="S.Core.Gpu.CardOff">Ekran kartı kapalı (UMA). Önce geri açın - Windows'un başlatmayacağı bir karta ekranı vermek bir sonraki açılışı karanlıkta bırakır.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.CardDrivesScreen">Ekranınızı şu an ekran kartı sürüyor. Önce Hybrid'e geçin, yeniden başlatın; sonra kapatılabilir.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NoCard">Ayrık ekran kartı bulunamadı.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.AlreadyIn">Zaten {0} modunda.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NotSwitchedOff">Windows kartı kapatmadı.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SwitchedOff">Ekran kartı kapatıldı. Yeniden başlatma gerekmez.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.NotSwitchedOn">Windows kartı geri açmadı.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SwitchedOn">Ekran kartı yeniden açıldı. Yeniden başlatma gerekmez.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridFirst">Önce Hybrid'e geçin. Ekran karta verilmeden önce kartın açık olması gerekir.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.AtRestart">Ekran bir sonraki yeniden başlatmada {0} moduna verilecek. Yeniden başlatma başlayana kadar hiçbir şey değişmez.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.TheCard">ekran kartı</sys:String>
+    <sys:String x:Key="S.Core.Gpu.DiscreteDesc">Ekranınızı doğrudan {0} sürüyor. Oyunlarda en iyi performansı verir ama kart hiç uyumaz; dizüstü daha sıcak çalışır ve pil daha hızlı biter.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.DiscreteWarning">Bunu aşağıdan değiştirebilirsiniz. Önce BitLocker kurtarma anahtarınızı bulun: ekranı hangi çipin sürdüğünü değiştirmek TPM'in açılışta ölçtüğü şeyi değiştirir ve bir sonraki açılış o anahtarı isteyebilir - o olmadan disk açılmaz. Windows PIN'inizi de yeniden ayarlamanız gerekir. Casper'ın kendi Control Center'ı aynı değişikliği ikisini de söylemeden yapar.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridDesc">Ekranınızı tümleşik grafik sürüyor; ekran kartı yalnızca bir uygulama ihtiyaç duyduğunda uyanıyor. Pil ömrü ve serin çalışma için en iyi ayar.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.UmaDesc">Yalnızca tümleşik grafik kullanımda. En serin ve en sessiz ayar; ama oyunlar belirgin biçimde yavaş çalışır.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.Unknown">Nextcalibur grafiklerinizin şu an nasıl ayarlı olduğunu çözemedi.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.Drawing">{0:N1} W çekiyor</sys:String>
+    <sys:String x:Key="S.Core.Gpu.WithFan">ve fanı {0} rpm'de</sys:String>
+    <sys:String x:Key="S.Core.Gpu.SittingAt">{0} °C'de duruyor</sys:String>
+    <sys:String x:Key="S.Core.Gpu.IdleCost">Şu an {0}. Bu modda kart masaüstünü de çizdiğinden düşük güç durumlarına hiç inmez - bu, karta ihtiyaç olsun olmasın harcanan pil ve fanların atması gereken ısı demektir.</sys:String>
+
+    <!-- Tur: kartın sözleri, adım adım -->
+    <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>
+    <sys:String x:Key="S.Tour.SkipTo">{0} bölümüne atla</sys:String>
+    <sys:String x:Key="S.Tour.Section.Window">Pencere</sys:String>
+    <sys:String x:Key="S.Tour.Section.Rail">Sol şerit</sys:String>
+    <sys:String x:Key="S.Tour.Section.System">Sistem</sys:String>
+    <sys:String x:Key="S.Tour.Section.Power">Güç Modu</sys:String>
+    <sys:String x:Key="S.Tour.Section.Display">Ekran Modu</sys:String>
+    <sys:String x:Key="S.Tour.Section.Lighting">Aydınlatma</sys:String>
+    <sys:String x:Key="S.Tour.Section.Settings">Ayarlar</sys:String>
+    <sys:String x:Key="S.Tour.Section.Readings">Okumalar</sys:String>
+    <sys:String x:Key="S.Tour.Section.Tray">Tepsi</sys:String>
+
+    <!-- Pencere -->
+    <sys:String x:Key="S.Tour.Step.TourButton.Title">Nextcalibur'a hoş geldiniz</sys:String>
+    <sys:String x:Key="S.Tour.Step.TourButton.Body">Bu, tur. Her sayfayı ve her denetimi teker teker gezer, tepsi simgesinde biter. Tur sürerken hiçbir şey değiştirilmez; yalnızca gösterir. İleri ve Geri ile ilerleyin; istediğiniz an Escape'e veya Atla'ya basıp çıkın. Bu düğme turu dilediğinizde yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TitleBar.Title">Başlık çubuğu</sys:String>
+    <sys:String x:Key="S.Tour.Step.TitleBar.Body">Pencereyi taşımak için herhangi bir yerinden sürükleyin. Pencerenin tek bir sabit boyutu vardır; yeniden boyutlandırılacak bir şey yoktur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ThemeSwitch.Title">Koyu, açık veya Windows'un seçimi</sys:String>
+    <sys:String x:Key="S.Tour.Step.ThemeSwitch.Body">Üç görünüm: koyu, açık veya Windows ne seçtiyse o. Seçim hatırlanır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.MinimiseButton.Title">Simge durumuna küçült</sys:String>
+    <sys:String x:Key="S.Tour.Step.MinimiseButton.Body">Pencereyi görev çubuğuna gönderir. Nextcalibur olduğu gibi çalışmaya devam eder; geri getirmek için görev çubuğundaki düğmeye tıklayın.</sys:String>
+    <sys:String x:Key="S.Tour.Step.HideToTrayButton.Title">Tepsiye gizle</sys:String>
+    <sys:String x:Key="S.Tour.Step.HideToTrayButton.Body">Pencereyi görev çubuğundan tamamen kaldırır. Uygulama saatin yanındaki bildirim alanında kalır, sensörleri okumayı ve modunuzu korumayı sürdürür; yeniden açmak için tepsi simgesine çift tıklayın.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CloseButton.Title">Kapat</sys:String>
+    <sys:String x:Key="S.Tour.Step.CloseButton.Body">Çıkmak isteyip istemediğinizi sorar. Çıkmak Nextcalibur'u tamamen durdurur: yeniden başlatılana kadar okuma, aşırı ısınma uyarısı ve şarj takılıp çıkarılınca mod değişimi olmaz. Yalnızca gözünüzün önünden kalksın istiyorsanız tepsiye gizleyin.</sys:String>
+
+    <!-- Sol şerit -->
+    <sys:String x:Key="S.Tour.Step.NavSystem.Title">Sistem</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSystem.Body">İlk sayfa: sistem modu, fanlar ve iki çip. Uygulamanın açıldığı sayfadır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavPower.Title">Güç Modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavPower.Body">Windows'un kendi güç modları, kart olarak; ve Windows'un seçtiğiniz moda uyup uymadığını sınayan bir denetim.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavDisplay.Title">Ekran Modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavDisplay.Body">Ekranı hangi ekran kartının sürdüğü: yalnızca NVIDIA kartı, ikisi birlikte veya işlemcinin kendi grafiği.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavLighting.Title">Aydınlatma</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavLighting.Body">Klavye arka ışığı: bölge başına renk, efektler, parlaklık ve kayıtlı profiller.</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSettings.Title">Ayarlar</sys:String>
+    <sys:String x:Key="S.Tour.Step.NavSettings.Body">Her tercih tek yerde; tepsi menüsündekilerle aynı ve onlarla eşzamanlı.</sys:String>
+    <sys:String x:Key="S.Tour.Step.UpdateNowButton.Title">Güncellemeler</sys:String>
+    <sys:String x:Key="S.Tour.Step.UpdateNowButton.Body">Daha yeni bir sürüm bulunana kadar "Güncel" yazar; izin verirseniz denetim arka planda sessizce yapılır. Yeni sürüm bulunduğunda düğme adını yazar; basınca güncelleme indirilir, doğrulanır, uygulanır ve uygulama yeni sürüm olarak yeniden açılır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OpenLogButton.Title">Günlüğü aç</sys:String>
+    <sys:String x:Key="S.Tour.Step.OpenLogButton.Body">Nextcalibur'un kendi günlüğünün bulunduğu klasörü açar: günde bir dosya, yedi gün saklanır, yalnızca olaylar - başlangıçlar, mod değişiklikleri, grafik geçişleri, güncellemeler, ters giden ne varsa. Sorun bildirirken bir tanesini ekleyin.</sys:String>
+    <sys:String x:Key="S.Tour.Step.VersionText.Title">Sürüm</sys:String>
+    <sys:String x:Key="S.Tour.Step.VersionText.Body">Çalıştırdığınız sürüm. Her bildirimde belirtin.</sys:String>
+
+    <!-- Sistem -->
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Office modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">Sessiz ve serin: güç planı, Windows'un güç modu ve donanım yazılımının kendi profili hafif iş için ayarlanır. İzin verirseniz (bir tepsi ayarı) şarj çıkarıldığında Nextcalibur kendiliğinden Office'e geçer, takıldığında modunuza döner.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">Günlük hızlı mod. Donanım yazılımı Gaming profilini çalıştırır, Windows Dengeli veya Daha iyi performans modunu alır, işlemcinin yüklenmeler arasında yavaşlamasına izin verilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Her şey açık: donanım yazılımının Performance profili ve Windows'un en hızlı modları. Daha gürültülü ve daha sıcak; fanlara değdiği zamanlar için.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SystemModeNote.Title">Modun anlamı</sys:String>
+    <sys:String x:Key="S.Tour.Step.SystemModeNote.Body">Kartların altındaki satır seçili modun şu an ne yaptığını açıklar. Windows kartlardan hiçbirine uymayan bir moda alınmışsa tahmin etmek yerine bunu burada söyler.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SubtitleText.Title">Durum satırı</sys:String>
+    <sys:String x:Key="S.Tour.Step.SubtitleText.Body">Etkin mod, dizüstünün şarjda mı pilde mi olduğu ve son sensör okumasının saati. Bir okuma başarısız olursa uydurma bir değer yerine "--" gösterilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.Banner.Title">Bildirim şeridi</sys:String>
+    <sys:String x:Key="S.Tour.Step.Banner.Body">Yalnızca söylenecek bir şey olduğunda görünür: dizüstü desteklenmiyor, donanım yazılımı tuhaf yanıt verdi veya üreticinin yazılımı yan yana kurulu. Aksi hâlde ortada durmaz.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuFanGauge.Title">İşlemcinin fanı</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuFanGauge.Body">Dakikadaki devir olarak fan hızı, donanım yazılımından okunur. Nextcalibur fan eğrisi ayarlamaz; modun seçtiği donanım yazılımı profili karar verir, tam olarak özgün yazılımın yaptığı gibi.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuName.Title">İşlemci</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuName.Body">Makineden okunur, asla varsayılmaz.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuFanGauge.Title">Ekran kartının fanı</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuFanGauge.Body">İkinci fan, aynı kaynak. Kart uykudayken veya kapalıyken fan yalnızca durur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuName.Title">Ekran kartı</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuName.Body">O da makineden okunur. UMA modunda kart devre dışıdır ama burası yine adını yazar.</sys:String>
+
+    <!-- Güç Modu -->
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Title">En iyi güç verimliliği</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows'un pil tasarrufu modu. Yalnızca sistem modu Office iken sunulur; modunuzun aralığı dışındaki kartlar soluklaşır, böylece hızlı bir mod yavaş bir profille (ya da tersi) eşleşemez.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Title">Dengeli</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows'un varsayılanı. Office ve Gaming'de kullanılabilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Title">Daha iyi performans</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Gaming ve Performance'ta kullanılabilir. Bir sistem modu seçmek burada her zaman o modun kendi varsayılanını seçer; bu kartlar bir adım öteye ya da beriye yaslanmanızı sağlar.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBest.Title">En iyi performans</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBest.Body">Windows'un en hızlı modu, yalnızca Performance için. Nextcalibur bunun üstünde bir koruma tutar: dizüstü boştayken bu mod işlemciyi artık tam hızda tutamaz - özgün yazılımın geride bıraktığı kusur buydu.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayState.Title">Windows moda uyuyor mu?</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayState.Body">Windows'un güç katmanının seçtiğiniz modla karşılaştırılması. Yeşil, her şey yolunda demektir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayDetail.Title">Ne buldu</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverlayDetail.Body">Açıklama, sade sözcüklerle: Windows ne yapıyor ve neden önemli.</sys:String>
+    <sys:String x:Key="S.Tour.Step.FixButton.Title">Onar</sys:String>
+    <sys:String x:Key="S.Tour.Step.FixButton.Body">Yalnızca denetim bir sorun bulduğunda görünür. Basınca güç ayarları düzeltilir; başka hiçbir şeye dokunulmaz.</sys:String>
+
+    <!-- Ekran Modu -->
+    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Title">Discrete</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Body">Ekranı yalnızca NVIDIA kartı sürer: en çok performans, en çok güç. Grafik modunu değiştirmek yeniden başlatma ister ve geçiş donanım yazılımına ancak Windows gerçekten yeniden başlarken yazılır - yeniden başlatmayı iptal ederseniz hiçbir şey değişmemiştir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeHybrid.Title">Hybrid</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeHybrid.Body">İkisi birden: ekranı işlemcinin grafiği sürer, NVIDIA kartı oyunlar ve ağır işler için uyanır, aralarda uyur. Olağan seçim.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeUma.Title">UMA</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeUma.Body">Yalnızca işlemcinin grafiği; en uzun pil ömrü için NVIDIA kartı tamamen kapatılır. Diğer ikisinden farklı olarak hemen etkili olur, yeniden başlatma gerekmez.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Title">Bir değişiklik bekliyor</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Body">Discrete veya Hybrid seçildikten sonra bu satır yeniden başlatmaya kadar kalır. Yeniden başlatmadan Nextcalibur'dan çıkmak bekleyen değişikliği düşürür.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuModeDetail.Title">Kart ne yapıyor</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuModeDetail.Body">Kart uyanıkken saat hızı ve güç tüketimi; Windows kapattığında "uykuda". Nextcalibur uyku durumunu Windows'un kendi kayıtlarından okur, böylece bakmak kartı asla uyandırmaz.</sys:String>
+
+    <!-- Aydınlatma -->
+    <sys:String x:Key="S.Tour.Step.LedPower.Title">Aydınlatma açık veya kapalı</sys:String>
+    <sys:String x:Key="S.Tour.Step.LedPower.Body">Klavye arka ışığını tamamen kapatır ya da her şey olduğu gibi geri açar. Klavyedeki Fn+Space parlaklığı kademeli değiştirmeye devam eder ve sayfa bunu izler.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TabZoneA.Title">Bölgeler</sys:String>
+    <sys:String x:Key="S.Tour.Step.TabZoneA.Body">Klavye soldan sağa üç bölgede ışır. O bölgeyi renklendirmek için sekmesini seçin; üstündeki çizim ayarlananı gösterir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SelectAll.Title">Tüm bölgeler birden</sys:String>
+    <sys:String x:Key="S.Tour.Step.SelectAll.Body">İşaretleyin; seçtiğiniz renk ve efekt üç bölgeye birlikte gider.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Title">Profiller</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Dört kayıtlı aydınlatma kümesi: Office, Gaming, Performance ve kendinize ait bir tane. Bir profil seçmek onu uygular; sonra değiştirdiğiniz her şey ona kaydedilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.EffectPanel.Title">Efektler</sys:String>
+    <sys:String x:Key="S.Tour.Step.EffectPanel.Body">Sabit, nefes, yanıp sönme, kalp atışı, renk döngüsü ve dalga. Son ikisi kendi renklerini üretir; onlar seçiliyken tekerlek soluklaşır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.Wheel.Title">Renk tekerleği</sys:String>
+    <sys:String x:Key="S.Tour.Step.Wheel.Body">Seçili bölge için bir renk seçmek üzere tıklayın veya sürükleyin. Değişiklik bıraktığınız an klavyeye gönderilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.BrightnessSlider.Title">Parlaklık</sys:String>
+    <sys:String x:Key="S.Tour.Step.BrightnessSlider.Body">Seçilen renkleri kısar. Fn+Space donanımın kendi üç kademesini adımlar; ikisi de burada tek bir yüzde olarak gösterilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ReloadButton.Title">Yeniden yükle</sys:String>
+    <sys:String x:Key="S.Tour.Step.ReloadButton.Body">Kayıtlı aydınlatmayı klavyeye yeniden gönderir; başka bir şey sıfırladıysa işe yarar.</sys:String>
+
+    <!-- Ayarlar -->
+    <sys:String x:Key="S.Tour.Step.SettingWinUtilButton.Title">WinUtil</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingWinUtilButton.Body">Chris Titus Tech'in WinUtil aracını - bir Windows sadeleştirme ve ince ayar aracı - yazarının sitesinden indirip yönetici PowerShell'de açar. Nextcalibur'un parçası değildir; açılmadan önce size sorulur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDriversButton.Title">Sürücüler</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDriversButton.Body">Dizüstü üreticisinin kendi sürücü indirme sayfasını tarayıcınızda açar; Nextcalibur'un dağıtmadığı donanım yazılımı, yonga seti ve klavye sürücülerinin yeri.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingReportButton.Title">Sorun bildir</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingReportButton.Body">Projenin GitHub'daki issues sayfasını açar. Günün günlüğünü ekleyin (sol altta Günlüğü aç) ve hangi sürümü çalıştırdığınızı yazın; sürüm düğmelerin altındadır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Title">Gizlilik</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Body">Uygulamanın verilerle ne yaptığı, kendi sözcükleriyle: hiçbir şey toplanmaz, hakkınızda hiçbir şey gönderilmez; tek istekler güncellemeler için GitHub'a gider, otomatik denetim kapalıyken hiç gitmez. Tam metin bir tık ötededir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Title">Windows ile başlat</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Nextcalibur'u oturum açılınca yönetici olarak, sormadan başlatır - zamanlanmış bir görevle; yönetici bir programın Windows ile başlamasının tek yolu budur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Pilde Office modu</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">Şarj çıkarıldığında Office'e düş; takıldığında önceki moda dön. Varsayılan olarak açık, özgün yazılımın yaptığı gibi.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Aşırı ısınma uyarısı</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">Okumalar panelindeki anahtarın aynısı: çiplerden biri eşiğini aştığında tepsiden bir uyarı. Eşiklerin kendisi sıcaklıkların yanındadır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">Sensörler ne sıklıkla okunsun</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">Saniyede bir, iki, beş veya on saniyede bir okuma. Her okuma bir donanım yazılımı çağrısıdır; iki saniye varsayılandır ve bir çekirdeğin yüzde onda birine mal olur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Title">Güncellemeleri otomatik denetle</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Body">Başlangıçtan bir dakika sonra ve her altı saatte bir GitHub'a küçük bir istek. Bulunan sürüm önerilir, kendiliğinden kurulmaz - bir sonraki anahtar açık değilse.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Title">Güncellemeleri otomatik kur</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Body">Bir adım daha ileri gider: bulunan sürüm sormadan indirilir, doğrulanır, kurulur ve uygulama yeni sürümle yeniden başlar. Varsayılan olarak kapalı. Yeniden başlatma bekleyen bir grafik değişikliği varsa bekler; o yeniden başlatmanın zamanı sizindir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Dil</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Şimdi denetle</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Body">GitHub'a hemen sorar ve yanıtı her durumda söyler.</sys:String>
+
+    <!-- Okumalar -->
+    <sys:String x:Key="S.Tour.Step.CpuClock.Title">İşlemci, canlı</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuClock.Body">Gigahertz olarak saat hızı ve PawnIO sürücüsü kurulu Intel makinelerde watt olarak paket gücü. Birkaç saniyede bir okunur; aralık bir tepsi ayarıdır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuTemp.Title">İşlemci sıcaklığı</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuTemp.Body">Donanım yazılımının kendi sensöründen - fanların uyduğu sensörün aynısı.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuClock.Title">Ekran kartı, canlı</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuClock.Body">Kart uyanıkken saat ve watt; değilken "uykuda". Nextcalibur sormak için kartı asla uyandırmaz.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuTemp.Title">Ekran kartı sıcaklığı</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuTemp.Body">Donanım yazılımından; bu yüzden kartın kendi sürücüsü yokken bile vardır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatWarningToggle.Title">Aşırı ısınma uyarısı</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatWarningToggle.Body">Açıkken çiplerden biri eşiğini aşarsa tepsiden bir uyarı görünür. Yalnızca uyarıdır; Nextcalibur hiçbir şeyi kısmaz.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuWarnSlider.Title">İşlemci eşiği</sys:String>
+    <sys:String x:Key="S.Tour.Step.CpuWarnSlider.Body">Kaydırıcıyı sürükleyin veya kutuya tam sayı yazın. Aralık dışı değerler sınırlanmaz, reddedilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuWarnSlider.Title">Ekran kartı eşiği</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuWarnSlider.Body">Kart için aynısı. Varsayılanlar bu sınıf dizüstüler için güvenli değerlerdir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatResetButton.Title">Sıfırla</sys:String>
+    <sys:String x:Key="S.Tour.Step.OverheatResetButton.Body">İki eşiği de varsayılanlarına döndürür.</sys:String>
+    <sys:String x:Key="S.Tour.Step.RamGauge.Title">Bellek</sys:String>
+    <sys:String x:Key="S.Tour.Step.RamGauge.Body">Takılı belleğin ne kadarının kullanımda olduğu, Windows'tan saniyede bir okunur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.DriveList.Title">Diskler</sys:String>
+    <sys:String x:Key="S.Tour.Step.DriveList.Body">Makinedeki her sabit disk, her biri kendi göstergesiyle. Dakikada bir okunur; bir diskin kullanımı bundan hızlı değişmez.</sys:String>
+
+    <!-- Tepsi -->
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Title">Tepsi simgesi</sys:String>
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur saatin yanındaki bildirim alanında yaşar; menüsü az önce orada açıldı. Nextcalibur'u aç pencereyi geri getirir. Windows ile başlat oturum açılınca yönetici olarak, sormadan başlatır. Pilde Office modu şarj çıkarıldığındaki otomatik geçiştir. CPU veya GPU ısınınca uyar aşırı ısınma uyarısıdır. Sensörleri okuma sıklığı sayıların ne sıklıkla yenileneceğini belirler. Güncellemeleri otomatik denetle, Güncellemeleri otomatik kur ve Güncellemeleri şimdi denetle adları ne diyorsa odur; Ayarlar sayfasında aynı anahtarlar vardır. Günlük klasörünü aç, Günlüğü aç düğmesiyle aynıdır. Çıkış uygulamayı durdurur - durmasının tek yolu budur. Hepsi bu kadar. Makinenin tadını çıkarın.</sys:String>
 </ResourceDictionary>

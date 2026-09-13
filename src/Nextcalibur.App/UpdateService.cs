@@ -120,21 +120,21 @@ public sealed class UpdateService : IDisposable
         {
             // Not an installed copy: only the dependencies can be checked.
             if (!await CheckDependenciesAsync())
-                CheckedByHand?.Invoke(this, "This copy was not installed by Setup, so it cannot update itself; the things it depends on are current.");
+                CheckedByHand?.Invoke(this, Strings.Get("S.Update.PortableCurrent"));
             return;
         }
 
         if (Available is not null)
         {
             // Already found; the caller offers it again.
-            UpdateFound?.Invoke(this, AvailableVersion ?? "a new version");
+            UpdateFound?.Invoke(this, AvailableVersion ?? Strings.Get("S.Update.ANewVersion"));
             return;
         }
 
         var app = await CheckAsync(report: true);
         var dependencies = await CheckDependenciesAsync();
         if (!app && !dependencies)
-            CheckedByHand?.Invoke(this, "You have the latest version, and so do the things it depends on.");
+            CheckedByHand?.Invoke(this, Strings.Get("S.Update.Latest"));
     }
 
     private async Task<bool> CheckAsync(bool report)
@@ -149,14 +149,14 @@ public sealed class UpdateService : IDisposable
 
             var announce = Available is null;
             Available = available;
-            if (announce) UpdateFound?.Invoke(this, AvailableVersion ?? "a new version");
+            if (announce) UpdateFound?.Invoke(this, AvailableVersion ?? Strings.Get("S.Update.ANewVersion"));
             return true;
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
             // No network, GitHub unreachable, a rate limit. Said only when
             // somebody asked; a timer's failure is the next check's business.
-            if (report) CheckedByHand?.Invoke(this, "Could not reach GitHub to check: " + ex.Message);
+            if (report) CheckedByHand?.Invoke(this, Strings.Get("S.Update.Unreachable") + " " + ex.Message);
             return false;
         }
         finally

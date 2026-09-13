@@ -144,9 +144,8 @@ public sealed class GpuModeService
 
         var current = Detect();
         if (current.Mode == GpuMode.Uma || (current.DiscretePresent && !DiscreteAdapterEnabled()))
-            throw new InvalidOperationException(
-                "The graphics card is switched off (UMA). Turn it back on first - " +
-                "handing the screen to a card Windows will not start leaves the next boot dark.");
+            throw new InvalidOperationException(Words.Get("S.Core.Gpu.CardOff",
+                "The graphics card is switched off (UMA). Turn it back on first - handing the screen to a card Windows will not start leaves the next boot dark."));
 
         using (mailbox.Hold())
         {
@@ -232,12 +231,11 @@ public sealed class GpuModeService
     {
         var current = Detect();
         if (!enabled && current.DiscreteDrivesDisplay)
-            throw new InvalidOperationException(
-                "The graphics card is driving your screen right now. Switch to Hybrid first, " +
-                "restart, and then it can be turned off.");
+            throw new InvalidOperationException(Words.Get("S.Core.Gpu.CardDrivesScreen",
+                "The graphics card is driving your screen right now. Switch to Hybrid first, restart, and then it can be turned off."));
 
         if (DiscreteAdapterInstanceId() is null)
-            throw new InvalidOperationException("No discrete graphics card was found.");
+            throw new InvalidOperationException(Words.Get("S.Core.Gpu.NoCard", "No discrete graphics card was found."));
 
         // Without a prompt when the tasks are registered - which the one
         // elevation at first run does - and with Windows' prompt otherwise.
@@ -329,27 +327,27 @@ public sealed class GpuModeService
     {
         var current = Detect();
         if (current.Mode == target)
-            return new SwitchOutcome(false, false, $"Already in {target}.");
+            return new SwitchOutcome(false, false, Words.Get("S.Core.Gpu.AlreadyIn", "Already in {0}.", target));
 
         switch (target)
         {
             case GpuMode.Uma:
                 if (!SetDiscreteAdapterEnabled(false))
-                    return new SwitchOutcome(false, false, "Windows did not switch the card off.");
+                    return new SwitchOutcome(false, false, Words.Get("S.Core.Gpu.NotSwitchedOff", "Windows did not switch the card off."));
                 return new SwitchOutcome(true, false,
-                    "The graphics card is switched off. No restart needed.");
+                    Words.Get("S.Core.Gpu.SwitchedOff", "The graphics card is switched off. No restart needed."));
 
             case GpuMode.Hybrid when current.Mode == GpuMode.Uma:
                 // Firmware is already on Hybrid underneath UMA; all that is
                 // switched off is the device.
                 if (!SetDiscreteAdapterEnabled(true))
-                    return new SwitchOutcome(false, false, "Windows did not switch the card back on.");
+                    return new SwitchOutcome(false, false, Words.Get("S.Core.Gpu.NotSwitchedOn", "Windows did not switch the card back on."));
                 return new SwitchOutcome(true, false,
-                    "The graphics card is back on. No restart needed.");
+                    Words.Get("S.Core.Gpu.SwitchedOn", "The graphics card is back on. No restart needed."));
 
             case GpuMode.Discrete when current.Mode == GpuMode.Uma:
                 throw new InvalidOperationException(
-                    "Switch to Hybrid first. The card has to be on before the screen can be handed to it.");
+                    Words.Get("S.Core.Gpu.HybridFirst", "Switch to Hybrid first. The card has to be on before the screen can be handed to it."));
 
             default:
                 // Nothing is written here. The register is written when the
@@ -358,7 +356,7 @@ public sealed class GpuModeService
                 // are preventing restart" screen leaves the machine exactly as
                 // it was. Set by the owner, 12 September 2026.
                 return new SwitchOutcome(true, true,
-                    $"The screen will be handed to {target} at the next restart. Nothing is changed until the restart begins.");
+                    Words.Get("S.Core.Gpu.AtRestart", "The screen will be handed to {0} at the next restart. Nothing is changed until the restart begins.", target));
         }
     }
 
@@ -450,26 +448,23 @@ public sealed class GpuModeService
         GpuConfiguration c, GpuLoad? load = null, ThermalSample? thermal = null) => c.Mode switch
     {
         GpuMode.Discrete =>
-            $"Your screen is driven by the {c.DiscreteName ?? "graphics card"} directly. " +
-            "This gives the best performance in games, but the card never powers down, " +
-            "so the laptop runs hotter and the battery drains faster." +
+            Words.Get("S.Core.Gpu.DiscreteDesc",
+                "Your screen is driven by the {0} directly. This gives the best performance in games, but the card never powers down, so the laptop runs hotter and the battery drains faster.",
+                c.DiscreteName ?? Words.Get("S.Core.Gpu.TheCard", "graphics card")) +
             IdleCost(load, thermal) +
-            "\n\nYou can change this below. Before you do: find your BitLocker recovery key. " +
-            "Switching which chip drives the screen changes what the TPM measures at " +
-            "startup, and the next boot can ask for that key - without it the drive does " +
-            "not open. Your Windows PIN will need setting up again as well. Casper's own " +
-            "Control Center makes the same change without mentioning either.",
+            "\n\n" +
+            Words.Get("S.Core.Gpu.DiscreteWarning",
+                "You can change this below. Before you do: find your BitLocker recovery key. Switching which chip drives the screen changes what the TPM measures at startup, and the next boot can ask for that key - without it the drive does not open. Your Windows PIN will need setting up again as well. Casper's own Control Center makes the same change without mentioning either."),
 
         GpuMode.Hybrid =>
-            "Your screen is driven by the built-in graphics, and the graphics card wakes " +
-            "only when an application needs it. This is the best setting for battery life " +
-            "and running cool.",
+            Words.Get("S.Core.Gpu.HybridDesc",
+                "Your screen is driven by the built-in graphics, and the graphics card wakes only when an application needs it. This is the best setting for battery life and running cool."),
 
         GpuMode.Uma =>
-            "Only the built-in graphics are in use. The coolest and quietest setting, " +
-            "but games will run considerably slower.",
+            Words.Get("S.Core.Gpu.UmaDesc",
+                "Only the built-in graphics are in use. The coolest and quietest setting, but games will run considerably slower."),
 
-        _ => "Nextcalibur could not work out how your graphics are currently set up.",
+        _ => Words.Get("S.Core.Gpu.Unknown", "Nextcalibur could not work out how your graphics are currently set up."),
     };
 
     /// <summary>
@@ -492,7 +487,7 @@ public sealed class GpuModeService
         var parts = new List<string>();
 
         // The lower bound only rejects a nonsense reading.
-        if (load is { } l && l.Watts >= 1) parts.Add($"drawing {l.Watts:N1} W");
+        if (load is { } l && l.Watts >= 1) parts.Add(Words.Get("S.Core.Gpu.Drawing", "drawing {0:N1} W", l.Watts));
 
         // Measured on the development machine over eight quiet minutes in each
         // mode, read through the mailbox so nothing woke the card: 61 C and
@@ -502,14 +497,14 @@ public sealed class GpuModeService
         // is what their own machine reads right now.
         if (thermal is { } t && t.GpuTemperatureC > 0)
         {
-            var fan = t.GpuFanRpm > 0 ? $" with its fan at {t.GpuFanRpm} rpm" : string.Empty;
-            parts.Add($"sitting at {t.GpuTemperatureC} °C{fan}");
+            var fan = t.GpuFanRpm > 0 ? " " + Words.Get("S.Core.Gpu.WithFan", "with its fan at {0} rpm", t.GpuFanRpm) : string.Empty;
+            parts.Add(Words.Get("S.Core.Gpu.SittingAt", "sitting at {0} °C", t.GpuTemperatureC) + fan);
         }
 
         if (parts.Count == 0) return string.Empty;
 
-        return $"\n\nRight now it is {string.Join(", ", parts)}. In this mode the card draws your " +
-               "desktop as well, so it never reaches its low-power states - that is battery " +
-               "spent whether or not anything needs the card, and heat the fans have to move.";
+        return "\n\n" + Words.Get("S.Core.Gpu.IdleCost",
+            "Right now it is {0}. In this mode the card draws your desktop as well, so it never reaches its low-power states - that is battery spent whether or not anything needs the card, and heat the fans have to move.",
+            string.Join(", ", parts));
     }
 }
