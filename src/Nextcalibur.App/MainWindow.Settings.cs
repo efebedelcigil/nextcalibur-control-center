@@ -21,6 +21,9 @@ public partial class MainWindow
     private Grid? _pageSettings;
     private RadioButton? _navSettings;
     private ToggleButton? _settingWindowsFaults;
+    private ToggleButton? _settingFixTextInputHost, _settingFixCrossDevice, _settingFixWidgets,
+        _settingWatchGpuAwake, _settingTrimDwmMemory, _settingTrimExplorerMemory, _settingDisableNdu;
+    private StackPanel? _panelWindowsFaultsSubOptions;
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
@@ -40,6 +43,14 @@ public partial class MainWindow
         _settingStartWithWindows = FindName("SettingStartWithWindows") as ToggleButton;
         _settingOfficeOnBattery = FindName("SettingOfficeOnBattery") as ToggleButton;
         _settingWindowsFaults = FindName("SettingWindowsFaults") as ToggleButton;
+        _settingFixTextInputHost = FindName("SettingFixTextInputHost") as ToggleButton;
+        _settingFixCrossDevice = FindName("SettingFixCrossDevice") as ToggleButton;
+        _settingFixWidgets = FindName("SettingFixWidgets") as ToggleButton;
+        _settingWatchGpuAwake = FindName("SettingWatchGpuAwake") as ToggleButton;
+        _settingTrimDwmMemory = FindName("SettingTrimDwmMemory") as ToggleButton;
+        _settingTrimExplorerMemory = FindName("SettingTrimExplorerMemory") as ToggleButton;
+        _settingDisableNdu = FindName("SettingDisableNdu") as ToggleButton;
+        _panelWindowsFaultsSubOptions = FindName("PanelWindowsFaultsSubOptions") as StackPanel;
         _settingOverheatWarning = FindName("SettingOverheatWarning") as ToggleButton;
         _settingAutoCheckUpdates = FindName("SettingAutoCheckUpdates") as ToggleButton;
         _settingAutoInstallUpdates = FindName("SettingAutoInstallUpdates") as ToggleButton;
@@ -64,10 +75,23 @@ public partial class MainWindow
         Wire(_settingWindowsFaults, on =>
         {
             _settings.CompensateWindowsFaults = on;
+            if (_panelWindowsFaultsSubOptions is not null)
+                _panelWindowsFaultsSubOptions.IsEnabled = on;
             // A change of mind starts the watching again from nothing, so a
             // switch flicked off and on does not act on a window that was
             // half measured while it was off.
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
+        });
+        Wire(_settingFixTextInputHost, on => _settings.FixTextInputHost = on);
+        Wire(_settingFixCrossDevice, on => _settings.FixCrossDeviceService = on);
+        Wire(_settingFixWidgets, on => _settings.FixWidgets = on);
+        Wire(_settingWatchGpuAwake, on => _settings.WatchGpuAwake = on);
+        Wire(_settingTrimDwmMemory, on => _settings.TrimDwmMemory = on);
+        Wire(_settingTrimExplorerMemory, on => _settings.TrimExplorerMemory = on);
+        Wire(_settingDisableNdu, on =>
+        {
+            _settings.DisableNdu = on;
+            Nextcalibur.Core.Hardware.NduFix.SetNduDisabled(on);
         });
         Wire(_settingOverheatWarning, on =>
         {
@@ -141,7 +165,20 @@ public partial class MainWindow
         {
             if (_settingStartWithWindows is not null) _settingStartWithWindows.IsChecked = StartupRegistration.IsEnabled;
             if (_settingOfficeOnBattery is not null) _settingOfficeOnBattery.IsChecked = _settings.QuietOnBattery;
-            if (_settingWindowsFaults is not null) _settingWindowsFaults.IsChecked = _settings.CompensateWindowsFaults;
+            if (_settingWindowsFaults is not null)
+            {
+                _settingWindowsFaults.IsChecked = _settings.CompensateWindowsFaults;
+                if (_panelWindowsFaultsSubOptions is not null)
+                    _panelWindowsFaultsSubOptions.IsEnabled = _settings.CompensateWindowsFaults;
+            }
+            if (_settingFixTextInputHost is not null) _settingFixTextInputHost.IsChecked = _settings.FixTextInputHost;
+            if (_settingFixCrossDevice is not null) _settingFixCrossDevice.IsChecked = _settings.FixCrossDeviceService;
+            if (_settingFixWidgets is not null) _settingFixWidgets.IsChecked = _settings.FixWidgets;
+            if (_settingWatchGpuAwake is not null) _settingWatchGpuAwake.IsChecked = _settings.WatchGpuAwake;
+            if (_settingTrimDwmMemory is not null) _settingTrimDwmMemory.IsChecked = _settings.TrimDwmMemory;
+            if (_settingTrimExplorerMemory is not null) _settingTrimExplorerMemory.IsChecked = _settings.TrimExplorerMemory;
+            if (_settingDisableNdu is not null)
+                _settingDisableNdu.IsChecked = _settings.DisableNdu || Nextcalibur.Core.Hardware.NduFix.IsNduDisabled();
             if (_settingOverheatWarning is not null) _settingOverheatWarning.IsChecked = _settings.OverheatWarningEnabled;
             if (_settingAutoCheckUpdates is not null) _settingAutoCheckUpdates.IsChecked = _settings.AutoCheckForUpdates;
             if (_settingAutoInstallUpdates is not null)

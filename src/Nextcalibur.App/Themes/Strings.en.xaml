@@ -422,14 +422,31 @@
     <!-- Windows' own faults -->
     <sys:String x:Key="S.Core.Fault.Unknown">{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.</sys:String>
     <sys:String x:Key="S.Core.Fault.InputHost">Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.</sys:String>
+    <sys:String x:Key="S.Core.Fault.CrossDevice">Windows' Phone Link service (CrossDeviceService) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again on demand.</sys:String>
+    <sys:String x:Key="S.Core.Fault.Widgets">Windows' Widgets board (Widgets) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again when opened.</sys:String>
     <sys:String x:Key="S.WindowsFault.Fixed">Windows fault put right</sys:String>
     <sys:String x:Key="S.WindowsFault.Found">Windows fault found</sys:String>
     <sys:String x:Key="S.WindowsFault.GpuWakeTitle">Graphics card held awake</sys:String>
     <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Graphics settings</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWake">The graphics card is awake at full clocks with nothing to draw, costing about {0} W. Holding processes: {1}.</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">The graphics card is awake at full clocks with nothing to draw, costing about {0} W.</sys:String>
+    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows Fixes &amp; Optimizations</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsTitle">Compensate for known Windows faults</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsDesc">Watches for the few Windows components known to get stuck and cost the machine heat, and restarts them. It says what it did.</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostTitle">Fix TextInputHost.exe CPU loop</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Restarts the touch keyboard &amp; emoji process if it freezes in a background loop consuming an entire CPU core.</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Fix Phone Link (CrossDeviceService) CPU loop</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Restarts the Phone Link service if it gets stuck spinning in a background CPU loop.</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsTitle">Fix Widgets (Widgets.exe) CPU loop</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsDesc">Restarts the Windows Widgets board if its background web engine freezes consuming CPU cycles.</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Alert when graphics card is held awake</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Notifies you if background apps prevent the NVIDIA card from powering down when idle.</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Trim Desktop Window Manager (dwm.exe) memory</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Safely releases leaked cache memory from the desktop manager when it exceeds 1.5 GB, without closing or flickering windows.</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Trim Windows Explorer (explorer.exe) memory</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Safely flushes cached thumbnail and shell memory when Explorer exceeds 1.2 GB, without restarting the taskbar.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduTitle">Disable NDU network driver memory leak</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Disables the Windows Network Data Usage driver (NDU) in the registry to prevent multi-gigabyte kernel memory leaks.</sys:String>
 
     <!-- The tour: the card's words, one step after another -->
     <sys:String x:Key="S.Tour.Finish">Finish</sys:String>

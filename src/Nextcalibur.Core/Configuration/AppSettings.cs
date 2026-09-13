@@ -110,6 +110,27 @@ public sealed class AppSettings
     /// </summary>
     public bool CompensateWindowsFaults { get; set; } = true;
 
+    /// <summary>Watches and restarts TextInputHost when stuck spinning on a core unbroken.</summary>
+    public bool FixTextInputHost { get; set; } = true;
+
+    /// <summary>Watches and restarts CrossDeviceService (Phone Link) when stuck in a background CPU loop.</summary>
+    public bool FixCrossDeviceService { get; set; } = true;
+
+    /// <summary>Watches and restarts Widgets.exe when stuck spinning in background with no window.</summary>
+    public bool FixWidgets { get; set; } = true;
+
+    /// <summary>Watches discrete GPU staying awake at full clocks with no display.</summary>
+    public bool WatchGpuAwake { get; set; } = true;
+
+    /// <summary>Safely trims bloated DWM memory via Windows working set trim when exceeding 1.5 GB.</summary>
+    public bool TrimDwmMemory { get; set; } = true;
+
+    /// <summary>Safely trims bloated Explorer thumbnail/COM cache when exceeding 1.2 GB.</summary>
+    public bool TrimExplorerMemory { get; set; } = true;
+
+    /// <summary>Disables Windows Network Data Usage (NDU) driver to prevent gigabyte-scale non-paged pool RAM leak.</summary>
+    public bool DisableNdu { get; set; } = false;
+
     /// <summary>Dark, light, or follow Windows.</summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ThemePreference Theme { get; set; } = ThemePreference.System;

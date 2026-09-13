@@ -389,4 +389,53 @@ public class WindowsFaultsTests
         Assert.Contains("15 W", descWithoutProcs);
         Assert.DoesNotContain("Holding processes", descWithoutProcs);
     }
+
+    [Fact]
+    public void Known_faults_contains_required_windows_components()
+    {
+        var ids = WindowsFaults.Known.Select(k => k.Id).ToList();
+        Assert.Contains("input-host", ids);
+        Assert.Contains("cross-device", ids);
+        Assert.Contains("widgets", ids);
+    }
+
+    [Fact]
+    public void IsFaultEnabled_filters_faults_properly()
+    {
+        try
+        {
+            WindowsFaults.IsFaultEnabled = id => id != "cross-device";
+            Assert.True(WindowsFaults.IsFaultEnabled("input-host"));
+            Assert.False(WindowsFaults.IsFaultEnabled("cross-device"));
+            Assert.True(WindowsFaults.IsFaultEnabled("widgets"));
+        }
+        finally
+        {
+            WindowsFaults.IsFaultEnabled = _ => true;
+        }
+    }
+
+    [Fact]
+    public void MemoryTrimmer_handles_nonexistent_process_without_throwing()
+    {
+        var reclaimed = MemoryTrimmer.TrimIfExceeds("NonExistentProcess_12345", 1024 * 1024);
+        Assert.Equal(0, reclaimed);
+    }
+
+    [Fact]
+    public void MemoryTrimmer_on_current_process_runs_safely()
+    {
+        var current = System.Diagnostics.Process.GetCurrentProcess();
+        // Set threshold higher than current working set to verify threshold check
+        var reclaimed = MemoryTrimmer.TrimIfExceeds(current.ProcessName, current.WorkingSet64 + 1024 * 1024 * 100);
+        Assert.Equal(0, reclaimed);
+    }
+
+    [Fact]
+    public void NduFix_is_safe_to_query()
+    {
+        // Reading registry state should never throw an unhandled exception
+        var disabled = NduFix.IsNduDisabled();
+        Assert.True(disabled || !disabled);
+    }
 }

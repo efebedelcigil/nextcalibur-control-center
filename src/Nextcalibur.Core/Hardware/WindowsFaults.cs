@@ -124,7 +124,23 @@ public static class WindowsFaults
             Process: "TextInputHost",
             Describe: () => Words.Get("S.Core.Fault.InputHost",
                 "Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.")),
+        new Watched(
+            Id: "cross-device",
+            Process: "CrossDeviceService",
+            Describe: () => Words.Get("S.Core.Fault.CrossDevice",
+                "Windows' Phone Link service (CrossDeviceService) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again on demand.")),
+        new Watched(
+            Id: "widgets",
+            Process: "Widgets",
+            Describe: () => Words.Get("S.Core.Fault.Widgets",
+                "Windows' Widgets board (Widgets) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again when opened.")),
     ];
+
+    /// <summary>
+    /// Custom filter to determine if a specific fault ID is enabled by the user's settings.
+    /// Default enables all.
+    /// </summary>
+    public static Func<string, bool> IsFaultEnabled { get; set; } = _ => true;
 
     private static readonly CoreLoad Cores = new();
     private static readonly Dictionary<int, ProcessMetrics> Before = new();
@@ -253,6 +269,10 @@ public static class WindowsFaults
         Snapshot(now);
 
         var watched = Known.Find(w => string.Equals(w.Process, who.Name, StringComparison.OrdinalIgnoreCase));
+        if (watched is not null && !IsFaultEnabled(watched.Id))
+        {
+            return [];
+        }
         var onList = watched is not null;
 
         var (threadStable, topShare) = (false, 0.0);

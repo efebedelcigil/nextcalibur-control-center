@@ -420,14 +420,31 @@
     <!-- Windows'un kendi hataları -->
     <sys:String x:Key="S.Core.Fault.Unknown">{0}, birkaç dakikadır başka hiçbir şey meşgul değilken bir işlemci çekirdeğini tamamen kullanıyor. Nextcalibur ona dokunmadı - işini yapıyor olabilir.</sys:String>
     <sys:String x:Key="S.Core.Fault.InputHost">Windows'un giriş bileşeni (TextInputHost) bir işlemci çekirdeğini tamamen tüketir hâlde takılmıştı. Nextcalibur onu yeniden başlattı; dokunmatik klavye veya emoji paneli gerektiğinde Windows kendisi tekrar başlatır.</sys:String>
+    <sys:String x:Key="S.Core.Fault.CrossDevice">Windows'un Telefon Bağlantısı hizmeti (CrossDeviceService) bir arka plan işlemci döngüsünde takılmıştı. Nextcalibur onu yeniden başlattı; Windows gerektiğinde tekrar başlatır.</sys:String>
+    <sys:String x:Key="S.Core.Fault.Widgets">Windows'un Pencere Öğeleri paneli (Widgets) bir arka plan işlemci döngüsünde takılmıştı. Nextcalibur onu yeniden başlattı; açıldığında Windows tekrar başlatır.</sys:String>
     <sys:String x:Key="S.WindowsFault.Fixed">Windows hatası giderildi</sys:String>
     <sys:String x:Key="S.WindowsFault.Found">Windows hatası bulundu</sys:String>
     <sys:String x:Key="S.WindowsFault.GpuWakeTitle">Ekran kartı uyanık tutuluyor</sys:String>
     <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Grafik ayarları</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWake">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor. Tutan işlemler: {1}.</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor.</sys:String>
+    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows Onarımları ve İyileştirmeleri</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsTitle">Bilinen Windows hatalarını telafi et</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsDesc">Takılıp makineyi ısıtan birkaç bilinen Windows bileşenini izler ve yeniden başlatır. Ne yaptığını söyler.</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostTitle">TextInputHost.exe işlemci kilitlenmesini onar</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Dokunmatik klavye ve emoji bileşeni arka planda takılıp bir işlemci çekirdeğini tüketirse güvenle yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Telefon Bağlantısı (CrossDeviceService) işlemci döngüsünü onar</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Windows Telefon Bağlantısı arka planda kilitlenip işlemciyi sürekli meşgul ederse güvenle yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsTitle">Pencere Öğeleri (Widgets.exe) işlemci kilitlenmesini onar</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsDesc">Hava durumu ve haberler bileşeni arka planda takılıp işlemci tüketirse güvenle yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Ekran kartı uyanık tutulduğunda uyar</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Arka plan uygulamaları boştayken harici NVIDIA ekran kartının uykuya geçmesini engellerse uyarır.</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Masaüstü Pencere Yöneticisi (dwm.exe) belleğini temizle</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Masaüstü yöneticisi 1,5 GB belleği aşarsa sızıntı yapan önbelleği pencereleri kapatmadan veya kırpmadan güvenle serbest bırakır.</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Windows Gezgini (explorer.exe) belleğini temizle</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Windows Gezgini 1,2 GB belleği aşarsa şişen küçük resim ve arayüz önbelleğini görev çubuğunu yeniden başlatmadan güvenle temizler.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduTitle">NDU ağ sürücüsü bellek sızıntısını önle</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Ağ kartlarında gigabaytlarca çekirdek belleği sızdıran Windows Ağ Veri Kullanımı (NDU) sürücüsünü kayıt defterinden devre dışı bırakır.</sys:String>
 
     <!-- Tur: kartın sözleri, adım adım -->
     <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>

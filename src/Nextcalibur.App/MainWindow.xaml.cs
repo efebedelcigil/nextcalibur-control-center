@@ -158,6 +158,13 @@ public partial class MainWindow : Window
         Dialogs.Owner = this;
 
         ApplyPollInterval();
+        WindowsFaults.IsFaultEnabled = id => id switch
+        {
+            "input-host" => _settings.FixTextInputHost,
+            "cross-device" => _settings.FixCrossDeviceService,
+            "widgets" => _settings.FixWidgets,
+            _ => true
+        };
         Loaded += OnLoaded;
         ContentRendered += (_, _) => HasRendered = true;
         StateChanged += OnStateChanged;
@@ -2284,10 +2291,19 @@ public partial class MainWindow : Window
                 _tray?.ShowMessage(title, fault.What);
         }
 
+        // Memory trimming when not in game / undisturbed
+        if (!UserPresence.WouldRatherNotBeDisturbed())
+        {
+            if (_settings.TrimDwmMemory)
+                Nextcalibur.Core.Hardware.MemoryTrimmer.TrimIfExceeds("dwm", 1536L * 1024 * 1024);
+            if (_settings.TrimExplorerMemory)
+                Nextcalibur.Core.Hardware.MemoryTrimmer.TrimIfExceeds("explorer", 1228L * 1024 * 1024);
+        }
+
         // §26, §28: The graphics card held awake at full clocks with nothing to draw.
         // Controlled under the same switch, touches nothing on the card.
-        // Suppress and reset when in UMA mode, discrete card is off, or user is in a full-screen game.
-        if (_currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed())
+        // Suppress and reset when in UMA mode, discrete card is off, user is in a full-screen game, or toggle disabled.
+        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed())
         {
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;

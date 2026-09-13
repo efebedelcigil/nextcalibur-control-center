@@ -1494,9 +1494,14 @@
                                                           Style="{DynamicResource Pill}" VerticalAlignment="Center" />
                                         </Grid>
 
-                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+                                    </StackPanel>
+                                </Border>
 
-                                        <!-- SettingWindowsFaults (§23) -->
+                                <!-- Section: Windows Fixes & Optimizations -->
+                                <TextBlock Text="{DynamicResource S.Settings.GroupWindowsFaults}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
+                                    <StackPanel>
+                                        <!-- Master Toggle: SettingWindowsFaults -->
                                         <Grid Margin="0,3">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
@@ -1506,11 +1511,140 @@
                                                 <TextBlock Text="{DynamicResource S.Settings.WindowsFaultsTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
                                                 <TextBlock Text="{DynamicResource S.Settings.WindowsFaultsDesc}"
-                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingWindowsFaults" Grid.Column="1"
                                                           Style="{DynamicResource Pill}" VerticalAlignment="Center" />
                                         </Grid>
+
+                                        <!-- Sub-options container, dynamically enabled/disabled by master switch -->
+                                        <StackPanel x:Name="PanelWindowsFaultsSubOptions">
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingFixTextInputHost -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixTextInputHostTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixTextInputHostDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingFixTextInputHost" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingFixCrossDevice -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixCrossDeviceTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixCrossDeviceDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingFixCrossDevice" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingFixWidgets -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixWidgetsTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.FixWidgetsDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingFixWidgets" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingWatchGpuAwake -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.WatchGpuAwakeTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.WatchGpuAwakeDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingWatchGpuAwake" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingTrimDwmMemory -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.TrimDwmMemoryTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.TrimDwmMemoryDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingTrimDwmMemory" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingTrimExplorerMemory -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.TrimExplorerMemoryTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.TrimExplorerMemoryDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingTrimExplorerMemory" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                            <!-- SettingDisableNdu -->
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                    <TextBlock Text="{DynamicResource S.Settings.DisableNduTitle}" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="{DynamicResource S.Settings.DisableNduDesc}"
+                                                               Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                                </StackPanel>
+                                                <ToggleButton x:Name="SettingDisableNdu" Grid.Column="1"
+                                                              Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
 
