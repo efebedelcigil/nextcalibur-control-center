@@ -109,6 +109,15 @@ public sealed class CoreLoad
         return pinned >= 1 && total / loads.Length < whileAverageBelow;
     }
 
+    /// <summary>The average load across all logical processors.</summary>
+    public static double AverageLoad(double[] loads)
+    {
+        if (loads.Length == 0) return 0.0;
+        var total = 0.0;
+        for (var i = 0; i < loads.Length; i++) total += loads[i];
+        return total / loads.Length;
+    }
+
     private const int SystemProcessorPerformanceInformation = 8;
 
     [StructLayout(LayoutKind.Sequential)]

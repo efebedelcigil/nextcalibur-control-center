@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Nextcalibur.Core.Configuration;
 
 namespace Nextcalibur.Core.Hardware;
@@ -8,6 +9,37 @@ namespace Nextcalibur.Core.Hardware;
 /// <param name="What">One sentence for the person, in their language.</param>
 /// <param name="Fixed">True when it was put right, false when it is only being reported.</param>
 public sealed record FaultFound(string Id, string What, bool Fixed);
+
+/// <summary>Evidence collected across the measurement window for a candidate process.</summary>
+public readonly record struct FaultEvidence(
+    string ProcessName,
+    int Pid,
+    bool IsOnAllowList,
+    TimeSpan PinnedDuration,
+    TimeSpan RequiredWindow,
+    bool ThreadSetStable,
+    double TopThreadSharePercent,
+    ulong IoOperationsDelta,
+    uint PageFaultsDelta,
+    long WorkingSetDeltaBytes,
+    double AverageMachineLoadPercent,
+    bool HasVisibleWindow,
+    bool IsInCurrentSession,
+    bool IsWindowsOwnBinary,
+    TimeSpan TimeSinceLastAction,
+    int PriorFailures);
+
+/// <summary>The evaluated decision over the seven rules, with individual rule results.</summary>
+public readonly record struct FaultEvaluation(
+    bool AllowedToAct,
+    bool Rule1AllowList,
+    bool Rule2Duration,
+    bool Rule3Thread,
+    bool Rule4Work,
+    bool Rule5QuietMachine,
+    bool Rule6NoVisibleWindow,
+    bool Rule7Locks,
+    string LogSummary);
 
 /// <summary>
 /// Windows going wrong, watched for and - where it is safe, and only where
@@ -53,25 +85,39 @@ public sealed record FaultFound(string Id, string What, bool Fixed);
 public static class WindowsFaults
 {
     /// <summary>A core at or above this, for a whole window, is not working - it is spinning.</summary>
-    private const double PinnedAtPercent = 92;
+    public const double PinnedAtPercent = 92;
 
     /// <summary>...while the machine as a whole is below this. Real work lights up more than one core.</summary>
-    private const double QuietMachineBelowPercent = 30;
+    public const double QuietMachineBelowPercent = 30;
 
     /// <summary>A process using at least this share of one core over the window is the one doing it.</summary>
-    private const double CulpritAtPercent = 70;
+    public const double CulpritAtPercent = 70;
 
-    /// <summary>How long it has to look like that before it is believed.</summary>
-    public static readonly TimeSpan Window = TimeSpan.FromMinutes(3);
+    /// <summary>A single thread must account for at least this share of the process's CPU time.</summary>
+    public const double TopThreadSharePercent = 90;
+
+    /// <summary>Maximum I/O operations (read + write + other) allowed across the whole window.</summary>
+    public const ulong MaxIoOperations = 100;
+
+    /// <summary>Maximum page faults allowed across the whole window.</summary>
+    public const uint MaxPageFaults = 1000;
+
+    /// <summary>Maximum working set movement allowed across the whole window (1 MB).</summary>
+    public const long MaxWorkingSetDeltaBytes = 1024 * 1024;
+
+    /// <summary>How long it has to look like that before it is believed (15 minutes unbroken).</summary>
+    public static TimeSpan Window { get; set; } = TimeSpan.FromMinutes(15);
 
     /// <summary>How long before the same fault may be acted on again.</summary>
-    private static readonly TimeSpan NotAgainWithin = TimeSpan.FromHours(1);
+    public static TimeSpan NotAgainWithin { get; set; } = TimeSpan.FromHours(1);
 
     /// <summary>
     /// The list. One entry, and the shape is the point: a new fault is a
     /// new line here, with its evidence, not a new heuristic.
     /// </summary>
-    private static readonly Watched[] Known =
+    public sealed record Watched(string Id, string Process, Func<string> Describe);
+
+    public static readonly List<Watched> Known =
     [
         new Watched(
             Id: "input-host",
@@ -80,14 +126,71 @@ public static class WindowsFaults
                 "Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.")),
     ];
 
-    private sealed record Watched(string Id, string Process, Func<string> Describe);
-
     private static readonly CoreLoad Cores = new();
-    private static readonly Dictionary<int, TimeSpan> Before = new();
+    private static readonly Dictionary<int, ProcessMetrics> Before = new();
     private static readonly Dictionary<string, DateTime> ActedAt = new(StringComparer.Ordinal);
     private static readonly Dictionary<string, int> Failures = new(StringComparer.Ordinal);
     private static DateTime _pinnedSince = DateTime.MinValue;
     private static DateTime _snapshotAt = DateTime.MinValue;
+
+    /// <summary>Evaluates the seven rules as a pure function over recorded evidence.</summary>
+    public static FaultEvaluation Evaluate(FaultEvidence e)
+    {
+        var r1 = e.IsOnAllowList;
+        var r2 = e.PinnedDuration >= e.RequiredWindow;
+        var r3 = e.ThreadSetStable && e.TopThreadSharePercent >= TopThreadSharePercent;
+        var r4 = e.IoOperationsDelta < MaxIoOperations
+                 && e.PageFaultsDelta < MaxPageFaults
+                 && Math.Abs(e.WorkingSetDeltaBytes) <= MaxWorkingSetDeltaBytes;
+        var r5 = e.AverageMachineLoadPercent < QuietMachineBelowPercent;
+        var r6 = !e.HasVisibleWindow;
+        var r7 = e.IsInCurrentSession
+                 && e.IsWindowsOwnBinary
+                 && e.TimeSinceLastAction >= NotAgainWithin
+                 && e.PriorFailures < 2;
+
+        var allowed = r1 && r2 && r3 && r4 && r5 && r6 && r7;
+
+        var summary = $"Decision for {e.ProcessName} (pid {e.Pid}): " +
+            $"R1(list)={r1}; " +
+            $"R2(15m unbroken)={r2} ({e.PinnedDuration.TotalMinutes:N1}m/{e.RequiredWindow.TotalMinutes:N0}m); " +
+            $"R3(thread>={TopThreadSharePercent:N0}%)={r3} ({e.TopThreadSharePercent:N1}%, stable={e.ThreadSetStable}); " +
+            $"R4(idle: IO<{MaxIoOperations}, flt<{MaxPageFaults}, ws<={MaxWorkingSetDeltaBytes / 1024}kB)={r4} (io={e.IoOperationsDelta}, flt={e.PageFaultsDelta}, wsDelta={e.WorkingSetDeltaBytes / 1024:N0}kB); " +
+            $"R5(quiet<{QuietMachineBelowPercent:N0}%)={r5} ({e.AverageMachineLoadPercent:N1}%); " +
+            $"R6(no visible win)={r6}; " +
+            $"R7(locks: session={e.IsInCurrentSession}, winOwn={e.IsWindowsOwnBinary}, coolDown={e.TimeSinceLastAction.TotalMinutes:N0}m/{(int)NotAgainWithin.TotalMinutes}m, fail={e.PriorFailures}/2)={r7} " +
+            $"-> {(allowed ? "ACT" : "REPORT_ONLY")}";
+
+        return new FaultEvaluation(allowed, r1, r2, r3, r4, r5, r6, r7, summary);
+    }
+
+    /// <summary>Calculates whether thread IDs remained stable and the share of the top thread.</summary>
+    public static (bool Stable, double TopSharePercent) CalculateThreadShare(
+        IReadOnlyDictionary<int, TimeSpan> baseThreads,
+        IReadOnlyDictionary<int, TimeSpan> currentThreads,
+        TimeSpan totalProcessCpuDelta)
+    {
+        if (baseThreads.Count == 0 || currentThreads.Count == 0) return (false, 0.0);
+        if (baseThreads.Count != currentThreads.Count) return (false, 0.0);
+
+        foreach (var id in baseThreads.Keys)
+        {
+            if (!currentThreads.ContainsKey(id)) return (false, 0.0);
+        }
+
+        if (totalProcessCpuDelta <= TimeSpan.Zero) return (true, 0.0);
+
+        var maxThreadDeltaMs = 0.0;
+        foreach (var (id, baseTime) in baseThreads)
+        {
+            var curTime = currentThreads[id];
+            var delta = (curTime - baseTime).TotalMilliseconds;
+            if (delta > maxThreadDeltaMs) maxThreadDeltaMs = delta;
+        }
+
+        var share = (maxThreadDeltaMs / totalProcessCpuDelta.TotalMilliseconds) * 100.0;
+        return (true, Math.Clamp(share, 0.0, 100.0));
+    }
 
     /// <summary>
     /// Looks once; call it every few minutes. Cheap unless something is
@@ -97,7 +200,7 @@ public static class WindowsFaults
     public static IReadOnlyList<FaultFound> Check(bool mayAct)
     {
         var loads = Cores.Read();
-        if (loads.Length == 0) return [];   // the first look; nothing to compare against yet
+        if (loads.Length == 0) return [];
 
         if (!CoreLoad.ACoreIsPinned(loads, PinnedAtPercent, QuietMachineBelowPercent))
         {
@@ -107,40 +210,98 @@ public static class WindowsFaults
         }
 
         var now = DateTime.UtcNow;
+        var avgLoad = CoreLoad.AverageLoad(loads);
+
         if (_pinnedSince == DateTime.MinValue)
         {
-            // First sight of it. Remember who was using what, and wait.
             _pinnedSince = now;
             Snapshot(now);
             return [];
         }
 
         var elapsed = now - _snapshotAt;
-        if (now - _pinnedSince < Window || elapsed <= TimeSpan.Zero) return [];
+        var pinnedDuration = now - _pinnedSince;
+        if (pinnedDuration < Window || elapsed <= TimeSpan.Zero) return [];
 
         var culprit = Busiest(elapsed);
+        if (culprit is not { } who)
+        {
+            _pinnedSince = now;
+            Snapshot(now);
+            return [];
+        }
+
+        _pinnedSince = now; // reset the window for next check
+        var currentMetrics = ProcessMetrics.Capture(who.Pid);
+        Before.TryGetValue(who.Pid, out var baseMetrics);
         Snapshot(now);
-        if (culprit is not { } who) return [];
 
-        Log.Warn("windows", $"A core has been pinned for {(now - _pinnedSince).TotalMinutes:N0} minutes; {who.Name} (pid {who.Pid}) used {who.Share:N0}% of a core");
-        _pinnedSince = now;   // whatever happens next, the window starts again
+        var watched = Known.Find(w => string.Equals(w.Process, who.Name, StringComparison.OrdinalIgnoreCase));
+        var onList = watched is not null;
 
-        var watched = Array.Find(Known, w => string.Equals(w.Process, who.Name, StringComparison.OrdinalIgnoreCase));
-        if (watched is null)
+        var (threadStable, topShare) = (false, 0.0);
+        ulong ioDelta = ulong.MaxValue;
+        uint faultDelta = uint.MaxValue;
+        long wsDelta = long.MaxValue;
+
+        if (baseMetrics is not null && currentMetrics is not null)
+        {
+            var cpuDelta = currentMetrics.TotalProcessorTime - baseMetrics.TotalProcessorTime;
+            (threadStable, topShare) = CalculateThreadShare(baseMetrics.Threads, currentMetrics.Threads, cpuDelta);
+            ioDelta = currentMetrics.TotalIoOperations >= baseMetrics.TotalIoOperations
+                ? currentMetrics.TotalIoOperations - baseMetrics.TotalIoOperations
+                : 0;
+            faultDelta = currentMetrics.PageFaultCount >= baseMetrics.PageFaultCount
+                ? currentMetrics.PageFaultCount - baseMetrics.PageFaultCount
+                : 0;
+            wsDelta = currentMetrics.WorkingSet64 - baseMetrics.WorkingSet64;
+        }
+
+        var hasWindow = HasVisibleWindow(who.Pid);
+        var inSession = currentMetrics is not null && currentMetrics.SessionId == CurrentSessionId();
+        var winOwn = currentMetrics is not null && IsWindowsOwn(who.Pid);
+        var actedAt = watched is not null && ActedAt.TryGetValue(watched.Id, out var last) ? last : DateTime.MinValue;
+        var timeSinceLast = actedAt == DateTime.MinValue ? TimeSpan.FromDays(365) : (now - actedAt);
+        var failCount = watched is not null && Failures.TryGetValue(watched.Id, out var f) ? f : 0;
+
+        var evidence = new FaultEvidence(
+            ProcessName: who.Name,
+            Pid: who.Pid,
+            IsOnAllowList: onList,
+            PinnedDuration: pinnedDuration,
+            RequiredWindow: Window,
+            ThreadSetStable: threadStable,
+            TopThreadSharePercent: topShare,
+            IoOperationsDelta: ioDelta,
+            PageFaultsDelta: faultDelta,
+            WorkingSetDeltaBytes: wsDelta,
+            AverageMachineLoadPercent: avgLoad,
+            HasVisibleWindow: hasWindow,
+            IsInCurrentSession: inSession,
+            IsWindowsOwnBinary: winOwn,
+            TimeSinceLastAction: timeSinceLast,
+            PriorFailures: failCount);
+
+        var eval = Evaluate(evidence);
+        Log.Info("windows", eval.LogSummary);
+
+        if (!onList)
+        {
             return [new FaultFound("busy-process",
                 Words.Get("S.Core.Fault.Unknown",
                     "{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.",
                     who.Name),
                 Fixed: false)];
+        }
 
-        if (!mayAct) return [new FaultFound(watched.Id, watched.Describe(), Fixed: false)];
-        if (ActedAt.TryGetValue(watched.Id, out var last) && now - last < NotAgainWithin) return [];
-        if (Failures.TryGetValue(watched.Id, out var failed) && failed >= 2)
-            return [new FaultFound(watched.Id, watched.Describe(), Fixed: false)];
-
-        if (!End(who.Pid, watched.Process))
+        if (!eval.AllowedToAct || !mayAct)
         {
-            Failures[watched.Id] = failed + 1;
+            return [new FaultFound(watched!.Id, watched.Describe(), Fixed: false)];
+        }
+
+        if (!End(who.Pid, watched!.Process))
+        {
+            Failures[watched.Id] = failCount + 1;
             return [new FaultFound(watched.Id, watched.Describe(), Fixed: false)];
         }
 
@@ -158,6 +319,7 @@ public static class WindowsFaults
         ActedAt.Clear();
         Failures.Clear();
         _pinnedSince = DateTime.MinValue;
+        _snapshotAt = DateTime.MinValue;
     }
 
     private static void Snapshot(DateTime at)
@@ -165,8 +327,11 @@ public static class WindowsFaults
         Before.Clear();
         foreach (var process in Process.GetProcesses())
         {
-            try { Before[process.Id] = process.TotalProcessorTime; }
-            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException) { }
+            try
+            {
+                if (ProcessMetrics.Capture(process) is { } metrics)
+                    Before[process.Id] = metrics;
+            }
             finally { process.Dispose(); }
         }
         _snapshotAt = at;
@@ -181,7 +346,7 @@ public static class WindowsFaults
             try
             {
                 if (!Before.TryGetValue(process.Id, out var was)) continue;
-                var share = (process.TotalProcessorTime - was).TotalMilliseconds / elapsed.TotalMilliseconds * 100;
+                var share = (process.TotalProcessorTime - was.TotalProcessorTime).TotalMilliseconds / elapsed.TotalMilliseconds * 100;
                 if (share > (worst?.Share ?? CulpritAtPercent)) worst = (process.Id, process.ProcessName, share);
             }
             catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException) { }
@@ -191,7 +356,7 @@ public static class WindowsFaults
     }
 
     /// <summary>
-    /// Ends it, with the two locks that are not the list: it has to be in
+    /// Ends it, with the locks that are not the list: it has to be in
     /// this session - a service or another account's process is not ours to
     /// touch - and its image has to be Windows' own, so that something
     /// which merely borrowed the name is left alone.
@@ -222,7 +387,7 @@ public static class WindowsFaults
     }
 
     /// <summary>Whether the image lives under the Windows directory - Windows' own, not something wearing its name.</summary>
-    private static bool IsWindowsOwn(Process process)
+    internal static bool IsWindowsOwn(Process process)
     {
         try
         {
@@ -234,6 +399,168 @@ public static class WindowsFaults
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
         {
             return false;
+        }
+    }
+
+    internal static bool IsWindowsOwn(int pid)
+    {
+        try
+        {
+            using var process = Process.GetProcessById(pid);
+            return IsWindowsOwn(process);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    internal static bool HasVisibleWindow(int pid)
+    {
+        var found = false;
+        try
+        {
+            EnumWindows((hWnd, _) =>
+            {
+                if (IsWindowVisible(hWnd))
+                {
+                    GetWindowThreadProcessId(hWnd, out var windowPid);
+                    if (windowPid == (uint)pid)
+                    {
+                        found = true;
+                        return false;
+                    }
+                }
+                return true;
+            }, IntPtr.Zero);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return false;
+        }
+        return found;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct IO_COUNTERS
+    {
+        public ulong ReadOperationCount;
+        public ulong WriteOperationCount;
+        public ulong OtherOperationCount;
+        public ulong ReadTransferCount;
+        public ulong WriteTransferCount;
+        public ulong OtherTransferCount;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetProcessIoCounters(IntPtr hProcess, out IO_COUNTERS lpIoCounters);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct PROCESS_MEMORY_COUNTERS
+    {
+        public uint cb;
+        public uint PageFaultCount;
+        public UIntPtr PeakWorkingSetSize;
+        public UIntPtr WorkingSetSize;
+        public UIntPtr QuotaPeakPagedPoolUsage;
+        public UIntPtr QuotaPagedPoolUsage;
+        public UIntPtr QuotaPeakNonPagedPoolUsage;
+        public UIntPtr QuotaNonPagedPoolUsage;
+        public UIntPtr PagefileUsage;
+        public UIntPtr PeakPagefileUsage;
+    }
+
+    [DllImport("psapi.dll", SetLastError = true)]
+    private static extern bool GetProcessMemoryInfo(IntPtr hProcess, out PROCESS_MEMORY_COUNTERS counters, uint cb);
+
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    internal sealed class ProcessMetrics
+    {
+        public int Pid { get; init; }
+        public string Name { get; init; } = "";
+        public int SessionId { get; init; }
+        public TimeSpan TotalProcessorTime { get; init; }
+        public long WorkingSet64 { get; init; }
+        public ulong TotalIoOperations { get; init; }
+        public uint PageFaultCount { get; init; }
+        public Dictionary<int, TimeSpan> Threads { get; init; } = new();
+
+        public static ProcessMetrics? Capture(Process process)
+        {
+            try
+            {
+                var pid = process.Id;
+                var name = process.ProcessName;
+                var session = process.SessionId;
+                var cpu = process.TotalProcessorTime;
+                var ws = process.WorkingSet64;
+
+                ulong ioOps = 0;
+                try
+                {
+                    if (GetProcessIoCounters(process.Handle, out var io))
+                        ioOps = io.ReadOperationCount + io.WriteOperationCount + io.OtherOperationCount;
+                }
+                catch (Exception) { }
+
+                uint pageFaults = 0;
+                try
+                {
+                    var memSize = (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS>();
+                    if (GetProcessMemoryInfo(process.Handle, out var mem, memSize))
+                        pageFaults = mem.PageFaultCount;
+                }
+                catch (Exception) { }
+
+                var threads = new Dictionary<int, TimeSpan>();
+                try
+                {
+                    foreach (ProcessThread t in process.Threads)
+                    {
+                        try { threads[t.Id] = t.TotalProcessorTime; } catch { }
+                    }
+                }
+                catch (Exception) { }
+
+                return new ProcessMetrics
+                {
+                    Pid = pid,
+                    Name = name,
+                    SessionId = session,
+                    TotalProcessorTime = cpu,
+                    WorkingSet64 = ws,
+                    TotalIoOperations = ioOps,
+                    PageFaultCount = pageFaults,
+                    Threads = threads,
+                };
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
+            {
+                return null;
+            }
+        }
+
+        public static ProcessMetrics? Capture(int pid)
+        {
+            try
+            {
+                using var p = Process.GetProcessById(pid);
+                return Capture(p);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
