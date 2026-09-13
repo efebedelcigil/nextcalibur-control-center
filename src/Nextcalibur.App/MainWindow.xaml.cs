@@ -567,8 +567,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void SyncSamplingToScreen()
     {
-        var onScreen = IsVisible && WindowState != WindowState.Minimized;
-        if (!onScreen)
+        if (!ReadingsAreOnScreen())
         {
             _timer.Stop();
             TrimWorkingSet();
@@ -578,6 +577,27 @@ public partial class MainWindow : Window
             _timer.Start();
             Sample();   // now, not two seconds from now
         }
+    }
+
+    /// <summary>
+    /// Whether anything on screen is showing a reading.
+    ///
+    /// The readings panel is on every page but Lighting and Settings, and
+    /// the fast timer exists to keep it truthful. On those two pages it was
+    /// still reading the firmware every couple of seconds for a panel that
+    /// is not there - and every read is a write to the mailbox, which
+    /// raises a system-management interrupt that stops all cores. Somebody
+    /// choosing a colour was paying thirty of those a minute for nothing.
+    ///
+    /// The slow timer carries on either way: the tray tooltip and the
+    /// overheat warning are not on any page.
+    /// </summary>
+    private bool ReadingsAreOnScreen()
+    {
+        if (!IsVisible || WindowState == WindowState.Minimized) return false;
+        if (PageLighting is { Visibility: Visibility.Visible }) return false;
+        if (PageSettings is { Visibility: Visibility.Visible }) return false;
+        return true;
     }
 
     /// <summary>
@@ -785,6 +805,10 @@ public partial class MainWindow : Window
         // showing whatever was true at startup.
         if (NavPower.IsChecked == true) { RefreshOverlay(); LoadPowerModes(); }
         if (NavDisplay.IsChecked == true) LoadGpuMode();
+
+        // Lighting and Settings have no readings panel, so nothing needs the
+        // firmware every two seconds while one of them is open.
+        SyncSamplingToScreen();
     }
 
     // ----------------------------------------------------------- system mode

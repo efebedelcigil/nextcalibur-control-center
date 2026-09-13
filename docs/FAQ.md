@@ -150,6 +150,17 @@ are about 9 kB with headers, and each is asked conditionally so an unchanged
 answer sends no body. Four checks a day is under 40 kB. Turn *Check for
 updates automatically* off and it is nothing at all.
 
+**How does this compare with the software it replaces?**
+On the thing that costs the machine most - how often the firmware is
+asked - it is between ten and twenty times lighter. The vendor's Control
+Center polls the mailbox every 6.1 seconds, measured by capturing the
+traffic while it ran, and it does that whether its window is open or not.
+Nextcalibur reads once a minute while it is in the tray, once every two
+minutes while the machine is hot or a game has the screen, not at all
+while you are on the Lighting or Settings page, and not at all with the
+overheat warning switched off. With the window open on a page that shows
+readings, you choose: one, two, five or ten seconds.
+
 **Does it send anything anywhere? Is there telemetry?**
 No. The only network requests are to GitHub, to find the application's own
 updates, PawnIO's and .NET's, and none at all with automatic checks off. Nothing
