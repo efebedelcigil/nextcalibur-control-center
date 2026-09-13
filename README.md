@@ -18,7 +18,7 @@ interface. Windows 11, English and Turkish.
 | File | What it is |
 |---|---|
 | `Nextcalibur-<version>-1-Installer.exe` | The installer: a wizard, English or Turkish, that installs under Program Files and does the rest. **This is the one to download.** |
-| `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - and asks for administrator rights at every start (see *Why it runs as administrator*). |
+| `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - asks for administrator rights at every start (see *Why it runs as administrator*), and needs the [.NET 8 desktop runtime](https://dotnet.microsoft.com/download/dotnet/8.0) already installed, which the wizard would have put there for you. |
 | the rest | Read by the application's own updater; not for you. |
 
 About 12 MB. It needs the .NET 8 desktop runtime, and installs it from
