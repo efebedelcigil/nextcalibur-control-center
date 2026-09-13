@@ -21,8 +21,12 @@ interface. Windows 11, English and Turkish.
 | `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - and asks for administrator rights at every start (see *Why it runs as administrator*). |
 | the rest | Read by the application's own updater; not for you. |
 
-About 65 MB: the .NET 8 desktop runtime is carried inside, so nothing is
-downloaded during install. The installer is not code-signed, so SmartScreen
+About 12 MB. It needs the .NET 8 desktop runtime, and installs it from
+Microsoft if the machine has none - after that Windows patches it like
+anything else, and Nextcalibur offers the newer one when there is one, the
+same way it offers its own updates. (Until 0.5.4 the runtime was carried
+inside the package, which meant a .NET security fix could only reach you as
+a new Nextcalibur.) The installer is not code-signed, so SmartScreen
 warns: *More info → Run anyway*. Every release is built by a public GitHub
 Actions workflow from a tag, with a build-provenance attestation; any file on
 the release page can be checked with

@@ -12,6 +12,7 @@ Only these, and only for the purposes named:
 |---|---|---|---|
 | A minute after start, then every six hours (if *Check for updates automatically* is on), or when you ask | `api.github.com` and `github.com` | An ordinary HTTPS request for this project's release list; a download of the release package if you accept an update | To find and install new versions |
 | At the same times | `api.github.com` and `github.com` | A request for PawnIO's release list; a download of its installer if you accept | To offer the driver the CPU power reading needs, and keep it current |
+| At the same times | `raw.githubusercontent.com`, and `builds.dotnet.microsoft.com` for a download | A request for Microsoft's list of .NET releases; a download of the runtime installer if you accept | To offer the .NET runtime's security patches, which Windows also delivers |
 | When you press *Open WinUtil* and confirm | `christitus.com` | A PowerShell download of that script | Because you asked for it; it is not part of Nextcalibur |
 | When you press *Driver downloads* or *Open issues* | the laptop maker's site, `github.com` | Your browser opens the page | Because you asked for it |
 

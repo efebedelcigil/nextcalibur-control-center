@@ -79,15 +79,19 @@ rules the code follows.
   is the one thing deliberately run elevated from the network, at the
   person's explicit request, after a dialogue that says exactly that.
 
-- **The runtime goes out with the release, so it must be current.** This
-  application carries its own .NET: nothing on the machine patches those
-  files, and a release built against an old runtime pack carries that
-  runtime's known holes on every machine that installs it, for as long as
-  it is installed. Every workflow takes the newest SDK
-  (`check-latest`), and the release refuses to publish a build whose
-  runtime is behind Microsoft's latest patch or whose channel is out of
-  support - `tools/Check-BundledRuntime.ps1`, which reads the version out
-  of the produced binary rather than trusting the build.
+- **The runtime is the machine's, so the machine patches it.** Until 0.5.4
+  this application carried its own .NET, which meant nothing on a machine
+  ever patched it: 0.5.3 shipped 8.0.30 five days after 8.0.31 fixed five
+  CVEs, and only a new release could have cured it. It is a dependency now
+  - installed by the wizard from Microsoft when a machine has none,
+  patched by Windows afterwards, and offered by the application itself
+  through the same check as its own updates when Windows has not got there
+  yet. The download is verified against the SHA-512 Microsoft publishes for
+  it and against its Authenticode signature, and the link must be one of
+  Microsoft's own hosts over HTTPS. `tools/Check-Runtime.ps1` stops a
+  release that targets a channel out of support - after a channel's end of
+  life nobody patches it at all - and still catches a stale runtime in any
+  build that carries one.
 - **Two names, and what happens when they are taken.** The single-instance
   mutex and the wake event live in the session's namespace, where anything
   running as the account can create them first and refuse everyone. A name

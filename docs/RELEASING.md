@@ -6,11 +6,18 @@
    `src/Nextcalibur.App/Nextcalibur.App.csproj` and `build.ps1`, commit.
 2. `git tag vX.Y.Z && git push origin main vX.Y.Z`.
 3. The `Release` workflow builds on a GitHub-hosted runner: tests, a
-   self-contained publish, the Velopack package with a delta against the
+   framework-dependent publish, the Velopack package with a delta against the
    previous release (fetched from GitHub), the Inno Setup wizard, a
    build-provenance attestation, and the release itself with the notes
    file. Nothing is built on a development machine for a release;
    `build.ps1` is for trying the same steps locally.
+
+The workflow refuses to publish against a .NET channel that is out of
+support (`tools/Check-Runtime.ps1`), and warns while the end of life is
+within four months. The runtime itself is not in the package since 0.5.4:
+the wizard installs it, Windows patches it, and the application offers
+newer patches through its own update flow. A build that carries one again
+would have to carry the newest patch, which the same script checks.
 
 The release page carries, in this order:
 

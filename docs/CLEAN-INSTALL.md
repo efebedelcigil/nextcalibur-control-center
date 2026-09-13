@@ -16,7 +16,7 @@ on hardware or in a clean Windows Sandbox, not reasoned about.
 | The card's clock and power draw | `nvml.dll`, from the NVIDIA driver | no - degrades to `--` |
 | The processor's package power | the PawnIO driver, offered and installed on a yes | no - degrades to `--` |
 | Settings, the log, the theme | `%AppData%` | no |
-| The .NET 8 desktop runtime | carried inside the package | no |
+| The .NET 8 desktop runtime | installed by the wizard from Microsoft when the machine has none; patched by Windows; kept current by the application | **yes** - the application does not start without it |
 
 Nothing the vendor installs is loaded, read or written. The only mention of
 the vendor in the source is two process names, used to notice its software
@@ -79,11 +79,19 @@ page locks and the banner says so; when it returns, everything comes back.
 **No PawnIO.** The processor's power reads `--`; the application offers the
 driver, from its own releases, signature checked.
 
-**No .NET runtime.** Nothing to do: the package carries its own. (The
-framework-dependent package of the first releases relied on the installer
-fetching the runtime, which was watched failing silently in a clean sandbox
-on 11 September 2026 - a prompt, a bar that never moved, a Finish button
-that worked - and was replaced by a self-contained one the same day.)
+**No .NET runtime.** The wizard installs it: Microsoft's own installer for
+the channel, signature checked, run quietly, before the application is
+unpacked. Afterwards Windows patches it, and the application offers a newer
+one through the same check and button as its own updates.
+
+The first releases left this to Velopack's runtime bootstrap, which was
+watched failing silently in a clean sandbox on 11 September 2026 - a prompt,
+a bar that never moved, a Finish button that worked - and the runtime was
+carried inside the package the same day. That cured the symptom and created
+another: nothing on a machine patches a runtime that lives inside an
+application, and 0.5.3 went out carrying one that was five days and five
+CVEs behind. Since 0.5.4 the wizard does the fetching itself, the way it
+does PawnIO's, and the bootstrap is not used at all.
 
 **An unsupported laptop.** One without the interface gets a banner, nothing
 to click, and no change to the machine at all; one whose firmware answers
@@ -104,6 +112,7 @@ safe for a known state of the cooling.
 |---|---|
 | The interface needs nothing the vendor installs | readings on a laptop with the vendor's software, driver and registry key all removed |
 | The vendor's installer is what opened the data block to every user | the descriptor watched before, during and after in a clean sandbox |
-| A self-contained package installs and runs with no .NET on the machine | clean sandbox, 11 September 2026 |
+| A self-contained package installs and runs with no .NET on the machine | clean sandbox, 11 September 2026 (the shape until 0.5.4) |
+| The application offers a newer .NET runtime through its own update flow | on the machine, 13 September 2026: 8.0.30 installed, 8.0.31 offered |
 | The wizard installs under Program Files and the uninstall leaves nothing | clean sandbox, 12 September 2026 |
 | The updater finds, downloads and applies a release | 0.5.2 to 0.5.3 on the machine, 12 September 2026 |

@@ -102,6 +102,17 @@ The one Windows is set to - Turkish on a Turkish Windows, English on every
 other. Change it on the Settings page; the switch is immediate and
 remembered.
 
+**Does it need .NET installed?**
+Yes: the .NET 8 desktop runtime. The wizard installs it from Microsoft when
+the machine has none, so on a normal install there is nothing to do. It is
+worth knowing why, because it changed in 0.5.4: the runtime used to be
+carried inside Nextcalibur, and that meant a .NET security fix could only
+reach you as a new Nextcalibur - 0.5.3 shipped one that was five days and
+five fixes behind. A runtime installed on the machine is patched by Windows,
+and Nextcalibur offers the newer one through the same button as its own
+updates when Windows has not got to it yet. The download is a twelfth of
+what it was, too.
+
 **What is PawnIO, and why would I install it?**
 An open-source, Microsoft-signed kernel driver that runs small signed
 modules; LibreHardwareMonitor and FanControl use it. Nextcalibur uses one
@@ -114,7 +125,7 @@ application is. Without it: `--`.
 
 **Does it send anything anywhere? Is there telemetry?**
 No. The only network requests are to GitHub, to find the application's own
-updates and PawnIO's, and none at all with automatic checks off. Nothing
+updates, PawnIO's and .NET's, and none at all with automatic checks off. Nothing
 about you or the machine is in them beyond what any download carries.
 [PRIVACY.md](PRIVACY.md) has the full table; *Privacy* on the Settings page
 says the same in the window.
