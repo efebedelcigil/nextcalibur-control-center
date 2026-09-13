@@ -1056,7 +1056,10 @@ public partial class MainWindow : Window
     private void ApplyGpuMode(GpuConfiguration config, GpuLoad? load)
     {
         _currentGpuMode = config.Mode;
-        GpuModeDetail.Text = GpuModeService.Describe(config, load, _lastThermal);
+        var detail = GpuModeService.Describe(config, load, _lastThermal);
+        if (_currentGpuFaultText is not null)
+            detail += "\n\n" + _currentGpuFaultText;
+        GpuModeDetail.Text = detail;
 
         // The transitions the firmware refuses, said on the card rather than
         // on click: UMA is a switched-off card and Discrete hands it the
@@ -2246,22 +2249,63 @@ public partial class MainWindow : Window
     }
 
     private DateTime _registryLookedAt = DateTime.MinValue;
+    private DateTime _windowsFaultsLookedAt = DateTime.MinValue;
+    private DateTime _lastGpuFaultNotified = DateTime.MinValue;
+    private string? _currentGpuFaultText;
 
     /// <summary>
     /// Windows' own faults: watched on the same slow beat as everything
     /// else, and put right where that is safe. See
-    /// <see cref="Nextcalibur.Core.Hardware.WindowsFaults"/> for the rules
+    /// <see cref="Nextcalibur.Core.Hardware.WindowsFaults"/> and
+    /// <see cref="Nextcalibur.Core.Hardware.GpuClockReader"/> for the rules
     /// this is held to; the switch is on the Settings page.
     /// </summary>
     private void WatchWindowsItself()
     {
-        if (!_settings.CompensateWindowsFaults) return;
+        if (!_settings.CompensateWindowsFaults)
+        {
+            _currentGpuFaultText = null;
+            _gpuClock.ResetAwakeFault();
+            return;
+        }
 
         foreach (var fault in Nextcalibur.Core.Hardware.WindowsFaults.Check(mayAct: true))
         {
             var title = Strings.Get(fault.Fixed ? "S.WindowsFault.Fixed" : "S.WindowsFault.Found");
             if (!Toasts.TryShow(title, fault.What, Strings.Get("S.Dialog.OK"), () => { }))
                 _tray?.ShowMessage(title, fault.What);
+        }
+
+        // §26: The graphics card held awake at full clocks with nothing to draw.
+        // Controlled under the same switch, touches nothing on the card.
+        var gpuFault = _gpuClock.CheckAwakeFault();
+        if (gpuFault is not null)
+        {
+            var desc = gpuFault.Describe();
+            var hadFault = _currentGpuFaultText != null;
+            _currentGpuFaultText = desc;
+
+            if (DateTime.UtcNow - _lastGpuFaultNotified >= TimeSpan.FromHours(1))
+            {
+                _lastGpuFaultNotified = DateTime.UtcNow;
+                var title = Strings.Get("S.WindowsFault.GpuWakeTitle");
+                var buttonText = Strings.Get("S.WindowsFault.OpenGraphicsSettings");
+                if (!Toasts.TryShow(title, desc, buttonText, () => Unelevated.Open("ms-settings:display-graphics")))
+                    _tray?.ShowMessage(title, desc);
+            }
+
+            if (!hadFault && NavDisplay.IsChecked == true)
+            {
+                LoadGpuMode();
+            }
+        }
+        else if (_currentGpuFaultText != null)
+        {
+            _currentGpuFaultText = null;
+            if (NavDisplay.IsChecked == true)
+            {
+                LoadGpuMode();
+            }
         }
     }
 
@@ -2361,6 +2405,13 @@ public partial class MainWindow : Window
                 await WatchForTheCardBeingSwitched();
             }
 
+            // Once a minute whether on screen or hidden: check Windows and GPU faults.
+            if (DateTime.UtcNow - _windowsFaultsLookedAt >= TimeSpan.FromMinutes(1))
+            {
+                _windowsFaultsLookedAt = DateTime.UtcNow;
+                WatchWindowsItself();
+            }
+
             // Once a minute on screen, once every five while hidden: two
             // registry scans for things that change once in a machine's
             // life - the vendor's plans going, the vendor's software coming
@@ -2369,7 +2420,6 @@ public partial class MainWindow : Window
             if (DateTime.UtcNow - _registryLookedAt >= (onScreen ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(5)))
             {
                 _registryLookedAt = DateTime.UtcNow;
-                WatchWindowsItself();
                 KeepTheModesPlanAlive();
                 if (_support.Level != SupportLevel.Unsupported)
                 {

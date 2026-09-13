@@ -422,6 +422,10 @@
     <sys:String x:Key="S.Core.Fault.InputHost">Windows'un giriş bileşeni (TextInputHost) bir işlemci çekirdeğini tamamen tüketir hâlde takılmıştı. Nextcalibur onu yeniden başlattı; dokunmatik klavye veya emoji paneli gerektiğinde Windows kendisi tekrar başlatır.</sys:String>
     <sys:String x:Key="S.WindowsFault.Fixed">Windows hatası giderildi</sys:String>
     <sys:String x:Key="S.WindowsFault.Found">Windows hatası bulundu</sys:String>
+    <sys:String x:Key="S.WindowsFault.GpuWakeTitle">Ekran kartı uyanık tutuluyor</sys:String>
+    <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Grafik ayarları</sys:String>
+    <sys:String x:Key="S.Core.Fault.GpuWake">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor. Tutan işlemler: {1}.</sys:String>
+    <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor.</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsTitle">Bilinen Windows hatalarını telafi et</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsDesc">Takılıp makineyi ısıtan birkaç bilinen Windows bileşenini izler ve yeniden başlatır. Ne yaptığını söyler.</sys:String>
 

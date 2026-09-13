@@ -424,6 +424,10 @@
     <sys:String x:Key="S.Core.Fault.InputHost">Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.</sys:String>
     <sys:String x:Key="S.WindowsFault.Fixed">Windows fault put right</sys:String>
     <sys:String x:Key="S.WindowsFault.Found">Windows fault found</sys:String>
+    <sys:String x:Key="S.WindowsFault.GpuWakeTitle">Graphics card held awake</sys:String>
+    <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Graphics settings</sys:String>
+    <sys:String x:Key="S.Core.Fault.GpuWake">The graphics card is awake at full clocks with nothing to draw, costing about {0} W. Holding processes: {1}.</sys:String>
+    <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">The graphics card is awake at full clocks with nothing to draw, costing about {0} W.</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsTitle">Compensate for known Windows faults</sys:String>
     <sys:String x:Key="S.Settings.WindowsFaultsDesc">Watches for the few Windows components known to get stuck and cost the machine heat, and restarts them. It says what it did.</sys:String>
 

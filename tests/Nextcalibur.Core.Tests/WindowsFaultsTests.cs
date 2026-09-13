@@ -253,4 +253,92 @@ public class WindowsFaultsTests
         double[] loads = [10.0, 20.0, 30.0, 40.0];
         Assert.Equal(25.0, CoreLoad.AverageLoad(loads));
     }
+
+    [Theory]
+    [InlineData(0, 0, 18.7, false, true)]
+    [InlineData(1, 4, 10.1, false, true)]
+    [InlineData(2, 0, 18.7, false, false)]
+    [InlineData(8, 0, 5.0, false, false)]
+    [InlineData(0, 5, 18.7, false, false)]
+    [InlineData(0, 0, 10.0, false, false)]
+    [InlineData(0, 0, 9.5, false, false)]
+    [InlineData(0, 0, 18.7, true, false)]
+    public void Gpu_awake_fault_condition_evaluates_correctly(
+        int pState, int util, double watts, bool displayActive, bool expected)
+    {
+        var actual = GpuClockReader.IsGpuAwakeFaultCondition(pState, util, watts, displayActive);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Gpu_awake_fault_requires_ten_unbroken_minutes()
+    {
+        using var reader = new GpuClockReader();
+        var start = new DateTime(2026, 9, 14, 12, 0, 0, DateTimeKind.Utc);
+        string[] procs = ["Brave"];
+
+        // First sample at t = 0
+        var f0 = reader.EvaluateAwakeFault(true, start, () => procs, 18.7, 0, 0);
+        Assert.Null(f0);
+
+        // Sample at t = 5 min
+        var f5 = reader.EvaluateAwakeFault(true, start.AddMinutes(5), () => procs, 18.7, 0, 0);
+        Assert.Null(f5);
+
+        // Sample at t = 9.9 min
+        var f9 = reader.EvaluateAwakeFault(true, start.AddMinutes(9.9), () => procs, 18.7, 0, 0);
+        Assert.Null(f9);
+
+        // Sample at t = 10 min
+        var f10 = reader.EvaluateAwakeFault(true, start.AddMinutes(10), () => procs, 18.7, 0, 0);
+        Assert.NotNull(f10);
+        Assert.Equal(0, f10.PerformanceState);
+        Assert.Equal(18.7, f10.Watts);
+        Assert.Single(f10.HoldingProcesses);
+        Assert.Equal("Brave", f10.HoldingProcesses[0]);
+        Assert.Equal(TimeSpan.FromMinutes(10), f10.Duration);
+    }
+
+    [Fact]
+    public void Gpu_awake_fault_resets_clock_if_condition_breaks()
+    {
+        using var reader = new GpuClockReader();
+        var start = new DateTime(2026, 9, 14, 12, 0, 0, DateTimeKind.Utc);
+        string[] procs = ["Brave"];
+
+        // Starts at t = 0
+        reader.EvaluateAwakeFault(true, start, () => procs, 18.7, 0, 0);
+        // At t = 5 min, still true
+        reader.EvaluateAwakeFault(true, start.AddMinutes(5), () => procs, 18.7, 0, 0);
+
+        // At t = 6 min, condition breaks (e.g. card dropped to P8 or power dropped)
+        var fBroken = reader.EvaluateAwakeFault(false, start.AddMinutes(6), () => procs, 3.5, 8, 0);
+        Assert.Null(fBroken);
+
+        // At t = 7 min, condition becomes true again
+        var fNewStart = reader.EvaluateAwakeFault(true, start.AddMinutes(7), () => procs, 18.7, 0, 0);
+        Assert.Null(fNewStart);
+
+        // At t = 15 min (8 minutes since restart at t = 7)
+        var f8Min = reader.EvaluateAwakeFault(true, start.AddMinutes(15), () => procs, 18.7, 0, 0);
+        Assert.Null(f8Min);
+
+        // At t = 17 min (10 minutes since restart at t = 7)
+        var f10Min = reader.EvaluateAwakeFault(true, start.AddMinutes(17), () => procs, 18.7, 0, 0);
+        Assert.NotNull(f10Min);
+    }
+
+    [Fact]
+    public void Gpu_awake_fault_describe_formats_holding_processes()
+    {
+        var faultWithProcs = new GpuAwakeFault(0, 18.7, 0, ["Brave", "Code"], TimeSpan.FromMinutes(10));
+        var descWithProcs = faultWithProcs.Describe();
+        Assert.Contains("19 W", descWithProcs);
+        Assert.Contains("Brave, Code", descWithProcs);
+
+        var faultWithoutProcs = new GpuAwakeFault(0, 15.2, 0, [], TimeSpan.FromMinutes(10));
+        var descWithoutProcs = faultWithoutProcs.Describe();
+        Assert.Contains("15 W", descWithoutProcs);
+        Assert.DoesNotContain("Holding processes", descWithoutProcs);
+    }
 }

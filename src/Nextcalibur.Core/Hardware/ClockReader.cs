@@ -192,6 +192,12 @@ public sealed class GpuClockReader : IDisposable
     [DllImport(Nvml, EntryPoint = "nvmlDeviceGetUtilizationRates")]
     private static extern int GetUtilisation(IntPtr device, out NvmlUtilisation rates);
 
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetPerformanceState")]
+    private static extern int GetPerformanceState(IntPtr device, out int pState);
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetDisplayActive")]
+    private static extern int GetDisplayActive(IntPtr device, out int isActive);
+
     [StructLayout(LayoutKind.Sequential)]
     private struct NvmlUtilisation
     {
@@ -199,10 +205,21 @@ public sealed class GpuClockReader : IDisposable
         public uint Memory;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NvmlProcessInfo
+    {
+        public uint Pid;
+        public ulong UsedGpuMemory;
+    }
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetGraphicsRunningProcesses")]
+    private static extern int GetGraphicsProcesses(IntPtr device, ref uint infoCount, [In, Out] NvmlProcessInfo[]? infos);
+
     private IntPtr _device;
     private bool _ready;
     private bool _tried;
     private bool _disposed;
+    private DateTime _awakeSince = DateTime.MinValue;
 
     /// <summary>
     /// Forgets the device handle so the next read starts from a fresh
@@ -236,6 +253,7 @@ public sealed class GpuClockReader : IDisposable
         _device = IntPtr.Zero;
         _ready = false;
         _tried = false;
+        _awakeSince = DateTime.MinValue;
     }
 
     private bool EnsureReady()
@@ -325,6 +343,154 @@ public sealed class GpuClockReader : IDisposable
         }
     }
 
+    /// <summary>Resets the unbroken awake timer.</summary>
+    public void ResetAwakeFault() => _awakeSince = DateTime.MinValue;
+
+    /// <summary>
+    /// Pure arithmetic check: the card in P0 or P1, utilisation under 5 %,
+    /// power over 10 W, and no display attached.
+    /// </summary>
+    public static bool IsGpuAwakeFaultCondition(int performanceState, int utilisationPercent, double watts, bool displayActive)
+    {
+        return (performanceState is 0 or 1)
+            && utilisationPercent < 5
+            && watts > 10.0
+            && !displayActive;
+    }
+
+    /// <summary>
+    /// Reads distinct process names holding graphics contexts on the discrete adapter through NVML.
+    /// </summary>
+    public IReadOnlyList<string> ReadGraphicsRunningProcessNames()
+    {
+        if (!EnsureReady()) return [];
+
+        try
+        {
+            uint count = 64;
+            var infos = new NvmlProcessInfo[count];
+            var res = GetGraphicsProcesses(_device, ref count, infos);
+            if (res == 6 && count > 64) // NVML_ERROR_INSUFFICIENT_SIZE
+            {
+                infos = new NvmlProcessInfo[count];
+                res = GetGraphicsProcesses(_device, ref count, infos);
+            }
+            if (res != Success) return [];
+
+            var names = new List<string>();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < count && i < infos.Length; i++)
+            {
+                var pid = (int)infos[i].Pid;
+                try
+                {
+                    using var p = System.Diagnostics.Process.GetProcessById(pid);
+                    var name = p.ProcessName;
+                    if (!string.IsNullOrWhiteSpace(name) && seen.Add(name))
+                    {
+                        names.Add(name);
+                    }
+                }
+                catch
+                {
+                    // Process may have exited or access is denied.
+                }
+            }
+            return names;
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            _ready = false;
+            return [];
+        }
+    }
+
+    /// <summary>
+    /// Evaluates the awake fault state given the current reading and timestamp.
+    /// Returns the active fault if the condition has held unbroken for at least the required window (10 minutes).
+    /// </summary>
+    public GpuAwakeFault? EvaluateAwakeFault(
+        bool isFaultCondition,
+        DateTime now,
+        Func<IReadOnlyList<string>> readProcesses,
+        double watts,
+        int pState,
+        int utilisation,
+        TimeSpan? requiredWindow = null)
+    {
+        var window = requiredWindow ?? TimeSpan.FromMinutes(10);
+        if (!isFaultCondition)
+        {
+            _awakeSince = DateTime.MinValue;
+            return null;
+        }
+
+        if (_awakeSince == DateTime.MinValue)
+        {
+            _awakeSince = now;
+            return null;
+        }
+
+        var duration = now - _awakeSince;
+        if (duration < window)
+        {
+            return null;
+        }
+
+        var procs = readProcesses();
+        return new GpuAwakeFault(pState, watts, utilisation, procs, duration);
+    }
+
+    /// <summary>
+    /// Detects the discrete GPU sitting at full clocks (P0/P1) with under 5% utilisation,
+    /// power over 10 W, and no display attached, for 10 minutes unbroken.
+    /// Returns the fault details when detected, or null otherwise.
+    /// </summary>
+    public GpuAwakeFault? CheckAwakeFault(DateTime? utcNow = null)
+    {
+        if (!EnsureReady())
+        {
+            _awakeSince = DateTime.MinValue;
+            return null;
+        }
+
+        try
+        {
+            if (GetPerformanceState(_device, out var pState) != Success)
+            {
+                _awakeSince = DateTime.MinValue;
+                return null;
+            }
+            if (GetUtilisation(_device, out var rates) != Success)
+            {
+                _awakeSince = DateTime.MinValue;
+                return null;
+            }
+            if (GetPower(_device, out var milliwatts) != Success)
+            {
+                _awakeSince = DateTime.MinValue;
+                return null;
+            }
+            if (GetDisplayActive(_device, out var dispActive) != Success)
+            {
+                _awakeSince = DateTime.MinValue;
+                return null;
+            }
+
+            var watts = milliwatts / 1000.0;
+            var isFault = IsGpuAwakeFaultCondition(pState, (int)rates.Gpu, watts, dispActive != 0);
+            var now = utcNow ?? DateTime.UtcNow;
+
+            return EvaluateAwakeFault(isFault, now, ReadGraphicsRunningProcessNames, watts, pState, (int)rates.Gpu);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            _ready = false;
+            _awakeSince = DateTime.MinValue;
+            return null;
+        }
+    }
+
     public void Dispose()
     {
         if (_disposed) return;
@@ -342,3 +508,32 @@ public sealed class GpuClockReader : IDisposable
         _ready = false;
     }
 }
+
+/// <summary>
+/// Evidence of a discrete graphics card held awake at full clocks with nothing to draw.
+/// </summary>
+public sealed record GpuAwakeFault(
+    int PerformanceState,
+    double Watts,
+    int UtilisationPercent,
+    IReadOnlyList<string> HoldingProcesses,
+    TimeSpan Duration)
+{
+    /// <summary>Describes what is happening in the current language.</summary>
+    public string Describe()
+    {
+        var roundedWatts = (int)Math.Round(Watts);
+        if (HoldingProcesses.Count > 0)
+        {
+            var procs = string.Join(", ", HoldingProcesses);
+            return Words.Get("S.Core.Fault.GpuWake",
+                "The graphics card is awake at full clocks with nothing to draw, costing about {0} W. Holding processes: {1}.",
+                roundedWatts, procs);
+        }
+
+        return Words.Get("S.Core.Fault.GpuWakeNoProcesses",
+            "The graphics card is awake at full clocks with nothing to draw, costing about {0} W.",
+            roundedWatts);
+    }
+}
+
