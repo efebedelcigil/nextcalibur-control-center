@@ -24,6 +24,51 @@ public partial class App : Application
     private static Mutex? _instanceLock;
 
     /// <summary>
+    /// The single-instance lock, and what to do when it cannot be had.
+    ///
+    /// The name lives in the session's own namespace, where anything running
+    /// as this account can create it first - with a security descriptor that
+    /// refuses everyone, if it likes. Believing that blindly would hand any
+    /// unprivileged process a way to stop this application from ever
+    /// starting. So a lock that cannot be taken is only believed when there
+    /// is another copy of this application actually running; otherwise the
+    /// name has been squatted and the start goes ahead without it.
+    /// </summary>
+    private static Mutex? TakeInstanceLock(out bool isFirst)
+    {
+        try
+        {
+            var mutex = new Mutex(initiallyOwned: true, InstanceMutexName, out isFirst);
+            if (isFirst) return mutex;
+            mutex.Dispose();
+            if (AnotherCopyIsRunning()) return null;
+            Log.Warn("start", "The single-instance name was already taken, and no other copy is running: starting anyway");
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or WaitHandleCannotBeOpenedException or IOException)
+        {
+            Log.Warn("start", "The single-instance name is held by something that will not share it: " + ex.Message);
+            if (AnotherCopyIsRunning()) { isFirst = false; return null; }
+        }
+
+        // Squatted, or held by something that is not us. Start anyway.
+        isFirst = true;
+        return null;
+    }
+
+    private static bool AnotherCopyIsRunning()
+    {
+        try
+        {
+            var mine = Environment.ProcessId;
+            return Process.GetProcessesByName("Nextcalibur").Any(p => p.Id != mine);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or Win32Exception)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Asks this process, elevated, to undo the two machine-wide changes.
     /// Reached only from the uninstall hook, after the person has said yes.
     /// </summary>
@@ -96,8 +141,14 @@ public partial class App : Application
         // A short-lived elevated copy of the application doing the uninstall's
         // machine-wide work and exiting. It must not run installer hooks, take
         // the single-instance mutex, or put a second icon in the notification area.
+        //
+        // Elevated only, and not because it needs the rights: this switch
+        // deletes the shortcuts, the registry entry and the install folder,
+        // and it asks nobody. Anything running as the account could have
+        // started the application with it and taken the installation apart.
         if (args.Contains(CleanUpArgument))
         {
+            if (!Elevation.IsElevated()) return;
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
             for (var i = 0; i + 1 < args.Length; i++)
             {
@@ -116,6 +167,7 @@ public partial class App : Application
         var cardIndex = Array.IndexOf(args, CardSwitchTasks.Argument);
         if (cardIndex >= 0 && cardIndex + 1 < args.Length)
         {
+            if (!Elevation.IsElevated()) return;
             var enable = string.Equals(args[cardIndex + 1], "on", StringComparison.OrdinalIgnoreCase);
             Environment.Exit(GpuModeService.RunPnputil(enable) ? 0 : 1);
             return;
@@ -132,7 +184,7 @@ public partial class App : Application
         // two icons in the notification area, and the mailbox holds one command
         // at a time — a write from one can land between another's, which is the
         // failure the lighting code takes a lock to avoid within a process.
-        _instanceLock = new Mutex(initiallyOwned: true, InstanceMutexName, out var isFirst);
+        _instanceLock = TakeInstanceLock(out var isFirst);
         if (!isFirst)
         {
             // Someone asked for the application while it was already running,
@@ -249,7 +301,7 @@ public partial class App : Application
         ListenForWakeRequests(app);
         app.Run();
 
-        _instanceLock.ReleaseMutex();
+        _instanceLock?.ReleaseMutex();
     }
 
     /// <summary>Signals the running copy to bring its window forward.</summary>
@@ -279,7 +331,19 @@ public partial class App : Application
     /// </summary>
     private static void ListenForWakeRequests(Application app)
     {
-        var wake = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+        EventWaitHandle wake;
+        try
+        {
+            wake = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or WaitHandleCannotBeOpenedException)
+        {
+            // Same story as the instance lock: the name is the session's and
+            // anything as this account can take it. Without it, opening the
+            // window from a second start does not work; everything else does.
+            Log.Warn("start", "The wake event could not be created: " + ex.Message);
+            return;
+        }
 
         var listener = new Thread(() =>
         {

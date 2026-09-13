@@ -32,6 +32,11 @@ public sealed class DependencyManager
     {
         Timeout = TimeSpan.FromSeconds(30),
         DefaultRequestHeaders = { { "User-Agent", "Nextcalibur" } },
+        // The release answer is read into memory; a megabyte is a hundred
+        // times what it needs and an endless one is refused. The installer
+        // download is streamed and capped separately, so this does not
+        // stand in its way.
+        MaxResponseContentBufferSize = 1024 * 1024,
     };
 
     /// <summary>Every dependency that is missing or behind. Empty when all is well or nothing could be reached.</summary>

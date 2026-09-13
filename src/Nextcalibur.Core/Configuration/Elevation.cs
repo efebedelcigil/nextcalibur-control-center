@@ -66,13 +66,19 @@ public static class Elevation
 
         // The one prompt: relaunch elevated. The elevated copy registers the
         // tasks, so this is the last time.
+        //
+        // Only --tray is carried over. The command line of the unelevated
+        // start belongs to whoever started it, and passing it on would let
+        // anything running as the account choose what the elevated copy is
+        // asked to do - the person seeing only Nextcalibur's own name on the
+        // prompt. A quote inside an argument used to survive unquoted, which
+        // is how one argument becomes two.
         try
         {
             Process.Start(new ProcessStartInfo
             {
                 FileName = executablePath,
-                Arguments = string.Join(' ', args.Where(a => !a.Equals(ViaTaskArgument, StringComparison.OrdinalIgnoreCase))
-                    .Select(a => a.Contains(' ') ? $"\"{a}\"" : a)),
+                Arguments = tray ? "--tray" : string.Empty,
                 UseShellExecute = true,
                 Verb = "runas",
             });

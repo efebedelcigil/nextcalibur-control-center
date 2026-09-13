@@ -37,6 +37,10 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
+          # Not the runner's preinstalled SDK: it lags, and a self-contained
+          # build carries whatever runtime its SDK bundles. 0.5.3 went out
+          # with 8.0.30 five days after 8.0.31 fixed five CVEs.
+          check-latest: true
 
       - name: Velopack CLI
         run: dotnet tool install -g vpk --version 1.2.0
@@ -58,6 +62,14 @@ jobs:
 
       - name: Publish
         run: dotnet publish src/Nextcalibur.App/Nextcalibur.App.csproj -c Release -o publish --nologo /p:Version=${{ steps.version.outputs.version }}
+
+      # Nothing on a machine patches the runtime inside a self-contained
+      # application; only the next release does. So a release that would
+      # carry a runtime behind the latest patch, or one out of support,
+      # stops here.
+      - name: The bundled runtime must be current
+        shell: pwsh
+        run: tools/Check-BundledRuntime.ps1 -Path publish/Nextcalibur.exe
 
       - name: Sign the executable
         if: ${{ env.SIGNING_CERT_PFX_BASE64 != '' }}

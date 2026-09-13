@@ -31,6 +31,10 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
+          # Not the runner's preinstalled SDK: it lags, and a self-contained
+          # build carries whatever runtime its SDK bundles. 0.5.3 went out
+          # with 8.0.30 five days after 8.0.31 fixed five CVEs.
+          check-latest: true
 
       - name: Restore
         run: dotnet restore Nextcalibur.sln

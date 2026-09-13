@@ -207,7 +207,14 @@ public static class StartupRegistration
         try
         {
             using var run = Registry.CurrentUser.OpenSubKey(RunKey);
-            if (run?.GetValue(ValueName) is null) return;
+            // The value is the account's to write, and this turns into a
+            // task that starts something at logon. So it is migrated only
+            // when it is what an earlier version of this application left:
+            // a command naming this executable. Anything else is somebody
+            // else's entry that happens to share the name, and is left
+            // alone rather than acted on.
+            if (run?.GetValue(ValueName) is not string command) return;
+            if (!command.Contains(System.IO.Path.GetFileName(executablePath), StringComparison.OrdinalIgnoreCase)) return;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
         {

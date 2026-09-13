@@ -77,11 +77,24 @@ public static class Strings
 
     // An absolute pack URI: the relative form needs an Application to resolve
     // against, and the uninstall hook runs before there is one.
+    /// <summary>
+    /// Loads one of the dictionaries by an absolute pack URI, which works
+    /// before there is an <see cref="Application"/> - the uninstall hook and
+    /// the first-run repair both ask their questions there, and they should
+    /// ask in the language the person chose.
+    ///
+    /// Two things have to exist first, and both are set up by WPF's own
+    /// static constructors rather than by an instance: the pack URI scheme
+    /// (System.IO.Packaging) and the handler that resolves
+    /// <c>application:,,,</c> against this assembly (System.Windows.Application,
+    /// whose ResourceAssembly is the entry assembly by default). Touching
+    /// both is enough; neither creates an application.
+    /// </summary>
     private static ResourceDictionary Load(string source)
     {
-        // The pack scheme is registered by the Application's constructor;
-        // before that, touching PackUriHelper registers it.
         _ = System.IO.Packaging.PackUriHelper.UriSchemePack;
+        if (Application.ResourceAssembly is null)
+            Application.ResourceAssembly = typeof(Strings).Assembly;
         return new ResourceDictionary { Source = new Uri("pack://application:,,,/" + source, UriKind.Absolute) };
     }
 

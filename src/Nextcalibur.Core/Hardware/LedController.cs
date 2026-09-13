@@ -188,12 +188,16 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
         }
     }
 
+    /// <summary>
+    /// The state file is the account's to edit, and its number goes into the
+    /// high nibble of a byte written to firmware. A value that is not one of
+    /// the six effects is not sent as one.
+    /// </summary>
+    internal static LedEffect Sanitise(LedEffect effect) => Enum.IsDefined(effect) ? effect : LedEffect.Static;
+
     private void Send(LedZone zone, byte r, byte g, byte b, LedEffect? effectOverride = null)
     {
-        var effect = effectOverride ?? State.Effect;
-        // The state file is the account's to edit; a number that is not an
-        // effect is not sent to the firmware as one.
-        if (!Enum.IsDefined(effect)) effect = LedEffect.Static;
+        var effect = Sanitise(effectOverride ?? State.Effect);
 
         // The useful range comes from scaling the colour; the hardware field
         // is left where the keyboard's own key put it, so a colour change does

@@ -27,6 +27,14 @@
          in a delta. -->
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Carrying the runtime means carrying its security fixes too: nothing
+         on the machine patches these files, only a new release does. Without
+         this, the runtime that goes out is whatever the build machine's SDK
+         happened to bundle - 0.5.3 shipped 8.0.30 while 8.0.31, five
+         security fixes, was already out. This asks restore for the newest
+         patch of the runtime pack instead. Checked at every release
+         (docs/RELEASING.md). -->
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <PublishSingleFile>true</PublishSingleFile>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <TieredPGO>true</TieredPGO>

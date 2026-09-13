@@ -136,6 +136,26 @@ public abstract class Dependency
         }
     }
 
+    /// <summary>
+    /// Whether a download link is what it should be: HTTPS, on GitHub, and
+    /// under the releases of the repository that was asked about.
+    ///
+    /// The answer that carries it arrives over TLS from api.github.com, so
+    /// this is a second lock on the same door - but the thing behind the door
+    /// is a file this application downloads and runs as administrator, and a
+    /// link is the cheapest part of an answer to change.
+    /// </summary>
+    internal static bool IsReleaseAssetOf(string? link, string owner, string repo, out Uri url)
+    {
+        url = null!;
+        if (!Uri.TryCreate(link, UriKind.Absolute, out var candidate)) return false;
+        if (candidate.Scheme != Uri.UriSchemeHttps) return false;
+        if (!candidate.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase)) return false;
+        if (!candidate.AbsolutePath.StartsWith($"/{owner}/{repo}/releases/download/", StringComparison.OrdinalIgnoreCase)) return false;
+        url = candidate;
+        return true;
+    }
+
     /// <summary>The newest GitHub release of a repository, for dependencies hosted there.</summary>
     protected static async Task<(Version Version, Uri Download)?> LatestGitHubReleaseAsync(
         HttpClient http, string owner, string repo, string assetName, CancellationToken ct)
@@ -143,9 +163,20 @@ public abstract class Dependency
         using var response = await http.GetAsync($"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
         if (!response.IsSuccessStatusCode) return null;
 
-        // Read as the shape it should have; a rate-limit notice or a changed
-        // API is a null answer, not an exception out of a timer.
-        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+        // Read as the shape it should have; a rate-limit notice, a changed
+        // API or a body that is not JSON at all is a null answer, not an
+        // exception out of a timer.
+        JsonDocument json;
+        try
+        {
+            json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+
+        using var _ = json;
         var root = json.RootElement;
         if (root.ValueKind != JsonValueKind.Object
             || !root.TryGetProperty("tag_name", out var tagElement) || tagElement.ValueKind != JsonValueKind.String
@@ -160,8 +191,7 @@ public abstract class Dependency
                 && asset.TryGetProperty("name", out var name) && name.ValueKind == JsonValueKind.String
                 && string.Equals(name.GetString(), assetName, StringComparison.OrdinalIgnoreCase)
                 && asset.TryGetProperty("browser_download_url", out var link) && link.ValueKind == JsonValueKind.String
-                && Uri.TryCreate(link.GetString(), UriKind.Absolute, out var url)
-                && url.Scheme == Uri.UriSchemeHttps)
+                && IsReleaseAssetOf(link.GetString(), owner, repo, out var url))
                 return (version, url);
         }
         return null;
