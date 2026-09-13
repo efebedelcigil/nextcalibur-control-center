@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using Nextcalibur.Core.Security;
 
@@ -31,7 +32,21 @@ public sealed class DependencyManager
     /// </summary>
     public static IReadOnlyList<Dependency> All { get; } = [new DotNetRuntimeDependency(), new PawnIoDependency()];
 
-    private static readonly HttpClient Http = new()
+    /// <summary>
+    /// One client for the life of the process, and as quiet as it can be
+    /// made: compressed answers, and conditional requests through
+    /// <see cref="Conditional"/> so a check that finds nothing new costs a
+    /// few hundred bytes rather than kilobytes. Measured on 13 September
+    /// 2026: the .NET channel index is 6.7 kB plain, 813 bytes compressed
+    /// and nothing at all when it has not changed.
+    /// </summary>
+    private static readonly HttpClient Http = new(new SocketsHttpHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All,
+        // Nothing is expected between checks six hours apart; a socket kept
+        // open for that is a socket kept open for nothing.
+        PooledConnectionIdleTimeout = TimeSpan.FromSeconds(30),
+    })
     {
         Timeout = TimeSpan.FromSeconds(30),
         DefaultRequestHeaders = { { "User-Agent", "Nextcalibur" } },
@@ -43,6 +58,40 @@ public sealed class DependencyManager
         // separately, so this does not stand in its way.
         MaxResponseContentBufferSize = 8 * 1024 * 1024,
     };
+
+    /// <summary>
+    /// The newest release a GitHub repository has published, or null when
+    /// the answer could not be had or read.
+    ///
+    /// This exists to be asked before the updater is: Velopack's own check
+    /// downloads the repository's whole release list - ninety kilobytes on
+    /// 13 September 2026, and it grows with every release - while this is
+    /// three and a half compressed, and nothing at all when GitHub answers
+    /// "not modified". On a machine that is up to date, which is nearly
+    /// every check on nearly every machine, the expensive one is then never
+    /// made at all.
+    /// </summary>
+    public static async Task<Version?> LatestReleaseAsync(string owner, string repo, CancellationToken ct = default)
+    {
+        try
+        {
+            var body = await Conditional.GetAsync(Http, $"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
+            if (body is null) return null;
+
+            using var json = System.Text.Json.JsonDocument.Parse(body);
+            if (json.RootElement.ValueKind != System.Text.Json.JsonValueKind.Object
+                || !json.RootElement.TryGetProperty("tag_name", out var tag)
+                || tag.ValueKind != System.Text.Json.JsonValueKind.String)
+                return null;
+
+            var text = tag.GetString()!.TrimStart('v', 'V');
+            return Version.TryParse(text.Contains('.') ? text : text + ".0", out var version) ? version : null;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            return null;
+        }
+    }
 
     /// <summary>Every dependency that is missing or behind. Empty when all is well or nothing could be reached.</summary>
     public static async Task<IReadOnlyList<DependencyStatus>> CheckAsync(CancellationToken ct = default)
@@ -103,6 +152,10 @@ public sealed class DependencyManager
         string? file = null;
         try
         {
+            // Anything the check was too thrifty to ask for is asked now.
+            var latest = await status.Dependency.ResolveBeforeDownloadAsync(Http, status.Latest, ct);
+            status = status with { Latest = latest };
+
             await using (var target = SystemTools.CreateProtectedTemporaryFile(".exe", out file))
             using (var response = await Http.GetAsync(status.Latest.Download, HttpCompletionOption.ResponseHeadersRead, ct))
             {

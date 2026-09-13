@@ -110,35 +110,48 @@ public sealed class DotNetRuntimeDependency : Dependency
     }
 
     /// <summary>
-    /// The newest patch of the channel.
+    /// The newest patch of the channel, from Microsoft's index of channels:
+    /// 813 bytes compressed, and nothing when it has not changed.
     ///
-    /// Asked in two steps, because the cheap question is asked every six
-    /// hours and the expensive one almost never. Microsoft's index of
-    /// channels is seven kilobytes and names the latest patch; the
-    /// channel's own index, which carries every file's link and hash, is a
-    /// megabyte and a half. So the small one decides whether anything is
-    /// needed, and only then is the large one read - for the exact link and
-    /// the SHA-512 to check the download against.
+    /// The exact link is worked out from the version - Microsoft's own
+    /// index uses the same shape - so the check never reads the channel's
+    /// own index, which is a megabyte and a half of JSON (310 kB
+    /// compressed) and carries the hashes. That one is read once, in
+    /// <see cref="ResolveBeforeDownloadAsync"/>, when somebody has said yes
+    /// to the offer. A check four times a day should not cost what a
+    /// download costs.
     /// </summary>
     public override async Task<ReleaseFile?> LatestAsync(HttpClient http, CancellationToken ct)
     {
         var latest = LatestInIndex(await ReadJsonAsync(http, ChannelsUrl, ct), Channel);
-        if (latest is null) return null;
-
-        var installed = InstalledVersion();
-        if (installed is not null && installed >= latest) return new ReleaseFile(latest, DownloadFor(latest));
-
-        return Newest(await ReadJsonAsync(http, ReleasesUrl, ct)) ?? new ReleaseFile(latest, DownloadFor(latest));
+        return latest is null ? null : new ReleaseFile(latest, DownloadFor(latest));
     }
 
-    /// <summary>A JSON answer, or a null element when there is none to be had. Never throws.</summary>
+    /// <summary>
+    /// The hash, which is worth 310 kB once and nothing four times a day.
+    /// Microsoft publishes a SHA-512 for every file in the channel's index;
+    /// if it cannot be had, the download still has to be signed by
+    /// Microsoft, which is the check that was there before this one.
+    /// </summary>
+    public override async Task<ReleaseFile> ResolveBeforeDownloadAsync(HttpClient http, ReleaseFile found, CancellationToken ct)
+    {
+        if (found.Sha512 is { Length: > 0 }) return found;
+
+        var exact = Newest(await ReadJsonAsync(http, ReleasesUrl, ct));
+        return exact is not null && exact.Version == found.Version ? exact : found;
+    }
+
+    /// <summary>
+    /// A JSON answer, or a null element when there is none to be had. Asked
+    /// conditionally, so an unchanged file is answered with 304 and no body.
+    /// Never throws: this runs from a timer.
+    /// </summary>
     private static async Task<JsonElement> ReadJsonAsync(HttpClient http, string url, CancellationToken ct)
     {
         try
         {
-            using var response = await http.GetAsync(url, ct);
-            if (!response.IsSuccessStatusCode) return default;
-            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+            if (await Conditional.GetAsync(http, url, ct) is not { } body) return default;
+            using var json = JsonDocument.Parse(body);
             return json.RootElement.Clone();
         }
         catch (Exception ex) when (ex is JsonException or HttpRequestException or TaskCanceledException or IOException)

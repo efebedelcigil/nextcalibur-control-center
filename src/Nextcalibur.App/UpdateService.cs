@@ -23,6 +23,10 @@ public sealed class UpdateService : IDisposable
 {
     public const string Repository = "https://github.com/efebedelcigil/nextcalibur-control-center";
 
+    /// <summary>The same repository, in the two pieces GitHub's API wants.</summary>
+    private const string Owner = "efebedelcigil";
+    private const string Repo = "nextcalibur-control-center";
+
     /// <summary>
     /// How long after startup the first check waits. Startup is when the
     /// person is most likely looking; a network round trip can wait a minute.
@@ -34,6 +38,9 @@ public sealed class UpdateService : IDisposable
     /// six hours finds one the same day without troubling GitHub.
     /// </summary>
     private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(6);
+
+    /// <summary>How soon to look again after leaving a game alone. Costs nothing: the check does not run.</summary>
+    private static readonly TimeSpan WhileBusyDelay = TimeSpan.FromMinutes(20);
 
     private readonly UpdateManager? _manager;
     private readonly DispatcherTimer? _timer;
@@ -73,6 +80,20 @@ public sealed class UpdateService : IDisposable
         {
             _timer.Interval = CheckInterval;
             if (!AutomaticChecksEnabled()) return;
+
+            // Not while a game has the screen. A check is a few requests and
+            // a few hundred bytes, but it can end in a download, an
+            // installer and a question - none of which belong in the middle
+            // of a round, and the tab-out alone would cost more than the
+            // update is worth. Windows is asked, rather than guessed at, and
+            // the next look is soon rather than in six hours so the end of
+            // the session is not missed.
+            if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed())
+            {
+                _timer.Interval = WhileBusyDelay;
+                return;
+            }
+
             await CheckAsync(report: false);
             await CheckDependenciesAsync();
         };
@@ -144,6 +165,22 @@ public sealed class UpdateService : IDisposable
 
         try
         {
+            // The cheap question first. Velopack's check downloads the whole
+            // release list - ninety kilobytes, and it grows with every
+            // release published - and on a machine that is already current
+            // the answer is always the same. Asking GitHub for the newest
+            // tag costs three and a half compressed kilobytes, or nothing at
+            // all when it answers "not modified", and settles it on every
+            // machine nobody has left behind.
+            //
+            // Fail open: an answer that cannot be had or read means the full
+            // check runs, exactly as it did before this.
+            var mine = typeof(UpdateService).Assembly.GetName().Version;
+            var published = await Nextcalibur.Core.Dependencies.DependencyManager.LatestReleaseAsync(Owner, Repo);
+            if (mine is not null && published is not null
+                && published <= new Version(mine.Major, mine.Minor, mine.Build))
+                return false;
+
             var available = await _manager.CheckForUpdatesAsync();
             if (available is null) return false;
 

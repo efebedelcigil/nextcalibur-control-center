@@ -123,6 +123,21 @@ It is downloaded from PawnIO's own releases, its Authenticode signature and
 chain verified, and installed quietly - and kept current the same way the
 application is. Without it: `--`.
 
+**Does it use the network or the processor while I am playing?**
+No network at all: Windows is asked whether a game has the screen (the same
+question its own notifications ask), and while one does, the checks do not
+run - no requests, no downloads, and no notification to tab out to. It looks
+again twenty minutes later, so the end of a session is not missed.
+
+The readings carry on while you play, because the overheat warning is the
+reason the application is resident at all: two firmware reads a minute while
+the window is away, which is where its cost while hidden comes from.
+
+When a check does run it is a few kilobytes: the three questions together
+are about 9 kB with headers, and each is asked conditionally so an unchanged
+answer sends no body. Four checks a day is under 40 kB. Turn *Check for
+updates automatically* off and it is nothing at all.
+
 **Does it send anything anywhere? Is there telemetry?**
 No. The only network requests are to GitHub, to find the application's own
 updates, PawnIO's and .NET's, and none at all with automatic checks off. Nothing

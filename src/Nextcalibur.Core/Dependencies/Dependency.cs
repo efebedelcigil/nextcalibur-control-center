@@ -56,6 +56,18 @@ public abstract class Dependency
     /// </summary>
     public abstract string ExpectedSigner { get; }
 
+    /// <summary>
+    /// A last look before the file is fetched, for anything too dear to ask
+    /// for on every check. The default answers with what the check found.
+    ///
+    /// The .NET runtime is why this exists: knowing that a newer patch
+    /// exists costs 813 bytes, while knowing its exact link and hash costs
+    /// 310 kB - so the cheap question is asked four times a day and the
+    /// dear one only when somebody says yes.
+    /// </summary>
+    public virtual Task<ReleaseFile> ResolveBeforeDownloadAsync(HttpClient http, ReleaseFile found, CancellationToken ct) =>
+        Task.FromResult(found);
+
     /// <summary>Arguments that make the installer run without a wizard.</summary>
     public abstract string SilentInstallArguments { get; }
 
@@ -178,8 +190,11 @@ public abstract class Dependency
     protected static async Task<ReleaseFile?> LatestGitHubReleaseAsync(
         HttpClient http, string owner, string repo, string assetName, CancellationToken ct)
     {
-        using var response = await http.GetAsync($"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
-        if (!response.IsSuccessStatusCode) return null;
+        // Conditional: after the first check GitHub answers 304 with no
+        // body, which costs a few hundred bytes and nothing at all against
+        // the rate limit.
+        var body = await Conditional.GetAsync(http, $"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
+        if (body is null) return null;
 
         // Read as the shape it should have; a rate-limit notice, a changed
         // API or a body that is not JSON at all is a null answer, not an
@@ -187,7 +202,7 @@ public abstract class Dependency
         JsonDocument json;
         try
         {
-            json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+            json = JsonDocument.Parse(body);
         }
         catch (JsonException)
         {

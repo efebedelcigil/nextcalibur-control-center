@@ -38,6 +38,23 @@ per machine (a second run offers to repair the first). The application then
 keeps itself current: a new release is found quietly and offered once, and
 installs on a yes - or, if you switch it on, without asking.
 
+## What it costs while it sits there
+
+It lives in the notification area, so this is a promise it has to keep
+rather than a footnote. Measured on the machine it was written for, on the
+release build, hidden in the tray:
+
+| | |
+|---|---|
+| Processor | about 0.3 % of one core - 0.015 % of a sixteen-thread laptop. All of it is the firmware read behind the overheat warning: one command a minute while both chips sit well below their thresholds, two while either is near one. Turn the warning off and the reads stop with it |
+| Memory | around 230 MB of working set, released back to Windows every five minutes while the window is away |
+| Network, one check | about 9 kB, four times a day: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB), this project's newest release (3.6 kB) |
+| Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen, and while one is, no check runs and no notification appears |
+| Network, with automatic checks off | nothing at all |
+
+Nothing is downloaded until you accept it, and each request is conditional,
+so a server that answers "not modified" sends no body.
+
 ## What it does
 
 | | |

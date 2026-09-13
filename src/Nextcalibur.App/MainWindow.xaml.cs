@@ -57,6 +57,19 @@ public partial class MainWindow : Window
     private static readonly TimeSpan HiddenSlowInterval = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    /// The hidden interval when both chips are a long way below their
+    /// thresholds. Hidden, the only reason to touch the firmware at all is
+    /// the overheat warning, and a machine sitting 15 °C under the line
+    /// does not reach it in a minute - while every read costs this process,
+    /// the WMI host that serves it, and a little of whatever the person is
+    /// actually doing. Close to the line it goes back to thirty seconds.
+    /// </summary>
+    private static readonly TimeSpan HiddenCoolInterval = TimeSpan.FromMinutes(1);
+
+    /// <summary>How far below the threshold counts as a long way.</summary>
+    private const int HiddenCoolMarginC = 15;
+
+    /// <summary>
     /// How many hidden ticks pass between idle reclamations — ten of them, so
     /// once every five minutes. See <see cref="ReclaimWhileIdle"/>.
     /// </summary>
@@ -2194,6 +2207,24 @@ public partial class MainWindow : Window
 
     private DateTime _registryLookedAt = DateTime.MinValue;
 
+    /// <summary>
+    /// How long to wait before the next hidden read: a minute while both
+    /// chips are well below their thresholds, thirty seconds once either is
+    /// near. Read from the last sample, so a machine that warms up is back
+    /// to thirty seconds one tick later - a minute of warning at worst,
+    /// against a warning that exists for a laptop cooking in a bag.
+    /// </summary>
+    private TimeSpan HiddenIntervalNow()
+    {
+        if (!_settings.WarnsAboutHeat) return HiddenCoolInterval;
+        if (_lastThermal is not { } last) return HiddenSlowInterval;
+
+        var headroom = Math.Min(
+            _settings.CpuWarningTemperatureC - last.CpuTemperatureC,
+            _settings.GpuWarningTemperatureC - last.GpuTemperatureC);
+        return headroom >= HiddenCoolMarginC ? HiddenCoolInterval : HiddenSlowInterval;
+    }
+
     private void StartSlowTimer()
     {
         var slow = new DispatcherTimer { Interval = VisibleSlowInterval };
@@ -2203,7 +2234,7 @@ public partial class MainWindow : Window
             // While it is in the notification area there is nothing to keep
             // truthful, so none of it runs and the timer itself slows down.
             var onScreen = IsVisible && WindowState != WindowState.Minimized;
-            slow.Interval = onScreen ? VisibleSlowInterval : HiddenSlowInterval;
+            slow.Interval = onScreen ? VisibleSlowInterval : HiddenIntervalNow();
 
             if (onScreen)
             {
@@ -2215,10 +2246,12 @@ public partial class MainWindow : Window
                 await WatchForTheCardBeingSwitched();
             }
 
-            // Hidden or not, but once a minute, not every tick: two registry
-            // scans for things that change once in a machine's life - the
-            // vendor's plans going, the vendor's software coming or going.
-            if (DateTime.UtcNow - _registryLookedAt >= TimeSpan.FromMinutes(1))
+            // Once a minute on screen, once every five while hidden: two
+            // registry scans for things that change once in a machine's
+            // life - the vendor's plans going, the vendor's software coming
+            // or going. Nobody is reading the banner they feed while the
+            // window is away.
+            if (DateTime.UtcNow - _registryLookedAt >= (onScreen ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(5)))
             {
                 _registryLookedAt = DateTime.UtcNow;
                 KeepTheModesPlanAlive();

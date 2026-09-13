@@ -16,6 +16,14 @@ Only these, and only for the purposes named:
 | When you press *Open WinUtil* and confirm | `christitus.com` | A PowerShell download of that script | Because you asked for it; it is not part of Nextcalibur |
 | When you press *Driver downloads* or *Open issues* | the laptop maker's site, `github.com` | Your browser opens the page | Because you asked for it |
 
+**What the checks cost.** Measured on 13 September 2026, on the wire:
+Microsoft's channel index 813 bytes compressed, PawnIO's release 1.4 kB,
+this project's newest release 3.6 kB - about 9 kB with headers for one
+check, four checks a day, under 40 kB a day. Each is asked conditionally,
+so a server that answers "not modified" sends no body at all. Nothing is
+asked while a game has the screen. Nothing is downloaded until you accept
+something.
+
 Every request carries what any HTTPS request carries - your IP address and
 a user-agent string (`Nextcalibur`, or Velopack's for the updater). No
 identifier of yours, no hardware serial, no settings, no readings, no log
