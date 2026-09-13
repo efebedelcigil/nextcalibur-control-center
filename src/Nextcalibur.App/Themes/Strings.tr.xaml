@@ -271,6 +271,8 @@
     <sys:String x:Key="S.Banner.NoDriverBody">Ekran kartı var ama sürücüsü yok; Ekran Modu sayfası ve kartın okumaları sürücü dönene kadar kullanılamaz. Üreticinin sürücü sayfası Ayarlar'da.</sys:String>
     <sys:String x:Key="S.Banner.VendorOpenTitle">Casper'ın Control Center'ı açık</sys:String>
     <sys:String x:Key="S.Banner.VendorOpenBody">İki uygulama da aynı donanımla konuşuyor; okumalar duraksayabilir ve aydınlatma değişiklikleri tutmayabilir. Onu kapatın, bu ileti kendiliğinden kalkar.</sys:String>
+    <sys:String x:Key="S.Banner.ProfileCopyTitle">Her açılışta yönetici izni sorulur</sys:String>
+    <sys:String x:Key="S.Banner.ProfileCopyBody">Bu kopya hesabınızın değiştirebileceği bir klasörden çalışıyor; bu yüzden sormadan yönetici olarak başlatılamaz - aksi hâlde sizin adınıza çalışan her şey yönetici olabilirdi. Yayın sayfasındaki kurulum sihirbazıyla kurun; Program Files altına gider ve izin bir kez sorulur.</sys:String>
 
     <!-- Desteklenmeyen makine, üreticinin yazılımı -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - burada desteklenmiyor</sys:String>
@@ -316,7 +318,7 @@
     <!-- Kütüphanenin söyledikleri (Nextcalibur.Core.Words) -->
 
     <!-- Kütüphaneden: Windows ile başlatma -->
-    <sys:String x:Key="S.Core.Startup.NotInstalled">Windows ile başlat kurulu kopya içindir. Bu kopya herhangi bir programın yazabileceği bir klasörden çalışıyor; oturum açılınca sormadan yönetici olarak başlatmak böyle bir programın yönetici olarak çalışmasına yol açardı. Windows ile başlatmak için Nextcalibur'u kurulum sihirbazıyla kurun.</sys:String>
+    <sys:String x:Key="S.Core.Startup.NotInstalled">Windows ile başlat, Program Files altına kurulu kopya içindir. Bu kopya hesabın değiştirebileceği bir klasörden çalışıyor; oturum açılınca sormadan yönetici olarak başlatmak, hesap olarak çalışan her şeyin yönetici olarak çalışmasına yol açardı. Windows ile başlatmak için Nextcalibur'u kurulum sihirbazıyla kurun.</sys:String>
 
     <!-- Kütüphaneden: kaldırmanın bulduğu izler -->
     <sys:String x:Key="S.Core.Trace.Settings">Ayarlarınız</sys:String>

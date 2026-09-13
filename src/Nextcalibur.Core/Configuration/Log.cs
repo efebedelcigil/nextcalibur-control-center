@@ -31,9 +31,10 @@ public static class Log
     {
         try
         {
-            Directory.CreateDirectory(Folder);
-            _folderReady = true;
-            Prune();
+            // An elevated process appending to a folder the account owns:
+            // not through a link, or the line lands wherever the link points.
+            _folderReady = Security.ProfileFiles.EnsureOrdinaryFolder(Folder);
+            if (_folderReady) Prune();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -87,6 +88,7 @@ public static class Log
                     if (_currentFile is not null) Prune();
                     _currentFile = file;
                 }
+                if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(file)) return;
                 using var writer = new StreamWriter(file, append: true, Encoding.UTF8);
                 writer.WriteLine(line);
             }

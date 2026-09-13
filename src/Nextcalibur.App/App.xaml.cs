@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Hardware;
@@ -48,9 +49,31 @@ public partial class App : Application
     private static bool IsVelopackHook(string[] args) =>
         args.Any(a => a.StartsWith("--veloapp-", StringComparison.OrdinalIgnoreCase));
 
+    private static void HardenSearchPaths()
+    {
+        try { Directory.SetCurrentDirectory(AppContext.BaseDirectory); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { }
+        // LOAD_LIBRARY_SEARCH_DEFAULT_DIRS: the application's folder, the
+        // system folder, and folders added with AddDllDirectory - never the
+        // current directory, never PATH.
+        try { SetDefaultDllDirectories(0x00001000); }
+        catch (Exception ex) when (ex is EntryPointNotFoundException or DllNotFoundException) { }
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    private static extern bool SetDefaultDllDirectories(uint flags);
+
     [STAThread]
     public static void Main(string[] args)
     {
+        // This process runs elevated. Two places Windows would otherwise look
+        // in for things this process asks for by name are the account's to
+        // fill: the current directory (inherited from whatever unelevated
+        // thing started this) and PATH. Neither is searched from here on -
+        // libraries come from the application's folder and the system's,
+        // and the current directory is the application's own.
+        HardenSearchPaths();
+
         // One taskbar identity, claimed before anything can create a window -
         // Velopack's hooks included, since they may show one.
         AppIdentity.Claim();
@@ -124,8 +147,14 @@ public partial class App : Application
 
         // Elevated now. The on-demand task is what makes the next start
         // prompt-free; registering it is idempotent and costs a schtasks call.
+        // Only a copy under Program Files gets one - and a task an earlier
+        // version registered for a copy in the profile is taken away here,
+        // because it ran a file the account could replace, as administrator,
+        // without asking.
         if (self is not null)
         {
+            if (Elevation.RetireTasksNotAllowed(self))
+                Log.Info("tasks", "Removed the no-prompt tasks: this copy is not under Program Files, so it is prompted at every start until the installer moves it");
             Elevation.RegisterOpenTask(self);
             StartupRegistration.MigrateRunEntry(self);
 
@@ -381,8 +410,13 @@ public partial class App : Application
         {
             // Retries for two minutes: the uninstaller and this process are
             // still running from the folder when the script starts.
-            var script = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "nextcalibur-remove.cmd");
-            File.WriteAllText(script,
+            // cmd reads a batch file as it runs it, line by line, for the two
+            // minutes this one may take - so it lives where only
+            // administrators can reach it, under a name nobody can guess.
+            string script;
+            using (var file = Nextcalibur.Core.Security.SystemTools.CreateProtectedTemporaryFile(".cmd", out script))
+            using (var writer = new StreamWriter(file, new System.Text.UTF8Encoding(false)))
+                writer.Write(
                 "@echo off\r\n" +
                 "set n=0\r\n" +
                 ":again\r\n" +
@@ -394,7 +428,7 @@ public partial class App : Application
                 ":done\r\n" +
                 "reg delete \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nextcalibur\" /f >nul 2>&1\r\n" +
                 "del \"%~f0\"\r\n");
-            Process.Start(new ProcessStartInfo("cmd.exe", $"/c \"{script}\"")
+            Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.Cmd, $"/c \"{script}\"")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,

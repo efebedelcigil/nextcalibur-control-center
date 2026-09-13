@@ -117,7 +117,7 @@ public static class CardSwitchTasks
         {
             using var process = Process.Start(new ProcessStartInfo
             {
-                FileName = "schtasks.exe",
+                FileName = Security.SystemTools.Schtasks,
                 Arguments = arguments,
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -157,7 +157,7 @@ public static class CardSwitchTasks
         {
             using var process = Process.Start(new ProcessStartInfo
             {
-                FileName = "schtasks.exe",
+                FileName = Security.SystemTools.Schtasks,
                 Arguments = arguments,
                 UseShellExecute = false,
                 CreateNoWindow = true,

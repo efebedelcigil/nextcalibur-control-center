@@ -20,7 +20,7 @@ internal static class Unelevated
     /// <summary>Opens a URL or a file with its default handler, at the desktop's own level.</summary>
     public static void Open(string target)
     {
-        if (TryStartAsDesktop($"explorer.exe \"{target}\"")) return;
+        if (TryStartAsDesktop($"\"{Nextcalibur.Core.Security.SystemTools.Explorer}\" \"{target}\"")) return;
 
         Log.Warn("shell", "No desktop token to borrow; opening elevated: " + target);
         Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });

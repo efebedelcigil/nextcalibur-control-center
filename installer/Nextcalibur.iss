@@ -168,16 +168,17 @@ begin
 end;
 
 // The signature is checked the way the application checks it: Authenticode
-// valid, chain built, signed by PawnIO's author. PowerShell does the work;
-// a non-zero exit refuses the file.
+// valid (hash, signature, chain, revocation), signed by PawnIO's author -
+// the whole subject component, not a substring. PowerShell does the work,
+// from its own folder; a non-zero exit refuses the file.
 function PawnIOSignatureIsTrusted(const File: String): Boolean;
 var
   Code: Integer;
   Cmd: String;
 begin
   Cmd := '-NoProfile -NonInteractive -Command "$s = Get-AuthenticodeSignature ''' + File + '''; ' +
-         'if ($s.Status -eq ''Valid'' -and $s.SignerCertificate.Subject -like ''*CN=namazso.eu*'') { exit 0 } else { exit 1 }"';
-  Result := Exec('powershell.exe', Cmd, '', SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
+         'if ($s.Status -eq ''Valid'' -and $s.SignerCertificate.Subject -match ''(^|, )CN=namazso\.eu(,|$)'') { exit 0 } else { exit 1 }"';
+  Result := Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Cmd, '', SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
 end;
 
 // After the application is in place: fetch and install what was ticked.
@@ -194,14 +195,18 @@ begin
     try
       try
         DownloadPage.Download;
-        File := ExpandConstant('{tmp}\PawnIO_setup.exe');
-        if not PawnIOSignatureIsTrusted(File) then
-        begin
-          DeleteFile(File);
-          MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), [CustomMessage('PawnIOBadSignature')]), mbError, MB_OK);
-        end
+        // Checked and run from {app}, which only administrators can write,
+        // not from {tmp}, which is the account's: nothing running as the
+        // account can swap the file between the check and the run there.
+        File := ExpandConstant('{app}\PawnIO_setup.exe');
+        if not FileCopy(ExpandConstant('{tmp}\PawnIO_setup.exe'), File, False) then
+          MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), ['copy']), mbError, MB_OK)
+        else if not PawnIOSignatureIsTrusted(File) then
+          MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), [CustomMessage('PawnIOBadSignature')]), mbError, MB_OK)
         else if not (Exec(File, '-install -silent', '', SW_HIDE, ewWaitUntilTerminated, Code) and ((Code = 0) or (Code = 183))) then
           MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), ['exit ' + IntToStr(Code)]), mbError, MB_OK);
+        DeleteFile(File);
+        DeleteFile(ExpandConstant('{tmp}\PawnIO_setup.exe'));
       except
         MsgBox(FmtMessage(CustomMessage('PawnIOFailed'), [GetExceptionMessage]), mbError, MB_OK);
       end;

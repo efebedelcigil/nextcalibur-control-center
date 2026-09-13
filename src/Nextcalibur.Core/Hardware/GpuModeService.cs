@@ -250,7 +250,7 @@ public sealed class GpuModeService
             {
                 using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "pnputil.exe",
+                    FileName = Security.SystemTools.Pnputil,
                     Arguments = PnputilArguments(enabled),
                     UseShellExecute = true,
                     Verb = "runas",
@@ -296,7 +296,7 @@ public sealed class GpuModeService
 
         using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
         {
-            FileName = "pnputil.exe",
+            FileName = Security.SystemTools.Pnputil,
             Arguments = PnputilArguments(enabled),
             UseShellExecute = false,
             CreateNoWindow = true,

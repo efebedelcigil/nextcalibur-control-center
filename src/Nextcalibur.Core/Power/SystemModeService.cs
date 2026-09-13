@@ -201,7 +201,7 @@ public sealed class SystemModeService
         {
             using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "powercfg.exe",
+                FileName = Security.SystemTools.Powercfg,
                 Arguments = arguments,
                 UseShellExecute = false,
                 CreateNoWindow = true,

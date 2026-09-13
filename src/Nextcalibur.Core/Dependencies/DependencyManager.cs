@@ -1,4 +1,5 @@
 using System.Net.Http;
+using Nextcalibur.Core.Security;
 
 namespace Nextcalibur.Core.Dependencies;
 
@@ -54,34 +55,49 @@ public sealed class DependencyManager
         return needing;
     }
 
+    /// <summary>An installer larger than this is not what it claims to be; the download stops there.</summary>
+    private const long LargestInstallerBytes = 200L * 1024 * 1024;
+
     /// <summary>
     /// Downloads the installer with progress, verifies its signature, runs
     /// it quietly. Returns a sentence for the person; the installer file is
     /// removed either way.
+    ///
+    /// This process is elevated, and what it downloads it then runs. So the
+    /// file goes where only administrators can reach it, under a name nobody
+    /// can guess, and stays open - shared for reading only - from the first
+    /// byte to the end of the install, so that nothing can swap it between
+    /// the signature check and the run.
     /// </summary>
     public static async Task<(bool Ok, string Message)> InstallAsync(DependencyStatus status, IProgress<int> progress, CancellationToken ct = default)
     {
-        var file = Path.Combine(Path.GetTempPath(), $"nextcalibur-{status.Dependency.Id}-{status.Latest.Version}.exe");
+        string? file = null;
         try
         {
+            await using (var target = SystemTools.CreateProtectedTemporaryFile(".exe", out file))
             using (var response = await Http.GetAsync(status.Latest.Download, HttpCompletionOption.ResponseHeadersRead, ct))
             {
                 response.EnsureSuccessStatusCode();
                 var total = response.Content.Headers.ContentLength ?? -1;
+                if (total > LargestInstallerBytes) throw new IOException("The download is larger than any installer should be.");
                 await using var source = await response.Content.ReadAsStreamAsync(ct);
-                await using var target = File.Create(file);
                 var buffer = new byte[81920];
                 long done = 0;
                 int read;
                 while ((read = await source.ReadAsync(buffer, ct)) > 0)
                 {
-                    await target.WriteAsync(buffer.AsMemory(0, read), ct);
                     done += read;
+                    if (done > LargestInstallerBytes) throw new IOException("The download is larger than any installer should be.");
+                    await target.WriteAsync(buffer.AsMemory(0, read), ct);
                     if (total > 0) progress.Report((int)(done * 100 / total));
                 }
+                await target.FlushAsync(ct);
             }
             progress.Report(100);
 
+            // Held open, shared for reading only, while the signature is checked
+            // and the installer runs: no rename, no rewrite in between.
+            using var guard = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             if (!status.Dependency.SignatureIsTrusted(file))
                 return (false, Words.Get("S.Core.Dependency.Unsigned", "The {0} download is not signed by {1}; it was not installed.", status.Dependency.Name, status.Dependency.ExpectedSigner));
 
@@ -95,7 +111,8 @@ public sealed class DependencyManager
         }
         finally
         {
-            try { File.Delete(file); } catch (IOException) { }
+            if (file is not null)
+                try { File.Delete(file); } catch (IOException) { }
         }
     }
 }

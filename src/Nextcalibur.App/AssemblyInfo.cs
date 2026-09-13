@@ -1,4 +1,8 @@
+using System.Runtime.InteropServices;
 using System.Windows;
+
+// The Windows libraries this assembly imports come from the system folder only; see Core's AssemblyInfo.
+[assembly: DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 
 [assembly:ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

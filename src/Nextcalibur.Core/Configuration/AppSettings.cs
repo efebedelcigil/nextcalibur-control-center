@@ -144,6 +144,9 @@ public sealed class AppSettings
 
         settings.CpuWarningTemperatureC = Math.Clamp(settings.CpuWarningTemperatureC, MinWarningTemperatureC, MaxWarningTemperatureC);
         settings.GpuWarningTemperatureC = Math.Clamp(settings.GpuWarningTemperatureC, MinWarningTemperatureC, MaxWarningTemperatureC);
+        // A file edited by hand, or by something else: an interval of zero
+        // would spin, a negative one would throw at the timer.
+        if (settings.PollIntervalMs is < 500 or > 60000) settings.PollIntervalMs = new AppSettings().PollIntervalMs;
 
         return settings;
     }
@@ -153,11 +156,13 @@ public sealed class AppSettings
         try
         {
             var dir = System.IO.Path.GetDirectoryName(Path)!;
-            Directory.CreateDirectory(dir);
+            // Not through a link: this process is elevated and the folder is the account's.
+            if (!Security.ProfileFiles.EnsureOrdinaryFolder(dir)) return;
             // Written beside and moved into place, so a write cut short - the
             // battery giving out, a forced power-off - leaves the previous file
             // whole rather than a truncated one that loads as defaults.
             var temporary = Path + ".tmp";
+            if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
             File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
             File.Move(temporary, Path, overwrite: true);
         }

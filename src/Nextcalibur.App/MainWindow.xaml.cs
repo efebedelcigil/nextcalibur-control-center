@@ -2679,6 +2679,18 @@ public partial class MainWindow : Window
             return;
         }
 
+        // An installed copy outside Program Files - an earlier version's
+        // install in the profile - is prompted at every start (see
+        // Elevation.MayStartWithoutPrompt) and told why, and what to do.
+        if (Environment.ProcessPath is { } self && Elevation.IsInstalledCopy(self) && !Elevation.MayStartWithoutPrompt(self))
+        {
+            ShowBanner(
+                Strings.Get("S.Banner.ProfileCopyTitle"),
+                Strings.Get("S.Banner.ProfileCopyBody"),
+                (SolidColorBrush)FindResource("Warn"));
+            return;
+        }
+
         Banner.Visibility = Visibility.Collapsed;
     }
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using Nextcalibur.Core.Hardware;
 
@@ -89,24 +90,59 @@ public static class Elevation
     /// </summary>
     public static bool RegisterOpenTask(string executablePath)
     {
-        if (!IsInstalledCopy(executablePath)) return false;
+        if (!MayStartWithoutPrompt(executablePath)) return false;
         if (TaskPointsAt(OpenTask, executablePath)) return false;
         return Create(OpenTask, executablePath, ViaTaskArgument, logon: false);
     }
 
     /// <summary>
     /// Whether this executable is an installed copy - one with the updater
-    /// beside its <c>current\</c> folder - as opposed to the portable zip, a
-    /// build output, or a copy somebody dropped in a folder. Only an
-    /// installed copy gets the no-prompt tasks: its folder is Program
-    /// Files' or made Administrators' (see InstallFolderGuard). A task that
-    /// elevated a file in an ordinary folder without a prompt would be the
-    /// UAC bypass the install location exists to prevent; a portable copy
-    /// is prompted at every start instead, which is the honest price.
+    /// beside its <c>current\</c> folder - as opposed to a build output or
+    /// a copy somebody dropped in a folder.
     /// </summary>
     public static bool IsInstalledCopy(string executablePath) =>
         InstallFolderGuard.RootOf(executablePath) is { } root
         && File.Exists(Path.Combine(root, "Update.exe"));
+
+    /// <summary>
+    /// Whether this executable may be started elevated without a prompt: an
+    /// installed copy under Program Files, and nothing else.
+    ///
+    /// The tasks run whatever file they point at as administrator, with no
+    /// question asked. That is only safe when nothing running as the
+    /// account can change what the file is - and under Program Files
+    /// nothing can. A folder in the profile is not enough even when its
+    /// own permissions are tightened: the folder above it is the account's,
+    /// and an account that may delete or rename entries in a folder may
+    /// swap a hardened subfolder for another one with the same name while
+    /// the application is not running. So a copy in the profile - an
+    /// earlier version's install, the portable zip, a build output - is
+    /// prompted at every start, which is the honest price, and the wizard
+    /// puts it under Program Files for good.
+    /// </summary>
+    public static bool MayStartWithoutPrompt(string executablePath) =>
+        IsInstalledCopy(executablePath)
+        && InstallFolderGuard.RootOf(executablePath) is { } root
+        && InstallFolderGuard.IsUnderProgramFiles(root);
+
+    /// <summary>
+    /// Removes any no-prompt task that points at this executable when it
+    /// may not have one (see <see cref="MayStartWithoutPrompt"/>): a task
+    /// registered by an earlier version for a copy in the profile. Elevated
+    /// only. Returns whether anything was removed.
+    /// </summary>
+    public static bool RetireTasksNotAllowed(string executablePath)
+    {
+        if (MayStartWithoutPrompt(executablePath)) return false;
+        var removed = false;
+        foreach (var task in new[] { OpenTask, StartupTask })
+        {
+            if (!TaskPointsAt(task, executablePath)) continue;
+            CardSwitchTasks.Schtasks($"/delete /tn \"{task}\" /f");
+            removed = true;
+        }
+        return removed;
+    }
 
     /// <summary>Whether the logon task exists and points at this executable.</summary>
     public static bool StartsWithWindows(string executablePath) => TaskPointsAt(StartupTask, executablePath);
@@ -117,11 +153,12 @@ public static class Elevation
     {
         if (enabled == StartsWithWindows(executablePath)) return false;
         if (!enabled) return CardSwitchTasks.Schtasks($"/delete /tn \"{StartupTask}\" /f") == 0;
-        if (!IsInstalledCopy(executablePath))
+        if (!MayStartWithoutPrompt(executablePath))
             throw new InvalidOperationException(Words.Get("S.Core.Startup.NotInstalled",
-                "Start with Windows is for an installed copy. This one runs from a folder any program could " +
-                "write to, and starting it elevated at sign-in without a prompt would let such a program run as " +
-                "administrator. Install Nextcalibur with its installer to start it with Windows."));
+                "Start with Windows is for a copy installed under Program Files. This one runs from a folder " +
+                "the account can change, and starting it as administrator at sign-in without a prompt would let " +
+                "anything running as the account run as administrator. Install Nextcalibur with its installer " +
+                "to start it with Windows."));
         return Create(StartupTask, executablePath, $"--tray {ViaTaskArgument}", logon: true);
     }
 
@@ -149,6 +186,14 @@ public static class Elevation
     /// </summary>
     private static string Xml(string text) => text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 
+    /// <summary>
+    /// Registers the task through the Task Scheduler's own interface, with
+    /// the definition handed over in memory. It used to be written to a
+    /// file in the account's temporary folder and given to schtasks by
+    /// path; anything running as the account could have rewritten that
+    /// file between the write and the read, and registered a task of its
+    /// own choosing at the highest level.
+    /// </summary>
     private static bool Create(string task, string executablePath, string arguments, bool logon)
     {
         var sid = WindowsIdentity.GetCurrent().User?.Value;
@@ -198,15 +243,34 @@ public static class Elevation
             </Task>
             """;
 
-        var file = Path.Combine(Path.GetTempPath(), $"nextcalibur-task-{(logon ? "startup" : "open")}.xml");
-        File.WriteAllText(file, xml, System.Text.Encoding.Unicode);
+        var slash = task.LastIndexOf('\\');
+        var folderPath = slash <= 0 ? "\\" : task[..slash];
+        var name = task[(slash + 1)..];
         try
         {
-            return CardSwitchTasks.Schtasks($"/create /tn \"{task}\" /xml \"{file}\" /f") == 0;
+            var type = Type.GetTypeFromProgID("Schedule.Service") ?? throw new InvalidOperationException("The Task Scheduler is not available.");
+            dynamic service = Activator.CreateInstance(type)!;
+            service.Connect();
+            dynamic folder;
+            try
+            {
+                folder = service.GetFolder(folderPath);
+            }
+            catch (COMException)
+            {
+                folder = service.GetFolder("\\").CreateFolder(folderPath.TrimStart('\\'));
+            }
+            dynamic definition = service.NewTask(0);
+            definition.XmlText = xml;
+            const int createOrUpdate = 6;         // TASK_CREATE_OR_UPDATE
+            const int interactiveToken = 3;       // TASK_LOGON_INTERACTIVE_TOKEN
+            folder.RegisterTaskDefinition(name, definition, createOrUpdate, null, null, interactiveToken, null);
+            return true;
         }
-        finally
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
         {
-            try { File.Delete(file); } catch (IOException) { }
+            Log.Warn("tasks", $"Could not register {task}: {ex.Message}");
+            return false;
         }
     }
 }

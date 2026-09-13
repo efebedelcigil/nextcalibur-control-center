@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
+using Nextcalibur.Core.Security;
 
 namespace Nextcalibur.Core.Dependencies;
 
@@ -34,7 +34,7 @@ public abstract class Dependency
     public abstract Task<(Version Version, Uri Download)?> LatestAsync(HttpClient http, CancellationToken ct);
 
     /// <summary>
-    /// A distinctive part of the signer's subject, e.g. "CN=namazso.eu".
+    /// One component of the signer's subject, whole, e.g. "CN=namazso.eu".
     /// A download whose Authenticode signature is invalid or signed by
     /// anyone else is deleted, not run.
     /// </summary>
@@ -104,27 +104,13 @@ public abstract class Dependency
     }
 
     /// <summary>
-    /// Verifies the file's signature against <see cref="ExpectedSigner"/>.
-    /// The chain has to be valid too; a self-signed certificate with the
-    /// right name is exactly what an attacker would make.
+    /// Verifies the file's Authenticode signature - the hash, the signature,
+    /// the chain, the revocation, through <c>WinVerifyTrust</c> - and that
+    /// the signer is <see cref="ExpectedSigner"/>. Reading the certificate
+    /// out of the file and checking its chain is not enough: that does not
+    /// prove the signature covers this file.
     /// </summary>
-    public bool SignatureIsTrusted(string file)
-    {
-        try
-        {
-            using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(file));
-            if (!certificate.Subject.Contains(ExpectedSigner, StringComparison.OrdinalIgnoreCase)) return false;
-
-            using var chain = new X509Chain();
-            chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
-            chain.ChainPolicy.RevocationFlag = X509RevocationFlag.ExcludeRoot;
-            return chain.Build(certificate);
-        }
-        catch (Exception ex) when (ex is System.Security.Cryptography.CryptographicException or IOException)
-        {
-            return false;
-        }
-    }
+    public bool SignatureIsTrusted(string file) => Authenticode.IsSignedBy(file, ExpectedSigner);
 
     /// <summary>Runs the installer quietly and waits. True when it reported success.</summary>
     public bool Install(string file)

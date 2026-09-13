@@ -191,6 +191,9 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     private void Send(LedZone zone, byte r, byte g, byte b, LedEffect? effectOverride = null)
     {
         var effect = effectOverride ?? State.Effect;
+        // The state file is the account's to edit; a number that is not an
+        // effect is not sent to the firmware as one.
+        if (!Enum.IsDefined(effect)) effect = LedEffect.Static;
 
         // The useful range comes from scaling the colour; the hardware field
         // is left where the keyboard's own key put it, so a colour change does

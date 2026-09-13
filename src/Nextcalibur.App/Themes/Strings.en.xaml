@@ -273,6 +273,8 @@
     <sys:String x:Key="S.Banner.NoDriverBody">The graphics card is there but its driver is not, so the Display page and the card's readings are unavailable until it is back. The laptop maker's driver page is under Settings.</sys:String>
     <sys:String x:Key="S.Banner.VendorOpenTitle">Casper's Control Center is open</sys:String>
     <sys:String x:Key="S.Banner.VendorOpenBody">Both apps are talking to the same hardware, so readings may stall and lighting changes may not stick. Close it and this message will clear itself.</sys:String>
+    <sys:String x:Key="S.Banner.ProfileCopyTitle">Asked for administrator rights at every start</sys:String>
+    <sys:String x:Key="S.Banner.ProfileCopyBody">This copy runs from a folder your account can change, so it cannot be started as administrator without a prompt - that would let anything running as you run as administrator. Install it with the installer from the release page and it goes under Program Files, where the prompt is asked once.</sys:String>
 
     <!-- Unsupported machine, the vendor's software -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - not supported here</sys:String>
@@ -318,7 +320,7 @@
     <!-- Words the library says (Nextcalibur.Core.Words); the English here must match the English in the code, and a test checks it -->
 
     <!-- From the library: starting with Windows -->
-    <sys:String x:Key="S.Core.Startup.NotInstalled">Start with Windows is for an installed copy. This one runs from a folder any program could write to, and starting it elevated at sign-in without a prompt would let such a program run as administrator. Install Nextcalibur with its installer to start it with Windows.</sys:String>
+    <sys:String x:Key="S.Core.Startup.NotInstalled">Start with Windows is for a copy installed under Program Files. This one runs from a folder the account can change, and starting it as administrator at sign-in without a prompt would let anything running as the account run as administrator. Install Nextcalibur with its installer to start it with Windows.</sys:String>
 
     <!-- From the library: what the uninstall finds -->
     <sys:String x:Key="S.Core.Trace.Settings">Your settings</sys:String>
