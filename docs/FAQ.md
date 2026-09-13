@@ -130,8 +130,20 @@ run - no requests, no downloads, and no notification to tab out to. It looks
 again twenty minutes later, so the end of a session is not missed.
 
 The readings carry on while you play, because the overheat warning is the
-reason the application is resident at all: two firmware reads a minute while
-the window is away, which is where its cost while hidden comes from.
+reason the application is resident at all - but they slow down: one read
+every two minutes while a game has the screen or the machine is over its
+warning threshold, against one a minute otherwise.
+
+That is deliberate and it is the important number. Reading the firmware
+means writing to a mailbox on the embedded controller, and that write
+raises a system-management interrupt: the processor stops every core and
+hands itself to the firmware for as long as it takes - 21 milliseconds on
+the laptop this was written for. It is invisible to Windows and it is
+exactly the sort of thing that shows up as a stutter. So the application
+does it once a minute, once every two while you are playing, and never
+more often because the machine is hot - which was the first shape of this
+and is precisely backwards: a laptop that is overheating is a laptop that
+can least afford the work.
 
 When a check does run it is a few kilobytes: the three questions together
 are about 9 kB with headers, and each is asked conditionally so an unchanged

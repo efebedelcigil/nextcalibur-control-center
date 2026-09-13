@@ -46,7 +46,8 @@ release build, hidden in the tray:
 
 | | |
 |---|---|
-| Processor | about 0.3 % of one core - 0.015 % of a sixteen-thread laptop. All of it is the firmware read behind the overheat warning: one command a minute while both chips sit well below their thresholds, two while either is near one. Turn the warning off and the reads stop with it |
+| Processor | about 0.26 % of one core while hidden, 0.11 % once it backs off - 0.01 % of a sixteen-thread laptop. Nearly all of it is the firmware read behind the overheat warning |
+| Firmware reads | one a minute while hidden, **one every two minutes while the machine is hot or a game has the screen**. Each read is one write to the mailbox, which raises a system-management interrupt - 21 ms on this laptop, measured - so the count matters more than anything else here. Turn the overheat warning off and the reads stop with it |
 | Memory | around 230 MB of working set, released back to Windows every five minutes while the window is away |
 | Network, one check | about 9 kB, four times a day: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB), this project's newest release (3.6 kB) |
 | Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen, and while one is, no check runs and no notification appears |

@@ -49,31 +49,37 @@ public partial class MainWindow : Window
     private static readonly TimeSpan VisibleSlowInterval = TimeSpan.FromSeconds(5);
 
     /// <summary>
-    /// Slow-timer cadence while hidden in the notification area. Only the
-    /// overheat check runs at this point, and a fault that has been building for
-    /// half a minute is not less of a fault for being noticed a few seconds
-    /// later.
+    /// The hidden interval, once every minute. Hidden, the only reason to
+    /// touch the firmware at all is the overheat warning, and nothing this
+    /// application can say about a temperature is worth saying twice a
+    /// minute.
     /// </summary>
-    private static readonly TimeSpan HiddenSlowInterval = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan HiddenInterval = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    /// The hidden interval when both chips are a long way below their
-    /// thresholds. Hidden, the only reason to touch the firmware at all is
-    /// the overheat warning, and a machine sitting 15 °C under the line
-    /// does not reach it in a minute - while every read costs this process,
-    /// the WMI host that serves it, and a little of whatever the person is
-    /// actually doing. Close to the line it goes back to thirty seconds.
+    /// And once every two minutes while the machine is over its threshold
+    /// and has been told so.
+    ///
+    /// The first shape of this had it the other way round - thirty seconds
+    /// while hot, a minute while cool - which is precisely backwards. A
+    /// laptop that is overheating is a laptop that cannot spare the work,
+    /// and every read costs this process, the WMI host that serves it, and
+    /// a slice of whatever is making the heat. Reading more often at that
+    /// moment adds to the problem it is there to report.
+    ///
+    /// Nothing is lost by backing off: the warning has already been given,
+    /// it is given once, and what the reads are watching for afterwards is
+    /// the machine cooling down - which nobody needs to hear about within
+    /// thirty seconds.
     /// </summary>
-    private static readonly TimeSpan HiddenCoolInterval = TimeSpan.FromMinutes(1);
-
-    /// <summary>How far below the threshold counts as a long way.</summary>
-    private const int HiddenCoolMarginC = 15;
+    private static readonly TimeSpan HiddenHotInterval = TimeSpan.FromMinutes(2);
 
     /// <summary>
-    /// How many hidden ticks pass between idle reclamations — ten of them, so
-    /// once every five minutes. See <see cref="ReclaimWhileIdle"/>.
+    /// How many hidden ticks pass between idle reclamations. A hidden tick
+    /// is a minute now (two while the machine is hot), so five of them is
+    /// the five minutes this used to mean. See <see cref="ReclaimWhileIdle"/>.
     /// </summary>
-    private const int HiddenTicksPerReclaim = 10;
+    private const int HiddenTicksPerReclaim = 5;
 
     /// <summary>Hidden slow-timer ticks since the last reclamation.</summary>
     private int _hiddenTicks;
@@ -722,13 +728,23 @@ public partial class MainWindow : Window
     /// </summary>
     private static void ReclaimWhileIdle()
     {
-        // The first pass queues the finalisers, the wait runs them — which is
-        // what actually closes the handles — and the second reclaims what they
+        // The first pass queues the finalisers, the wait runs them - which is
+        // what actually closes the handles - and the second reclaims what they
         // released. Blocking here is safe: the window is hidden, so the thread
         // this runs on has nothing to draw.
-        GC.Collect();
+        //
+        // Generation one, and no compacting. What needs collecting is a
+        // handful of wrappers left by a firmware read a minute or two ago;
+        // hidden, the application allocates almost nothing, so nothing has
+        // aged out of the young generations and nothing older needs
+        // touching. Collecting the whole 230 MB heap instead - which is
+        // what GC.Collect() means - turned out to cost more processor than
+        // every firmware read between two reclamations put together
+        // (measured 13 September 2026: it was most of the hidden cost, not
+        // the reads it cleans up after).
+        GC.Collect(1, GCCollectionMode.Forced, blocking: true, compacting: false);
         GC.WaitForPendingFinalizers();
-        GC.Collect();
+        GC.Collect(1, GCCollectionMode.Forced, blocking: true, compacting: false);
 
         TrimWorkingSet();
     }
@@ -2208,21 +2224,47 @@ public partial class MainWindow : Window
     private DateTime _registryLookedAt = DateTime.MinValue;
 
     /// <summary>
-    /// How long to wait before the next hidden read: a minute while both
-    /// chips are well below their thresholds, thirty seconds once either is
-    /// near. Read from the last sample, so a machine that warms up is back
-    /// to thirty seconds one tick later - a minute of warning at worst,
-    /// against a warning that exists for a laptop cooking in a bag.
+    /// Runs one piece of work at a lower thread priority and puts the
+    /// priority back: the pool lends its threads out again, so leaving one
+    /// demoted would quietly demote something else later.
+    /// </summary>
+    private static T AtBackgroundPriority<T>(Func<T> work)
+    {
+        var thread = System.Threading.Thread.CurrentThread;
+        var was = thread.Priority;
+        try
+        {
+            thread.Priority = System.Threading.ThreadPriority.BelowNormal;
+            return work();
+        }
+        finally
+        {
+            try { thread.Priority = was; }
+            catch (Exception ex) when (ex is System.Threading.ThreadStateException or ArgumentException) { }
+        }
+    }
+
+    /// <summary>
+    /// How long to wait before the next hidden read. Never shorter because
+    /// the machine is hotter: a minute as a rule, two once it is over the
+    /// line and has been told. The cost of watching must not rise with the
+    /// thing being watched for.
     /// </summary>
     private TimeSpan HiddenIntervalNow()
     {
-        if (!_settings.WarnsAboutHeat) return HiddenCoolInterval;
-        if (_lastThermal is not { } last) return HiddenSlowInterval;
+        if (!_settings.WarnsAboutHeat) return HiddenInterval;
 
-        var headroom = Math.Min(
-            _settings.CpuWarningTemperatureC - last.CpuTemperatureC,
-            _settings.GpuWarningTemperatureC - last.GpuTemperatureC);
-        return headroom >= HiddenCoolMarginC ? HiddenCoolInterval : HiddenSlowInterval;
+        // Two minutes while the machine is over the line and has been told,
+        // and two while a game has the screen. Both for the same reason:
+        // every read is a write to the mailbox, every write to the mailbox
+        // raises a system-management interrupt - 21 ms on this machine,
+        // measured - and an interrupt stops every core for its duration,
+        // which is a frame in somebody's game. Windows suppresses our
+        // notification in that state anyway, so the reads are only keeping
+        // watch until they come back out.
+        return _overheatNotified || Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed()
+            ? HiddenHotInterval
+            : HiddenInterval;
     }
 
     private void StartSlowTimer()
@@ -2291,8 +2333,14 @@ public partial class MainWindow : Window
                 var reader = _thermal;
                 try
                 {
-                    var reading = await Task.Run(
-                        () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
+                    // Below normal while the window is away: this is a
+                    // background errand on somebody else's machine, and on a
+                    // machine that is hot or busy - the two go together -
+                    // it should lose every tie it is in. It still runs
+                    // promptly; it just never takes a turn from the thing
+                    // in front of the person.
+                    var reading = await Task.Run(() => AtBackgroundPriority(
+                        () => reader.TryRead(out var value) ? value : (ThermalSample?)null));
                     if (reading is null) return;
                     s = reading.Value;
                 }
