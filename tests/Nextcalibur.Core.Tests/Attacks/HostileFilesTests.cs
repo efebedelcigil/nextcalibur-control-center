@@ -20,9 +20,45 @@ public class HostileFilesTests
         return folder;
     }
 
-    /// <summary>Making a link needs a privilege or Developer Mode; where it is refused, the test says so rather than passing quietly.</summary>
+    /// <summary>
+    /// Taking the scratch folder away again. A tree with a junction in it
+    /// does not delete like an ordinary one - the recursive delete throws
+    /// rather than follow it - so the links go first, one at a time.
+    /// </summary>
+    private static void Clear(string folder)
+    {
+        try
+        {
+            foreach (var entry in Directory.EnumerateDirectories(folder, "*", SearchOption.AllDirectories).Reverse())
+                if ((File.GetAttributes(entry) & FileAttributes.ReparsePoint) != 0) Directory.Delete(entry);
+            Directory.Delete(folder, recursive: true);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // A test that cannot tidy up is not a test that failed.
+        }
+    }
+
+    /// <summary>
+    /// A link where a folder should be. A symbolic link needs a privilege
+    /// or Developer Mode; a junction needs neither, which is exactly why
+    /// this is worth guarding against - so the junction is tried first,
+    /// because that is what an unprivileged attacker would use.
+    /// </summary>
     private static bool TryLink(string link, string target)
     {
+        var cmd = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = Path.Combine(Environment.SystemDirectory, "cmd.exe"),
+            Arguments = $"/c mklink /J \"{link}\" \"{target}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        });
+        cmd?.WaitForExit(15000);
+        if (Directory.Exists(link) && (File.GetAttributes(link) & FileAttributes.ReparsePoint) != 0) return true;
+
         try
         {
             Directory.CreateSymbolicLink(link, target);
@@ -43,19 +79,24 @@ public class HostileFilesTests
             var elsewhere = Path.Combine(scratch, "elsewhere");
             Directory.CreateDirectory(elsewhere);
             var link = Path.Combine(scratch, "logs");
-            if (!TryLink(link, elsewhere))
-            {
-                // No privilege here. The rule is still stated by the file test below.
-                Assert.True(ProfileFiles.EnsureOrdinaryFolder(Path.Combine(scratch, "ordinary")));
-                return;
-            }
+            Assert.True(TryLink(link, elsewhere), "the attack could not be set up: no junction and no symbolic link");
 
             Assert.False(ProfileFiles.EnsureOrdinaryFolder(link),
                 "an elevated process must not write into a folder the account replaced with a link");
+
+            // Nor into anything under one: creating a folder there is already
+            // a write through the link.
+            Assert.False(ProfileFiles.EnsureOrdinaryFolder(Path.Combine(link, "deeper")),
+                "nor into a folder under a link");
+            Assert.False(Directory.Exists(Path.Combine(elsewhere, "deeper")),
+                "and nothing was created on the other side of it");
+
+            // A file inside a linked folder is refused for the same reason.
+            Assert.False(ProfileFiles.IsOrdinaryFileOrAbsent(Path.Combine(link, "settings.json")));
         }
         finally
         {
-            try { Directory.Delete(scratch, recursive: true); } catch (IOException) { }
+            Clear(scratch);
         }
     }
 
@@ -70,7 +111,7 @@ public class HostileFilesTests
         }
         finally
         {
-            try { Directory.Delete(scratch, recursive: true); } catch (IOException) { }
+            Clear(scratch);
         }
     }
 
@@ -99,7 +140,7 @@ public class HostileFilesTests
         }
         finally
         {
-            try { Directory.Delete(scratch, recursive: true); } catch (IOException) { }
+            Clear(scratch);
         }
     }
 
