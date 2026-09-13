@@ -27,6 +27,8 @@ public sealed class CpuPowerReader : IDisposable
 {
     private const uint MsrRaplPowerUnit = 0x606;
     private const uint MsrPkgEnergyStatus = 0x611;
+    private const uint MsrTemperatureTarget = 0x1A2;
+    private const uint MsrPackageThermStatus = 0x1B1;
 
     // PawnIO's device and control codes, as its own client library defines them.
     private const string DevicePath = @"\\?\GLOBALROOT\Device\PawnIO";
@@ -89,6 +91,48 @@ public sealed class CpuPowerReader : IDisposable
 
         var watts = joules / seconds;
         return watts is >= 0 and < 1000 ? watts : null;
+    }
+
+    /// <summary>
+    /// The package temperature, in whole degrees, or null when there is no
+    /// number to give.
+    ///
+    /// This exists to keep the firmware alone. Reading a temperature from
+    /// the embedded controller means writing to its mailbox, and that write
+    /// raises a system-management interrupt - every core stopped for 21 ms
+    /// on this machine. A model-specific register costs a driver call and
+    /// no interrupt at all, so while the window is away the cheap reading
+    /// decides whether the dear one is needed: nowhere near the warning
+    /// threshold, and the firmware is not touched at all.
+    ///
+    /// It is a gate, not a replacement. What the window shows and what the
+    /// warning fires on is still the controller's own number - this only
+    /// answers "is it worth asking".
+    /// </summary>
+    public int? ReadPackageTemperatureC()
+    {
+        if (!Open()) return null;
+        if (!ReadMsr(MsrPackageThermStatus, out var status)) { Close(); return null; }
+        if (!ReadMsr(MsrTemperatureTarget, out var target)) { Close(); return null; }
+        return PackageTemperature(status, target);
+    }
+
+    /// <summary>
+    /// Intel's two registers, turned into a temperature: the thermal status
+    /// carries how many degrees the package is *below* the point the
+    /// processor throttles at, and the temperature target carries where
+    /// that point is. Bit 31 says the reading is valid.
+    /// </summary>
+    internal static int? PackageTemperature(ulong thermStatus, ulong temperatureTarget)
+    {
+        if ((thermStatus & (1UL << 31)) == 0) return null;
+
+        var below = (int)((thermStatus >> 16) & 0x7F);
+        var tjMax = (int)((temperatureTarget >> 16) & 0xFF);
+        if (tjMax is < 60 or > 130) return null;      // not a throttle point any processor has
+
+        var celsius = tjMax - below;
+        return celsius is >= -10 and <= 130 ? celsius : null;
     }
 
     /// <summary>

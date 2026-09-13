@@ -2248,6 +2248,55 @@ public partial class MainWindow : Window
     private DateTime _registryLookedAt = DateTime.MinValue;
 
     /// <summary>
+    /// Windows' own faults: watched on the same slow beat as everything
+    /// else, and put right where that is safe. See
+    /// <see cref="Nextcalibur.Core.Hardware.WindowsFaults"/> for the rules
+    /// this is held to; the switch is on the Settings page.
+    /// </summary>
+    private void WatchWindowsItself()
+    {
+        if (!_settings.CompensateWindowsFaults) return;
+
+        foreach (var fault in Nextcalibur.Core.Hardware.WindowsFaults.Check(mayAct: true))
+        {
+            var title = Strings.Get(fault.Fixed ? "S.WindowsFault.Fixed" : "S.WindowsFault.Found");
+            if (!Toasts.TryShow(title, fault.What, Strings.Get("S.Dialog.OK"), () => { }))
+                _tray?.ShowMessage(title, fault.What);
+        }
+    }
+
+    /// <summary>
+    /// How far below its threshold a chip has to read, on the cheap
+    /// sensors, before the firmware is left unasked. Ten degrees is more
+    /// than either chip travels in the minute between hidden ticks.
+    /// </summary>
+    private const int CheapGateMarginC = 10;
+
+    /// <summary>
+    /// Whether both chips are far enough below their warning thresholds,
+    /// according to sensors that cost no interrupt, that the firmware need
+    /// not be read at all this tick.
+    ///
+    /// False whenever it cannot be sure: no PawnIO, an AMD machine, a card
+    /// that is asleep or absent, a register that does not answer. The
+    /// expensive read is the safe answer, and it is what happened before
+    /// these sensors were consulted at all.
+    /// </summary>
+    private bool NothingNearTheThresholds()
+    {
+        var cpu = _cpuPower.ReadPackageTemperatureC();
+        if (cpu is null || cpu >= _settings.CpuWarningTemperatureC - CheapGateMarginC) return false;
+
+        // The card: a reading that is near the line stops the gate, and no
+        // reading at all is fine - a card that NVML cannot see is a card
+        // that is asleep or switched off, and neither overheats.
+        var gpu = _gpuClock.ReadTemperatureC();
+        if (gpu is not null && gpu >= _settings.GpuWarningTemperatureC - CheapGateMarginC) return false;
+
+        return true;
+    }
+
+    /// <summary>
     /// Runs one piece of work at a lower thread priority and puts the
     /// priority back: the pool lends its threads out again, so leaving one
     /// demoted would quietly demote something else later.
@@ -2320,6 +2369,7 @@ public partial class MainWindow : Window
             if (DateTime.UtcNow - _registryLookedAt >= (onScreen ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(5)))
             {
                 _registryLookedAt = DateTime.UtcNow;
+                WatchWindowsItself();
                 KeepTheModesPlanAlive();
                 if (_support.Level != SupportLevel.Unsupported)
                 {
@@ -2334,6 +2384,18 @@ public partial class MainWindow : Window
             if (!_settings.WarnsAboutHeat && !onScreen) return;
 
             if (_thermal is null) return;
+
+            // And before paying for one: the two sensors that cost no
+            // interrupt. The processor's own thermal register through
+            // PawnIO, and the card's through NVML. Both a long way below
+            // the thresholds means there is nothing for the warning to say,
+            // and the firmware is left alone entirely - no mailbox write,
+            // no system-management interrupt, nothing stopped.
+            //
+            // A gate, not a replacement: the moment either is anywhere near
+            // the line, the tick goes on to read the controller and decides
+            // on its number, which is the one the window shows.
+            if (!onScreen && NothingNearTheThresholds()) return;
 
             // Off the user-interface thread for the same reason as Sample: see
             // the note there. This read is the one that keeps the tray tooltip

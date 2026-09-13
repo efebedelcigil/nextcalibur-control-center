@@ -20,6 +20,7 @@ public partial class MainWindow
 {
     private Grid? _pageSettings;
     private RadioButton? _navSettings;
+    private ToggleButton? _settingWindowsFaults;
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
@@ -38,6 +39,7 @@ public partial class MainWindow
 
         _settingStartWithWindows = FindName("SettingStartWithWindows") as ToggleButton;
         _settingOfficeOnBattery = FindName("SettingOfficeOnBattery") as ToggleButton;
+        _settingWindowsFaults = FindName("SettingWindowsFaults") as ToggleButton;
         _settingOverheatWarning = FindName("SettingOverheatWarning") as ToggleButton;
         _settingAutoCheckUpdates = FindName("SettingAutoCheckUpdates") as ToggleButton;
         _settingAutoInstallUpdates = FindName("SettingAutoInstallUpdates") as ToggleButton;
@@ -59,6 +61,14 @@ public partial class MainWindow
             _settings.StartMinimised = on;
         });
         Wire(_settingOfficeOnBattery, on => _settings.QuietOnBattery = on);
+        Wire(_settingWindowsFaults, on =>
+        {
+            _settings.CompensateWindowsFaults = on;
+            // A change of mind starts the watching again from nothing, so a
+            // switch flicked off and on does not act on a window that was
+            // half measured while it was off.
+            Nextcalibur.Core.Hardware.WindowsFaults.Forget();
+        });
         Wire(_settingOverheatWarning, on =>
         {
             // The readings panel's toggle is the same setting; its handler
@@ -131,6 +141,7 @@ public partial class MainWindow
         {
             if (_settingStartWithWindows is not null) _settingStartWithWindows.IsChecked = StartupRegistration.IsEnabled;
             if (_settingOfficeOnBattery is not null) _settingOfficeOnBattery.IsChecked = _settings.QuietOnBattery;
+            if (_settingWindowsFaults is not null) _settingWindowsFaults.IsChecked = _settings.CompensateWindowsFaults;
             if (_settingOverheatWarning is not null) _settingOverheatWarning.IsChecked = _settings.OverheatWarningEnabled;
             if (_settingAutoCheckUpdates is not null) _settingAutoCheckUpdates.IsChecked = _settings.AutoCheckForUpdates;
             if (_settingAutoInstallUpdates is not null)

@@ -101,6 +101,15 @@ public sealed class AppSettings
     /// </summary>
     public bool AcceptedVendorSoftware { get; set; }
 
+    /// <summary>
+    /// Whether to watch for the handful of known Windows faults that cost a
+    /// laptop heat and battery, and put right the ones that can be put
+    /// right (see <see cref="Hardware.WindowsFaults"/>). On by default: the
+    /// one thing it does is restart a component Windows starts again by
+    /// itself, and it says so afterwards. Off, it watches nothing.
+    /// </summary>
+    public bool CompensateWindowsFaults { get; set; } = true;
+
     /// <summary>Dark, light, or follow Windows.</summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ThemePreference Theme { get; set; } = ThemePreference.System;

@@ -419,6 +419,14 @@
     <sys:String x:Key="S.Core.DotNet.Purpose">is what Nextcalibur runs on</sys:String>
     <sys:String x:Key="S.Core.Dependency.BadHash">The {0} download is not the file its publisher describes; it was not installed.</sys:String>
 
+    <!-- Windows' own faults -->
+    <sys:String x:Key="S.Core.Fault.Unknown">{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.</sys:String>
+    <sys:String x:Key="S.Core.Fault.InputHost">Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.</sys:String>
+    <sys:String x:Key="S.WindowsFault.Fixed">Windows fault put right</sys:String>
+    <sys:String x:Key="S.WindowsFault.Found">Windows fault found</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Compensate for known Windows faults</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Watches for the few Windows components known to get stuck and cost the machine heat, and restarts them. It says what it did.</sys:String>
+
     <!-- The tour: the card's words, one step after another -->
     <sys:String x:Key="S.Tour.Finish">Finish</sys:String>
     <sys:String x:Key="S.Tour.SkipTo">Skip to {0}</sys:String>

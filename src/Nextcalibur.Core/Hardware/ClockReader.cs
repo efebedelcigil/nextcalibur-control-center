@@ -186,6 +186,9 @@ public sealed class GpuClockReader : IDisposable
     [DllImport(Nvml, EntryPoint = "nvmlDeviceGetPowerUsage")]
     private static extern int GetPower(IntPtr device, out uint milliwatts);
 
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetTemperature")]
+    private static extern int GetTemperature(IntPtr device, int sensor, out uint celsius);
+
     [DllImport(Nvml, EntryPoint = "nvmlDeviceGetUtilizationRates")]
     private static extern int GetUtilisation(IntPtr device, out NvmlUtilisation rates);
 
@@ -275,6 +278,29 @@ public sealed class GpuClockReader : IDisposable
             if (GetUtilisation(_device, out var rates) != Success) return null;
 
             return new GpuLoad(milliwatts / 1000.0, (int)rates.Gpu);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            _ready = false;
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// The card's temperature in whole degrees, or null when there is no
+    /// card answering. NVML costs a library call and no interrupt, which is
+    /// the point: while the window is away this and the processor's own
+    /// register decide whether the firmware needs asking at all.
+    /// </summary>
+    public int? ReadTemperatureC()
+    {
+        if (!EnsureReady()) return null;
+
+        try
+        {
+            return GetTemperature(_device, 0 /* NVML_TEMPERATURE_GPU */, out var celsius) == Success && celsius is > 0 and < 130
+                ? (int)celsius
+                : null;
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

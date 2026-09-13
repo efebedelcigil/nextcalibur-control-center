@@ -417,6 +417,14 @@
     <sys:String x:Key="S.Core.DotNet.Purpose">Nextcalibur'un üzerinde çalıştığı bileşendir</sys:String>
     <sys:String x:Key="S.Core.Dependency.BadHash">İndirilen {0}, yayıncısının tarif ettiği dosya değil; kurulmadı.</sys:String>
 
+    <!-- Windows'un kendi hataları -->
+    <sys:String x:Key="S.Core.Fault.Unknown">{0}, birkaç dakikadır başka hiçbir şey meşgul değilken bir işlemci çekirdeğini tamamen kullanıyor. Nextcalibur ona dokunmadı - işini yapıyor olabilir.</sys:String>
+    <sys:String x:Key="S.Core.Fault.InputHost">Windows'un giriş bileşeni (TextInputHost) bir işlemci çekirdeğini tamamen tüketir hâlde takılmıştı. Nextcalibur onu yeniden başlattı; dokunmatik klavye veya emoji paneli gerektiğinde Windows kendisi tekrar başlatır.</sys:String>
+    <sys:String x:Key="S.WindowsFault.Fixed">Windows hatası giderildi</sys:String>
+    <sys:String x:Key="S.WindowsFault.Found">Windows hatası bulundu</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Bilinen Windows hatalarını telafi et</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Takılıp makineyi ısıtan birkaç bilinen Windows bileşenini izler ve yeniden başlatır. Ne yaptığını söyler.</sys:String>
+
     <!-- Tur: kartın sözleri, adım adım -->
     <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>
     <sys:String x:Key="S.Tour.SkipTo">{0} bölümüne atla</sys:String>

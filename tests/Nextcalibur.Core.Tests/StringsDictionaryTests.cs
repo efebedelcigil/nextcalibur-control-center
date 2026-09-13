@@ -25,6 +25,31 @@ public class StringsDictionaryTests
         throw new DirectoryNotFoundException("The Themes folder was not found above the test output.");
     }
 
+    /// <summary>
+    /// A key defined twice does not fail the build - the compiler is happy,
+    /// and the window dies at load with a XamlParseException that names a
+    /// line number in a generated file. It happened on 14 September 2026:
+    /// a new S.Fault.Title collided with the crash dialogue's, and the
+    /// application would not start at all. The dictionaries are read here
+    /// as text for exactly that reason.
+    /// </summary>
+    [Theory]
+    [InlineData("Strings.en.xaml")]
+    [InlineData("Strings.tr.xaml")]
+    public void No_key_is_defined_twice(string file)
+    {
+        var doc = XDocument.Load(Path.Combine(ThemesFolder(), file));
+        var duplicates = doc.Root!.Elements()
+            .Select(e => e.Attribute(X + "Key")?.Value)
+            .Where(key => key is not null)
+            .GroupBy(key => key!, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+
+        Assert.True(duplicates.Count == 0, $"{file} defines these more than once: {string.Join(", ", duplicates)}");
+    }
+
     private static Dictionary<string, string> Keys(string file)
     {
         var doc = XDocument.Load(Path.Combine(ThemesFolder(), file));
