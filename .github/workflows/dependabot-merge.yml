@@ -9,6 +9,13 @@
 #
 # Auto-merge does not skip anything: GitHub holds the pull request until
 # the branch's required check ("build") has passed, and merges then.
+#
+# pull_request_target is the trigger that runs with the repository's own
+# token while a pull request is open, and it is dangerous for one reason:
+# checking out the proposed branch and running anything from it hands that
+# token to whoever opened the pull request. This workflow never checks out
+# anything and never runs a line of the diff - it reads Dependabot's
+# metadata from GitHub and calls gh. Keep it that way.
 name: Dependabot
 
 on: pull_request_target
@@ -27,7 +34,7 @@ jobs:
       # proposed diff is checked out or run here.
       - name: What is being updated
         id: what
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a   # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 

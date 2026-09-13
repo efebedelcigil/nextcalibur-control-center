@@ -60,7 +60,15 @@ public partial class App : Application
         try
         {
             var mine = Environment.ProcessId;
-            return Process.GetProcessesByName("Nextcalibur").Any(p => p.Id != mine);
+            var others = false;
+            foreach (var process in Process.GetProcessesByName("Nextcalibur"))
+            {
+                // Each one is a handle; the question is answered by their
+                // existence, not by anything inside them.
+                if (process.Id != mine) others = true;
+                process.Dispose();
+            }
+            return others;
         }
         catch (Exception ex) when (ex is InvalidOperationException or Win32Exception)
         {

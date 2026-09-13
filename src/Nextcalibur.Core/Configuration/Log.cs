@@ -122,7 +122,12 @@ public static class Log
 
     private static void Write(string level, string category, string message)
     {
-        var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {level} [{Environment.CurrentManagedThreadId,3}] {OneLine(category)}: {OneLine(message)}";
+        // Invariant: the format follows the machine's calendar otherwise -
+        // a Windows set to the Hijri or Buddhist calendar would date these
+        // lines, and name the files, in a year nobody reading a bug report
+        // would recognise, and the day would turn in the wrong place.
+        var line = string.Create(System.Globalization.CultureInfo.InvariantCulture,
+            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {level} [{Environment.CurrentManagedThreadId,3}] {OneLine(category)}: {OneLine(message)}");
         Debug.WriteLine(line);
         // Not only after Start: the first things worth logging - a name held
         // by something else, a folder that turned out to be a link - happen
@@ -136,7 +141,7 @@ public static class Log
                 // Named per write, not once at start: a process that runs
                 // across midnight starts the next day's file rather than
                 // growing yesterday's.
-                var file = Path.Combine(Folder, $"nextcalibur-{DateTime.Now:yyyyMMdd}.log");
+                var file = Path.Combine(Folder, string.Create(System.Globalization.CultureInfo.InvariantCulture, $"nextcalibur-{DateTime.Now:yyyyMMdd}.log"));
                 if (file != _currentFile)
                 {
                     // A process that runs for weeks would otherwise keep every

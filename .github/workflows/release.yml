@@ -21,7 +21,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -34,7 +34,7 @@ jobs:
           "version=$v" >> $env:GITHUB_OUTPUT
 
       - name: .NET 8 SDK
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68   # v6
         with:
           dotnet-version: 8.0.x
           # Not the runner's preinstalled SDK: it lags, and a self-contained
@@ -109,7 +109,7 @@ jobs:
           Remove-Item "$env:RUNNER_TEMP\cert.pfx"
 
       - name: Attest provenance
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8   # v4
         with:
           subject-path: |
             installer/output/Nextcalibur-Setup-*.exe

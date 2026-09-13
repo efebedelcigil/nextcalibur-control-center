@@ -2,6 +2,13 @@ name: CodeQL
 
 # Static analysis of the C# on every push to main, every pull request, and
 # weekly. Findings land in the repository's Security tab.
+#
+# security-extended rather than the default suite: this application runs as
+# administrator, downloads files and writes to the firmware, so the queries
+# that trade a few more false positives for coverage are the ones worth
+# having. Every action is pinned to a commit rather than a tag - a tag is a
+# name its owner can move, which is how the Actions supply chain has been
+# attacked (tj-actions/changed-files, March 2025).
 
 on:
   push:
@@ -20,18 +27,19 @@ jobs:
   analyze:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
         with:
           persist-credentials: false
-      - uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68   # v6
         with:
           dotnet-version: 8.0.x
           check-latest: true
-      - uses: github/codeql-action/init@v4
+      - uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63   # v4
         with:
           languages: csharp
           build-mode: manual
+          queries: security-extended
       - run: dotnet build Nextcalibur.sln -c Release --nologo
-      - uses: github/codeql-action/analyze@v4
+      - uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63   # v4
         with:
           category: '/language:csharp'

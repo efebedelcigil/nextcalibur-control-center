@@ -147,6 +147,18 @@ public sealed class UpdateService : IDisposable
             var available = await _manager.CheckForUpdatesAsync();
             if (available is null) return false;
 
+            // Forward only. Velopack refuses a downgrade by default; this
+            // says it a second time in our own code, because the cost of
+            // being wrong is an installed copy walked back onto a version
+            // whose holes are known and published.
+            var current = typeof(UpdateService).Assembly.GetName().Version;
+            if (current is not null && available.TargetFullRelease?.Version is { } offered
+                && new Version(offered.Major, offered.Minor, offered.Patch) <= new Version(current.Major, current.Minor, current.Build))
+            {
+                Nextcalibur.Core.Configuration.Log.Warn("update", $"The release page offered {offered}, which is not newer than {current.ToString(3)}; ignored");
+                return false;
+            }
+
             var announce = Available is null;
             Available = available;
             if (announce) UpdateFound?.Invoke(this, AvailableVersion ?? Strings.Get("S.Update.ANewVersion"));

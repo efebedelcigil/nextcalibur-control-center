@@ -213,6 +213,7 @@ public sealed class EcMailbox : IDisposable
     public void Write(SmiCommand command)
     {
         lock (_gate)
+        using (MachineWideGate.Take())
         {
             var mo = Instance();
             mo[BufferProperty] = command.ToBytes();
@@ -241,8 +242,11 @@ public sealed class EcMailbox : IDisposable
         ArgumentNullException.ThrowIfNull(isValid);
 
         // Held across the retries, not just around each call: a response only
-        // belongs to us if nothing wrote between our write and our read.
+        // belongs to us if nothing wrote between our write and our read. The
+        // machine-wide gate says the same thing to a copy of this
+        // application running in another session, where a lock says nothing.
         lock (_gate)
+        using (MachineWideGate.Take())
         {
             Exception? last = null;
             for (var attempt = 0; attempt < attempts; attempt++)

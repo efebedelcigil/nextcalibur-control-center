@@ -1179,9 +1179,24 @@ public partial class MainWindow : Window
             _tray?.ShowMessage(title, Strings.Get(install ? "S.Dependency.ClickToInstall" : "S.Dependency.ClickToUpdate"));
     }
 
+    /// <summary>
+    /// Offers waiting for the one in progress. Two dependencies can need
+    /// something at the same moment - a fresh machine needs the runtime and
+    /// PawnIO both - and the check raises them one after the other, faster
+    /// than a person can answer. They used to be dropped: the second was
+    /// never mentioned, and the reading it serves showed "--" with nothing
+    /// said about why.
+    /// </summary>
+    private readonly Queue<Nextcalibur.Core.Dependencies.DependencyStatus> _dependenciesWaiting = new();
+
     private async void OfferDependency(Nextcalibur.Core.Dependencies.DependencyStatus status)
     {
-        if (_updating) return;
+        if (_updating)
+        {
+            if (!_dependenciesWaiting.Any(waiting => waiting.Dependency.Id == status.Dependency.Id))
+                _dependenciesWaiting.Enqueue(status);
+            return;
+        }
 
         var install = status.Missing;
         if (!Dialogs.Ask(Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
@@ -1191,6 +1206,7 @@ public partial class MainWindow : Window
                 defaultNo: false))
         {
             _updates.DeclineDependency(status);
+            OfferTheNextDependency();
             return;
         }
 
@@ -1220,7 +1236,21 @@ public partial class MainWindow : Window
         finally
         {
             _updating = false;
+            OfferTheNextDependency();
         }
+    }
+
+    /// <summary>
+    /// The next offer, once the current one is done with. Through the
+    /// dispatcher so that this call unwinds first: the offer opens a
+    /// dialogue of its own, and one nested message loop inside another's
+    /// finally block is not a place to be.
+    /// </summary>
+    private void OfferTheNextDependency()
+    {
+        if (_updating || _dependenciesWaiting.Count == 0) return;
+        var next = _dependenciesWaiting.Dequeue();
+        Dispatcher.BeginInvoke(new Action(() => AnnounceDependency(next)), DispatcherPriority.Background);
     }
 
     /// <summary>The overlay as a progress panel: title, a line, a bar, no buttons. Not modal - nothing waits on it.</summary>
@@ -2214,8 +2244,12 @@ public partial class MainWindow : Window
             // was a third of all mailbox traffic for nothing (12 September
             // 2026). Use that sample while it is fresh; read only when it
             // is not - hidden, or the fast timer stalled.
+            // The age is checked at both ends: a sample from the future -
+            // which is what a clock put back looks like - is not a fresh
+            // sample, and the overheat warning is the last thing that
+            // should be reading an hour-old temperature.
             ThermalSample s;
-            if (_lastThermal is { } recent && DateTimeOffset.Now - recent.Timestamp < VisibleSlowInterval)
+            if (_lastThermal is { } recent && DateTimeOffset.Now - recent.Timestamp is { Ticks: >= 0 } age && age < VisibleSlowInterval)
             {
                 s = recent;
             }

@@ -3,6 +3,12 @@ name: CI
 # Every push and pull request: build in Release, run the tests. The tests
 # that touch the machine (registry, tasks) are written to skip or pass on a
 # runner that has none of it.
+#
+# Actions are pinned to a commit, with the tag in a comment: a tag can be
+# moved by whoever owns the action, and a moved tag is how a workflow ends
+# up running somebody else's code with the runner's secrets. Dependabot
+# keeps the pins current and this project's rule is that a bump waits for a
+# person unless it is a patch.
 
 on:
   push:
@@ -23,12 +29,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
         with:
           persist-credentials: false
 
       - name: .NET 8 SDK
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68   # v6
         with:
           dotnet-version: 8.0.x
           # Not the runner's preinstalled SDK: it lags, and a self-contained
@@ -47,7 +53,7 @@ jobs:
 
       - name: Test results
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
         with:
           name: test-results
           path: '**/TestResults/*.trx'
