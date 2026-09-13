@@ -412,6 +412,11 @@
     <sys:String x:Key="S.Core.Gpu.SittingAt">{0} °C'de duruyor</sys:String>
     <sys:String x:Key="S.Core.Gpu.IdleCost">Şu an {0}. Bu modda kart masaüstünü de çizdiğinden düşük güç durumlarına hiç inmez - bu, karta ihtiyaç olsun olmasın harcanan pil ve fanların atması gereken ısı demektir.</sys:String>
 
+    <!-- Uygulamanın üzerinde çalıştığı .NET -->
+    <sys:String x:Key="S.Core.DotNet.Name">.NET {0} masaüstü çalışma zamanı</sys:String>
+    <sys:String x:Key="S.Core.DotNet.Purpose">Nextcalibur'un üzerinde çalıştığı bileşendir</sys:String>
+    <sys:String x:Key="S.Core.Dependency.BadHash">İndirilen {0}, yayıncısının tarif ettiği dosya değil; kurulmadı.</sys:String>
+
     <!-- Tur: kartın sözleri, adım adım -->
     <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>
     <sys:String x:Key="S.Tour.SkipTo">{0} bölümüne atla</sys:String>

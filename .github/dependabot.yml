@@ -1,20 +1,46 @@
-# Dependabot: pull requests for NuGet packages and for the actions the
-# workflows pin, weekly, grouped so one PR carries the small bumps.
+# What this repository depends on, watched by GitHub.
+#
+# Two ecosystems and nothing else: the NuGet packages the application is
+# built from, and the actions the workflows run. The .NET runtime itself is
+# not here - it is a dependency of the installed application rather than of
+# the source, and Nextcalibur keeps that one current on the machine
+# (DotNetRuntimeDependency).
+#
+# What may merge itself is decided in dependabot-merge.yml: a patch, once
+# the build and the tests have passed, and nothing else.
 version: 2
+
 updates:
   - package-ecosystem: nuget
     directory: /
     schedule:
       interval: weekly
       day: monday
+      time: "06:00"
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "Dependency:"
     groups:
-      nuget:
-        patterns: ['*']
+      # One pull request for the test libraries, which move together and
+      # are not in the shipped application at all.
+      testing:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet*"
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
+      time: "06:00"
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "Workflow:"
     groups:
       actions:
-        patterns: ['*']
+        patterns:
+          - "*"

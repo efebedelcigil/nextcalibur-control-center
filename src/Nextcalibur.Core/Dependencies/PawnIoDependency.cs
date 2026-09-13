@@ -28,7 +28,7 @@ public sealed class PawnIoDependency : Dependency
         }
     }
 
-    public override Task<(Version Version, Uri Download)?> LatestAsync(HttpClient http, CancellationToken ct) =>
+    public override Task<ReleaseFile?> LatestAsync(HttpClient http, CancellationToken ct) =>
         LatestGitHubReleaseAsync(http, "namazso", "PawnIO.Setup", "PawnIO_setup.exe", ct);
 
     public override string ExpectedSigner => "CN=namazso.eu";

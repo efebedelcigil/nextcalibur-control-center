@@ -13,28 +13,36 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
 
-    <!-- Self-contained, and it has to be.
-         Framework-dependent kept the download at a few megabytes, on the
-         understanding that the installer would fetch the .NET desktop runtime
-         when a machine lacked it. Watched on a clean Windows for the first time
-         on 11 September 2026, it does not: the prompt appears, the progress bar
-         never moves, and the Finish button is clickable anyway - so somebody is
-         told nothing is wrong and then cannot find the application they just
-         installed. The network was not the problem; the same runtime downloads
-         directly at 4.13 MB/s in the same sandbox.
-         Carrying the runtime removes the step that fails. Updates stay small:
-         the runtime files do not change between versions, so they cost nothing
-         in a delta. -->
-    <SelfContained>true</SelfContained>
+    <!-- Framework-dependent: the .NET desktop runtime is a dependency, not
+         cargo.
+
+         It was carried inside the package from 11 September 2026, and for a
+         good reason: Velopack's own runtime bootstrap was watched failing
+         silently on a clean Windows - the prompt appeared, the progress bar
+         never moved, the Finish button was clickable anyway, and somebody
+         was left with no application and nothing to read. The network was
+         never the problem; the same runtime downloaded directly at
+         4.13 MB/s in the same sandbox.
+
+         What that decision could not price: nothing on a machine patches a
+         runtime that lives inside an application. 0.5.3 carried 8.0.30 for
+         as long as it stayed installed, five days after 8.0.31 fixed five
+         security holes, and the only cure was another release - for every
+         .NET patch, for ever.
+
+         So the runtime is a dependency now (DotNetRuntimeDependency), and
+         neither thing that failed then is in the way: the wizard installs
+         it itself the way it installs PawnIO - Microsoft's own installer,
+         checked against Microsoft's published hash and signature - and the
+         application keeps it current afterwards through the same check,
+         button and notification as everything else. Windows patches a
+         shared runtime by itself as well, which is the point.
+
+         RollForward=Major: if the 8.0 runtime is ever gone and a newer one
+         is there, the application runs on that rather than not at all. -->
+    <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <!-- Carrying the runtime means carrying its security fixes too: nothing
-         on the machine patches these files, only a new release does. Without
-         this, the runtime that goes out is whatever the build machine's SDK
-         happened to bundle - 0.5.3 shipped 8.0.30 while 8.0.31, five
-         security fixes, was already out. This asks restore for the newest
-         patch of the runtime pack instead. Checked at every release
-         (docs/RELEASING.md). -->
-    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <RollForward>Major</RollForward>
     <PublishSingleFile>true</PublishSingleFile>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <TieredPGO>true</TieredPGO>

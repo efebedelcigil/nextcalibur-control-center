@@ -137,6 +137,7 @@ public partial class App : Application
         // Read before the uninstall removes the settings file.
         Strings.Apply(Strings.Initial(AppSettings.Load()));
         Nextcalibur.Core.Words.Resolver = Strings.TryGet;   // the library's words come from the same dictionaries
+        Log.Info("language", $"Words in {Strings.Current}");
 
         // A short-lived elevated copy of the application doing the uninstall's
         // machine-wide work and exiting. It must not run installer hooks, take
@@ -155,7 +156,8 @@ public partial class App : Application
                 if (args[i] != RemoveDependencyArgument) continue;
                 var id = args[i + 1];
                 foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
-                    if (dependency.Id == id && dependency.InstalledVersion() is not null) dependency.Uninstall();
+                    if (dependency.Id == id && dependency.MayBeRemoved && dependency.InstalledVersion() is not null)
+                        dependency.Uninstall();
             }
             FinishUninstall(self);
             Environment.Exit(0);
@@ -411,6 +413,10 @@ public partial class App : Application
         var dependenciesToRemove = new List<Nextcalibur.Core.Dependencies.Dependency>();
         foreach (var dependency in Nextcalibur.Core.Dependencies.DependencyManager.All)
         {
+            // The .NET runtime is not ours to take away: every other .NET
+            // application on the machine is using it, and we are the ones
+            // who asked for it in the first place.
+            if (!dependency.MayBeRemoved) continue;
             if (dependency.InstalledVersion() is null) continue;
             if (Dialogs.Ask(Strings.Get("S.Uninstall.DependencyTitle", dependency.Name),
                     Strings.Get("S.Uninstall.DependencyBody", dependency.Name, dependency.Purpose),

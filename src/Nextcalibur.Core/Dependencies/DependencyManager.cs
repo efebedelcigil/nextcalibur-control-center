@@ -7,7 +7,7 @@ namespace Nextcalibur.Core.Dependencies;
 /// <param name="Dependency">Which.</param>
 /// <param name="Installed">The version here, or null when absent.</param>
 /// <param name="Latest">The newest release, and where to get it.</param>
-public sealed record DependencyStatus(Dependency Dependency, Version? Installed, (Version Version, Uri Download) Latest)
+public sealed record DependencyStatus(Dependency Dependency, Version? Installed, ReleaseFile Latest)
 {
     public bool Missing => Installed is null;
     public bool Outdated => Installed is { } v && v < Latest.Version;
@@ -25,18 +25,23 @@ public sealed record DependencyStatus(Dependency Dependency, Version? Installed,
 /// </summary>
 public sealed class DependencyManager
 {
-    /// <summary>Everything the application knows how to keep current. Add here.</summary>
-    public static IReadOnlyList<Dependency> All { get; } = [new PawnIoDependency()];
+    /// <summary>
+    /// Everything the application knows how to keep current, in the order
+    /// they matter: the runtime it runs on first.
+    /// </summary>
+    public static IReadOnlyList<Dependency> All { get; } = [new DotNetRuntimeDependency(), new PawnIoDependency()];
 
     private static readonly HttpClient Http = new()
     {
         Timeout = TimeSpan.FromSeconds(30),
         DefaultRequestHeaders = { { "User-Agent", "Nextcalibur" } },
-        // The release answer is read into memory; a megabyte is a hundred
-        // times what it needs and an endless one is refused. The installer
-        // download is streamed and capped separately, so this does not
-        // stand in its way.
-        MaxResponseContentBufferSize = 1024 * 1024,
+        // Answers are read into memory, so they are bounded. Eight megabytes
+        // rather than one: .NET's own release index for a channel is a
+        // megabyte and a half, and a cap below it was silently turning every
+        // runtime check into "nothing found" - which is how a cap fails, if
+        // it fails. The installer download is streamed and capped
+        // separately, so this does not stand in its way.
+        MaxResponseContentBufferSize = 8 * 1024 * 1024,
     };
 
     /// <summary>Every dependency that is missing or behind. Empty when all is well or nothing could be reached.</summary>
@@ -49,7 +54,7 @@ public sealed class DependencyManager
             {
                 var latest = await dependency.LatestAsync(Http, ct);
                 if (latest is null) continue;
-                var status = new DependencyStatus(dependency, dependency.InstalledVersion(), latest.Value);
+                var status = new DependencyStatus(dependency, dependency.InstalledVersion(), latest);
                 if (status.NeedsAction) needing.Add(status);
             }
             catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
@@ -62,6 +67,25 @@ public sealed class DependencyManager
 
     /// <summary>An installer larger than this is not what it claims to be; the download stops there.</summary>
     private const long LargestInstallerBytes = 200L * 1024 * 1024;
+
+    /// <summary>
+    /// The file against the hash its publisher states. Microsoft publishes
+    /// one for every .NET release; where there is none, the Authenticode
+    /// signature stands alone.
+    /// </summary>
+    private static bool HashMatches(string file, string expected)
+    {
+        try
+        {
+            using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var actual = Convert.ToHexString(System.Security.Cryptography.SHA512.HashData(stream));
+            return actual.Equals(expected.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
 
     /// <summary>
     /// Downloads the installer with progress, verifies its signature, runs
@@ -103,6 +127,10 @@ public sealed class DependencyManager
             // Held open, shared for reading only, while the signature is checked
             // and the installer runs: no rename, no rewrite in between.
             using var guard = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            if (status.Latest.Sha512 is { Length: > 0 } expected && !HashMatches(file, expected))
+                return (false, Words.Get("S.Core.Dependency.BadHash",
+                    "The {0} download is not the file its publisher describes; it was not installed.", status.Dependency.Name));
+
             if (!status.Dependency.SignatureIsTrusted(file))
                 return (false, Words.Get("S.Core.Dependency.Unsigned", "The {0} download is not signed by {1}; it was not installed.", status.Dependency.Name, status.Dependency.ExpectedSigner));
 

@@ -6,6 +6,15 @@ using Nextcalibur.Core.Security;
 namespace Nextcalibur.Core.Dependencies;
 
 /// <summary>
+/// A release to fetch: which version, where it lives, and the hash its
+/// publisher states for it, when one is published.
+/// </summary>
+/// <param name="Version">The version this file installs.</param>
+/// <param name="Download">Where to get it, checked before it is used.</param>
+/// <param name="Sha512">The publisher's hash, hexadecimal, or null when there is none to check against.</param>
+public sealed record ReleaseFile(Version Version, Uri Download, string? Sha512 = null);
+
+/// <summary>
 /// Something the application needs from outside itself, kept current.
 ///
 /// Set by the owner on 12 September 2026: what is not carried inside the
@@ -30,8 +39,15 @@ public abstract class Dependency
     /// <summary>The version on the machine, or null when it is not installed.</summary>
     public abstract Version? InstalledVersion();
 
-    /// <summary>The newest release: version and the installer's download URL.</summary>
-    public abstract Task<(Version Version, Uri Download)?> LatestAsync(HttpClient http, CancellationToken ct);
+    /// <summary>The newest release: version, where to get it, and what it should hash to.</summary>
+    public abstract Task<ReleaseFile?> LatestAsync(HttpClient http, CancellationToken ct);
+
+    /// <summary>
+    /// Whether this application's uninstall may offer to remove it. False
+    /// for anything the machine as a whole depends on - the .NET runtime is
+    /// not ours to take away because we were the ones who needed it.
+    /// </summary>
+    public virtual bool MayBeRemoved => true;
 
     /// <summary>
     /// One component of the signer's subject, whole, e.g. "CN=namazso.eu".
@@ -54,6 +70,8 @@ public abstract class Dependency
     /// </summary>
     public bool Uninstall()
     {
+        if (!MayBeRemoved) return false;
+
         string? command;
         try
         {
@@ -157,7 +175,7 @@ public abstract class Dependency
     }
 
     /// <summary>The newest GitHub release of a repository, for dependencies hosted there.</summary>
-    protected static async Task<(Version Version, Uri Download)?> LatestGitHubReleaseAsync(
+    protected static async Task<ReleaseFile?> LatestGitHubReleaseAsync(
         HttpClient http, string owner, string repo, string assetName, CancellationToken ct)
     {
         using var response = await http.GetAsync($"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
@@ -192,7 +210,7 @@ public abstract class Dependency
                 && string.Equals(name.GetString(), assetName, StringComparison.OrdinalIgnoreCase)
                 && asset.TryGetProperty("browser_download_url", out var link) && link.ValueKind == JsonValueKind.String
                 && IsReleaseAssetOf(link.GetString(), owner, repo, out var url))
-                return (version, url);
+                return new ReleaseFile(version, url);
         }
         return null;
     }

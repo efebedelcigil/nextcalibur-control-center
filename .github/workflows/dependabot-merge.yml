@@ -1,0 +1,47 @@
+# A dependency bump that is only a patch, and whose build and tests pass,
+# merges itself. Anything larger waits for a person.
+#
+# Why the line is drawn at a patch: merging what a robot proposes is
+# merging what an upstream account can publish, and this application runs
+# as administrator. A patch of a package already trusted is a small step
+# and the alternative - a queue of stale pull requests nobody reads - is
+# worse. A minor or a major changes enough to be worth a pair of eyes.
+#
+# Auto-merge does not skip anything: GitHub holds the pull request until
+# the branch's required check ("build") has passed, and merges then.
+name: Dependabot
+
+on: pull_request_target
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      # The only thing this reads from the pull request is Dependabot's own
+      # metadata, from GitHub rather than from the branch: nothing in the
+      # proposed diff is checked out or run here.
+      - name: What is being updated
+        id: what
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Let a patch merge itself once the build passes
+        if: steps.what.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR"
+        env:
+          PR: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Say why a larger one is waiting
+        if: steps.what.outputs.update-type != 'version-update:semver-patch'
+        run: |
+          gh pr comment "$PR" --body "This is a ${{ steps.what.outputs.update-type }}, so it waits for a person: only patches merge themselves here (.github/workflows/dependabot-merge.yml)."
+        env:
+          PR: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

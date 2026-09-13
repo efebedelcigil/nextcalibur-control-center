@@ -414,6 +414,11 @@
     <sys:String x:Key="S.Core.Gpu.SittingAt">sitting at {0} °C</sys:String>
     <sys:String x:Key="S.Core.Gpu.IdleCost">Right now it is {0}. In this mode the card draws your desktop as well, so it never reaches its low-power states - that is battery spent whether or not anything needs the card, and heat the fans have to move.</sys:String>
 
+    <!-- The runtime the application runs on -->
+    <sys:String x:Key="S.Core.DotNet.Name">.NET {0} desktop runtime</sys:String>
+    <sys:String x:Key="S.Core.DotNet.Purpose">is what Nextcalibur runs on</sys:String>
+    <sys:String x:Key="S.Core.Dependency.BadHash">The {0} download is not the file its publisher describes; it was not installed.</sys:String>
+
     <!-- The tour: the card's words, one step after another -->
     <sys:String x:Key="S.Tour.Finish">Finish</sys:String>
     <sys:String x:Key="S.Tour.SkipTo">Skip to {0}</sys:String>

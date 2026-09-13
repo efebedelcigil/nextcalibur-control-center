@@ -105,6 +105,12 @@ en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur w
 tr.PawnIOFailed=PawnIO sürücüsü şu an kurulamadı (%1). Nextcalibur onsuz da çalışır; daha sonra yeniden önerecek.
 en.PawnIOBadSignature=the download is not signed by namazso.eu
 tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
+en.DownloadingRuntime=Downloading the .NET 8 desktop runtime from Microsoft...
+tr.DownloadingRuntime=.NET 8 masaüstü çalışma zamanı Microsoft'tan indiriliyor...
+en.RuntimeFailed=The .NET 8 desktop runtime could not be installed (%1).%n%nNextcalibur runs on it and will not start without it. Install it from%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) and start Nextcalibur again.
+tr.RuntimeFailed=.NET 8 masaüstü çalışma zamanı kurulamadı (%1).%n%nNextcalibur bunun üzerinde çalışır ve o olmadan başlamaz. Şu adresten kurun:%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) ve Nextcalibur'u yeniden başlatın.
+en.RuntimeBadSignature=the download is not signed by Microsoft
+tr.RuntimeBadSignature=indirilen dosya Microsoft imzalı değil
 en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
 tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
 
@@ -156,6 +162,43 @@ begin
   Result := RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO', 'DisplayVersion', V);
 end;
 
+// The .NET desktop runtime the application runs on. Framework-dependent
+// since 13 September 2026: a runtime carried inside the package is one no
+// machine ever patches, and 0.5.3 shipped one that was five days behind
+// five security fixes. Velopack's own runtime bootstrap is not used - it
+// was watched failing silently on a clean Windows, which is why the
+// runtime was carried in the first place - so the wizard fetches it the
+// same way it fetches PawnIO: Microsoft's installer, signature checked,
+// run quietly, from a folder only administrators can write.
+function DesktopRuntimeInstalled(): Boolean;
+var
+  Folder: String;
+  Search: TFindRec;
+  Major: Integer;
+begin
+  Result := False;
+  Folder := ExpandConstant('{commonpf}\dotnet\shared\Microsoft.WindowsDesktop.App');
+  if not DirExists(Folder) then Exit;
+  if FindFirst(Folder + '\*', Search) then
+  begin
+    try
+      repeat
+        if (Search.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          Major := StrToIntDef(Copy(Search.Name, 1, Pos('.', Search.Name + '.') - 1), 0);
+          if Major >= 8 then
+          begin
+            Result := True;
+            Exit;
+          end;
+        end;
+      until not FindNext(Search);
+    finally
+      FindClose(Search);
+    end;
+  end;
+end;
+
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
 begin
   if Progress = ProgressMax then Log(Format('Downloaded %s', [FileName]));
@@ -171,14 +214,68 @@ end;
 // valid (hash, signature, chain, revocation), signed by PawnIO's author -
 // the whole subject component, not a substring. PowerShell does the work,
 // from its own folder; a non-zero exit refuses the file.
-function PawnIOSignatureIsTrusted(const File: String): Boolean;
+function SignatureIsTrusted(const File, SignerPattern: String): Boolean;
 var
   Code: Integer;
   Cmd: String;
 begin
   Cmd := '-NoProfile -NonInteractive -Command "$s = Get-AuthenticodeSignature ''' + File + '''; ' +
-         'if ($s.Status -eq ''Valid'' -and $s.SignerCertificate.Subject -match ''(^|, )CN=namazso\.eu(,|$)'') { exit 0 } else { exit 1 }"';
+         'if ($s.Status -eq ''Valid'' -and $s.SignerCertificate.Subject -match ''' + SignerPattern + ''') { exit 0 } else { exit 1 }"';
   Result := Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Cmd, '', SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
+end;
+
+function PawnIOSignatureIsTrusted(const File: String): Boolean;
+begin
+  Result := SignatureIsTrusted(File, '(^|, )CN=namazso\.eu(,|$)');
+end;
+
+// Microsoft signs with a name that has moved over the years; the constant
+// part is the organisation, and the chain is what Get-AuthenticodeSignature
+// has already checked by saying Valid.
+function MicrosoftSignatureIsTrusted(const File: String): Boolean;
+begin
+  Result := SignatureIsTrusted(File, '(^|, )O=Microsoft Corporation(,|$)');
+end;
+
+// Fetches and installs the runtime. True when the machine has it afterwards.
+function InstallDesktopRuntime(): Boolean;
+var
+  File: String;
+  Code: Integer;
+begin
+  Result := True;
+  if DesktopRuntimeInstalled() then Exit;
+
+  Result := False;
+  DownloadPage.Clear;
+  // Microsoft's evergreen link for the channel: it redirects to the newest
+  // patch, so a wizard built months ago still installs a current runtime.
+  // The application takes it from there, patch by patch, afterwards.
+  DownloadPage.Add('https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe', 'windowsdesktop-runtime-win-x64.exe', '');
+  DownloadPage.SetText(CustomMessage('DownloadingRuntime'), '');
+  DownloadPage.Show;
+  try
+    try
+      DownloadPage.Download;
+      // Checked and run from {app}: only administrators can write there,
+      // so nothing can swap the file between the check and the run.
+      File := ExpandConstant('{app}\windowsdesktop-runtime-win-x64.exe');
+      if not FileCopy(ExpandConstant('{tmp}\windowsdesktop-runtime-win-x64.exe'), File, False) then
+        MsgBox(FmtMessage(CustomMessage('RuntimeFailed'), ['copy']), mbError, MB_OK)
+      else if not MicrosoftSignatureIsTrusted(File) then
+        MsgBox(FmtMessage(CustomMessage('RuntimeFailed'), [CustomMessage('RuntimeBadSignature')]), mbError, MB_OK)
+      else if not (Exec(File, '/install /quiet /norestart', '', SW_HIDE, ewWaitUntilTerminated, Code) and ((Code = 0) or (Code = 3010) or (Code = 1638))) then
+        MsgBox(FmtMessage(CustomMessage('RuntimeFailed'), ['exit ' + IntToStr(Code)]), mbError, MB_OK)
+      else
+        Result := True;
+      DeleteFile(File);
+      DeleteFile(ExpandConstant('{tmp}\windowsdesktop-runtime-win-x64.exe'));
+    except
+      MsgBox(FmtMessage(CustomMessage('RuntimeFailed'), [GetExceptionMessage]), mbError, MB_OK);
+    end;
+  finally
+    DownloadPage.Hide;
+  end;
 end;
 
 // After the application is in place: fetch and install what was ticked.
@@ -187,6 +284,12 @@ var
   File: String;
   Code: Integer;
 begin
+  // First, because the application does not start without it. This runs
+  // before the [Run] entries, so the runtime is in place before Velopack
+  // unpacks the application and before the finish page offers to start it.
+  if CurStep = ssPostInstall then
+    InstallDesktopRuntime();
+
   if (CurStep = ssPostInstall) and WizardIsComponentSelected('deps\pawnio') and (not PawnIOInstalled) then
   begin
     DownloadPage.Clear;

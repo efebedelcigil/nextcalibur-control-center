@@ -63,13 +63,14 @@ jobs:
       - name: Publish
         run: dotnet publish src/Nextcalibur.App/Nextcalibur.App.csproj -c Release -o publish --nologo /p:Version=${{ steps.version.outputs.version }}
 
-      # Nothing on a machine patches the runtime inside a self-contained
-      # application; only the next release does. So a release that would
-      # carry a runtime behind the latest patch, or one out of support,
-      # stops here.
-      - name: The bundled runtime must be current
+      # The application is framework-dependent: the runtime is installed on
+      # the machine, patched by Windows, and kept current by the application
+      # itself. What a release must not do is target a channel nobody
+      # patches any more - and, if it ever carries a runtime again, carry a
+      # stale one.
+      - name: The runtime channel must be supported
         shell: pwsh
-        run: tools/Check-BundledRuntime.ps1 -Path publish/Nextcalibur.exe
+        run: tools/Check-Runtime.ps1 -Channel 8.0 -Path publish/Nextcalibur.exe
 
       - name: Sign the executable
         if: ${{ env.SIGNING_CERT_PFX_BASE64 != '' }}

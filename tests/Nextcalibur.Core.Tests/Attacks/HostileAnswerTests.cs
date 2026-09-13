@@ -33,11 +33,11 @@ public class HostileAnswerTests
         public override string ExpectedSigner => "CN=nobody";
         public override string SilentInstallArguments => "/S";
         public override Version? InstalledVersion() => null;
-        public override Task<(Version Version, Uri Download)?> LatestAsync(HttpClient http, CancellationToken ct) =>
+        public override Task<ReleaseFile?> LatestAsync(HttpClient http, CancellationToken ct) =>
             LatestGitHubReleaseAsync(http, "namazso", "PawnIO.Setup", "PawnIO_setup.exe", ct);
     }
 
-    private static async Task<(Version Version, Uri Download)?> Ask(string body, HttpStatusCode status = HttpStatusCode.OK)
+    private static async Task<ReleaseFile?> Ask(string body, HttpStatusCode status = HttpStatusCode.OK)
     {
         using var http = new HttpClient(new Answer(body, status));
         return await new Probe().LatestAsync(http, CancellationToken.None);
@@ -58,8 +58,8 @@ public class HostileAnswerTests
     {
         var latest = await Ask(Release("v3.0", "PawnIO_setup.exe", Good));
         Assert.NotNull(latest);
-        Assert.Equal(new Version(3, 0), latest!.Value.Version);
-        Assert.Equal(new Uri(Good), latest.Value.Download);
+        Assert.Equal(new Version(3, 0), latest!.Version);
+        Assert.Equal(new Uri(Good), latest.Download);
     }
 
     /// <summary>
