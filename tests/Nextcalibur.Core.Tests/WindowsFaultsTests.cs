@@ -163,6 +163,54 @@ public class WindowsFaultsTests
     }
 
     [Fact]
+    public void Rule3_thread_share_calculation_drops_sample_if_thread_cpu_time_regresses()
+    {
+        var baseThreads = new Dictionary<int, TimeSpan>
+        {
+            [10] = TimeSpan.FromSeconds(100),
+        };
+        var curThreads = new Dictionary<int, TimeSpan>
+        {
+            [10] = TimeSpan.FromSeconds(50), // Thread CPU went backwards (ID recycled)
+        };
+        var totalCpuDelta = TimeSpan.FromSeconds(100);
+
+        var (stable, share) = WindowsFaults.CalculateThreadShare(baseThreads, curThreads, totalCpuDelta);
+
+        Assert.False(stable);
+        Assert.Equal(0.0, share);
+    }
+
+    [Fact]
+    public void Rule3_thread_share_calculation_drops_sample_if_thread_delta_exceeds_process_delta()
+    {
+        var baseThreads = new Dictionary<int, TimeSpan>
+        {
+            [10] = TimeSpan.FromSeconds(100),
+        };
+        var curThreads = new Dictionary<int, TimeSpan>
+        {
+            [10] = TimeSpan.FromSeconds(220), // +120s on thread vs +100s on process
+        };
+        var totalCpuDelta = TimeSpan.FromSeconds(100);
+
+        var (stable, share) = WindowsFaults.CalculateThreadShare(baseThreads, curThreads, totalCpuDelta);
+
+        Assert.False(stable);
+        Assert.Equal(0.0, share);
+    }
+
+    [Fact]
+    public void Rule4_fails_when_working_set_shrinks_by_more_than_1mb()
+    {
+        var ev = ValidEvidence() with { WorkingSetDeltaBytes = -(1024 * 1024 + 1) };
+        var result = WindowsFaults.Evaluate(ev);
+
+        Assert.False(result.Rule4Work);
+        Assert.False(result.AllowedToAct);
+    }
+
+    [Fact]
     public void Rule4_passes_with_negative_working_set_delta_within_1mb()
     {
         var ev = ValidEvidence() with { WorkingSetDeltaBytes = -500 * 1024 };

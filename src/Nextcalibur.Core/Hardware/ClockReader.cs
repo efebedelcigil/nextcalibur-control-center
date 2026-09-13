@@ -220,6 +220,7 @@ public sealed class GpuClockReader : IDisposable
     private bool _tried;
     private bool _disposed;
     private DateTime _awakeSince = DateTime.MinValue;
+    private DateTime _lastSampleAt = DateTime.MinValue;
 
     /// <summary>
     /// Forgets the device handle so the next read starts from a fresh
@@ -254,6 +255,7 @@ public sealed class GpuClockReader : IDisposable
         _ready = false;
         _tried = false;
         _awakeSince = DateTime.MinValue;
+        _lastSampleAt = DateTime.MinValue;
     }
 
     private bool EnsureReady()
@@ -344,7 +346,11 @@ public sealed class GpuClockReader : IDisposable
     }
 
     /// <summary>Resets the unbroken awake timer.</summary>
-    public void ResetAwakeFault() => _awakeSince = DateTime.MinValue;
+    public void ResetAwakeFault()
+    {
+        _awakeSince = DateTime.MinValue;
+        _lastSampleAt = DateTime.MinValue;
+    }
 
     /// <summary>
     /// Pure arithmetic check: the card in P0 or P1, utilisation under 5 %,
@@ -480,6 +486,12 @@ public sealed class GpuClockReader : IDisposable
             var watts = milliwatts / 1000.0;
             var isFault = IsGpuAwakeFaultCondition(pState, (int)rates.Gpu, watts, dispActive != 0);
             var now = utcNow ?? DateTime.UtcNow;
+
+            if (_lastSampleAt != DateTime.MinValue && (now - _lastSampleAt) > TimeSpan.FromMinutes(2))
+            {
+                _awakeSince = DateTime.MinValue;
+            }
+            _lastSampleAt = now;
 
             return EvaluateAwakeFault(isFault, now, ReadGraphicsRunningProcessNames, watts, pState, (int)rates.Gpu);
         }

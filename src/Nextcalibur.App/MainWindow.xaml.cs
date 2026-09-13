@@ -996,6 +996,14 @@ public partial class MainWindow : Window
     /// </summary>
     private void OnPowerSourceMayHaveChanged(object sender, Microsoft.Win32.PowerModeChangedEventArgs e)
     {
+        if (e.Mode is Microsoft.Win32.PowerModes.Resume or Microsoft.Win32.PowerModes.Suspend)
+        {
+            Nextcalibur.Core.Hardware.WindowsFaults.Forget();
+            _gpuClock.ResetAwakeFault();
+            _currentGpuFaultText = null;
+            return;
+        }
+
         if (e.Mode != Microsoft.Win32.PowerModes.StatusChange) return;
 
         var onBattery = PowerSource.OnBattery();
@@ -2276,8 +2284,16 @@ public partial class MainWindow : Window
                 _tray?.ShowMessage(title, fault.What);
         }
 
-        // §26: The graphics card held awake at full clocks with nothing to draw.
+        // §26, §28: The graphics card held awake at full clocks with nothing to draw.
         // Controlled under the same switch, touches nothing on the card.
+        // Suppress and reset when in UMA mode, discrete card is off, or user is in a full-screen game.
+        if (_currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed())
+        {
+            _gpuClock.ResetAwakeFault();
+            _currentGpuFaultText = null;
+            return;
+        }
+
         var gpuFault = _gpuClock.CheckAwakeFault();
         if (gpuFault is not null)
         {

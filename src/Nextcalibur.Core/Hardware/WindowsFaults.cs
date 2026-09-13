@@ -129,9 +129,11 @@ public static class WindowsFaults
     private static readonly CoreLoad Cores = new();
     private static readonly Dictionary<int, ProcessMetrics> Before = new();
     private static readonly Dictionary<string, DateTime> ActedAt = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, DateTime> ReportedAt = new(StringComparer.Ordinal);
     private static readonly Dictionary<string, int> Failures = new(StringComparer.Ordinal);
     private static DateTime _pinnedSince = DateTime.MinValue;
     private static DateTime _snapshotAt = DateTime.MinValue;
+    private static DateTime _lastSampleAt = DateTime.MinValue;
 
     /// <summary>Evaluates the seven rules as a pure function over recorded evidence.</summary>
     public static FaultEvaluation Evaluate(FaultEvidence e)
@@ -178,13 +180,17 @@ public static class WindowsFaults
             if (!currentThreads.ContainsKey(id)) return (false, 0.0);
         }
 
-        if (totalProcessCpuDelta <= TimeSpan.Zero) return (true, 0.0);
+        if (totalProcessCpuDelta <= TimeSpan.Zero) return (false, 0.0);
 
         var maxThreadDeltaMs = 0.0;
         foreach (var (id, baseTime) in baseThreads)
         {
             var curTime = currentThreads[id];
             var delta = (curTime - baseTime).TotalMilliseconds;
+            // Thread CPU time went backwards -> Windows recycled the thread ID for a new thread.
+            if (delta < 0) return (false, 0.0);
+            // Single thread accrued more CPU time than the entire process did -> inconsistent timing.
+            if (delta > totalProcessCpuDelta.TotalMilliseconds * 1.05) return (false, 0.0);
             if (delta > maxThreadDeltaMs) maxThreadDeltaMs = delta;
         }
 
@@ -202,6 +208,17 @@ public static class WindowsFaults
         var loads = Cores.Read();
         if (loads.Length == 0) return [];
 
+        var now = DateTime.UtcNow;
+
+        // If more than 2 minutes have elapsed since the last check, the machine was asleep or suspended.
+        // Sleep must never quietly count toward the unbroken pinned duration.
+        if (_lastSampleAt != DateTime.MinValue && (now - _lastSampleAt) > TimeSpan.FromMinutes(2))
+        {
+            _pinnedSince = DateTime.MinValue;
+            Before.Clear();
+        }
+        _lastSampleAt = now;
+
         if (!CoreLoad.ACoreIsPinned(loads, PinnedAtPercent, QuietMachineBelowPercent))
         {
             _pinnedSince = DateTime.MinValue;
@@ -209,7 +226,6 @@ public static class WindowsFaults
             return [];
         }
 
-        var now = DateTime.UtcNow;
         var avgLoad = CoreLoad.AverageLoad(loads);
 
         if (_pinnedSince == DateTime.MinValue)
@@ -246,21 +262,28 @@ public static class WindowsFaults
 
         if (baseMetrics is not null && currentMetrics is not null)
         {
-            var cpuDelta = currentMetrics.TotalProcessorTime - baseMetrics.TotalProcessorTime;
-            (threadStable, topShare) = CalculateThreadShare(baseMetrics.Threads, currentMetrics.Threads, cpuDelta);
-            ioDelta = currentMetrics.TotalIoOperations >= baseMetrics.TotalIoOperations
-                ? currentMetrics.TotalIoOperations - baseMetrics.TotalIoOperations
-                : 0;
-            faultDelta = currentMetrics.PageFaultCount >= baseMetrics.PageFaultCount
-                ? currentMetrics.PageFaultCount - baseMetrics.PageFaultCount
-                : 0;
-            wsDelta = currentMetrics.WorkingSet64 - baseMetrics.WorkingSet64;
+            // Verify it is the exact same process instance across the window
+            var sameInstance = (baseMetrics.StartTimeUtc == DateTime.MinValue || baseMetrics.StartTimeUtc == currentMetrics.StartTimeUtc)
+                && currentMetrics.TotalProcessorTime >= baseMetrics.TotalProcessorTime;
+
+            if (sameInstance)
+            {
+                var cpuDelta = currentMetrics.TotalProcessorTime - baseMetrics.TotalProcessorTime;
+                (threadStable, topShare) = CalculateThreadShare(baseMetrics.Threads, currentMetrics.Threads, cpuDelta);
+                ioDelta = currentMetrics.TotalIoOperations >= baseMetrics.TotalIoOperations
+                    ? currentMetrics.TotalIoOperations - baseMetrics.TotalIoOperations
+                    : ulong.MaxValue;
+                faultDelta = currentMetrics.PageFaultCount >= baseMetrics.PageFaultCount
+                    ? currentMetrics.PageFaultCount - baseMetrics.PageFaultCount
+                    : uint.MaxValue;
+                wsDelta = Math.Abs(currentMetrics.WorkingSet64 - baseMetrics.WorkingSet64);
+            }
         }
 
         var hasWindow = HasVisibleWindow(who.Pid);
         var inSession = currentMetrics is not null && currentMetrics.SessionId == CurrentSessionId();
         var winOwn = currentMetrics is not null && IsWindowsOwn(who.Pid);
-        var actedAt = watched is not null && ActedAt.TryGetValue(watched.Id, out var last) ? last : DateTime.MinValue;
+        var actedAt = watched is not null && ActedAt.TryGetValue(watched.Id, out var lastActed) ? lastActed : DateTime.MinValue;
         var timeSinceLast = actedAt == DateTime.MinValue ? TimeSpan.FromDays(365) : (now - actedAt);
         var failCount = watched is not null && Failures.TryGetValue(watched.Id, out var f) ? f : 0;
 
@@ -287,7 +310,12 @@ public static class WindowsFaults
 
         if (!onList)
         {
-            return [new FaultFound("busy-process",
+            var id = "busy-" + who.Name.ToLowerInvariant();
+            if (ReportedAt.TryGetValue(id, out var last) && (now - last) < NotAgainWithin)
+                return [];
+
+            ReportedAt[id] = now;
+            return [new FaultFound(id,
                 Words.Get("S.Core.Fault.Unknown",
                     "{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.",
                     who.Name),
@@ -296,16 +324,25 @@ public static class WindowsFaults
 
         if (!eval.AllowedToAct || !mayAct)
         {
-            return [new FaultFound(watched!.Id, watched.Describe(), Fixed: false)];
+            if (ReportedAt.TryGetValue(watched!.Id, out var last) && (now - last) < NotAgainWithin)
+                return [];
+
+            ReportedAt[watched.Id] = now;
+            return [new FaultFound(watched.Id, watched.Describe(), Fixed: false)];
         }
 
-        if (!End(who.Pid, watched!.Process))
+        if (!End(who.Pid, watched!.Process, who.StartTimeUtc))
         {
             Failures[watched.Id] = failCount + 1;
+            if (ReportedAt.TryGetValue(watched.Id, out var last) && (now - last) < NotAgainWithin)
+                return [];
+
+            ReportedAt[watched.Id] = now;
             return [new FaultFound(watched.Id, watched.Describe(), Fixed: false)];
         }
 
         ActedAt[watched.Id] = now;
+        ReportedAt[watched.Id] = now;
         Failures.Remove(watched.Id);
         Log.Info("windows", $"Ended {watched.Process} (pid {who.Pid}); Windows restarts it on demand");
         return [new FaultFound(watched.Id, watched.Describe(), Fixed: true)];
@@ -317,9 +354,11 @@ public static class WindowsFaults
         Cores.Reset();
         Before.Clear();
         ActedAt.Clear();
+        ReportedAt.Clear();
         Failures.Clear();
         _pinnedSince = DateTime.MinValue;
         _snapshotAt = DateTime.MinValue;
+        _lastSampleAt = DateTime.MinValue;
     }
 
     private static void Snapshot(DateTime at)
@@ -338,16 +377,24 @@ public static class WindowsFaults
     }
 
     /// <summary>The process that used the most processor since the snapshot, if any used enough to be the one.</summary>
-    private static (int Pid, string Name, double Share)? Busiest(TimeSpan elapsed)
+    private static (int Pid, string Name, double Share, DateTime StartTimeUtc)? Busiest(TimeSpan elapsed)
     {
-        (int Pid, string Name, double Share)? worst = null;
+        (int Pid, string Name, double Share, DateTime StartTimeUtc)? worst = null;
         foreach (var process in Process.GetProcesses())
         {
             try
             {
                 if (!Before.TryGetValue(process.Id, out var was)) continue;
+                // If the process restarted under the same PID, CPU time goes backwards
+                if (process.TotalProcessorTime < was.TotalProcessorTime) continue;
+
                 var share = (process.TotalProcessorTime - was.TotalProcessorTime).TotalMilliseconds / elapsed.TotalMilliseconds * 100;
-                if (share > (worst?.Share ?? CulpritAtPercent)) worst = (process.Id, process.ProcessName, share);
+                if (share > (worst?.Share ?? CulpritAtPercent))
+                {
+                    DateTime start = DateTime.MinValue;
+                    try { start = process.StartTime.ToUniversalTime(); } catch { }
+                    worst = (process.Id, process.ProcessName, share, start);
+                }
             }
             catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException) { }
             finally { process.Dispose(); }
@@ -360,12 +407,28 @@ public static class WindowsFaults
     /// this session - a service or another account's process is not ours to
     /// touch - and its image has to be Windows' own, so that something
     /// which merely borrowed the name is left alone.
+    /// Re-reads process identity and verifies start time immediately before killing to prevent PID reuse races.
     /// </summary>
-    private static bool End(int pid, string expectedName)
+    private static bool End(int pid, string expectedName, DateTime expectedStartTimeUtc)
     {
         try
         {
             using var process = Process.GetProcessById(pid);
+            if (expectedStartTimeUtc != DateTime.MinValue)
+            {
+                try
+                {
+                    if (Math.Abs((process.StartTime.ToUniversalTime() - expectedStartTimeUtc).TotalSeconds) > 1.0)
+                    {
+                        Log.Warn("windows", $"Refusing to end pid {pid}: start time mismatch (expected {expectedStartTimeUtc:O}, got {process.StartTime.ToUniversalTime():O})");
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
             if (!string.Equals(process.ProcessName, expectedName, StringComparison.OrdinalIgnoreCase)) return false;
             if (process.SessionId != CurrentSessionId()) return false;
             if (!IsWindowsOwn(process)) return false;
@@ -489,6 +552,7 @@ public static class WindowsFaults
         public int Pid { get; init; }
         public string Name { get; init; } = "";
         public int SessionId { get; init; }
+        public DateTime StartTimeUtc { get; init; }
         public TimeSpan TotalProcessorTime { get; init; }
         public long WorkingSet64 { get; init; }
         public ulong TotalIoOperations { get; init; }
@@ -504,6 +568,8 @@ public static class WindowsFaults
                 var session = process.SessionId;
                 var cpu = process.TotalProcessorTime;
                 var ws = process.WorkingSet64;
+                DateTime start = DateTime.MinValue;
+                try { start = process.StartTime.ToUniversalTime(); } catch { }
 
                 ulong ioOps = 0;
                 try
@@ -537,6 +603,7 @@ public static class WindowsFaults
                     Pid = pid,
                     Name = name,
                     SessionId = session,
+                    StartTimeUtc = start,
                     TotalProcessorTime = cpu,
                     WorkingSet64 = ws,
                     TotalIoOperations = ioOps,
