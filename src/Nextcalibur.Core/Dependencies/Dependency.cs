@@ -143,16 +143,26 @@ public abstract class Dependency
         using var response = await http.GetAsync($"https://api.github.com/repos/{owner}/{repo}/releases/latest", ct);
         if (!response.IsSuccessStatusCode) return null;
 
+        // Read as the shape it should have; a rate-limit notice or a changed
+        // API is a null answer, not an exception out of a timer.
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
         var root = json.RootElement;
-        var tag = root.GetProperty("tag_name").GetString()?.TrimStart('v', 'V');
-        if (tag is null || !Version.TryParse(tag.Contains('.') ? tag : tag + ".0", out var version)) return null;
+        if (root.ValueKind != JsonValueKind.Object
+            || !root.TryGetProperty("tag_name", out var tagElement) || tagElement.ValueKind != JsonValueKind.String
+            || !root.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
+            return null;
+        var tag = tagElement.GetString()!.TrimStart('v', 'V');
+        if (!Version.TryParse(tag.Contains('.') ? tag : tag + ".0", out var version)) return null;
 
-        foreach (var asset in root.GetProperty("assets").EnumerateArray())
+        foreach (var asset in assets.EnumerateArray())
         {
-            if (string.Equals(asset.GetProperty("name").GetString(), assetName, StringComparison.OrdinalIgnoreCase)
-                && asset.GetProperty("browser_download_url").GetString() is { } url)
-                return (version, new Uri(url));
+            if (asset.ValueKind == JsonValueKind.Object
+                && asset.TryGetProperty("name", out var name) && name.ValueKind == JsonValueKind.String
+                && string.Equals(name.GetString(), assetName, StringComparison.OrdinalIgnoreCase)
+                && asset.TryGetProperty("browser_download_url", out var link) && link.ValueKind == JsonValueKind.String
+                && Uri.TryCreate(link.GetString(), UriKind.Absolute, out var url)
+                && url.Scheme == Uri.UriSchemeHttps)
+                return (version, url);
         }
         return null;
     }
