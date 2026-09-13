@@ -16,6 +16,10 @@
     <sys:String x:Key="S.Dialog.OK">OK</sys:String>
     <sys:String x:Key="S.Dialog.Cancel">Cancel</sys:String>
 
+    <!-- The pill switches -->
+    <sys:String x:Key="S.Toggle.On">on</sys:String>
+    <sys:String x:Key="S.Toggle.Off">off</sys:String>
+
     <!-- Tray menu -->
     <sys:String x:Key="S.Tray.Open">Open Nextcalibur</sys:String>
     <sys:String x:Key="S.Tray.StartWithWindows">Start with Windows</sys:String>

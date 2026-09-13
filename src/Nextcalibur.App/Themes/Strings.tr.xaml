@@ -14,6 +14,10 @@
     <sys:String x:Key="S.Dialog.OK">Tamam</sys:String>
     <sys:String x:Key="S.Dialog.Cancel">İptal</sys:String>
 
+    <!-- Anahtarlar -->
+    <sys:String x:Key="S.Toggle.On">açık</sys:String>
+    <sys:String x:Key="S.Toggle.Off">kapalı</sys:String>
+
     <!-- Tepsi menüsü -->
     <sys:String x:Key="S.Tray.Open">Nextcalibur'u aç</sys:String>
     <sys:String x:Key="S.Tray.StartWithWindows">Windows ile başlat</sys:String>
