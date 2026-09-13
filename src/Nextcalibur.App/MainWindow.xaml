@@ -1493,6 +1493,24 @@
                                             <ToggleButton x:Name="SettingOfficeOnBattery" Grid.Column="1"
                                                           Style="{DynamicResource Pill}" VerticalAlignment="Center" />
                                         </Grid>
+
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                        <!-- SettingWindowsFaults (§23) -->
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.WindowsFaultsTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.WindowsFaultsDesc}"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <ToggleButton x:Name="SettingWindowsFaults" Grid.Column="1"
+                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
 
