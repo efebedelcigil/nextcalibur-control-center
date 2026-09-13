@@ -329,6 +329,7 @@
     <sys:String x:Key="S.Core.Trace.FolderGuard">Kurulum klasörünün hesaba karşı koruması</sys:String>
     <sys:String x:Key="S.Core.Trace.PowerPlans">Oluşturduğu güç planları</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">Windows güç modu onarımı</sys:String>
+    <sys:String x:Key="S.Core.Trace.Ndu">NDU ağ sürücüsü onarımı</sys:String>
 
     <!-- Kütüphaneden: PawnIO sürücüsü -->
     <sys:String x:Key="S.Core.PawnIo.Name">PawnIO sürücüsü</sys:String>
@@ -444,7 +445,7 @@
     <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Windows Gezgini (explorer.exe) belleğini temizle</sys:String>
     <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Windows Gezgini 1,2 GB belleği aşarsa şişen küçük resim ve arayüz önbelleğini görev çubuğunu yeniden başlatmadan güvenle temizler.</sys:String>
     <sys:String x:Key="S.Settings.DisableNduTitle">NDU ağ sürücüsü bellek sızıntısını önle</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduDesc">Ağ kartlarında gigabaytlarca çekirdek belleği sızdıran Windows Ağ Veri Kullanımı (NDU) sürücüsünü kayıt defterinden devre dışı bırakır.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Gigabaytlarca çekirdek bellek sızıntısını önlemek için Windows Ağ Veri Kullanımı (NDU) sürücüsünü devre dışı bırakır. Yeniden başlatma gerekir. Not: Görev Yöneticisi ve Ayarlar'daki uygulama bazlı veri kullanımı takibi durur.</sys:String>
 
     <!-- Tur: kartın sözleri, adım adım -->
     <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>

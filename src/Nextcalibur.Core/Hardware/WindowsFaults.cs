@@ -119,16 +119,21 @@ public static class WindowsFaults
 
     public static readonly List<Watched> Known =
     [
+        // TextInputHost.exe: Documented Windows 11 touch keyboard & emoji host fault where a background thread enters an infinite spin loop on 1 core after sleep or session transition.
         new Watched(
             Id: "input-host",
             Process: "TextInputHost",
             Describe: () => Words.Get("S.Core.Fault.InputHost",
                 "Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.")),
+
+        // CrossDeviceService.exe: Documented Phone Link RPC discovery loop bug (Windows 11 22H2/23H2) where background sync spins at 100% of 1 core when phone unlinks.
         new Watched(
             Id: "cross-device",
             Process: "CrossDeviceService",
             Describe: () => Words.Get("S.Core.Fault.CrossDevice",
                 "Windows' Phone Link service (CrossDeviceService) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again on demand.")),
+
+        // Widgets.exe: Documented Windows 11 Widgets Board bug where background WebView2 renderer enters an unbroken CPU spin loop without user opening the board.
         new Watched(
             Id: "widgets",
             Process: "Widgets",
@@ -301,6 +306,12 @@ public static class WindowsFaults
         }
 
         var hasWindow = HasVisibleWindow(who.Pid);
+        if (string.Equals(who.Name, "CrossDeviceService", StringComparison.OrdinalIgnoreCase))
+        {
+            // Phone Link: CrossDeviceService has no window, so rule 6 cannot protect it.
+            // Stand down if PhoneExperienceHost.exe is running at all (service is in active use).
+            hasWindow = hasWindow || PhoneExperienceHostIsRunning();
+        }
         var inSession = currentMetrics is not null && currentMetrics.SessionId == CurrentSessionId();
         var winOwn = currentMetrics is not null && IsWindowsOwn(who.Pid);
         var actedAt = watched is not null && ActedAt.TryGetValue(watched.Id, out var lastActed) ? lastActed : DateTime.MinValue;
@@ -522,6 +533,18 @@ public static class WindowsFaults
             return false;
         }
         return found;
+    }
+
+    internal static bool PhoneExperienceHostIsRunning()
+    {
+        try
+        {
+            return Process.GetProcessesByName("PhoneExperienceHost").Length > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

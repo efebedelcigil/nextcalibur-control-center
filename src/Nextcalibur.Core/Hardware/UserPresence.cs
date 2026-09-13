@@ -14,21 +14,39 @@ namespace Nextcalibur.Core.Hardware;
 /// </summary>
 public static class UserPresence
 {
+    private static DateTime _lastSessionUnlockUtc = DateTime.MinValue;
+
+    /// <summary>Records the timestamp when the user unlocked their Windows session.</summary>
+    public static void RecordSessionUnlock()
+    {
+        _lastSessionUnlockUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>Returns true if the user unlocked their session within the specified window.</summary>
+    public static bool WasRecentlyUnlocked(TimeSpan window)
+    {
+        return DateTime.UtcNow - _lastSessionUnlockUtc < window;
+    }
+
     /// <summary>
-    /// True while a game or a presentation has the screen, or an
-    /// application has asked not to be interrupted. Nothing that costs
+    /// True while a game or a presentation has the screen, an application has
+    /// asked not to be interrupted, the session is locked / not present, or the
+    /// session was unlocked within the last two minutes. Nothing that costs
     /// network, disk or attention should happen while this is true; the
     /// readings carry on, because they are local and the tray tooltip is
     /// what somebody alt-tabs to see.
     /// </summary>
     public static bool WouldRatherNotBeDisturbed()
     {
+        if (WasRecentlyUnlocked(TimeSpan.FromMinutes(2))) return true;
+
         try
         {
             if (SHQueryUserNotificationState(out var state) != 0) return false;
             return state is NotificationState.Busy
                 or NotificationState.RunningDirect3dFullScreen
-                or NotificationState.PresentationMode;
+                or NotificationState.PresentationMode
+                or NotificationState.NotPresent;
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

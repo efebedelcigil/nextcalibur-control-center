@@ -12,8 +12,9 @@ public static class NduFix
 {
     private const string KeyPath = @"SYSTEM\CurrentControlSet\Services\Ndu";
     private const string ValueName = "Start";
+    private const string BackupValueName = "NextcaliburOriginalStart";
 
-    /// <summary>Returns true if the NDU driver is disabled (Start == 4).</summary>
+    /// <summary>Returns true if the NDU driver is currently disabled (Start == 4).</summary>
     public static bool IsNduDisabled()
     {
         try
@@ -27,20 +28,110 @@ public static class NduFix
         }
     }
 
-    /// <summary>Sets NDU Start to 4 (Disabled) or 2 (Automatic/Enabled).</summary>
-    public static bool SetNduDisabled(bool disable)
+    /// <summary>Returns true if Nextcalibur has modified the NDU driver state.</summary>
+    public static bool IsNduModified()
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(KeyPath, false);
+            return key?.GetValue(BackupValueName) is not null;
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Reads the current Start value from the registry, or null if unreachable.</summary>
+    public static int? ReadCurrentStartValue()
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(KeyPath, false);
+            return key?.GetValue(ValueName) as int?;
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Sets NDU Start to 4 (Disabled) or restores the original value.
+    /// Preserves original value in settings and registry backup.
+    /// </summary>
+    public static bool SetNduDisabled(bool disable, AppSettings? settings = null)
     {
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(KeyPath, true);
             if (key is null) return false;
-            key.SetValue(ValueName, disable ? 4 : 2, RegistryValueKind.DWord);
-            Log.Info("registry", $"NDU Start value set to {(disable ? 4 : 2)}");
+
+            if (disable)
+            {
+                var currentVal = key.GetValue(ValueName) as int? ?? 2;
+                var backup = key.GetValue(BackupValueName) as int?;
+                var original = backup ?? settings?.OriginalNduStart ?? currentVal;
+
+                if (backup is null)
+                {
+                    key.SetValue(BackupValueName, original, RegistryValueKind.DWord);
+                }
+
+                if (settings is not null && settings.OriginalNduStart is null)
+                {
+                    settings.OriginalNduStart = original;
+                }
+
+                key.SetValue(ValueName, 4, RegistryValueKind.DWord);
+                Log.Info("registry", $"NDU Start value set to 4 (Disabled), recorded original: {original}");
+            }
+            else
+            {
+                var original = (key.GetValue(BackupValueName) as int?)
+                    ?? settings?.OriginalNduStart
+                    ?? 2;
+
+                key.SetValue(ValueName, original, RegistryValueKind.DWord);
+                key.DeleteValue(BackupValueName, throwOnMissingValue: false);
+
+                if (settings is not null)
+                {
+                    settings.OriginalNduStart = null;
+                }
+
+                Log.Info("registry", $"NDU Start value restored to original ({original})");
+            }
+
             return true;
         }
         catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
         {
             Log.Warn("registry", $"Failed to update NDU Start value: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>Restores the original NDU Start value and removes the backup value.</summary>
+    public static bool RestoreOriginal(int? fromSettings = null)
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(KeyPath, true);
+            if (key is null) return false;
+
+            var original = fromSettings
+                ?? (key.GetValue(BackupValueName) as int?)
+                ?? 2;
+
+            key.SetValue(ValueName, original, RegistryValueKind.DWord);
+            key.DeleteValue(BackupValueName, throwOnMissingValue: false);
+            Log.Info("registry", $"NDU Start value restored to original ({original}) on uninstall/cleanup");
+            return true;
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+        {
+            Log.Warn("registry", $"Failed to restore NDU Start value: {ex.Message}");
             return false;
         }
     }

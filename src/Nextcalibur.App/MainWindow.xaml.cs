@@ -274,6 +274,7 @@ public partial class MainWindow : Window
         RefreshBanner();
         StartSlowTimer();
         Microsoft.Win32.SystemEvents.PowerModeChanged += OnPowerSourceMayHaveChanged;
+        Microsoft.Win32.SystemEvents.SessionSwitch += OnSessionSwitch;
 
         if (!_mailboxSupported)
         {
@@ -678,6 +679,7 @@ public partial class MainWindow : Window
         {
             _timer.Stop();
             Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
+            Microsoft.Win32.SystemEvents.SessionSwitch -= OnSessionSwitch;
             _tray?.Dispose();
             _backlightKey?.Dispose();
             _mailbox?.Dispose();
@@ -1040,6 +1042,15 @@ public partial class MainWindow : Window
                 // machine was already in. Nothing to undo, nothing to say.
             }
         });
+    }
+
+    private void OnSessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
+    {
+        if (e.Reason is Microsoft.Win32.SessionSwitchReason.SessionUnlock)
+        {
+            UserPresence.RecordSessionUnlock();
+            Nextcalibur.Core.Hardware.WindowsFaults.Forget();
+        }
     }
 
     // ------------------------------------------------------------ graphics

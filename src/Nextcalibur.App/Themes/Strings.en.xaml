@@ -331,6 +331,7 @@
     <sys:String x:Key="S.Core.Trace.FolderGuard">The install folder's protection against the account</sys:String>
     <sys:String x:Key="S.Core.Trace.PowerPlans">The power plans it created</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">The Windows power-mode repair</sys:String>
+    <sys:String x:Key="S.Core.Trace.Ndu">The NDU network driver fix</sys:String>
 
     <!-- From the library: the PawnIO driver -->
     <sys:String x:Key="S.Core.PawnIo.Name">PawnIO driver</sys:String>
@@ -446,7 +447,7 @@
     <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Trim Windows Explorer (explorer.exe) memory</sys:String>
     <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Safely flushes cached thumbnail and shell memory when Explorer exceeds 1.2 GB, without restarting the taskbar.</sys:String>
     <sys:String x:Key="S.Settings.DisableNduTitle">Disable NDU network driver memory leak</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduDesc">Disables the Windows Network Data Usage driver (NDU) in the registry to prevent multi-gigabyte kernel memory leaks.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Disables the Windows Network Data Usage (NDU) driver to prevent multi-gigabyte kernel memory leaks. Requires a restart. Note: Disables per-app network usage tracking in Task Manager and Windows Settings.</sys:String>
 
     <!-- The tour: the card's words, one step after another -->
     <sys:String x:Key="S.Tour.Finish">Finish</sys:String>

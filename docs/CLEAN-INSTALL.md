@@ -106,6 +106,11 @@ fans, and the three "profiles" are identical templates. This project has no
 fan control, deliberately: the vendor has none either, and a curve is only
 safe for a known state of the cooling.
 
+## Machine-wide registry modifications
+
+Nextcalibur modifies at most one machine-wide registry value, only when the user explicitly turns on the NDU fix on the Settings page:
+`HKLM\SYSTEM\CurrentControlSet\Services\Ndu\Start` (set to 4 to disable the Network Data Usage driver to prevent multi-gigabyte kernel non-paged pool memory leaks; costs per-app network usage tracking in Task Manager and Windows Settings). The original value is recorded before changing it, and the uninstaller (`Footprint.RemoveMachineTraces`) asks to restore it back upon removal.
+
 ## Verified
 
 | Claim | How |

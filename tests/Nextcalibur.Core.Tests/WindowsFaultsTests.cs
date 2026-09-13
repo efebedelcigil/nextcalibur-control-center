@@ -1,3 +1,4 @@
+using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Hardware;
 using Xunit;
 
@@ -437,5 +438,41 @@ public class WindowsFaultsTests
         // Reading registry state should never throw an unhandled exception
         var disabled = NduFix.IsNduDisabled();
         Assert.True(disabled || !disabled);
+    }
+
+    [Fact]
+    public void MemoryTrimmer_reads_free_physical_memory_percent_safely()
+    {
+        var freePct = MemoryTrimmer.GetFreePhysicalMemoryPercent();
+        if (freePct.HasValue)
+        {
+            Assert.InRange(freePct.Value, 0.0, 100.0);
+        }
+    }
+
+    [Fact]
+    public void UserPresence_session_unlock_triggers_standdown()
+    {
+        UserPresence.RecordSessionUnlock();
+        Assert.True(UserPresence.WasRecentlyUnlocked(TimeSpan.FromMinutes(1)));
+        Assert.True(UserPresence.WouldRatherNotBeDisturbed());
+    }
+
+    [Fact]
+    public void AppSettings_kill_list_and_ndu_defaults_are_safe()
+    {
+        var settings = new AppSettings();
+        Assert.True(settings.FixTextInputHost);
+        Assert.False(settings.FixCrossDeviceService);
+        Assert.False(settings.FixWidgets);
+        Assert.False(settings.DisableNdu);
+        Assert.Null(settings.OriginalNduStart);
+    }
+
+    [Fact]
+    public void Footprint_survey_contains_ndu_trace()
+    {
+        var traces = Footprint.Survey();
+        Assert.Contains(traces, t => t.KeepingIsReasonable && t.NeedsElevation && t.Name == Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"));
     }
 }

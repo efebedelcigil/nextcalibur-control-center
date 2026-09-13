@@ -113,23 +113,26 @@ public sealed class AppSettings
     /// <summary>Watches and restarts TextInputHost when stuck spinning on a core unbroken.</summary>
     public bool FixTextInputHost { get; set; } = true;
 
-    /// <summary>Watches and restarts CrossDeviceService (Phone Link) when stuck in a background CPU loop.</summary>
-    public bool FixCrossDeviceService { get; set; } = true;
+    /// <summary>Watches and restarts CrossDeviceService (Phone Link) when stuck in a background CPU loop. Off by default until observed on hardware.</summary>
+    public bool FixCrossDeviceService { get; set; } = false;
 
-    /// <summary>Watches and restarts Widgets.exe when stuck spinning in background with no window.</summary>
-    public bool FixWidgets { get; set; } = true;
+    /// <summary>Watches and restarts Widgets.exe when stuck spinning in background with no window. Off by default until observed on hardware.</summary>
+    public bool FixWidgets { get; set; } = false;
 
     /// <summary>Watches discrete GPU staying awake at full clocks with no display.</summary>
     public bool WatchGpuAwake { get; set; } = true;
 
-    /// <summary>Safely trims bloated DWM memory via Windows working set trim when exceeding 1.5 GB.</summary>
+    /// <summary>Safely trims bloated DWM memory via Windows working set trim under memory pressure.</summary>
     public bool TrimDwmMemory { get; set; } = true;
 
-    /// <summary>Safely trims bloated Explorer thumbnail/COM cache when exceeding 1.2 GB.</summary>
+    /// <summary>Safely trims bloated Explorer thumbnail/COM cache under memory pressure.</summary>
     public bool TrimExplorerMemory { get; set; } = true;
 
     /// <summary>Disables Windows Network Data Usage (NDU) driver to prevent gigabyte-scale non-paged pool RAM leak.</summary>
     public bool DisableNdu { get; set; } = false;
+
+    /// <summary>The original Ndu Start value before Nextcalibur modified it, or null if untouched.</summary>
+    public int? OriginalNduStart { get; set; }
 
     /// <summary>Dark, light, or follow Windows.</summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]

@@ -91,7 +91,7 @@ public partial class MainWindow
         Wire(_settingDisableNdu, on =>
         {
             _settings.DisableNdu = on;
-            Nextcalibur.Core.Hardware.NduFix.SetNduDisabled(on);
+            Nextcalibur.Core.Hardware.NduFix.SetNduDisabled(on, _settings);
         });
         Wire(_settingOverheatWarning, on =>
         {

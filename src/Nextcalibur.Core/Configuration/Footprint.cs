@@ -76,6 +76,12 @@ public static class Footprint
                 // Undoing it silently would leave somebody worse off than
                 // before they ever installed us.
                 KeepingIsReasonable: true),
+            new(Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"),
+                NduFix.IsNduModified(),
+                NeedsElevation: true,
+                // A fix to Windows network driver rather than part of this application.
+                // Asked before undoing so the user can choose to keep it.
+                KeepingIsReasonable: true),
         };
 
         return traces;
@@ -150,6 +156,9 @@ public static class Footprint
 
         if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+
+        try { NduFix.RestoreOriginal(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
     }
 
