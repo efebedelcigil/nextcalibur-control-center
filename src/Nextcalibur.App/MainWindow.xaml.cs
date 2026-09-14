@@ -173,7 +173,7 @@ public partial class MainWindow : Window
         StateChanged += OnStateChanged;
         Activated += (_, _) =>
         {
-            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal; } catch { }
+            SetProcessPriority(PriorityNormal);
             if (_slowTimer is not null && IsVisible && WindowState != WindowState.Minimized)
             {
                 _slowTimer.Interval = VisibleSlowInterval;
@@ -182,7 +182,7 @@ public partial class MainWindow : Window
         };
         Deactivated += (_, _) =>
         {
-            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal; } catch { }
+            SetProcessPriority(PriorityBelowNormal);
             SyncSamplingToScreen();
         };
 
@@ -593,7 +593,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal; } catch { }
+            SetProcessPriority(PriorityBelowNormal);
         }
         SyncSamplingToScreen();
     }
@@ -766,6 +766,29 @@ public partial class MainWindow : Window
 
     [System.Runtime.InteropServices.DllImport("kernel32.dll")]
     private static extern IntPtr GetCurrentProcess();
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
+
+    private const uint PriorityNormal = 0x00000020;
+    private const uint PriorityBelowNormal = 0x00004000;
+    private static uint _currentPriority = PriorityNormal;
+
+    private static void SetProcessPriority(uint priority)
+    {
+        if (_currentPriority == priority) return;
+        try
+        {
+            if (SetPriorityClass(GetCurrentProcess(), priority))
+            {
+                _currentPriority = priority;
+            }
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+        }
+    }
 
     /// <summary>
     /// Asks Windows to page out what the window was using.

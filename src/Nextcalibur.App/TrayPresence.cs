@@ -279,7 +279,9 @@ public sealed class TrayPresence : IDisposable
     public void UpdateStatus(int cpuC, int gpuC, int cpuRpm)
     {
         if (_disposed) return;
-        _icon.Text = Strings.Get("S.Tray.Tooltip", cpuC, gpuC, cpuRpm);
+        var text = Strings.Get("S.Tray.Tooltip", cpuC, gpuC, cpuRpm);
+        if (text.Length > 63) text = text[..63];
+        _icon.Text = text;
     }
 
     public void ShowMessage(string title, string body) =>
@@ -301,10 +303,18 @@ public sealed class TrayPresence : IDisposable
     }
 
     /// <summary>Brings the window up for something that is not the tray icon - a toast, say.</summary>
-    public void ShowWindowFromOutside() => ShowWindow();
+    public void ShowWindowFromOutside()
+    {
+        if (_disposed) return;
+        if (_window.Dispatcher.CheckAccess())
+            ShowWindow();
+        else
+            _window.Dispatcher.BeginInvoke((Action)ShowWindow);
+    }
 
     private void ShowWindow()
     {
+        if (_disposed || _window.Dispatcher.HasShutdownStarted) return;
         _window.Show();
         _window.WindowState = WindowState.Normal;
         _window.Activate();

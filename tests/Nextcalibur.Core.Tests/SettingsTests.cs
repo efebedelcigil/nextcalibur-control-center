@@ -135,6 +135,7 @@ public class MailboxAccessTests
 /// thorough about its own files, and then one permission left on the machine
 /// for ever - which is what silently stopped every reading here weeks later.
 /// </summary>
+[Collection("log")]
 public class FootprintTests
 {
     [Fact]

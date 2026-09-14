@@ -96,6 +96,7 @@ public static class UserPresence
         }
     }
 
+    private static readonly object CpuLoadLock = new();
     private static readonly CoreLoad CpuLoad = new();
     private static DateTime _lastCpuLoadSample = DateTime.MinValue;
     private static bool _lastCpuWasHeavy;
@@ -107,31 +108,34 @@ public static class UserPresence
     public static bool IsHeavyCpuLoad()
     {
         var now = DateTime.UtcNow;
-        if (now - _lastCpuLoadSample < TimeSpan.FromSeconds(2))
+        lock (CpuLoadLock)
         {
-            return _lastCpuWasHeavy;
-        }
-
-        _lastCpuLoadSample = now;
-        try
-        {
-            var loads = CpuLoad.Read();
-            if (loads.Length == 0) return _lastCpuWasHeavy = false;
-
-            var avg = CoreLoad.AverageLoad(loads);
-            if (avg >= 35.0) return _lastCpuWasHeavy = true;
-
-            var busyCores = 0;
-            for (var i = 0; i < loads.Length; i++)
+            if (now - _lastCpuLoadSample < TimeSpan.FromSeconds(2))
             {
-                if (loads[i] >= 75.0) busyCores++;
+                return _lastCpuWasHeavy;
             }
 
-            return _lastCpuWasHeavy = (busyCores >= 2 && avg >= 20.0);
-        }
-        catch (Exception ex) when (ex is not OutOfMemoryException)
-        {
-            return _lastCpuWasHeavy = false;
+            _lastCpuLoadSample = now;
+            try
+            {
+                var loads = CpuLoad.Read();
+                if (loads.Length == 0) return _lastCpuWasHeavy = false;
+
+                var avg = CoreLoad.AverageLoad(loads);
+                if (avg >= 35.0) return _lastCpuWasHeavy = true;
+
+                var busyCores = 0;
+                for (var i = 0; i < loads.Length; i++)
+                {
+                    if (loads[i] >= 75.0) busyCores++;
+                }
+
+                return _lastCpuWasHeavy = (busyCores >= 2 && avg >= 20.0);
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                return _lastCpuWasHeavy = false;
+            }
         }
     }
 
@@ -146,11 +150,14 @@ public static class UserPresence
             var hwnd = GetForegroundWindow();
             if (hwnd == IntPtr.Zero || hwnd == GetDesktopWindow() || hwnd == GetShellWindow()) return false;
 
+            if (GetWindowThreadProcessId(hwnd, out var pid) != 0 && pid == (uint)Environment.ProcessId)
+                return false;
+
             var sb = new System.Text.StringBuilder(256);
             if (GetClassName(hwnd, sb, sb.Capacity) > 0)
             {
                 var cls = sb.ToString();
-                if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Windows.UI.Core.CoreWindow")
+                if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd" or "Windows.UI.Core.CoreWindow")
                 {
                     return false;
                 }
@@ -243,4 +250,7 @@ public static class UserPresence
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder lpClassName, int nMaxCount);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 }

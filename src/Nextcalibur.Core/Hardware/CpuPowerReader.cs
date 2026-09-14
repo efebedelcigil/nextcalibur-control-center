@@ -37,6 +37,15 @@ public sealed class CpuPowerReader : IDisposable
     private const uint IoctlExecute = DeviceType | (0x841 << 2);
     private const int FunctionNameLength = 32;
     private static readonly byte[] IoctlReadMsrName = System.Text.Encoding.ASCII.GetBytes("ioctl_read_msr");
+    private readonly byte[] _msrInputBuffer = CreateMsrInputBuffer();
+    private readonly byte[] _msrOutputBuffer = new byte[sizeof(long)];
+
+    private static byte[] CreateMsrInputBuffer()
+    {
+        var buffer = new byte[FunctionNameLength + sizeof(long)];
+        Buffer.BlockCopy(IoctlReadMsrName, 0, buffer, 0, IoctlReadMsrName.Length);
+        return buffer;
+    }
 
     private SafeFileHandle? _device;
     private double _joulesPerUnit;
@@ -199,16 +208,13 @@ public sealed class CpuPowerReader : IDisposable
         value = 0;
         if (_device is null) return false;
 
-        var input = new byte[FunctionNameLength + sizeof(long)];
-        Buffer.BlockCopy(IoctlReadMsrName, 0, input, 0, IoctlReadMsrName.Length);
-        BitConverter.TryWriteBytes(input.AsSpan(FunctionNameLength), (long)index);
+        BitConverter.TryWriteBytes(_msrInputBuffer.AsSpan(FunctionNameLength), (long)index);
 
-        var output = new byte[sizeof(long)];
-        if (!DeviceIoControl(_device, IoctlExecute, input, (uint)input.Length, output, (uint)output.Length, out var read, IntPtr.Zero)
+        if (!DeviceIoControl(_device, IoctlExecute, _msrInputBuffer, (uint)_msrInputBuffer.Length, _msrOutputBuffer, (uint)_msrOutputBuffer.Length, out var read, IntPtr.Zero)
             || read < sizeof(long))
             return false;
 
-        value = BitConverter.ToUInt64(output, 0);
+        value = BitConverter.ToUInt64(_msrOutputBuffer, 0);
         return true;
     }
 
