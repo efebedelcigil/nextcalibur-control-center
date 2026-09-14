@@ -43,10 +43,10 @@ PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequiredOverridesAllowed=
-; Velopack registers the uninstaller; a second entry would be one too many.
-Uninstallable=no
-CreateUninstallRegKey=no
-UpdateUninstallLogAppName=no
+Uninstallable=yes
+CreateUninstallRegKey=yes
+UninstallDisplayName={#AppName}
+UninstallDisplayIcon={app}\current\Nextcalibur.exe,0
 OutputDir=output
 OutputBaseFilename=Nextcalibur-Setup-{#AppVersion}
 SetupIconFile=..\src\Nextcalibur.App\Assets\app.ico
@@ -119,6 +119,9 @@ en.RuntimeBadSignature=the download is not signed by Microsoft
 tr.RuntimeBadSignature=indirilen dosya Microsoft imzalı değil
 en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
 tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
+en.AskRemoveSettings=Do you want to delete your Nextcalibur settings, log files, and temporary trace files as well?
+tr.AskRemoveSettings=Nextcalibur ayarlarınızı, günlük dosyalarını ve artık sistem kayıtlarını da silmek istiyor musunuz?
+
 
 [Types]
 Name: "standard"; Description: "{cm:TypeStandard}"
@@ -142,22 +145,6 @@ Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check
 ; The engine, carried inside and run once.
 Source: "..\releases\Nextcalibur-win-Setup.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
-[Registry]
-; Windows Add/Remove Programs (Installed Apps / Control Panel) registration.
-; Under Program Files (machine-wide), Windows expects the uninstaller in HKLM.
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayName"; ValueData: "{#AppName}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayVersion"; ValueData: "{#AppVersion}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "Publisher"; ValueData: "{#Publisher}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayIcon"; ValueData: "{app}\current\Nextcalibur.exe,0"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "InstallLocation"; ValueData: "{app}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "UninstallString"; ValueData: """{app}\Update.exe"" uninstall"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "QuietUninstallString"; ValueData: """{app}\Update.exe"" uninstall -s"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "URLInfoAbout"; ValueData: "{#Url}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "HelpLink"; ValueData: "{#Url}/issues"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "NoModify"; ValueData: 1; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "NoRepair"; ValueData: 1; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "EstimatedSize"; ValueData: 35000; Flags: uninsdeletekey
-
 [INI]
 ; The application reads this on its first run, registers (or not) its logon
 ; task accordingly, and deletes the file. Written after Velopack has made the
@@ -168,7 +155,8 @@ Filename: "{app}\first-run.ini"; Section: "FirstRun"; Key: "StartWithWindows"; S
 ; Velopack installs into the chosen folder, quietly, and does not start the
 ; application itself (the finish page offers that).
 Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto ""{app}"""; StatusMsg: "{cm:Installing}"; Flags: runhidden waituntilterminated
-Filename: "{app}\Nextcalibur.exe"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\current\Nextcalibur.exe"; WorkingDir: "{app}\current"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
+
 
 [Code]
 var
@@ -342,6 +330,55 @@ begin
       DownloadPage.Hide;
     end;
   end;
+
+  if CurStep = ssDone then
+  begin
+    RegDeleteKeyIncludingSubkeys(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
+    RegDeleteKeyIncludingSubkeys(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
+  end;
+end;
+
+var
+  RemoveTracesChoice: Boolean;
+
+function InitializeUninstall(): Boolean;
+var
+  Answer: Integer;
+begin
+  Result := True;
+  Answer := MsgBox(CustomMessage('AskRemoveSettings'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2);
+  RemoveTracesChoice := (Answer = IDYES);
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  Code: Integer;
+begin
+  if CurUninstallStep = usUninstall then
+  begin
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM Nextcalibur.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
+
+    if FileExists(ExpandConstant('{app}\current\Nextcalibur.exe')) then
+    begin
+      Exec(ExpandConstant('{app}\current\Nextcalibur.exe'), '--remove-system-changes', '', SW_HIDE, ewWaitUntilTerminated, Code);
+    end;
+
+    Exec(ExpandConstant('{sys}\schtasks.exe'), '/delete /tn "\Nextcalibur\Open" /f', '', SW_HIDE, ewWaitUntilTerminated, Code);
+    Exec(ExpandConstant('{sys}\schtasks.exe'), '/delete /tn "\Nextcalibur\Start with Windows" /f', '', SW_HIDE, ewWaitUntilTerminated, Code);
+
+    RegDeleteKeyIncludingSubkeys(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
+    RegDeleteKeyIncludingSubkeys(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
+
+    if RemoveTracesChoice then
+    begin
+      DelTree(ExpandConstant('{userappdata}\Nextcalibur'), True, True, True);
+    end;
+  end;
+
+  if CurUninstallStep = usPostUninstall then
+  begin
+    DelTree(ExpandConstant('{app}'), True, True, True);
+  end;
 end;
 
 function StartupChoice(Param: String): String;
@@ -392,13 +429,15 @@ begin
     exit;
   end;
   Where := '';
-  if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
-    RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where);
+  if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'InstallLocation', Where) then
+    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
+      RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where);
 
   if Where <> '' then
   begin
-    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version) then
-      RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
+    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion', Version) then
+      if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version) then
+        RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
     if MsgBox(FmtMessage(CustomMessage('AlreadyInstalledRepair'), [Version, Where]), mbConfirmation, MB_YESNO) = IDYES then
       RepairDir := Where
     else

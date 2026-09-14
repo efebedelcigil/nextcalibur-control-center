@@ -353,6 +353,7 @@ public static class Footprint
         // Remove the Windows Installed Apps / Control Panel uninstall registration.
         try
         {
+            Registry.LocalMachine.DeleteSubKeyTree(InnoUninstallRegKey, throwOnMissingSubKey: false);
             Registry.LocalMachine.DeleteSubKeyTree(UninstallRegKey, throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur", throwOnMissingSubKey: false);
         }
@@ -374,6 +375,7 @@ public static class Footprint
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
     }
 
+    public const string InnoUninstallRegKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7C1E2B3A-3B6E-4C1B-9A55-0F2D6A6C9E01}_is1";
     public const string UninstallRegKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur";
 
     /// <summary>
@@ -383,6 +385,9 @@ public static class Footprint
     {
         try
         {
+            using var innoKey = Registry.LocalMachine.OpenSubKey(InnoUninstallRegKey);
+            if (innoKey?.GetValue("UninstallString") is not null) return true;
+
             using var key = Registry.LocalMachine.OpenSubKey(UninstallRegKey);
             return key?.GetValue("UninstallString") is not null;
         }
@@ -405,10 +410,28 @@ public static class Footprint
 
         try
         {
+            var version = typeof(Footprint).Assembly.GetName().Version?.ToString(3) ?? "0.5.7";
+
+            // If Inno Setup registered the official uninstaller, keep DisplayVersion in sync
+            // and remove any duplicate Velopack keys so exactly one entry shows in Control Panel.
+            using (var innoKey = Registry.LocalMachine.OpenSubKey(InnoUninstallRegKey, writable: true))
+            {
+                if (innoKey is not null)
+                {
+                    innoKey.SetValue("DisplayVersion", version);
+                    try
+                    {
+                        Registry.LocalMachine.DeleteSubKeyTree(UninstallRegKey, throwOnMissingSubKey: false);
+                        Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur", throwOnMissingSubKey: false);
+                    }
+                    catch { }
+                    return;
+                }
+            }
+
             using var key = Registry.LocalMachine.CreateSubKey(UninstallRegKey);
             if (key is null) return;
 
-            var version = typeof(Footprint).Assembly.GetName().Version?.ToString(3) ?? "0.5.6";
             var updateExe = Path.Combine(root, "Update.exe");
             if (!File.Exists(updateExe)) return;
 
