@@ -48,10 +48,12 @@ release build, hidden in the tray:
 |---|---|
 | Processor, window open | measured on the System page against the Lighting page, which shows no readings: 0.73 % of one core against 0.26 %. Almost all of the difference is the firmware read |
 | Processor, hidden in the tray | 0.026–0.035 % of one core (measured over 180 s after a 200 s settle), one firmware read a minute and little else |
-| Firmware reads | one a minute while hidden, **one every two minutes while the machine is hot or a game has the screen**, none at all on the Lighting and Settings pages, none with the overheat warning off. Each read is one write to the mailbox, which raises a system-management interrupt - 21 ms on this laptop, measured - so the count matters more than anything else here. The vendor's Control Center polls the same mailbox every 6.1 seconds, measured by capture, whatever it is doing |
-| Memory | around 230 MB of working set, released back to Windows every five minutes while the window is away |
+| Process priority | **BelowNormal** while in the background, minimized, or deactivated; **Normal** instantly on focus. The Windows OS scheduler unconditionally prioritizes games and heavy workloads |
+| Firmware reads | one a minute while hidden, **suppressed entirely while playing a game or under heavy multi-core load**, one every two minutes while hot, none at all on the Lighting and Settings pages, none with the overheat warning off. Each mailbox read raises a system-management interrupt (SMI) - 21 ms on this laptop, measured - which stops every core and drops frames in games. While playing a game (fullscreen or borderless windowed) or running heavy workloads (rendering, compiling), mailbox interrupts stand down completely; overheat watching shifts quietly to zero-interrupt PawnIO MSR register reads, and warnings are deferred until you finish. The vendor's Control Center polls the same mailbox every 6.1 seconds, measured by capture, whatever it is doing |
+| Discrete GPU sleep | in Hybrid mode, the discrete card is never probed or woken from runtime D3 sleep by background health checks |
+| Memory | around 230 MB of working set, released back to Windows every five minutes while the window is away; memory trimming stands down during gaming |
 | Network, one check | about 9 kB, four times a day: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB), this project's newest release (3.6 kB) |
-| Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen, and while one is, no check runs and no notification appears |
+| Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen or borderless, and while one is, no check runs and no notification appears |
 | Network, with automatic checks off | nothing at all |
 
 Nothing is downloaded until you accept it, and each request is conditional,
@@ -67,11 +69,12 @@ so a server that answers "not modified" sends no body.
 | Repair of the power-mode fault the vendor's software leaves | a Windows power mode that holds the CPU at full speed while idle - found, fixed once, guarded |
 | Temperatures, fan speeds, clocks, CPU package power | CPU power through PawnIO, when installed |
 | The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |
+| Zero-bottleneck gaming & heavy-workload architecture | borderless and fullscreen game detection, dynamic process priority, quiet MSR overheat deferral, zero SMI frame drops |
 | Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected |
 | Overheat warning | a threshold per chip, typeable |
 | Memory and every fixed drive | |
 | A guided tour | `?` in the title bar walks every page and every control, and ends at the tray |
-| A Settings page | everything the tray menu has, kept in step with it; the language; WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
+| A Settings page | everything the tray menu has, kept in step with it; the language; start-up preference (tray or window); WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
 | Tray icon, start with Windows, self-update, dependency update, a log | |
 | Dark, light or Windows' theme; the application's own dialogues | |
 | Fan control | **deliberately not implemented** - see the FAQ |
