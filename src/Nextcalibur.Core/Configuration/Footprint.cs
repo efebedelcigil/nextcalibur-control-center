@@ -148,7 +148,7 @@ public static class Footprint
                 Detect: () =>
                 {
                     if (self is null || Elevation.MayStartWithoutPrompt(self)) return false;
-                    return Elevation.StartsWithWindows(self) || CardSwitchTasks.SchtasksOutput($"/query /tn \"{Elevation.OpenTask}\"") is not null;
+                    return Elevation.StartsWithWindows(self) || Elevation.OpenTaskPointsAt(self);
                 },
                 Remove: () =>
                 {

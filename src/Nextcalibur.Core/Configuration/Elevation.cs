@@ -153,6 +153,9 @@ public static class Elevation
     /// <summary>Whether the logon task exists and points at this executable.</summary>
     public static bool StartsWithWindows(string executablePath) => TaskPointsAt(StartupTask, executablePath);
 
+    /// <summary>Whether the no-prompt open task exists and points at this executable.</summary>
+    public static bool OpenTaskPointsAt(string executablePath) => TaskPointsAt(OpenTask, executablePath);
+
     /// <summary>Enables or disables start at sign-in. Elevated only.</summary>
     /// <returns>False when nothing needed changing.</returns>
     public static bool SetStartWithWindows(bool enabled, string executablePath)

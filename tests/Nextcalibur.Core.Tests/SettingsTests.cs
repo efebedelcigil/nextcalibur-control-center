@@ -498,3 +498,46 @@ public class ForwardCompatibilityTests
         Assert.Contains("\"Nested\":{\"a\":1}", back);
     }
 }
+
+public class StartupPreferenceTests
+{
+    [Fact]
+    public void StartMinimised_defaults_to_true()
+    {
+        var settings = new AppSettings();
+        Assert.True(settings.StartMinimised);
+    }
+
+    [Fact]
+    public void StartMinimised_round_trips_through_json()
+    {
+        var settings = new AppSettings { StartMinimised = false };
+        var json = System.Text.Json.JsonSerializer.Serialize(settings);
+        var loaded = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json);
+        Assert.NotNull(loaded);
+        Assert.False(loaded.StartMinimised);
+
+        settings.StartMinimised = true;
+        json = System.Text.Json.JsonSerializer.Serialize(settings);
+        loaded = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json);
+        Assert.NotNull(loaded);
+        Assert.True(loaded.StartMinimised);
+    }
+
+    [Fact]
+    public void Missing_StartMinimised_in_older_json_defaults_to_true()
+    {
+        var json = """{"PollIntervalMs":5000,"QuietOnBattery":true}""";
+        var loaded = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json);
+        Assert.NotNull(loaded);
+        Assert.True(loaded.StartMinimised);
+    }
+
+    [Fact]
+    public void OpenTaskPointsAt_returns_false_for_nonexistent_or_unmatched_executable()
+    {
+        var result = Elevation.OpenTaskPointsAt(@"C:\NonExistent\Nextcalibur.exe");
+        Assert.False(result);
+    }
+}
+

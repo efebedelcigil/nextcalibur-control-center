@@ -505,6 +505,7 @@ public partial class MainWindow : Window
     /// <summary>Exit from the tray menu: the same question, then the same close.</summary>
     private void Exit()
     {
+        if (_dialogOpen) return;
         // The question is the window's own dialogue; bring the window up to ask it.
         if (!IsVisible || WindowState == WindowState.Minimized)
         {
@@ -678,6 +679,12 @@ public partial class MainWindow : Window
     {
         if (!_exiting && !_sessionEnding)
         {
+            if (_dialogOpen)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             // The question is the window's own dialogue, so the window has
             // to be on screen to ask it: a close from the taskbar's menu
             // arrives with the window minimised, and Windows' box is not
