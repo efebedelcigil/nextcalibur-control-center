@@ -38,7 +38,7 @@ public sealed record RetirementEntry(
     Version CreatedIn,
     Version? RetiredIn,
     Func<bool> Detect,
-    Action Remove,
+    Func<bool> Remove,
     bool NeedsAsking);
 
 /// <summary>
@@ -82,8 +82,8 @@ public static class Footprint
                 Detect: () => CardSwitchTasks.Registered(),
                 Remove: () =>
                 {
-                    try { CardSwitchTasks.Unregister(); }
-                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                    try { CardSwitchTasks.Unregister(); return true; }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { return false; }
                 },
                 NeedsAsking: false),
 
@@ -98,8 +98,8 @@ public static class Footprint
                 },
                 Remove: () =>
                 {
-                    try { MailboxAccess.Revoke(); }
-                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                    try { MailboxAccess.Revoke(); return true; }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { return false; }
                 },
                 NeedsAsking: false),
 
@@ -122,15 +122,21 @@ public static class Footprint
                     if (self is not null)
                     {
                         StartupRegistration.MigrateRunEntry(self);
+                        return true;
                     }
                     else
                     {
                         try
                         {
                             using var run = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-                            run?.DeleteValue(RunValue, throwOnMissingValue: false);
+                            if (run?.GetValue(RunValue) is not null)
+                            {
+                                run.DeleteValue(RunValue, throwOnMissingValue: false);
+                                return true;
+                            }
+                            return false;
                         }
-                        catch { }
+                        catch { return false; }
                     }
                 },
                 NeedsAsking: false),
@@ -148,8 +154,9 @@ public static class Footprint
                 {
                     if (self is not null)
                     {
-                        Elevation.RetireTasksNotAllowed(self);
+                        return Elevation.RetireTasksNotAllowed(self);
                     }
+                    return false;
                 },
                 NeedsAsking: false),
 
@@ -164,11 +171,13 @@ public static class Footprint
                 },
                 Remove: () =>
                 {
-                    try { NduFix.RemoveBackupMarker(); }
+                    var acted = false;
+                    try { if (NduFix.HasBackupMarker()) { NduFix.RemoveBackupMarker(); acted = true; } }
                     catch (Exception ex) when (ex is not OutOfMemoryException) { }
 
-                    try { NduFix.RestoreOriginal(); }
+                    try { if (NduFix.IsNduDisabled()) { NduFix.RestoreOriginal(); acted = true; } }
                     catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                    return acted;
                 },
                 NeedsAsking: true),
         };
@@ -201,7 +210,9 @@ public static class Footprint
                 if (entry.NeedsAsking && (askUser is null || !askUser(entry)))
                     continue;
 
-                entry.Remove();
+                if (!entry.Remove())
+                    continue;
+
                 removed.Add(entry);
                 Log.Info("retire", $"Retired old trace ({entry.CreatedIn} -> {entry.RetiredIn}): {entry.Description}");
             }

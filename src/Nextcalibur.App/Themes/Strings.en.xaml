@@ -150,6 +150,10 @@
     <sys:String x:Key="S.Settings.GroupBehaviour">Behaviour</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Start with Windows</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, elevated, without a prompt.</sys:String>
+    <sys:String x:Key="S.Settings.StartHowTitle">How it starts</sys:String>
+    <sys:String x:Key="S.Settings.StartHowDesc">In the notification area, or with the window open.</sys:String>
+    <sys:String x:Key="S.Settings.StartInTray">In the tray</sys:String>
+    <sys:String x:Key="S.Settings.StartOnScreen">With the window</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Office mode on battery</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Drop to Office when the charger comes out; back to your mode when it returns.</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Language</sys:String>

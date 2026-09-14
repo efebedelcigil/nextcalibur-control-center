@@ -26,6 +26,7 @@ public partial class MainWindow
     private StackPanel? _panelWindowsFaultsSubOptions;
     private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
         _settingAutoCheckUpdates, _settingAutoInstallUpdates;
+    private RadioButton? _settingStartInTray, _settingStartOnScreen;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
     private RadioButton? _settingLanguageEnglish, _settingLanguageTurkish;
     private Button? _settingCheckNowButton, _settingWinUtilButton, _settingDriversButton, _settingReportButton, _settingPrivacyButton;
@@ -41,6 +42,8 @@ public partial class MainWindow
         if (_pageSettings is null || _navSettings is null) return;
 
         _settingStartWithWindows = FindName("SettingStartWithWindows") as ToggleButton;
+        _settingStartInTray = FindName("SettingStartInTray") as RadioButton;
+        _settingStartOnScreen = FindName("SettingStartOnScreen") as RadioButton;
         _settingOfficeOnBattery = FindName("SettingOfficeOnBattery") as ToggleButton;
         _settingWindowsFaults = FindName("SettingWindowsFaults") as ToggleButton;
         _settingFixTextInputHost = FindName("SettingFixTextInputHost") as ToggleButton;
@@ -69,8 +72,19 @@ public partial class MainWindow
         {
             var exe = Environment.ProcessPath ?? throw new InvalidOperationException("Could not determine the executable path.");
             StartupRegistration.Set(on, exe);
-            _settings.StartMinimised = on;
+            if (_settingStartInTray is not null) _settingStartInTray.IsEnabled = on;
+            if (_settingStartOnScreen is not null) _settingStartOnScreen.IsEnabled = on;
+            if (on && _settingStartInTray is not null && _settingStartOnScreen is not null
+                   && _settingStartInTray.IsChecked != true && _settingStartOnScreen.IsChecked != true)
+            {
+                _settingStartInTray.IsChecked = true;
+                _settings.StartMinimised = true;
+            }
         });
+        if (_settingStartInTray is not null)
+            _settingStartInTray.Checked += (_, _) => ChangeSetting(() => _settings.StartMinimised = true);
+        if (_settingStartOnScreen is not null)
+            _settingStartOnScreen.Checked += (_, _) => ChangeSetting(() => _settings.StartMinimised = false);
         Wire(_settingOfficeOnBattery, on => _settings.QuietOnBattery = on);
         Wire(_settingWindowsFaults, on =>
         {
@@ -170,7 +184,15 @@ public partial class MainWindow
         _settingsPageLoading = true;
         try
         {
-            if (_settingStartWithWindows is not null) _settingStartWithWindows.IsChecked = StartupRegistration.IsEnabled;
+            if (_settingStartWithWindows is not null)
+            {
+                var startupOn = StartupRegistration.IsEnabled;
+                _settingStartWithWindows.IsChecked = startupOn;
+                if (_settingStartInTray is not null) _settingStartInTray.IsEnabled = startupOn;
+                if (_settingStartOnScreen is not null) _settingStartOnScreen.IsEnabled = startupOn;
+            }
+            if (_settingStartInTray is not null) _settingStartInTray.IsChecked = _settings.StartMinimised;
+            if (_settingStartOnScreen is not null) _settingStartOnScreen.IsChecked = !_settings.StartMinimised;
             if (_settingOfficeOnBattery is not null) _settingOfficeOnBattery.IsChecked = _settings.QuietOnBattery;
             if (_settingWindowsFaults is not null)
             {

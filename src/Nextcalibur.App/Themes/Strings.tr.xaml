@@ -148,6 +148,10 @@
     <sys:String x:Key="S.Settings.GroupBehaviour">Davranış</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Windows ile başlat</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açılınca yönetici olarak, sormadan başlar.</sys:String>
+    <sys:String x:Key="S.Settings.StartHowTitle">Nasıl başlasın</sys:String>
+    <sys:String x:Key="S.Settings.StartHowDesc">Bildirim alanında ya da pencere açık olarak.</sys:String>
+    <sys:String x:Key="S.Settings.StartInTray">Tepside</sys:String>
+    <sys:String x:Key="S.Settings.StartOnScreen">Pencereyle</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Pilde Office modu</sys:String>
     <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Şarj kablosu çıktığında Office moduna geç; takıldığında önceki moda dön.</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Dil</sys:String>

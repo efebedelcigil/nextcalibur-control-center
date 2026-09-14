@@ -259,7 +259,7 @@ public class FootprintTests
             CreatedIn: new Version(0, 5, 0),
             RetiredIn: new Version(0, 5, 4),
             Detect: () => traceExists,
-            Remove: () => traceExists = false,
+            Remove: () => { traceExists = false; return true; },
             NeedsAsking: true);
 
         var removed = Footprint.RetireOldVersions(
@@ -280,7 +280,7 @@ public class FootprintTests
             CreatedIn: new Version(0, 5, 0),
             RetiredIn: new Version(0, 5, 4),
             Detect: () => traceExists,
-            Remove: () => traceExists = false,
+            Remove: () => { traceExists = false; return true; },
             NeedsAsking: true);
 
         var removed = Footprint.RetireOldVersions(
@@ -301,7 +301,7 @@ public class FootprintTests
             CreatedIn: new Version(0, 5, 0),
             RetiredIn: new Version(0, 5, 4),
             Detect: () => traceExists,
-            Remove: () => traceExists = false,
+            Remove: () => { traceExists = false; return true; },
             NeedsAsking: true);
 
         var removed = Footprint.RetireOldVersions(
@@ -311,6 +311,25 @@ public class FootprintTests
 
         Assert.Single(removed);
         Assert.False(traceExists, "Trace must be gone when user permits removal");
+    }
+
+    [Fact]
+    public void Retirement_pass_does_not_log_or_report_when_remove_does_nothing()
+    {
+        var entry = new RetirementEntry(
+            Description: "Mock no-op setting",
+            CreatedIn: new Version(0, 5, 0),
+            RetiredIn: new Version(0, 5, 4),
+            Detect: () => true,
+            Remove: () => false,
+            NeedsAsking: false);
+
+        var removed = Footprint.RetireOldVersions(
+            currentVersion: new Version(0, 5, 4),
+            askUser: null,
+            entries: new[] { entry });
+
+        Assert.Empty(removed);
     }
 
     [Fact]

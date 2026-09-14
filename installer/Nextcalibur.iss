@@ -1,4 +1,4 @@
-﻿; Nextcalibur.iss - the installer's face.
+; Nextcalibur.iss - the installer's face.
 ;
 ; Inno Setup draws the wizard: where to install, what is happening, a finish
 ; page. Velopack does the installing and keeps doing the updating afterwards.
@@ -91,10 +91,16 @@ en.TypeCustom=Custom - choose which dependencies to install
 tr.TypeCustom=Özel - hangi bağımlılıkların kurulacağını seçin
 en.CompApp=Nextcalibur Control Center
 tr.CompApp=Nextcalibur Control Center
-en.CompDeps=Dependencies (optional; the application works without them)
-tr.CompDeps=Bağımlılıklar (isteğe bağlı; uygulama onlarsız da çalışır)
+en.CompDeps=Dependencies
+tr.CompDeps=Bağımlılıklar
+en.CompDotNet=.NET 8 desktop runtime - downloaded from Microsoft, about 60 MB
+tr.CompDotNet=.NET 8 masaüstü çalışma zamanı - Microsoft'tan indirilir, yaklaşık 60 MB
+en.CompDotNetPresent=.NET 8 desktop runtime - already installed
+tr.CompDotNetPresent=.NET 8 masaüstü çalışma zamanı - zaten kurulu
 en.CompPawnIO=PawnIO driver - reads the processor's power (signed, open source, pawnio.eu)
 tr.CompPawnIO=PawnIO sürücüsü - işlemcinin güç tüketimini okur (imzalı, açık kaynak, pawnio.eu)
+en.CompPawnIOPresent=PawnIO driver - already installed
+tr.CompPawnIOPresent=PawnIO sürücüsü - zaten kurulu
 en.AlreadyInstalledRepair=Nextcalibur %1 is already installed in%n%2%n%nOnly one copy can be installed. Repair it? This reinstalls the application in place, keeps your settings, and puts back anything missing - start-up, dependencies. To move it, remove it first from Settings > Apps.
 tr.AlreadyInstalledRepair=Nextcalibur %1 zaten şurada kurulu:%n%2%n%nYalnızca bir kopya kurulabilir. Onarılsın mı? Uygulama yerinde yeniden kurulur, ayarlarınız korunur, eksik olan her şey - başlangıç, bağımlılıklar - geri konur. Taşımak için önce Ayarlar > Uygulamalar'dan kaldırın.
 en.RepairTitle=Repair
@@ -118,13 +124,16 @@ tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur
 Name: "standard"; Description: "{cm:TypeStandard}"
 Name: "custom"; Description: "{cm:TypeCustom}"; Flags: iscustom
 
-; The application is fixed. Under "Dependencies" sit the things it can use
-; but does not need: leave one out and the feature it serves reads "--".
-; The application offers the same ones later when missing or behind.
+; The application is fixed. Under "Dependencies" sit the runtime and whatever
+; other dependencies the application can use: missing dependencies are installed
+; or offered, while already installed ones are shown as present.
 [Components]
 Name: "app"; Description: "{cm:CompApp}"; Types: standard custom; Flags: fixed
 Name: "deps"; Description: "{cm:CompDeps}"; Types: standard custom
+Name: "deps\dotnet"; Description: "{cm:CompDotNet}"; Types: standard custom; Flags: fixed; Check: not DesktopRuntimeInstalled
+Name: "deps\dotnet_present"; Description: "{cm:CompDotNetPresent}"; Types: standard custom; Flags: fixed; Check: DesktopRuntimeInstalled
 Name: "deps\pawnio"; Description: "{cm:CompPawnIO}"; Types: standard; Check: not PawnIOInstalled
+Name: "deps\pawnio_present"; Description: "{cm:CompPawnIOPresent}"; Flags: fixed; Check: PawnIOInstalled
 
 [Tasks]
 Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check: not Repairing

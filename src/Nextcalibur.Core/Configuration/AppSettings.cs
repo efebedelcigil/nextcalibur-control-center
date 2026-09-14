@@ -11,7 +11,7 @@ public sealed class AppSettings
     public int PollIntervalMs { get; set; } = 2000;
 
     /// <summary>Start hidden in the notification area.</summary>
-    public bool StartMinimised { get; set; }
+    public bool StartMinimised { get; set; } = true;
 
     /// <summary>Show a Windows notification when the CPU gets too hot.</summary>
     public bool OverheatWarningEnabled { get; set; } = true;
