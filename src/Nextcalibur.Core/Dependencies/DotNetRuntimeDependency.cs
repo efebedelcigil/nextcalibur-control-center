@@ -42,7 +42,16 @@ public sealed class DotNetRuntimeDependency : Dependency
     public override string Id => "dotnet";
     public override string Name => Words.Get("S.Core.DotNet.Name", ".NET {0} desktop runtime", Channel);
     public override string Purpose => Words.Get("S.Core.DotNet.Purpose", "is what Nextcalibur runs on");
-    public override string ExpectedSigner => "CN=Microsoft Corporation";
+    /// <summary>
+    /// The organisation, not the common name. Microsoft signs .NET with
+    /// <c>CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US</c> -
+    /// the common name is the product and moves with it, while the
+    /// organisation is what the certificate authority actually validated.
+    /// Expecting <c>CN=Microsoft Corporation</c> refused every genuine
+    /// download, which is what 0.5.4 shipped doing; the installer wizard had
+    /// it right from the start and the application did not.
+    /// </summary>
+    public override string ExpectedSigner => "O=Microsoft Corporation";
     public override string SilentInstallArguments => "/install /quiet /norestart";
 
     /// <summary>Not ours to remove: every other .NET application on the machine uses it.</summary>

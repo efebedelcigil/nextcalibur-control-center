@@ -109,6 +109,26 @@ public class SignatureForgeryTests
         Assert.Equal(matches, Authenticode.HasSubjectComponent(certificate, expected));
     }
 
+    /// <summary>
+    /// The subject Microsoft actually signs .NET with, against what each
+    /// dependency expects. 0.5.4 shipped expecting CN=Microsoft Corporation
+    /// and refused every genuine runtime download on every machine: the
+    /// common name is the product (".NET"), and the organisation is the part
+    /// the certificate authority validated.
+    /// </summary>
+    [Fact]
+    public void The_runtime_accepts_the_subject_Microsoft_really_uses()
+    {
+        const string real = "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US";
+        using var certificate = SelfSigned(real);
+
+        Assert.True(Authenticode.HasSubjectComponent(certificate,
+            new Nextcalibur.Core.Dependencies.DotNetRuntimeDependency().ExpectedSigner));
+
+        // And the thing that was wrong, kept so nobody puts it back.
+        Assert.False(Authenticode.HasSubjectComponent(certificate, "CN=Microsoft Corporation"));
+    }
+
     /// <summary>A self-signed certificate with any name at all: what an attacker makes in a minute.</summary>
     private static X509Certificate2 SelfSigned(string subject)
     {
