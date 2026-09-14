@@ -1837,6 +1837,9 @@ public partial class MainWindow : Window
                 _gpuPendingRestart = target;
                 _restartBannerDismissed = false;
                 RefreshBanner();
+                LoadGpuMode();
+                OfferRestart(outcome.Summary);
+                return;
             }
             else
             {
@@ -1907,14 +1910,17 @@ public partial class MainWindow : Window
     [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
     private static extern bool ExitWindowsEx(uint flags, uint reason);
 
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct Luid { public uint LowPart; public int HighPart; }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
+    private struct TokenPrivileges { public uint Count; public Luid Luid; public uint Attributes; }
+
     [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
     private static extern bool OpenProcessToken(IntPtr process, uint access, out IntPtr token);
 
     [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-    private static extern bool LookupPrivilegeValue(string? system, string name, out long luid);
-
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    private struct TokenPrivileges { public uint Count; public long Luid; public uint Attributes; }
+    private static extern bool LookupPrivilegeValue(string? system, string name, out Luid luid);
 
     [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
     private static extern bool AdjustTokenPrivileges(IntPtr token, bool disableAll, ref TokenPrivileges newState, uint length, IntPtr previous, IntPtr returnLength);
@@ -1932,18 +1938,45 @@ public partial class MainWindow : Window
     private static bool RequestRestart()
     {
         const uint TokenAdjustPrivileges = 0x0020, TokenQuery = 0x0008, PrivilegeEnabled = 0x0002;
-        if (!OpenProcessToken(GetCurrentProcess(), TokenAdjustPrivileges | TokenQuery, out var token)) return false;
+        if (OpenProcessToken(GetCurrentProcess(), TokenAdjustPrivileges | TokenQuery, out var token))
+        {
+            try
+            {
+                if (LookupPrivilegeValue(null, "SeShutdownPrivilege", out var luid))
+                {
+                    var privileges = new TokenPrivileges { Count = 1, Luid = luid, Attributes = PrivilegeEnabled };
+                    if (!AdjustTokenPrivileges(token, false, ref privileges, 0, IntPtr.Zero, IntPtr.Zero) ||
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error() != 0)
+                    {
+                        Log.Warn("restart", $"AdjustTokenPrivileges failed or not all assigned: {System.Runtime.InteropServices.Marshal.GetLastWin32Error()}");
+                    }
+                }
+            }
+            finally
+            {
+                CloseHandle(token);
+            }
+        }
+
+        if (ExitWindowsEx(EwxReboot, ShutdownReasonPlannedMaintenance))
+            return true;
+
+        var err = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+        Log.Warn("restart", $"ExitWindowsEx returned false (error {err}); attempting fallback via shutdown.exe");
         try
         {
-            if (!LookupPrivilegeValue(null, "SeShutdownPrivilege", out var luid)) return false;
-            var privileges = new TokenPrivileges { Count = 1, Luid = luid, Attributes = PrivilegeEnabled };
-            if (!AdjustTokenPrivileges(token, false, ref privileges, 0, IntPtr.Zero, IntPtr.Zero)) return false;
+            using var proc = Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 0")
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            });
+            return proc is not null;
         }
-        finally
+        catch (Exception ex)
         {
-            CloseHandle(token);
+            Log.Error("restart", "Fallback restart via shutdown.exe failed", ex);
+            return false;
         }
-        return ExitWindowsEx(EwxReboot, ShutdownReasonPlannedMaintenance);
     }
 
     /// <summary>
