@@ -51,7 +51,7 @@ release build, hidden in the tray:
 | Process priority | **BelowNormal** while in the background, minimized, or deactivated; **Normal** instantly on focus. The Windows OS scheduler unconditionally prioritizes games and heavy workloads |
 | Firmware reads | one a minute while hidden, **suppressed entirely while playing a game or under heavy multi-core load**, one every two minutes while hot, none at all on the Lighting and Settings pages, none with the overheat warning off. Each mailbox read raises a system-management interrupt (SMI) - 21 ms on this laptop, measured - which stops every core and drops frames in games. While playing a game (fullscreen or borderless windowed) or running heavy workloads (rendering, compiling), mailbox interrupts stand down completely; overheat watching shifts quietly to zero-interrupt PawnIO MSR register reads, and warnings are deferred until you finish. The vendor's Control Center polls the same mailbox every 6.1 seconds, measured by capture, whatever it is doing |
 | Discrete GPU sleep | in Hybrid mode, the discrete card is never probed or woken from runtime D3 sleep by background health checks |
-| Memory | around 230 MB of working set, released back to Windows every five minutes while the window is away; memory trimming stands down during gaming |
+| Memory | around 24–35 MB of working set while hidden in the tray (and ~35–45 MB with the window open); memory trimming stands down during gaming |
 | Network, one check | about 9 kB, four times a day: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB), this project's newest release (3.6 kB) |
 | Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen or borderless, and while one is, no check runs and no notification appears |
 | Network, with automatic checks off | nothing at all |
@@ -114,10 +114,12 @@ makes.
 
 ## Uninstalling
 
-Removes everything of its own - files, shortcuts, settings, logs, the
-scheduled tasks - without asking, and asks about what you may want to keep:
-the power plans it created, the power-mode repair, and each dependency
-(PawnIO) separately.
+Easily removed from Windows Settings (`Installed apps`) or the classic
+Control Panel through its unified uninstaller (`unins000.exe`).
+
+During uninstall, it cleanly cleans up all scheduled tasks, binaries, shortcuts,
+and system changes. It interactively prompts you whether you also wish to delete
+your settings, log files, and trace data (`%AppData%\Nextcalibur`).
 
 ## Hardware
 
