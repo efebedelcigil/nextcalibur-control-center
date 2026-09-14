@@ -92,13 +92,13 @@ public static class SystemInfo
                     var use = new StorageUse((ulong)(drive.TotalSize - drive.TotalFreeSpace), (ulong)drive.TotalSize);
                     drives.Add(new DriveUse(drive.Name.TrimEnd('\\'), drive.VolumeLabel, use));
                 }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
                 {
                     // A drive that will not answer is not a drive to show.
                 }
             }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
         {
         }
 
@@ -148,8 +148,9 @@ public static class SystemInfo
                 "SELECT Name, AdapterCompatibility FROM Win32_VideoController");
 
             string? fallback = null;
+            using var results = searcher.Get();
 
-            foreach (ManagementObject gpu in searcher.Get())
+            foreach (ManagementObject gpu in results)
             {
                 using (gpu)
                 {
@@ -180,7 +181,8 @@ public static class SystemInfo
         try
         {
             using var searcher = new ManagementObjectSearcher(query);
-            foreach (ManagementObject item in searcher.Get())
+            using var results = searcher.Get();
+            foreach (ManagementObject item in results)
             {
                 using (item)
                 {

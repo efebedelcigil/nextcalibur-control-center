@@ -28,3 +28,6 @@ docs/ROADMAP.md
 docs/BRIEF.md
 docs/CONTRACT.md
 docs/DESIGN-SPEC.md
+
+graphify-out/
+.agents/

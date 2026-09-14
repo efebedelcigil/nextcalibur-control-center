@@ -55,7 +55,18 @@ public static class Dialogs
         // from the tray; marshal rather than assume.
         var owner = Owner;
         if (owner is not null && !owner.Dispatcher.CheckAccess())
-            return owner.Dispatcher.Invoke(() => Show(title, body, buttons, fallback));
+        {
+            if (owner.Dispatcher.HasShutdownStarted || owner.Dispatcher.HasShutdownFinished)
+                return fallback;
+            try
+            {
+                return owner.Dispatcher.Invoke(() => Show(title, body, buttons, fallback));
+            }
+            catch (Exception ex) when (ex is OperationCanceledException or InvalidOperationException)
+            {
+                return fallback;
+            }
+        }
 
         // The application's own look, when there is a window to draw it in.
         // Before the window exists, or while it is in the tray, Windows' box

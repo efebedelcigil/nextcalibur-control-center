@@ -328,16 +328,34 @@ public partial class App : Application
 
         var listener = new Thread(() =>
         {
-            while (true)
+            try
             {
-                wake.WaitOne();
-                app.Dispatcher.Invoke(() =>
+                while (true)
                 {
-                    if (app.MainWindow is not { } window) return;
-                    window.Show();
-                    window.WindowState = WindowState.Normal;
-                    window.Activate();
-                });
+                    if (!wake.WaitOne()) break;
+                    if (app.Dispatcher.HasShutdownStarted || app.Dispatcher.HasShutdownFinished) break;
+                    try
+                    {
+                        app.Dispatcher.Invoke(() =>
+                        {
+                            if (app.MainWindow is not { } window) return;
+                            window.Show();
+                            window.WindowState = WindowState.Normal;
+                            window.Activate();
+                        });
+                    }
+                    catch (Exception ex) when (ex is OperationCanceledException or InvalidOperationException)
+                    {
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is ObjectDisposedException or ThreadAbortException)
+            {
+            }
+            finally
+            {
+                wake.Dispose();
             }
         })
         {
@@ -477,7 +495,7 @@ public partial class App : Application
                 ":done\r\n" +
                 "reg delete \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nextcalibur\" /f >nul 2>&1\r\n" +
                 "del \"%~f0\"\r\n");
-            Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.Cmd, $"/c \"{script}\"")
+            using var cmdProcess = Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.Cmd, $"/c \"{script}\"")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,

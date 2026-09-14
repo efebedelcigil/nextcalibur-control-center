@@ -241,7 +241,7 @@ public partial class MainWindow
 
         try
         {
-            Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.PowerShell,
+            using var process = Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.PowerShell,
                 "-NoProfile -ExecutionPolicy Bypass -Command \"irm https://christitus.com/win | iex\"")
             {
                 UseShellExecute = true,

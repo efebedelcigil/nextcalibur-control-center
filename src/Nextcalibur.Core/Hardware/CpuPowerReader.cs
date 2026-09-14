@@ -36,6 +36,7 @@ public sealed class CpuPowerReader : IDisposable
     private const uint IoctlLoadBinary = DeviceType | (0x821 << 2);
     private const uint IoctlExecute = DeviceType | (0x841 << 2);
     private const int FunctionNameLength = 32;
+    private static readonly byte[] IoctlReadMsrName = System.Text.Encoding.ASCII.GetBytes("ioctl_read_msr");
 
     private SafeFileHandle? _device;
     private double _joulesPerUnit;
@@ -199,8 +200,7 @@ public sealed class CpuPowerReader : IDisposable
         if (_device is null) return false;
 
         var input = new byte[FunctionNameLength + sizeof(long)];
-        var name = System.Text.Encoding.ASCII.GetBytes("ioctl_read_msr");
-        Buffer.BlockCopy(name, 0, input, 0, name.Length);
+        Buffer.BlockCopy(IoctlReadMsrName, 0, input, 0, IoctlReadMsrName.Length);
         BitConverter.TryWriteBytes(input.AsSpan(FunctionNameLength), (long)index);
 
         var output = new byte[sizeof(long)];

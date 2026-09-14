@@ -157,22 +157,27 @@ public sealed class LedState
         return new LedState();
     }
 
+    private static readonly object SaveLock = new();
+
     public void Save()
     {
-        try
+        lock (SaveLock)
         {
-            if (!Security.ProfileFiles.EnsureOrdinaryFolder(System.IO.Path.GetDirectoryName(Path)!)) return;
-            // Written beside and moved into place, so a write cut short - the
-            // battery giving out, a forced power-off - leaves the previous file
-            // whole rather than a truncated one that loads as defaults.
-            var temporary = Path + ".tmp";
-            if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
-            File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-            File.Move(temporary, Path, overwrite: true);
-        }
-        catch
-        {
-            // Losing the stored lighting is not worth failing a colour change over.
+            try
+            {
+                if (!Security.ProfileFiles.EnsureOrdinaryFolder(System.IO.Path.GetDirectoryName(Path)!)) return;
+                // Written beside and moved into place, so a write cut short - the
+                // battery giving out, a forced power-off - leaves the previous file
+                // whole rather than a truncated one that loads as defaults.
+                var temporary = Path + ".tmp";
+                if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
+                File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+                File.Move(temporary, Path, overwrite: true);
+            }
+            catch
+            {
+                // Losing the stored lighting is not worth failing a colour change over.
+            }
         }
     }
 }

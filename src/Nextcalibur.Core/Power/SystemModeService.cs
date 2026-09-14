@@ -210,7 +210,11 @@ public sealed class SystemModeService
             if (process is null) return null;
 
             var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(5000);
+            if (!process.WaitForExit(5000))
+            {
+                try { process.Kill(); } catch { }
+                return null;
+            }
             return process.ExitCode == 0 ? output : null;
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)

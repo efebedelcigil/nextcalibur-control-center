@@ -33,6 +33,7 @@ internal sealed class MachineWideGate : IDisposable
     /// </summary>
     private static readonly TimeSpan Patience = TimeSpan.FromMilliseconds(250);
 
+    private static readonly object InitLock = new();
     private static Mutex? _mutex;
     private static bool _unavailable;
     private readonly bool _held;
@@ -46,8 +47,14 @@ internal sealed class MachineWideGate : IDisposable
 
         try
         {
-            _mutex ??= new Mutex(false, Name);
-            return new MachineWideGate(_mutex.WaitOne(Patience));
+            Mutex mutex;
+            lock (InitLock)
+            {
+                if (_unavailable) return new MachineWideGate(false);
+                _mutex ??= new Mutex(false, Name);
+                mutex = _mutex;
+            }
+            return new MachineWideGate(mutex.WaitOne(Patience));
         }
         catch (AbandonedMutexException)
         {

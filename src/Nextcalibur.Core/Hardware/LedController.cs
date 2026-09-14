@@ -176,15 +176,19 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
         }
 
         // Each zone keeps its own colour, so a global change has to be written
-        // once per zone rather than broadcast.
-        foreach (var zone in new[] { LedZone.Left, LedZone.Middle, LedZone.Right })
+        // once per zone rather than broadcast. Held so background sensor reads
+        // cannot interleave during the delays.
+        using (_mailbox.Hold())
         {
-            var (r, g, b) = State.GetColour(zone);
-            Send(zone, r, g, b);
+            foreach (var zone in new[] { LedZone.Left, LedZone.Middle, LedZone.Right })
+            {
+                var (r, g, b) = State.GetColour(zone);
+                Send(zone, r, g, b);
 
-            // The vendor software spaces these writes out; firmware drops some
-            // of them when they arrive back to back.
-            Thread.Sleep(30);
+                // The vendor software spaces these writes out; firmware drops some
+                // of them when they arrive back to back.
+                Thread.Sleep(30);
+            }
         }
     }
 

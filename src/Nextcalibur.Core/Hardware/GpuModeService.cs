@@ -173,7 +173,8 @@ public sealed class GpuModeService
         {
             using var searcher = new ManagementObjectSearcher(
                 "SELECT DeviceID, PNPDeviceID FROM Win32_VideoController");
-            foreach (ManagementObject gpu in searcher.Get())
+            using var results = searcher.Get();
+            foreach (ManagementObject gpu in results)
             {
                 using (gpu)
                 {
@@ -195,7 +196,8 @@ public sealed class GpuModeService
         {
             using var searcher = new ManagementObjectSearcher(
                 "SELECT PNPDeviceID, ConfigManagerErrorCode FROM Win32_PnPEntity WHERE PNPClass = 'Display'");
-            foreach (ManagementObject device in searcher.Get())
+            using var results = searcher.Get();
+            foreach (ManagementObject device in results)
             {
                 using (device)
                 {
@@ -302,7 +304,11 @@ public sealed class GpuModeService
             CreateNoWindow = true,
         });
         if (process is null) return false;
-        process.WaitForExit(30000);
+        if (!process.WaitForExit(30000))
+        {
+            try { process.Kill(); } catch { }
+            return false;
+        }
         return process.ExitCode == 0;
     }
 
@@ -374,8 +380,8 @@ public sealed class GpuModeService
             using var searcher = new ManagementObjectSearcher(
                 "SELECT Name, AdapterCompatibility, CurrentHorizontalResolution, ConfigManagerErrorCode " +
                 "FROM Win32_VideoController");
-
-            foreach (ManagementObject gpu in searcher.Get())
+            using var results = searcher.Get();
+            foreach (ManagementObject gpu in results)
             {
                 using (gpu)
                 {

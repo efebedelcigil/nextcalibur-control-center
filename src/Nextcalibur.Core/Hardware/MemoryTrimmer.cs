@@ -126,67 +126,70 @@ public static class MemoryTrimmer
             return 0;
         }
 
-        foreach (var process in processes)
+        try
         {
-            try
+            foreach (var process in processes)
             {
-                var before = process.WorkingSet64;
-                if (before < minWorkingSetBytes) continue;
-
-                // Rule C.2: If memory returned to bloated size within 15 minutes of previous trim,
-                // that memory was actively live and re-faulted. Standing down for 1 hour.
-                if (record is not null && record.LastTrimTime != DateTime.MinValue && (now - record.LastTrimTime) <= TimeSpan.FromMinutes(15))
+                try
                 {
-                    lock (SyncLock)
+                    var before = process.WorkingSet64;
+                    if (before < minWorkingSetBytes) continue;
+
+                    // Rule C.2: If memory returned to bloated size within 15 minutes of previous trim,
+                    // that memory was actively live and re-faulted. Standing down for 1 hour.
+                    if (record is not null && record.LastTrimTime != DateTime.MinValue && (now - record.LastTrimTime) <= TimeSpan.FromMinutes(15))
                     {
-                        record.StandDownUntil = now.AddHours(1);
-                    }
-                    Log.Warn("memory", $"{processName} (pid {process.Id}) working set returned to {before / 1024 / 1024} MB within {(now - record.LastTrimTime).TotalMinutes:F1} min of trim; memory is actively live. Standing down for 1 hour.");
-                    return 0;
-                }
-
-                // Rule C.1: Only trim when system memory is genuinely under pressure (< 15% free)
-                // or when the process working set is far past anything explainable (extreme threshold).
-                bool isExtreme = before >= extremeThreshold;
-                if (!isUnderPressure && !isExtreme)
-                {
-                    continue;
-                }
-
-                if (K32EmptyWorkingSet(process.Handle))
-                {
-                    process.Refresh();
-                    var after = process.WorkingSet64;
-                    if (before > after)
-                    {
-                        var diff = before - after;
-                        reclaimed += diff;
-
                         lock (SyncLock)
                         {
-                            if (record is null)
-                            {
-                                record = new TrimRecord();
-                                History[processName] = record;
-                            }
-                            record.LastTrimTime = now;
-                            record.WorkingSetAfterTrim = after;
-                            record.StandDownUntil = DateTime.MinValue;
+                            record.StandDownUntil = now.AddHours(1);
                         }
+                        Log.Warn("memory", $"{processName} (pid {process.Id}) working set returned to {before / 1024 / 1024} MB within {(now - record.LastTrimTime).TotalMinutes:F1} min of trim; memory is actively live. Standing down for 1 hour.");
+                        return 0;
+                    }
 
-                        var freePctStr = freeMemPct.HasValue ? $"{freeMemPct.Value:F1}%" : "unknown";
-                        Log.Info("memory", $"Trimmed {processName} (pid {process.Id}): {before / 1024 / 1024} MB -> {after / 1024 / 1024} MB (reclaimed {diff / 1024 / 1024} MB, system free RAM: {freePctStr})");
+                    // Rule C.1: Only trim when system memory is genuinely under pressure (< 15% free)
+                    // or when the process working set is far past anything explainable (extreme threshold).
+                    bool isExtreme = before >= extremeThreshold;
+                    if (!isUnderPressure && !isExtreme)
+                    {
+                        continue;
+                    }
+
+                    if (K32EmptyWorkingSet(process.Handle))
+                    {
+                        process.Refresh();
+                        var after = process.WorkingSet64;
+                        if (before > after)
+                        {
+                            var diff = before - after;
+                            reclaimed += diff;
+
+                            lock (SyncLock)
+                            {
+                                if (record is null)
+                                {
+                                    record = new TrimRecord();
+                                    History[processName] = record;
+                                }
+                                record.LastTrimTime = now;
+                                record.WorkingSetAfterTrim = after;
+                                record.StandDownUntil = DateTime.MinValue;
+                            }
+
+                            var freePctStr = freeMemPct.HasValue ? $"{freeMemPct.Value:F1}%" : "unknown";
+                            Log.Info("memory", $"Trimmed {processName} (pid {process.Id}): {before / 1024 / 1024} MB -> {after / 1024 / 1024} MB (reclaimed {diff / 1024 / 1024} MB, system free RAM: {freePctStr})");
+                        }
                     }
                 }
+                catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NotSupportedException)
+                {
+                    // Process may be protected or access denied; fail quietly.
+                }
             }
-            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NotSupportedException)
-            {
-                // Process may be protected or access denied; fail quietly.
-            }
-            finally
-            {
-                process.Dispose();
-            }
+        }
+        finally
+        {
+            foreach (var p in processes) p.Dispose();
         }
         return reclaimed;
     }

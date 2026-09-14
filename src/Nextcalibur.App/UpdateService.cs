@@ -78,24 +78,31 @@ public sealed class UpdateService : IDisposable
         _timer = new DispatcherTimer { Interval = FirstCheckDelay };
         _timer.Tick += async (_, _) =>
         {
-            _timer.Interval = CheckInterval;
-            if (!AutomaticChecksEnabled()) return;
-
-            // Not while a game has the screen. A check is a few requests and
-            // a few hundred bytes, but it can end in a download, an
-            // installer and a question - none of which belong in the middle
-            // of a round, and the tab-out alone would cost more than the
-            // update is worth. Windows is asked, rather than guessed at, and
-            // the next look is soon rather than in six hours so the end of
-            // the session is not missed.
-            if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed())
+            try
             {
-                _timer.Interval = WhileBusyDelay;
-                return;
-            }
+                _timer.Interval = CheckInterval;
+                if (!AutomaticChecksEnabled()) return;
 
-            await CheckAsync(report: false);
-            await CheckDependenciesAsync();
+                // Not while a game has the screen. A check is a few requests and
+                // a few hundred bytes, but it can end in a download, an
+                // installer and a question - none of which belong in the middle
+                // of a round, and the tab-out alone would cost more than the
+                // update is worth. Windows is asked, rather than guessed at, and
+                // the next look is soon rather than in six hours so the end of
+                // the session is not missed.
+                if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed())
+                {
+                    _timer.Interval = WhileBusyDelay;
+                    return;
+                }
+
+                await CheckAsync(report: false);
+                await CheckDependenciesAsync();
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Nextcalibur.Core.Configuration.Log.Warn("updates", $"Update check failed: {ex.Message}");
+            }
         };
     }
 
@@ -122,14 +129,22 @@ public sealed class UpdateService : IDisposable
     /// </summary>
     public async Task<bool> CheckDependenciesAsync()
     {
-        var found = false;
-        foreach (var status in await Nextcalibur.Core.Dependencies.DependencyManager.CheckAsync())
+        try
         {
-            if (_declinedDependencies.Contains(status.Dependency.Id + status.Latest.Version)) continue;
-            found = true;
-            DependencyFound?.Invoke(this, status);
+            var found = false;
+            foreach (var status in await Nextcalibur.Core.Dependencies.DependencyManager.CheckAsync())
+            {
+                if (_declinedDependencies.Contains(status.Dependency.Id + status.Latest.Version)) continue;
+                found = true;
+                DependencyFound?.Invoke(this, status);
+            }
+            return found;
         }
-        return found;
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Nextcalibur.Core.Configuration.Log.Warn("dependencies", $"Dependency check failed: {ex.Message}");
+            return false;
+        }
     }
 
     public void Start() => _timer?.Start();

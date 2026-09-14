@@ -44,6 +44,7 @@ public partial class MainWindow : Window
     private readonly AppSettings _settings = AppSettings.Load();
     private readonly UpdateService _updates = new();
     private readonly DispatcherTimer _timer = new();
+    private DispatcherTimer? _slowTimer;
 
     /// <summary>Slow-timer cadence while the window is on screen.</summary>
     private static readonly TimeSpan VisibleSlowInterval = TimeSpan.FromSeconds(5);
@@ -686,6 +687,8 @@ public partial class MainWindow : Window
 
         {
             _timer.Stop();
+            _slowTimer?.Stop();
+            if (_tourActive) EndTour();
             Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
             Microsoft.Win32.SystemEvents.SessionSwitch -= OnSessionSwitch;
             _tray?.Dispose();
@@ -1018,6 +1021,10 @@ public partial class MainWindow : Window
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;
+            if (e.Mode == Microsoft.Win32.PowerModes.Resume)
+            {
+                Dispatcher.BeginInvoke(() => _led?.Apply());
+            }
             return;
         }
 
@@ -2149,6 +2156,22 @@ public partial class MainWindow : Window
             }
 
             s = reading.Value;
+
+            _consecutiveFailures = 0;
+            _lastThermal = s;
+            CarryTheBacklightLevel(s);
+
+            CpuTemp.Text = $"{s.CpuTemperatureC} °C";
+            GpuTemp.Text = $"{s.GpuTemperatureC} °C";
+            CpuFan.Text = $"{s.CpuFanRpm} rpm";
+            GpuFan.Text = $"{s.GpuFanRpm} rpm";
+
+            ColourByTemperature(CpuTemp, s.CpuTemperatureC);
+            ColourByTemperature(GpuTemp, s.GpuTemperatureC);
+
+            RefreshClocks();
+            _lastSampleAt = s.Timestamp;
+            ShowSubtitle();
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
@@ -2161,22 +2184,6 @@ public partial class MainWindow : Window
         {
             _sampling = false;
         }
-
-        _consecutiveFailures = 0;
-        _lastThermal = s;
-        CarryTheBacklightLevel(s);
-
-        CpuTemp.Text = $"{s.CpuTemperatureC} °C";
-        GpuTemp.Text = $"{s.GpuTemperatureC} °C";
-        CpuFan.Text = $"{s.CpuFanRpm} rpm";
-        GpuFan.Text = $"{s.GpuFanRpm} rpm";
-
-        ColourByTemperature(CpuTemp, s.CpuTemperatureC);
-        ColourByTemperature(GpuTemp, s.GpuTemperatureC);
-
-        RefreshClocks();
-        _lastSampleAt = s.Timestamp;
-        ShowSubtitle();
     }
 
     /// <summary>
@@ -2485,164 +2492,172 @@ public partial class MainWindow : Window
 
     private void StartSlowTimer()
     {
-        var slow = new DispatcherTimer { Interval = VisibleSlowInterval };
-        slow.Tick += async (_, _) =>
+        _slowTimer = new DispatcherTimer { Interval = VisibleSlowInterval };
+        _slowTimer.Tick += async (_, _) =>
         {
-            // Everything below the guard exists to keep the window truthful.
-            // While it is in the notification area there is nothing to keep
-            // truthful, so none of it runs and the timer itself slows down.
-            var onScreen = IsVisible && WindowState != WindowState.Minimized;
-            slow.Interval = onScreen ? VisibleSlowInterval : HiddenIntervalNow();
-
-            if (onScreen)
+            if (_exiting || _sessionEnding) return;
+            try
             {
-                _hiddenTicks = 0;
-                RefreshBanner();
-                ApplyPollInterval();
-                RefreshStorage();
-                if (_theme.PollForChange()) ApplyTheme();
-                await WatchForTheCardBeingSwitched();
-            }
+                // Everything below the guard exists to keep the window truthful.
+                // While it is in the notification area there is nothing to keep
+                // truthful, so none of it runs and the timer itself slows down.
+                var onScreen = IsVisible && WindowState != WindowState.Minimized;
+                _slowTimer.Interval = onScreen ? VisibleSlowInterval : HiddenIntervalNow();
 
-            // Once a minute whether on screen or hidden: check Windows and GPU faults.
-            if (DateTime.UtcNow - _windowsFaultsLookedAt >= TimeSpan.FromMinutes(1))
-            {
-                _windowsFaultsLookedAt = DateTime.UtcNow;
-                WatchWindowsItself();
-            }
-
-            // Once a minute on screen, once every five while hidden: two
-            // registry scans for things that change once in a machine's
-            // life - the vendor's plans going, the vendor's software coming
-            // or going. Nobody is reading the banner they feed while the
-            // window is away.
-            if (DateTime.UtcNow - _registryLookedAt >= (onScreen ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(5)))
-            {
-                _registryLookedAt = DateTime.UtcNow;
-                KeepTheModesPlanAlive();
-                if (_support.Level != SupportLevel.Unsupported)
+                if (onScreen)
                 {
-                    RecommendRemovingVendorSoftwareOnce();
-                    WatchTheVendorComingAndGoing();
-                    WatchTheEssentialDrivers();
+                    _hiddenTicks = 0;
+                    RefreshBanner();
+                    ApplyPollInterval();
+                    RefreshStorage();
+                    if (_theme.PollForChange()) ApplyTheme();
+                    await WatchForTheCardBeingSwitched();
                 }
-            }
 
-            // The overheat warning is the one thing worth a firmware read while
-            // hidden — it is the reason the application stays resident at all.
-            if (!_settings.WarnsAboutHeat && !onScreen) return;
-
-            if (_thermal is null) return;
-
-            // And before paying for one: the two sensors that cost no
-            // interrupt. The processor's own thermal register through
-            // PawnIO, and the card's through NVML. Both a long way below
-            // the thresholds means there is nothing for the warning to say,
-            // and the firmware is left alone entirely - no mailbox write,
-            // no system-management interrupt, nothing stopped.
-            //
-            // A gate, not a replacement: the moment either is anywhere near
-            // the line, the tick goes on to read the controller and decides
-            // on its number, which is the one the window shows.
-            if (!onScreen && NothingNearTheThresholds()) return;
-
-            // Off the user-interface thread for the same reason as Sample: see
-            // the note there. This read is the one that keeps the tray tooltip
-            // and the overheat warning alive while the window is put away.
-            // On screen the fast timer has just read the firmware for the
-            // window; a second read here for the tooltip and the warning
-            // was a third of all mailbox traffic for nothing (12 September
-            // 2026). Use that sample while it is fresh; read only when it
-            // is not - hidden, or the fast timer stalled.
-            // The age is checked at both ends: a sample from the future -
-            // which is what a clock put back looks like - is not a fresh
-            // sample, and the overheat warning is the last thing that
-            // should be reading an hour-old temperature.
-            ThermalSample s;
-            if (_lastThermal is { } recent && DateTimeOffset.Now - recent.Timestamp is { Ticks: >= 0 } age && age < VisibleSlowInterval)
-            {
-                s = recent;
-            }
-            else
-            {
-                var reader = _thermal;
-                try
+                // Once a minute whether on screen or hidden: check Windows and GPU faults.
+                if (DateTime.UtcNow - _windowsFaultsLookedAt >= TimeSpan.FromMinutes(1))
                 {
-                    // Below normal while the window is away: this is a
-                    // background errand on somebody else's machine, and on a
-                    // machine that is hot or busy - the two go together -
-                    // it should lose every tie it is in. It still runs
-                    // promptly; it just never takes a turn from the thing
-                    // in front of the person.
-                    var reading = await Task.Run(() => AtBackgroundPriority(
-                        () => reader.TryRead(out var value) ? value : (ThermalSample?)null));
-                    if (reading is null) return;
-                    s = reading.Value;
+                    _windowsFaultsLookedAt = DateTime.UtcNow;
+                    WatchWindowsItself();
                 }
-                catch (Exception ex) when (ex is not OutOfMemoryException)
+
+                // Once a minute on screen, once every five while hidden: two
+                // registry scans for things that change once in a machine's
+                // life - the vendor's plans going, the vendor's software coming
+                // or going. Nobody is reading the banner they feed while the
+                // window is away.
+                if (DateTime.UtcNow - _registryLookedAt >= (onScreen ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(5)))
                 {
-                    return;
-                }
-            }
-
-            _lastThermal = s;
-            _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
-
-            // Done after the read, so this tick's own leavings are included.
-            if (!onScreen && ++_hiddenTicks >= HiddenTicksPerReclaim)
-            {
-                _hiddenTicks = 0;
-                ReclaimWhileIdle();
-            }
-
-            // Each chip against its own threshold, one balloon at a time.
-            var cpuLimit = _settings.CpuWarningTemperatureC;
-            var gpuLimit = _settings.GpuWarningTemperatureC;
-            var hot = s.CpuTemperatureC >= cpuLimit ? Strings.Get("S.Heat.Cpu", s.CpuTemperatureC)
-                    : s.GpuTemperatureC >= gpuLimit ? Strings.Get("S.Heat.Gpu", s.GpuTemperatureC)
-                    : null;
-            if (_settings.WarnsAboutHeat && hot is not null)
-            {
-                var busy = Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed();
-                var away = Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching();
-                if (busy || away)
-                {
-                    bool cpuHot = s.CpuTemperatureC >= cpuLimit;
-                    bool gpuHot = s.GpuTemperatureC >= gpuLimit;
-                    bool isCpu = cpuHot && (!gpuHot || s.CpuTemperatureC >= s.GpuTemperatureC);
-                    int temp = isCpu ? s.CpuTemperatureC : s.GpuTemperatureC;
-
-                    if (_deferredOverheat is null || temp > _deferredOverheat.MaxTemperatureC)
+                    _registryLookedAt = DateTime.UtcNow;
+                    KeepTheModesPlanAlive();
+                    if (_support.Level != SupportLevel.Unsupported)
                     {
-                        _deferredOverheat = new DeferredOverheat(isCpu, temp, DateTime.UtcNow);
+                        RecommendRemovingVendorSoftwareOnce();
+                        WatchTheVendorComingAndGoing();
+                        WatchTheEssentialDrivers();
+                    }
+                }
+
+                // The overheat warning is the one thing worth a firmware read while
+                // hidden — it is the reason the application stays resident at all.
+                if (!_settings.WarnsAboutHeat && !onScreen) return;
+
+                if (_thermal is null) return;
+
+                // And before paying for one: the two sensors that cost no
+                // interrupt. The processor's own thermal register through
+                // PawnIO, and the card's through NVML. Both a long way below
+                // the thresholds means there is nothing for the warning to say,
+                // and the firmware is left alone entirely - no mailbox write,
+                // no system-management interrupt, nothing stopped.
+                //
+                // A gate, not a replacement: the moment either is anywhere near
+                // the line, the tick goes on to read the controller and decides
+                // on its number, which is the one the window shows.
+                if (!onScreen && NothingNearTheThresholds()) return;
+
+                // Off the user-interface thread for the same reason as Sample: see
+                // the note there. This read is the one that keeps the tray tooltip
+                // and the overheat warning alive while the window is put away.
+                // On screen the fast timer has just read the firmware for the
+                // window; a second read here for the tooltip and the warning
+                // was a third of all mailbox traffic for nothing (12 September
+                // 2026). Use that sample while it is fresh; read only when it
+                // is not - hidden, or the fast timer stalled.
+                // The age is checked at both ends: a sample from the future -
+                // which is what a clock put back looks like - is not a fresh
+                // sample, and the overheat warning is the last thing that
+                // should be reading an hour-old temperature.
+                ThermalSample s;
+                if (_lastThermal is { } recent && DateTimeOffset.Now - recent.Timestamp is { Ticks: >= 0 } age && age < VisibleSlowInterval)
+                {
+                    s = recent;
+                }
+                else
+                {
+                    var reader = _thermal;
+                    try
+                    {
+                        // Below normal while the window is away: this is a
+                        // background errand on somebody else's machine, and on a
+                        // machine that is hot or busy - the two go together -
+                        // it should lose every tie it is in. It still runs
+                        // promptly; it just never takes a turn from the thing
+                        // in front of the person.
+                        var reading = await Task.Run(() => AtBackgroundPriority(
+                            () => reader.TryRead(out var value) ? value : (ThermalSample?)null));
+                        if (reading is null) return;
+                        s = reading.Value;
+                    }
+                    catch (Exception ex) when (ex is not OutOfMemoryException)
+                    {
+                        return;
+                    }
+                }
+
+                _lastThermal = s;
+                _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
+
+                // Done after the read, so this tick's own leavings are included.
+                if (!onScreen && ++_hiddenTicks >= HiddenTicksPerReclaim)
+                {
+                    _hiddenTicks = 0;
+                    ReclaimWhileIdle();
+                }
+
+                // Each chip against its own threshold, one balloon at a time.
+                var cpuLimit = _settings.CpuWarningTemperatureC;
+                var gpuLimit = _settings.GpuWarningTemperatureC;
+                var hot = s.CpuTemperatureC >= cpuLimit ? Strings.Get("S.Heat.Cpu", s.CpuTemperatureC)
+                        : s.GpuTemperatureC >= gpuLimit ? Strings.Get("S.Heat.Gpu", s.GpuTemperatureC)
+                        : null;
+                if (_settings.WarnsAboutHeat && hot is not null)
+                {
+                    var busy = Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed();
+                    var away = Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching();
+                    if (busy || away)
+                    {
+                        bool cpuHot = s.CpuTemperatureC >= cpuLimit;
+                        bool gpuHot = s.GpuTemperatureC >= gpuLimit;
+                        bool isCpu = cpuHot && (!gpuHot || s.CpuTemperatureC >= s.GpuTemperatureC);
+                        int temp = isCpu ? s.CpuTemperatureC : s.GpuTemperatureC;
+
+                        if (_deferredOverheat is null || temp > _deferredOverheat.MaxTemperatureC)
+                        {
+                            _deferredOverheat = new DeferredOverheat(isCpu, temp, DateTime.UtcNow);
+                        }
+                    }
+                    else
+                    {
+                        _deferredOverheat = null;
+                        if (!_overheatNotified)
+                        {
+                            _overheatNotified = true;
+                            _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
+                        }
                     }
                 }
                 else
                 {
-                    _deferredOverheat = null;
-                    if (!_overheatNotified)
+                    if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
                     {
-                        _overheatNotified = true;
-                        _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
+                        // Re-arm only after a clear drop, so the balloon cannot flap.
+                        _overheatNotified = false;
+                    }
+
+                    if (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() &&
+                        !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
+                    {
+                        TryShowDeferredOverheat();
                     }
                 }
             }
-            else
+            catch (Exception ex) when (ex is not OutOfMemoryException)
             {
-                if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
-                {
-                    // Re-arm only after a clear drop, so the balloon cannot flap.
-                    _overheatNotified = false;
-                }
-
-                if (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() &&
-                    !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
-                {
-                    TryShowDeferredOverheat();
-                }
+                Log.Warn("slow-timer", ex.Message);
             }
         };
-        slow.Start();
+        _slowTimer.Start();
     }
 
     /// <summary>

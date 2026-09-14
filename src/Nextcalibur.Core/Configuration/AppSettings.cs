@@ -257,24 +257,29 @@ public sealed class AppSettings
         return settings;
     }
 
+    private static readonly object SaveLock = new();
+
     public void Save()
     {
-        try
+        lock (SaveLock)
         {
-            var dir = System.IO.Path.GetDirectoryName(Path)!;
-            // Not through a link: this process is elevated and the folder is the account's.
-            if (!Security.ProfileFiles.EnsureOrdinaryFolder(dir)) return;
-            // Written beside and moved into place, so a write cut short - the
-            // battery giving out, a forced power-off - leaves the previous file
-            // whole rather than a truncated one that loads as defaults.
-            var temporary = Path + ".tmp";
-            if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
-            File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-            File.Move(temporary, Path, overwrite: true);
-        }
-        catch
-        {
-            // Losing preferences is preferable to crashing on shutdown.
+            try
+            {
+                var dir = System.IO.Path.GetDirectoryName(Path)!;
+                // Not through a link: this process is elevated and the folder is the account's.
+                if (!Security.ProfileFiles.EnsureOrdinaryFolder(dir)) return;
+                // Written beside and moved into place, so a write cut short - the
+                // battery giving out, a forced power-off - leaves the previous file
+                // whole rather than a truncated one that loads as defaults.
+                var temporary = Path + ".tmp";
+                if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
+                File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+                File.Move(temporary, Path, overwrite: true);
+            }
+            catch
+            {
+                // Losing preferences is preferable to crashing on shutdown.
+            }
         }
     }
 }

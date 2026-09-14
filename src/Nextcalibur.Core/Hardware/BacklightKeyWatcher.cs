@@ -35,8 +35,17 @@ public sealed class BacklightKeyWatcher : IDisposable
 
     private void OnEvent(object sender, EventArrivedEventArgs e)
     {
-        if (e.NewEvent["EventDetail"] is not byte[] { Length: > 0 } detail) return;
-        if (Parse(detail[0]) is { } level) LevelChanged?.Invoke(level);
+        try
+        {
+            using (e.NewEvent)
+            {
+                if (e.NewEvent?["EventDetail"] is not byte[] { Length: > 0 } detail) return;
+                if (Parse(detail[0]) is { } level) LevelChanged?.Invoke(level);
+            }
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+        }
     }
 
     /// <summary>The first byte as a level, or null for anything not measured.</summary>

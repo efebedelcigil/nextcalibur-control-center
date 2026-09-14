@@ -317,7 +317,6 @@ public sealed class TrayPresence : IDisposable
             var exe = Environment.ProcessPath
                 ?? throw new InvalidOperationException("Could not determine the executable path.");
             StartupRegistration.Set(_startupItem.Checked, exe);
-            _settings.StartMinimised = _startupItem.Checked;
             _settings.Save();
             SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -332,7 +331,7 @@ public sealed class TrayPresence : IDisposable
 
     private static Icon LoadIcon()
     {
-        var stream = Application.GetResourceStream(
+        using var stream = Application.GetResourceStream(
             new Uri("pack://application:,,,/Assets/app.ico"))?.Stream;
 
         // SystemIcons.Application is a shared instance and must not be disposed,
@@ -345,6 +344,7 @@ public sealed class TrayPresence : IDisposable
         if (_disposed) return;
         _disposed = true;
         _icon.Visible = false;
+        _icon.ContextMenuStrip?.Dispose();
         _icon.Dispose();
     }
 }

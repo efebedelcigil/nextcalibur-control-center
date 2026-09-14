@@ -518,8 +518,7 @@ public static class WindowsFaults
             {
                 if (IsWindowVisible(hWnd))
                 {
-                    GetWindowThreadProcessId(hWnd, out var windowPid);
-                    if (windowPid == (uint)pid)
+                    if (GetWindowThreadProcessId(hWnd, out var windowPid) != 0 && windowPid == (uint)pid)
                     {
                         found = true;
                         return false;
@@ -539,7 +538,10 @@ public static class WindowsFaults
     {
         try
         {
-            return Process.GetProcessesByName("PhoneExperienceHost").Length > 0;
+            var processes = Process.GetProcessesByName("PhoneExperienceHost");
+            var running = processes.Length > 0;
+            foreach (var p in processes) p.Dispose();
+            return running;
         }
         catch (Exception)
         {

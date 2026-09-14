@@ -82,7 +82,8 @@ public sealed class CpuClockReader : IDisposable
             try
             {
                 using var searcher = new ManagementObjectSearcher("SELECT MaxClockSpeed FROM Win32_Processor");
-                foreach (ManagementObject cpu in searcher.Get())
+                using var results = searcher.Get();
+                foreach (ManagementObject cpu in results)
                 {
                     using (cpu)
                     {

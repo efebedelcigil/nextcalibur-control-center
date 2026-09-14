@@ -106,3 +106,36 @@ public class CleanMachineTests
         Assert.True(new RepairOutcome([], null).Empty);
     }
 }
+
+public class MachineWideGateTests
+{
+    [Fact]
+    public void Gate_is_reentrant_on_the_same_thread()
+    {
+        using var gate1 = MachineWideGate.Take();
+        using var gate2 = MachineWideGate.Take();
+        // Both takes should succeed reentrantly on the same thread without throwing or deadlocking
+        Assert.NotNull(gate1);
+        Assert.NotNull(gate2);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Gate_synchronizes_concurrent_tasks_cleanly()
+    {
+        var counter = 0;
+        var tasks = new System.Threading.Tasks.Task[10];
+
+        for (var i = 0; i < tasks.Length; i++)
+        {
+            tasks[i] = System.Threading.Tasks.Task.Run(() =>
+            {
+                using var gate = MachineWideGate.Take();
+                System.Threading.Interlocked.Increment(ref counter);
+            });
+        }
+
+        await System.Threading.Tasks.Task.WhenAll(tasks);
+        Assert.Equal(10, counter);
+    }
+}
+

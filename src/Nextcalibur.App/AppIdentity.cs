@@ -102,40 +102,54 @@ public static class AppIdentity
     private static bool PointsInto(string linkPath, string installRoot)
     {
         var shellLink = (IShellLinkW)new ShellLink();
-        ((IPersistFile)shellLink).Load(linkPath, 0 /* STGM_READ */);
-        var target = new System.Text.StringBuilder(1024);
-        shellLink.GetPath(target, target.Capacity, IntPtr.Zero, 0);
-        return target.ToString().StartsWith(installRoot, StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            ((IPersistFile)shellLink).Load(linkPath, 0 /* STGM_READ */);
+            var target = new System.Text.StringBuilder(1024);
+            shellLink.GetPath(target, target.Capacity, IntPtr.Zero, 0);
+            return target.ToString().StartsWith(installRoot, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            Marshal.FinalReleaseComObject(shellLink);
+        }
     }
 
     private static void StampIfOurs(string linkPath, string installRoot)
     {
         var shellLink = (IShellLinkW)new ShellLink();
-        var persist = (IPersistFile)shellLink;
-        persist.Load(linkPath, 2 /* STGM_READWRITE */);
-
-        var target = new System.Text.StringBuilder(1024);
-        shellLink.GetPath(target, target.Capacity, IntPtr.Zero, 0);
-        if (!target.ToString().StartsWith(installRoot, StringComparison.OrdinalIgnoreCase)) return;
-
-        var store = (IPropertyStore)shellLink;
-        var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5); // System.AppUserModel.ID
-
-        store.GetValue(ref key, out var current);
-        var existing = current.vt == 31 /* VT_LPWSTR */ ? Marshal.PtrToStringUni(current.p) : null;
-        PropVariantClear(ref current);
-        if (existing == Id) return;
-
-        var value = new PropVariant { vt = 31, p = Marshal.StringToCoTaskMemUni(Id) };
         try
         {
-            store.SetValue(ref key, ref value);
-            store.Commit();
-            persist.Save(linkPath, true);
+            var persist = (IPersistFile)shellLink;
+            persist.Load(linkPath, 2 /* STGM_READWRITE */);
+
+            var target = new System.Text.StringBuilder(1024);
+            shellLink.GetPath(target, target.Capacity, IntPtr.Zero, 0);
+            if (!target.ToString().StartsWith(installRoot, StringComparison.OrdinalIgnoreCase)) return;
+
+            var store = (IPropertyStore)shellLink;
+            var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5); // System.AppUserModel.ID
+
+            store.GetValue(ref key, out var current);
+            var existing = current.vt == 31 /* VT_LPWSTR */ ? Marshal.PtrToStringUni(current.p) : null;
+            PropVariantClear(ref current);
+            if (existing == Id) return;
+
+            var value = new PropVariant { vt = 31, p = Marshal.StringToCoTaskMemUni(Id) };
+            try
+            {
+                store.SetValue(ref key, ref value);
+                store.Commit();
+                persist.Save(linkPath, true);
+            }
+            finally
+            {
+                PropVariantClear(ref value);
+            }
         }
         finally
         {
-            PropVariantClear(ref value);
+            Marshal.FinalReleaseComObject(shellLink);
         }
     }
 
