@@ -15,11 +15,23 @@ namespace Nextcalibur.Core.Hardware;
 public static class UserPresence
 {
     private static DateTime _lastSessionUnlockUtc = DateTime.MinValue;
+    private static bool _isSessionLocked;
 
     /// <summary>Records the timestamp when the user unlocked their Windows session.</summary>
     public static void RecordSessionUnlock()
     {
+        _isSessionLocked = false;
         _lastSessionUnlockUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>Records whether the Windows session is currently locked.</summary>
+    public static void RecordSessionLock(bool locked)
+    {
+        _isSessionLocked = locked;
+        if (!locked)
+        {
+            _lastSessionUnlockUtc = DateTime.UtcNow;
+        }
     }
 
     /// <summary>Returns true if the user unlocked their session within the specified window.</summary>
@@ -29,12 +41,10 @@ public static class UserPresence
     }
 
     /// <summary>
-    /// True while a game or a presentation has the screen, an application has
-    /// asked not to be interrupted, the session is locked / not present, or the
-    /// session was unlocked within the last two minutes. Nothing that costs
-    /// network, disk or attention should happen while this is true; the
-    /// readings carry on, because they are local and the tray tooltip is
-    /// what somebody alt-tabs to see.
+    /// True while the person is here and using the machine in a state where
+    /// interruptions are unwelcome: a game or presentation has the screen, an
+    /// application has asked not to be interrupted, or the session was unlocked
+    /// within the last two minutes. Show nothing, cost them nothing.
     /// </summary>
     public static bool WouldRatherNotBeDisturbed()
     {
@@ -45,8 +55,27 @@ public static class UserPresence
             if (SHQueryUserNotificationState(out var state) != 0) return false;
             return state is NotificationState.Busy
                 or NotificationState.RunningDirect3dFullScreen
-                or NotificationState.PresentationMode
-                or NotificationState.NotPresent;
+                or NotificationState.PresentationMode;
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// True when nobody is at the machine: the session is locked or a screen saver is running.
+    /// Quiet work (such as checking for updates or trimming memory under pressure) is welcome,
+    /// but notifications and visual reports should stand down.
+    /// </summary>
+    public static bool NobodyIsWatching()
+    {
+        if (_isSessionLocked) return true;
+
+        try
+        {
+            if (SHQueryUserNotificationState(out var state) != 0) return false;
+            return state is NotificationState.NotPresent;
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

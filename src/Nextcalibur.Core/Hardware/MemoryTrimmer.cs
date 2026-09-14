@@ -87,7 +87,7 @@ public static class MemoryTrimmer
     /// </summary>
     public static long TrimIfExceeds(string processName, long minWorkingSetBytes, long? extremeWorkingSetBytes = null)
     {
-        if (UserPresence.WouldRatherNotBeDisturbed() || UserPresence.WasRecentlyUnlocked(TimeSpan.FromMinutes(2)))
+        if (UserPresence.WouldRatherNotBeDisturbed())
         {
             return 0;
         }

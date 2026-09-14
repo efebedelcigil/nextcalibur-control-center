@@ -1046,9 +1046,13 @@ public partial class MainWindow : Window
 
     private void OnSessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
     {
-        if (e.Reason is Microsoft.Win32.SessionSwitchReason.SessionUnlock)
+        if (e.Reason is Microsoft.Win32.SessionSwitchReason.SessionLock)
         {
-            UserPresence.RecordSessionUnlock();
+            UserPresence.RecordSessionLock(true);
+        }
+        else if (e.Reason is Microsoft.Win32.SessionSwitchReason.SessionUnlock)
+        {
+            UserPresence.RecordSessionLock(false);
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
         }
     }
@@ -2298,11 +2302,14 @@ public partial class MainWindow : Window
         foreach (var fault in Nextcalibur.Core.Hardware.WindowsFaults.Check(mayAct: true))
         {
             var title = Strings.Get(fault.Fixed ? "S.WindowsFault.Fixed" : "S.WindowsFault.Found");
-            if (!Toasts.TryShow(title, fault.What, Strings.Get("S.Dialog.OK"), () => { }))
-                _tray?.ShowMessage(title, fault.What);
+            if (!UserPresence.WouldRatherNotBeDisturbed() && !UserPresence.NobodyIsWatching())
+            {
+                if (!Toasts.TryShow(title, fault.What, Strings.Get("S.Dialog.OK"), () => { }))
+                    _tray?.ShowMessage(title, fault.What);
+            }
         }
 
-        // Memory trimming when not in game / undisturbed
+        // Memory trimming when not in game / undisturbed (allowed while nobody is watching / locked)
         if (!UserPresence.WouldRatherNotBeDisturbed())
         {
             if (_settings.TrimDwmMemory)
@@ -2311,10 +2318,10 @@ public partial class MainWindow : Window
                 Nextcalibur.Core.Hardware.MemoryTrimmer.TrimIfExceeds("explorer", 1228L * 1024 * 1024);
         }
 
-        // §26, §28: The graphics card held awake at full clocks with nothing to draw.
+        // §26, §28, §30: The graphics card held awake at full clocks with nothing to draw.
         // Controlled under the same switch, touches nothing on the card.
-        // Suppress and reset when in UMA mode, discrete card is off, user is in a full-screen game, or toggle disabled.
-        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed())
+        // Suppress and reset when in UMA mode, discrete card is off, user is undisturbed, or nobody is watching.
+        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed() || UserPresence.NobodyIsWatching())
         {
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;
@@ -2422,7 +2429,7 @@ public partial class MainWindow : Window
         // which is a frame in somebody's game. Windows suppresses our
         // notification in that state anyway, so the reads are only keeping
         // watch until they come back out.
-        return _overheatNotified || Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed()
+        return _overheatNotified || Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching()
             ? HiddenHotInterval
             : HiddenInterval;
     }
@@ -2547,7 +2554,7 @@ public partial class MainWindow : Window
                     : null;
             if (_settings.WarnsAboutHeat && hot is not null)
             {
-                if (!_overheatNotified)
+                if (!_overheatNotified && !Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
                 {
                     _overheatNotified = true;
                     _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));

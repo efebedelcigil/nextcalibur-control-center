@@ -77,11 +77,16 @@ public static class Footprint
                 // before they ever installed us.
                 KeepingIsReasonable: true),
             new(Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"),
-                NduFix.IsNduModified(),
+                NduFix.IsNduDisabled(),
                 NeedsElevation: true,
                 // A fix to Windows network driver rather than part of this application.
                 // Asked before undoing so the user can choose to keep it.
                 KeepingIsReasonable: true),
+            new(Words.Get("S.Core.Trace.NduMarker", "The NDU backup registry value"),
+                NduFix.HasBackupMarker(),
+                NeedsElevation: true,
+                // Our marker in a Windows key. Deleted at uninstall either way.
+                KeepingIsReasonable: false),
         };
 
         return traces;
@@ -153,6 +158,10 @@ public static class Footprint
                 InstallFolderGuard.Release(root);
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException) { }
+
+        // The marker we leave in Windows' own key is ours and must be deleted either way.
+        try { NduFix.RemoveBackupMarker(); }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
 
         if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }

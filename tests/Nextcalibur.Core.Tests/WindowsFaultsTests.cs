@@ -453,7 +453,10 @@ public class WindowsFaultsTests
     [Fact]
     public void UserPresence_session_unlock_triggers_standdown()
     {
-        UserPresence.RecordSessionUnlock();
+        UserPresence.RecordSessionLock(true);
+        Assert.True(UserPresence.NobodyIsWatching());
+
+        UserPresence.RecordSessionLock(false);
         Assert.True(UserPresence.WasRecentlyUnlocked(TimeSpan.FromMinutes(1)));
         Assert.True(UserPresence.WouldRatherNotBeDisturbed());
     }
@@ -470,9 +473,10 @@ public class WindowsFaultsTests
     }
 
     [Fact]
-    public void Footprint_survey_contains_ndu_trace()
+    public void Footprint_survey_contains_ndu_and_ndu_marker_traces()
     {
         var traces = Footprint.Survey();
         Assert.Contains(traces, t => t.KeepingIsReasonable && t.NeedsElevation && t.Name == Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"));
+        Assert.Contains(traces, t => !t.KeepingIsReasonable && t.NeedsElevation && t.Name == Words.Get("S.Core.Trace.NduMarker", "The NDU backup registry value"));
     }
 }

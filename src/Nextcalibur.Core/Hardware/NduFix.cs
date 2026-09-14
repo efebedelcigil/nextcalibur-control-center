@@ -28,8 +28,11 @@ public static class NduFix
         }
     }
 
-    /// <summary>Returns true if Nextcalibur has modified the NDU driver state.</summary>
-    public static bool IsNduModified()
+    /// <summary>Returns true if Nextcalibur has modified the NDU driver state (or the backup marker exists).</summary>
+    public static bool IsNduModified() => HasBackupMarker();
+
+    /// <summary>Returns true if Nextcalibur's backup marker exists in the registry.</summary>
+    public static bool HasBackupMarker()
     {
         try
         {
@@ -38,6 +41,24 @@ public static class NduFix
         }
         catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
         {
+            return false;
+        }
+    }
+
+    /// <summary>Deletes Nextcalibur's backup marker from the registry without altering the Start value.</summary>
+    public static bool RemoveBackupMarker()
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(KeyPath, true);
+            if (key is null) return false;
+            key.DeleteValue(BackupValueName, throwOnMissingValue: false);
+            Log.Info("registry", "Removed NDU backup marker from registry");
+            return true;
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+        {
+            Log.Warn("registry", $"Failed to delete NDU backup marker: {ex.Message}");
             return false;
         }
     }
