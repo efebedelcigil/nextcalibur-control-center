@@ -142,6 +142,22 @@ Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check
 ; The engine, carried inside and run once.
 Source: "..\releases\Nextcalibur-win-Setup.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
+[Registry]
+; Windows Add/Remove Programs (Installed Apps / Control Panel) registration.
+; Under Program Files (machine-wide), Windows expects the uninstaller in HKLM.
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayName"; ValueData: "{#AppName}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayVersion"; ValueData: "{#AppVersion}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "Publisher"; ValueData: "{#Publisher}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "DisplayIcon"; ValueData: "{app}\current\Nextcalibur.exe,0"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "InstallLocation"; ValueData: "{app}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "UninstallString"; ValueData: """{app}\Update.exe"" uninstall"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "QuietUninstallString"; ValueData: """{app}\Update.exe"" uninstall -s"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "URLInfoAbout"; ValueData: "{#Url}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: string; ValueName: "HelpLink"; ValueData: "{#Url}/issues"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "NoModify"; ValueData: 1; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "NoRepair"; ValueData: 1; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur"; ValueType: dword; ValueName: "EstimatedSize"; ValueData: 35000; Flags: uninsdeletekey
+
 [INI]
 ; The application reads this on its first run, registers (or not) its logon
 ; task accordingly, and deletes the file. Written after Velopack has made the
@@ -375,9 +391,14 @@ begin
     Result := False;
     exit;
   end;
-  if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
+  Where := '';
+  if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
+    RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where);
+
+  if Where <> '' then
   begin
-    RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
+    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version) then
+      RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
     if MsgBox(FmtMessage(CustomMessage('AlreadyInstalledRepair'), [Version, Where]), mbConfirmation, MB_YESNO) = IDYES then
       RepairDir := Where
     else

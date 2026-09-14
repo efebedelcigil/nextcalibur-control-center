@@ -217,6 +217,7 @@ public partial class App : Application
         if (self is not null)
         {
             Elevation.RegisterOpenTask(self);
+            Footprint.EnsureUninstallRegistration(self);
 
             // An installed copy in the profile (the earlier versions' place)
             // is put out of the account's reach; see InstallFolderGuard. Only

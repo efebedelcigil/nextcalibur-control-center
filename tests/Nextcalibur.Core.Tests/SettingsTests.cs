@@ -183,6 +183,14 @@ public class FootprintTests
     }
 
     [Fact]
+    public void Survey_includes_windows_uninstall_registration()
+    {
+        var trace = Footprint.Survey().Single(t => t.Name.Contains("Windows Installed Apps registration"));
+        Assert.True(trace.NeedsElevation);
+        Assert.False(trace.KeepingIsReasonable);
+    }
+
+    [Fact]
     public void Every_entry_on_retirement_list_has_detection_and_removal()
     {
         var entries = Footprint.Retirements();

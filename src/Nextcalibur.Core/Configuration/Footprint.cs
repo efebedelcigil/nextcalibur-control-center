@@ -274,6 +274,10 @@ public static class Footprint
                 NeedsElevation: true,
                 // Our marker in a Windows key. Deleted at uninstall either way.
                 KeepingIsReasonable: false),
+            new(Words.Get("S.Core.Trace.UninstallKey", "The Windows Installed Apps registration"),
+                IsUninstallRegistered(),
+                NeedsElevation: true,
+                KeepingIsReasonable: false),
         };
 
         return traces;
@@ -346,6 +350,14 @@ public static class Footprint
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException) { }
 
+        // Remove the Windows Installed Apps / Control Panel uninstall registration.
+        try
+        {
+            Registry.LocalMachine.DeleteSubKeyTree(UninstallRegKey, throwOnMissingSubKey: false);
+            Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur", throwOnMissingSubKey: false);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
+
         // The marker we leave in Windows' own key is ours and must be deleted either way.
         try { NduFix.RemoveBackupMarker(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
@@ -360,6 +372,62 @@ public static class Footprint
 
         try { NduFix.RestoreOriginal(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+    }
+
+    public const string UninstallRegKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur";
+
+    /// <summary>
+    /// Checks whether Nextcalibur is registered in Windows' Add/Remove Programs.
+    /// </summary>
+    public static bool IsUninstallRegistered()
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(UninstallRegKey);
+            return key?.GetValue("UninstallString") is not null;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Ensures that an elevated copy under Program Files is registered in
+    /// Windows' Add/Remove Programs (Installed Apps / Control Panel).
+    /// </summary>
+    public static void EnsureUninstallRegistration(string? executablePath)
+    {
+        if (executablePath is null) return;
+        var root = InstallFolderGuard.RootOf(executablePath);
+        if (root is null || !InstallFolderGuard.IsUnderProgramFiles(root)) return;
+        if (!Elevation.IsElevated()) return;
+
+        try
+        {
+            using var key = Registry.LocalMachine.CreateSubKey(UninstallRegKey);
+            if (key is null) return;
+
+            var version = typeof(Footprint).Assembly.GetName().Version?.ToString(3) ?? "0.5.6";
+            var updateExe = Path.Combine(root, "Update.exe");
+            if (!File.Exists(updateExe)) return;
+
+            key.SetValue("DisplayName", "Nextcalibur Control Center");
+            key.SetValue("DisplayVersion", version);
+            key.SetValue("Publisher", "Efe Bedelcigil");
+            key.SetValue("InstallLocation", root);
+            key.SetValue("DisplayIcon", $"{executablePath},0");
+            key.SetValue("UninstallString", $"\"{updateExe}\" uninstall");
+            key.SetValue("QuietUninstallString", $"\"{updateExe}\" uninstall -s");
+            key.SetValue("URLInfoAbout", "https://github.com/efebedelcigil/nextcalibur-control-center");
+            key.SetValue("HelpLink", "https://github.com/efebedelcigil/nextcalibur-control-center/issues");
+            key.SetValue("NoModify", 1, RegistryValueKind.DWord);
+            key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
+            key.SetValue("EstimatedSize", 35000, RegistryValueKind.DWord);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException)
+        {
+        }
     }
 
     private static string SettingsPath => Path.Combine(

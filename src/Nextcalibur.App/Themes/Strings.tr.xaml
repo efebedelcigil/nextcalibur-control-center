@@ -345,6 +345,7 @@
     <sys:String x:Key="S.Core.Trace.Repair">Windows güç modu onarımı</sys:String>
     <sys:String x:Key="S.Core.Trace.Ndu">NDU ağ sürücüsü onarımı</sys:String>
     <sys:String x:Key="S.Core.Trace.NduMarker">NDU yedek kayıt defteri değeri</sys:String>
+    <sys:String x:Key="S.Core.Trace.UninstallKey">Windows Yüklü Uygulamalar kaydı</sys:String>
 
     <!-- Kütüphaneden: PawnIO sürücüsü -->
     <sys:String x:Key="S.Core.PawnIo.Name">PawnIO sürücüsü</sys:String>

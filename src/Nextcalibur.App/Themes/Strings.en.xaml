@@ -347,6 +347,7 @@
     <sys:String x:Key="S.Core.Trace.Repair">The Windows power-mode repair</sys:String>
     <sys:String x:Key="S.Core.Trace.Ndu">The NDU network driver fix</sys:String>
     <sys:String x:Key="S.Core.Trace.NduMarker">The NDU backup registry value</sys:String>
+    <sys:String x:Key="S.Core.Trace.UninstallKey">The Windows Installed Apps registration</sys:String>
 
     <!-- From the library: the PawnIO driver -->
     <sys:String x:Key="S.Core.PawnIo.Name">PawnIO driver</sys:String>
