@@ -90,7 +90,7 @@ public sealed class UpdateService : IDisposable
                 // update is worth. Windows is asked, rather than guessed at, and
                 // the next look is soon rather than in six hours so the end of
                 // the session is not missed.
-                if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed())
+                if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
                 {
                     _timer.Interval = WhileBusyDelay;
                     return;

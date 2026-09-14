@@ -188,3 +188,18 @@ public class HardwareSupportTests
         Assert.True(verdict.AllowsWrites == (verdict.Level == SupportLevel.Supported));
     }
 }
+
+public class GpuAwakeFaultConditionTests
+{
+    [Theory]
+    [InlineData(0, 0, 15.0, false, true)]
+    [InlineData(1, 4, 11.0, false, true)]
+    [InlineData(8, 0, 15.0, false, false)]
+    [InlineData(0, 10, 15.0, false, false)]
+    [InlineData(0, 0, 8.0, false, false)]
+    [InlineData(0, 0, 15.0, true, false)]
+    public void GpuAwakeFault_identifies_true_stuck_awake_conditions(int pState, int util, double watts, bool displayActive, bool expected)
+    {
+        Assert.Equal(expected, GpuClockReader.IsGpuAwakeFaultCondition(pState, util, watts, displayActive));
+    }
+}

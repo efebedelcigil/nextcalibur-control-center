@@ -171,6 +171,14 @@ public partial class MainWindow : Window
         Loaded += OnLoaded;
         ContentRendered += (_, _) => HasRendered = true;
         StateChanged += OnStateChanged;
+        Activated += (_, _) =>
+        {
+            if (_slowTimer is not null && IsVisible && WindowState != WindowState.Minimized)
+            {
+                _slowTimer.Interval = VisibleSlowInterval;
+            }
+            SyncSamplingToScreen();
+        };
 
         // Not StateChanged: closing to the tray hides the window rather than
         // minimising it, so the state never changes and the handler never runs.
@@ -612,6 +620,7 @@ public partial class MainWindow : Window
     private bool ReadingsAreOnScreen()
     {
         if (!IsVisible || WindowState == WindowState.Minimized) return false;
+        if (!IsActive && (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())) return false;
         if (PageLighting is { Visibility: Visibility.Visible }) return false;
         if (PageSettings is { Visibility: Visibility.Visible }) return false;
         return true;
@@ -2134,6 +2143,11 @@ public partial class MainWindow : Window
     private async void Sample()
     {
         if (_thermal is null || _sampling) return;
+        if (!ReadingsAreOnScreen())
+        {
+            _timer.Stop();
+            return;
+        }
 
         ThermalSample s;
         var reader = _thermal;
@@ -2376,8 +2390,8 @@ public partial class MainWindow : Window
 
         // §26, §28, §30: The graphics card held awake at full clocks with nothing to draw.
         // Controlled under the same switch, touches nothing on the card.
-        // Suppress and reset when in UMA mode, discrete card is off, user is undisturbed, or nobody is watching.
-        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || UserPresence.WouldRatherNotBeDisturbed() || UserPresence.NobodyIsWatching())
+        // Suppress and reset when in UMA mode, discrete card is off, discrete card is asleep, user is undisturbed, or nobody is watching.
+        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || !CardIsAwakeNow() || UserPresence.WouldRatherNotBeDisturbed() || UserPresence.NobodyIsWatching())
         {
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;
@@ -2438,9 +2452,9 @@ public partial class MainWindow : Window
         if (cpu is null || cpu >= _settings.CpuWarningTemperatureC - CheapGateMarginC) return false;
 
         // The card: a reading that is near the line stops the gate, and no
-        // reading at all is fine - a card that NVML cannot see is a card
-        // that is asleep or switched off, and neither overheats.
-        var gpu = _gpuClock.ReadTemperatureC();
+        // reading at all is fine - a card that NVML cannot see or is asleep
+        // is not overheating. Never touch NVML if asleep, to avoid waking it.
+        var gpu = CardIsAwakeNow() ? _gpuClock.ReadTemperatureC() : null;
         if (gpu is not null && gpu >= _settings.GpuWarningTemperatureC - CheapGateMarginC) return false;
 
         return true;
@@ -2499,9 +2513,9 @@ public partial class MainWindow : Window
             try
             {
                 // Everything below the guard exists to keep the window truthful.
-                // While it is in the notification area there is nothing to keep
-                // truthful, so none of it runs and the timer itself slows down.
-                var onScreen = IsVisible && WindowState != WindowState.Minimized;
+                // While it is in the notification area or when undisturbed/nobody watching,
+                // there is nothing to keep truthful, so none of it runs and the timer itself slows down.
+                var onScreen = IsVisible && WindowState != WindowState.Minimized && (IsActive || (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching()));
                 _slowTimer.Interval = onScreen ? VisibleSlowInterval : HiddenIntervalNow();
 
                 if (onScreen)
@@ -2509,9 +2523,14 @@ public partial class MainWindow : Window
                     _hiddenTicks = 0;
                     RefreshBanner();
                     ApplyPollInterval();
+                    SyncSamplingToScreen();
                     RefreshStorage();
                     if (_theme.PollForChange()) ApplyTheme();
                     await WatchForTheCardBeingSwitched();
+                }
+                else
+                {
+                    if (_timer.IsEnabled) _timer.Stop();
                 }
 
                 // Once a minute whether on screen or hidden: check Windows and GPU faults.
