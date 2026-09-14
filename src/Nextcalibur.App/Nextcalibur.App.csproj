@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -57,7 +57,7 @@
     <Company>Efe Bedelcigil</Company>
     <Authors>Efe Bedelcigil</Authors>
     <Copyright>Efe Bedelcigil, MIT licence</Copyright>
-    <Version>0.5.4</Version>
+    <Version>0.5.5</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
 
