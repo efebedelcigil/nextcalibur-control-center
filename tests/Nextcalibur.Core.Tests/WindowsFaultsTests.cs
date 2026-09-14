@@ -4,6 +4,14 @@ using Xunit;
 
 namespace Nextcalibur.Core.Tests;
 
+/// <summary>
+/// In the "log" collection with <c>LogInjectionTests</c>, and not because
+/// it tests logging: the log's folder is a static, and those tests point
+/// it at a temporary one while they count the lines they wrote. Anything
+/// logging from another class at that moment lands in their file and is
+/// counted as theirs. The retirement pass logs.
+/// </summary>
+[Collection("log")]
 public class WindowsFaultsTests
 {
     private static FaultEvidence ValidEvidence() => new(

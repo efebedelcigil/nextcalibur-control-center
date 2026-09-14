@@ -13,6 +13,14 @@ namespace Nextcalibur.Core.Tests;
 /// is exactly one way to switch it off, and switching it off must not lose what
 /// it was set to.
 /// </summary>
+/// <summary>
+/// In the "log" collection with <c>LogInjectionTests</c>, and not because
+/// it tests logging: the log's folder is a static, and those tests point
+/// it at a temporary one while they count the lines they wrote. Anything
+/// logging from another class at that moment lands in their file and is
+/// counted as theirs. The retirement pass logs.
+/// </summary>
+[Collection("log")]
 public class SettingsTests
 {
     [Fact]
