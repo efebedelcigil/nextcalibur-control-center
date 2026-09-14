@@ -96,4 +96,23 @@ public class StringsDictionaryTests
             foreach (var (key, text) in Keys(file))
                 Assert.False(string.IsNullOrWhiteSpace(text), $"{file}: {key} is empty");
     }
+
+    [Fact]
+    public void Heat_while_away_formats_correctly()
+    {
+        var en = Keys("Strings.en.xaml");
+        var tr = Keys("Strings.tr.xaml");
+
+        var enText = string.Format(en["S.Heat.WhileAway"], 97, en["S.Heat.ChipCpu"]);
+        Assert.Equal("While you were away the processor reached 97 °C", enText);
+
+        var trText = string.Format(tr["S.Heat.WhileAway"], 97, tr["S.Heat.ChipCpu"]);
+        Assert.Equal("Siz yokken işlemci 97 °C'ye ulaştı", trText);
+
+        var enGpu = string.Format(en["S.Heat.WhileAway"], 88, en["S.Heat.ChipGpu"]);
+        Assert.Equal("While you were away the graphics card reached 88 °C", enGpu);
+
+        var trGpu = string.Format(tr["S.Heat.WhileAway"], 88, tr["S.Heat.ChipGpu"]);
+        Assert.Equal("Siz yokken ekran kartı 88 °C'ye ulaştı", trGpu);
+    }
 }

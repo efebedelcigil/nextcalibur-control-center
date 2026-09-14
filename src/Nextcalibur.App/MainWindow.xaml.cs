@@ -110,6 +110,8 @@ public partial class MainWindow : Window
     private ThermalSample? _lastThermal;
 
     private bool _overheatNotified;
+    private sealed record DeferredOverheat(bool IsCpu, int MaxTemperatureC, DateTime TimestampUtc);
+    private DeferredOverheat? _deferredOverheat;
     private bool _mailboxFailed;
 
     /// <summary>What this machine has been judged able to use. See <see cref="HardwareSupport"/>.</summary>
@@ -173,7 +175,11 @@ public partial class MainWindow : Window
         // minimising it, so the state never changes and the handler never runs.
         IsVisibleChanged += (_, e) =>
         {
-            if (e.NewValue is true) RefreshLightingFromHardware();
+            if (e.NewValue is true)
+            {
+                RefreshLightingFromHardware();
+                TryShowDeferredOverheat();
+            }
             // Hide-to-tray stops the sampling; Show from the tray leaves the
             // window state where it was, so StateChanged never fires and the
             // readings stayed frozen until the next minimise (found 12
@@ -565,6 +571,8 @@ public partial class MainWindow : Window
     private void OnStateChanged(object? sender, EventArgs e)
     {
         KeepMinimiseBox();
+        if (WindowState != WindowState.Minimized)
+            TryShowDeferredOverheat();
         SyncSamplingToScreen();
     }
 
@@ -1054,6 +1062,7 @@ public partial class MainWindow : Window
         {
             UserPresence.RecordSessionLock(false);
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
+            Dispatcher.InvokeAsync(TryShowDeferredOverheat);
         }
     }
 
@@ -2554,19 +2563,74 @@ public partial class MainWindow : Window
                     : null;
             if (_settings.WarnsAboutHeat && hot is not null)
             {
-                if (!_overheatNotified && !Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
+                var busy = Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed();
+                var away = Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching();
+                if (busy || away)
                 {
-                    _overheatNotified = true;
-                    _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
+                    bool cpuHot = s.CpuTemperatureC >= cpuLimit;
+                    bool gpuHot = s.GpuTemperatureC >= gpuLimit;
+                    bool isCpu = cpuHot && (!gpuHot || s.CpuTemperatureC >= s.GpuTemperatureC);
+                    int temp = isCpu ? s.CpuTemperatureC : s.GpuTemperatureC;
+
+                    if (_deferredOverheat is null || temp > _deferredOverheat.MaxTemperatureC)
+                    {
+                        _deferredOverheat = new DeferredOverheat(isCpu, temp, DateTime.UtcNow);
+                    }
+                }
+                else
+                {
+                    _deferredOverheat = null;
+                    if (!_overheatNotified)
+                    {
+                        _overheatNotified = true;
+                        _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
+                    }
                 }
             }
-            else if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
+            else
             {
-                // Re-arm only after a clear drop, so the balloon cannot flap.
-                _overheatNotified = false;
+                if (s.CpuTemperatureC < cpuLimit - 8 && s.GpuTemperatureC < gpuLimit - 8)
+                {
+                    // Re-arm only after a clear drop, so the balloon cannot flap.
+                    _overheatNotified = false;
+                }
+
+                if (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() &&
+                    !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
+                {
+                    TryShowDeferredOverheat();
+                }
             }
         };
         slow.Start();
+    }
+
+    /// <summary>
+    /// If the machine overheated while the session was locked or the person was
+    /// otherwise unreachable, report the highest temperature reached once
+    /// someone is here again. Clears without reporting if older than three hours.
+    /// </summary>
+    private void TryShowDeferredOverheat()
+    {
+        if (!_settings.WarnsAboutHeat || _deferredOverheat is null) return;
+
+        var overheat = _deferredOverheat;
+        _deferredOverheat = null;
+
+        // Clear without showing if older than 3 hours.
+        if (DateTime.UtcNow - overheat.TimestampUtc > TimeSpan.FromHours(3))
+            return;
+
+        // If nobody is watching (e.g. still locked or screen saver), keep it for later.
+        if (Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())
+        {
+            _deferredOverheat = overheat;
+            return;
+        }
+
+        var chipName = Strings.Get(overheat.IsCpu ? "S.Heat.ChipCpu" : "S.Heat.ChipGpu");
+        var title = Strings.Get("S.Heat.WhileAway", overheat.MaxTemperatureC, chipName);
+        _tray?.ShowMessage(title, Strings.Get("S.Heat.Body"));
     }
 
     // ------------------------------------------------------------------ power

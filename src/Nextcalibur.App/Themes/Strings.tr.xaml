@@ -301,6 +301,9 @@
     <sys:String x:Key="S.Heat.Cpu">CPU {0} °C</sys:String>
     <sys:String x:Key="S.Heat.Gpu">GPU {0} °C</sys:String>
     <sys:String x:Key="S.Heat.Body">Bu kadar yüksek sıcaklıkların sürmesi genellikle soğutucunun temizlenmesi gerektiği anlamına gelir.</sys:String>
+    <sys:String x:Key="S.Heat.WhileAway">Siz yokken {1} {0} °C'ye ulaştı</sys:String>
+    <sys:String x:Key="S.Heat.ChipCpu">işlemci</sys:String>
+    <sys:String x:Key="S.Heat.ChipGpu">ekran kartı</sys:String>
 
     <!-- Güç katmanı denetimi ve onarımı -->
     <sys:String x:Key="S.Overlay.Fine">Seçtiğiniz mod yönetimde; Nextcalibur en hızlı modun dizüstü boştayken işlemciyi artık tam hızda tutamamasını sağladı.</sys:String>
