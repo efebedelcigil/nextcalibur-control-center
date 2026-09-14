@@ -172,6 +172,75 @@ public class FootprintTests
             Assert.False(trace.NeedsElevation);
         }
     }
+
+    [Fact]
+    public void Every_entry_on_retirement_list_has_detection_and_removal()
+    {
+        var entries = Footprint.Retirements();
+        Assert.NotEmpty(entries);
+
+        foreach (var entry in entries)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(entry.Description), "Entry description must not be empty");
+            Assert.NotNull(entry.CreatedIn);
+            Assert.NotNull(entry.Detect);
+            Assert.NotNull(entry.Remove);
+        }
+    }
+
+    [Fact]
+    public void Retired_entries_have_valid_version_order()
+    {
+        var entries = Footprint.Retirements();
+        foreach (var entry in entries)
+        {
+            if (entry.RetiredIn is not null)
+            {
+                Assert.True(entry.RetiredIn >= entry.CreatedIn,
+                    $"{entry.Description}: RetiredIn ({entry.RetiredIn}) must be >= CreatedIn ({entry.CreatedIn})");
+            }
+        }
+    }
+
+    [Fact]
+    public void Ndu_entry_is_unretired_and_needs_asking()
+    {
+        var entries = Footprint.Retirements();
+        var ndu = Assert.Single(entries, e => e.Description.Contains("NDU", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Null(ndu.RetiredIn); // RetiredIn must be empty/null while the feature is active
+        Assert.True(ndu.NeedsAsking, "Windows fixes must require asking before removal");
+    }
+
+    [Fact]
+    public void Non_windows_entries_do_not_need_asking()
+    {
+        var entries = Footprint.Retirements();
+        foreach (var entry in entries.Where(e => !e.Description.Contains("NDU", StringComparison.OrdinalIgnoreCase)))
+        {
+            Assert.False(entry.NeedsAsking, $"{entry.Description} is an internal application trace and should not ask");
+        }
+    }
+
+    [Fact]
+    public void Older_version_does_not_execute_later_retirements()
+    {
+        // An earlier version (e.g. 0.5.3) running against the list must not execute 0.5.4 retirements.
+        var pastVersion = new Version(0, 5, 3);
+        var retired = Footprint.RetireOldVersions(currentVersion: pastVersion);
+        Assert.Empty(retired);
+    }
+
+    [Fact]
+    public void Retirement_pass_is_safe_to_run_twice()
+    {
+        // Must be safe to run twice: nothing fails on repeated execution. No test writes to HKLM.
+        var first = Footprint.RetireOldVersions(currentVersion: new Version(0, 5, 4));
+        var second = Footprint.RetireOldVersions(currentVersion: new Version(0, 5, 4));
+
+        Assert.NotNull(first);
+        Assert.NotNull(second);
+    }
 }
 
 /// <summary>

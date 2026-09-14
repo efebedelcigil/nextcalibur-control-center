@@ -19,6 +19,29 @@ public readonly record struct Trace(
     bool KeepingIsReasonable);
 
 /// <summary>
+/// A trace left by a past or current feature outside the application's own folder,
+/// and how to detect and remove it once the feature is dropped.
+/// </summary>
+/// <param name="Description">What it is, in one line.</param>
+/// <param name="CreatedIn">Which version introduced it.</param>
+/// <param name="RetiredIn">
+/// The version that dropped the feature, or null if the feature is still active.
+/// The pass acts on an entry only when the running version is at or past it.
+/// </param>
+/// <param name="Detect">Returns true if the trace is currently present on the machine.</param>
+/// <param name="Remove">Removes the trace.</param>
+/// <param name="NeedsAsking">
+/// True for fixes to Windows that a person may want to keep; false for things that only served this application.
+/// </param>
+public sealed record RetirementEntry(
+    string Description,
+    Version CreatedIn,
+    Version? RetiredIn,
+    Func<bool> Detect,
+    Action Remove,
+    bool NeedsAsking);
+
+/// <summary>
 /// Everything Nextcalibur leaves on a machine, and how to take it back off.
 ///
 /// Written after watching what the vendor's software leaves behind: its
@@ -37,6 +60,153 @@ public static class Footprint
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string RunValue = "Nextcalibur";
+
+    /// <summary>
+    /// The retirement list. Anything this application writes outside its own folder
+    /// must be listed here before its code can be removed.
+    /// </summary>
+    public static IReadOnlyList<RetirementEntry> Retirements(string? executablePath = null)
+    {
+        var self = executablePath ?? Environment.ProcessPath;
+        return new List<RetirementEntry>
+        {
+            new(
+                Description: "The card-switch scheduled tasks of the unelevated versions",
+                CreatedIn: new Version(0, 5, 0),
+                RetiredIn: new Version(0, 5, 4),
+                Detect: () => CardSwitchTasks.Registered(),
+                Remove: () =>
+                {
+                    try { CardSwitchTasks.Unregister(); }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                },
+                NeedsAsking: false),
+
+            new(
+                Description: "The widened firmware mailbox permission granted to this account",
+                CreatedIn: new Version(0, 5, 0),
+                RetiredIn: new Version(0, 5, 4),
+                Detect: () =>
+                {
+                    try { return MailboxAccess.WidenedForCurrentAccount(); }
+                    catch { return false; }
+                },
+                Remove: () =>
+                {
+                    try { MailboxAccess.Revoke(); }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                },
+                NeedsAsking: false),
+
+            new(
+                Description: "The HKCU Run registry value migrated to the logon task",
+                CreatedIn: new Version(0, 5, 0),
+                RetiredIn: new Version(0, 5, 4),
+                Detect: () =>
+                {
+                    try
+                    {
+                        using var run = Registry.CurrentUser.OpenSubKey(RunKey);
+                        if (run?.GetValue(RunValue) is not string command) return false;
+                        return self is null || command.Contains(Path.GetFileName(self), StringComparison.OrdinalIgnoreCase);
+                    }
+                    catch { return false; }
+                },
+                Remove: () =>
+                {
+                    if (self is not null)
+                    {
+                        StartupRegistration.MigrateRunEntry(self);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            using var run = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
+                            run?.DeleteValue(RunValue, throwOnMissingValue: false);
+                        }
+                        catch { }
+                    }
+                },
+                NeedsAsking: false),
+
+            new(
+                Description: "The no-prompt scheduled tasks belonging to a copy not under Program Files",
+                CreatedIn: new Version(0, 5, 0),
+                RetiredIn: new Version(0, 5, 4),
+                Detect: () =>
+                {
+                    if (self is null || Elevation.MayStartWithoutPrompt(self)) return false;
+                    return Elevation.StartsWithWindows(self) || CardSwitchTasks.SchtasksOutput($"/query /tn \"{Elevation.OpenTask}\"") is not null;
+                },
+                Remove: () =>
+                {
+                    if (self is not null)
+                    {
+                        Elevation.RetireTasksNotAllowed(self);
+                    }
+                },
+                NeedsAsking: false),
+
+            new(
+                Description: "The NDU network driver fix and backup registry value",
+                CreatedIn: new Version(0, 5, 4),
+                RetiredIn: null, // Still active in 0.5.4; listed now so retiring the feature later only needs filling in a version.
+                Detect: () =>
+                {
+                    try { return NduFix.IsNduDisabled() || NduFix.HasBackupMarker(); }
+                    catch { return false; }
+                },
+                Remove: () =>
+                {
+                    try { NduFix.RemoveBackupMarker(); }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+
+                    try { NduFix.RestoreOriginal(); }
+                    catch (Exception ex) when (ex is not OutOfMemoryException) { }
+                },
+                NeedsAsking: true),
+        };
+    }
+
+    /// <summary>
+    /// Checks the retirement list and cleans up traces of features that have been dropped
+    /// in this or earlier versions. Called once at startup when elevated.
+    /// Safe to run multiple times.
+    /// </summary>
+    public static IReadOnlyList<RetirementEntry> RetireOldVersions(
+        Version? currentVersion = null,
+        string? executablePath = null,
+        Func<RetirementEntry, bool>? askUser = null)
+    {
+        var running = currentVersion ?? typeof(Footprint).Assembly.GetName().Version ?? new Version(0, 5, 4);
+        var removed = new List<RetirementEntry>();
+
+        foreach (var entry in Retirements(executablePath))
+        {
+            if (entry.RetiredIn is null || running < entry.RetiredIn)
+                continue;
+
+            try
+            {
+                if (!entry.Detect())
+                    continue;
+
+                if (entry.NeedsAsking && askUser is not null && !askUser(entry))
+                    continue;
+
+                entry.Remove();
+                removed.Add(entry);
+                Log.Info("retire", $"Retired old trace ({entry.CreatedIn} -> {entry.RetiredIn}): {entry.Description}");
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Log.Warn("retire", $"Could not retire trace '{entry.Description}': {ex.Message}");
+            }
+        }
+
+        return removed;
+    }
 
     /// <summary>What is currently on this machine because of Nextcalibur.</summary>
     public static IReadOnlyList<Trace> Survey()

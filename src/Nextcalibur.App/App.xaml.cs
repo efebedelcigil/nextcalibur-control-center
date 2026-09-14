@@ -207,28 +207,16 @@ public partial class App : Application
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
 
+        // The retirement pass cleans up traces of features that have been dropped in this
+        // or earlier versions (see Footprint.RetireOldVersions and docs/BRIEF.md §32).
+        Footprint.RetireOldVersions(executablePath: self);
+
         // Elevated now. The on-demand task is what makes the next start
         // prompt-free; registering it is idempotent and costs a schtasks call.
-        // Only a copy under Program Files gets one - and a task an earlier
-        // version registered for a copy in the profile is taken away here,
-        // because it ran a file the account could replace, as administrator,
-        // without asking.
+        // Only a copy under Program Files gets one.
         if (self is not null)
         {
-            if (Elevation.RetireTasksNotAllowed(self))
-                Log.Info("tasks", "Removed the no-prompt tasks: this copy is not under Program Files, so it is prompted at every start until the installer moves it");
             Elevation.RegisterOpenTask(self);
-            StartupRegistration.MigrateRunEntry(self);
-
-            // The card-switch tasks of the unelevated versions ran this
-            // executable elevated on demand to enable or disable the card.
-            // The elevated application does that itself; two tasks that
-            // elevate a file in a user-writable folder are not worth keeping.
-            if (CardSwitchTasks.Registered())
-            {
-                CardSwitchTasks.Unregister();
-                Log.Info("tasks", "Removed the card-switch tasks of an earlier version; not needed elevated");
-            }
 
             // An installed copy in the profile (the earlier versions' place)
             // is put out of the account's reach; see InstallFolderGuard. Only
@@ -245,23 +233,6 @@ public partial class App : Application
             {
                 Log.Warn("install", "Could not protect the install folder: " + ex.Message);
             }
-        }
-
-        // Versions before the elevated model widened the firmware interface's
-        // permission to this account by name, so an unelevated copy could
-        // read it. Elevated, it is not needed, and it lets anything running
-        // as the account send firmware commands. Taken back, once, here.
-        try
-        {
-            if (MailboxAccess.WidenedForCurrentAccount())
-            {
-                MailboxAccess.Revoke();
-                Log.Info("access", "Took back the firmware permission an earlier version granted to this account; the elevated application does not need it");
-            }
-        }
-        catch (Exception ex) when (ex is InvalidOperationException or UnauthorizedAccessException or System.Security.SecurityException)
-        {
-            Log.Warn("access", "Could not take back the widened firmware permission: " + ex.Message);
         }
 
         // The wizard's install: Velopack's Setup ran silently and never
