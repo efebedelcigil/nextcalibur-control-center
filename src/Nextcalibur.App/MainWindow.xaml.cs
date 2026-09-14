@@ -1314,10 +1314,32 @@ public partial class MainWindow : Window
                 DialogProgress.Value = p;
                 DialogBodyText.Text = p < 100 ? Strings.Get("S.Progress.DownloadingPercent", p) : Strings.Get("S.Progress.Installing");
             });
-            var (ok, message) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
+            var (ok, message, restartRequired) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
             Log.Info("dependency", message);
             HideProgress();
-            if (ok) Dialogs.Tell(Strings.Get("S.Dependency.Title"), message);
+            if (ok)
+            {
+                if (restartRequired)
+                {
+                    _settings.RequestRestart("installer", status.Dependency.Name);
+                    _settings.Save();
+                    _restartBannerDismissed = false;
+                    RefreshBanner();
+                }
+                else if (status.Dependency is Nextcalibur.Core.Dependencies.PawnIoDependency)
+                {
+                    _cpuPower.Reset();
+                    if (!_cpuPower.CanOpen())
+                    {
+                        _settings.RequestRestart("pawnio");
+                        _settings.Save();
+                        _restartBannerDismissed = false;
+                        RefreshBanner();
+                    }
+                }
+
+                Dialogs.Tell(Strings.Get("S.Dependency.Title"), message);
+            }
             else Dialogs.Warn(Strings.Get("S.Dependency.Title"), message);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
@@ -1558,8 +1580,25 @@ public partial class MainWindow : Window
         };
     }
 
-    /// <summary>The mode written to firmware this session and not yet restarted into.</summary>
-    private GpuMode? _gpuPendingRestart;
+    /// <summary>The mode written to firmware this session and not yet restarted into, unified under AppSettings.</summary>
+    private GpuMode? _gpuPendingRestart
+    {
+        get
+        {
+            if (_settings.PendingRestart?.ReasonArguments.TryGetValue("gpu", out var modeStr) == true
+                && Enum.TryParse<GpuMode>(modeStr, out var mode))
+                return mode;
+            return null;
+        }
+        set
+        {
+            if (value is { } mode)
+                _settings.RequestRestart("gpu", mode.ToString());
+            else
+                _settings.ClearRestartReason("gpu");
+            _settings.Save();
+        }
+    }
 
     /// <summary>
     /// Power draw, but only where asking for it is free.
@@ -1706,7 +1745,8 @@ public partial class MainWindow : Window
             if (outcome.RestartNeeded)
             {
                 _gpuPendingRestart = target;
-                OfferRestart(outcome.Summary);
+                _restartBannerDismissed = false;
+                RefreshBanner();
             }
             else
             {
@@ -3056,15 +3096,73 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (!_restartBannerDismissed && _settings.HasPendingRestart)
+        {
+            ShowBanner(
+                Strings.Get("S.Banner.RestartTitle"),
+                GetRestartReasonText(),
+                (SolidColorBrush)FindResource("Warn"),
+                showRestartButtons: true);
+            return;
+        }
+
         Banner.Visibility = Visibility.Collapsed;
     }
 
-    private void ShowBanner(string title, string body, SolidColorBrush colour)
+    private bool _restartBannerDismissed;
+
+    private string GetRestartReasonText()
+    {
+        if (_settings.PendingRestart is null || _settings.PendingRestart.Reasons.Count == 0)
+            return string.Empty;
+
+        var messages = new List<string>();
+        foreach (var reason in _settings.PendingRestart.Reasons)
+        {
+            _settings.PendingRestart.ReasonArguments.TryGetValue(reason, out var arg);
+            switch (reason.ToLowerInvariant())
+            {
+                case "ndu":
+                    messages.Add(Strings.Get("S.Restart.ReasonNdu"));
+                    break;
+                case "installer":
+                    messages.Add(Strings.Get("S.Restart.ReasonInstaller", arg ?? string.Empty));
+                    break;
+                case "pawnio":
+                    messages.Add(Strings.Get("S.Restart.ReasonPawnIo"));
+                    break;
+                case "gpu":
+                    messages.Add(Strings.Get("S.Gpu.RestartPending", arg ?? string.Empty));
+                    break;
+                default:
+                    if (!string.IsNullOrWhiteSpace(arg))
+                        messages.Add(arg);
+                    break;
+            }
+        }
+
+        return string.Join(" ", messages);
+    }
+
+    private void OnBannerRestartClicked(object sender, RoutedEventArgs e)
+    {
+        if (!RequestRestart())
+            Dialogs.Warn(Strings.Get("S.Gpu.Title"), Strings.Get("S.Gpu.RestartRefused"));
+    }
+
+    private void OnBannerDismissClicked(object sender, RoutedEventArgs e)
+    {
+        _restartBannerDismissed = true;
+        Banner.Visibility = Visibility.Collapsed;
+    }
+
+    private void ShowBanner(string title, string body, SolidColorBrush colour, bool showRestartButtons = false)
     {
         BannerTitle.Text = title;
         BannerTitle.Foreground = colour;
         Banner.BorderBrush = colour;
         BannerBody.Text = body;
+        BannerActions.Visibility = showRestartButtons ? Visibility.Visible : Visibility.Collapsed;
         Banner.Visibility = Visibility.Visible;
     }
 

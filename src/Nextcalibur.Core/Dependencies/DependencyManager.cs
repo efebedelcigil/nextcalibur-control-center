@@ -147,7 +147,7 @@ public sealed class DependencyManager
     /// byte to the end of the install, so that nothing can swap it between
     /// the signature check and the run.
     /// </summary>
-    public static async Task<(bool Ok, string Message)> InstallAsync(DependencyStatus status, IProgress<int> progress, CancellationToken ct = default)
+    public static async Task<(bool Ok, string Message, bool RestartRequired)> InstallAsync(DependencyStatus status, IProgress<int> progress, CancellationToken ct = default)
     {
         string? file = null;
         try
@@ -182,18 +182,19 @@ public sealed class DependencyManager
             using var guard = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             if (status.Latest.Sha512 is { Length: > 0 } expected && !HashMatches(file, expected))
                 return (false, Words.Get("S.Core.Dependency.BadHash",
-                    "The {0} download is not the file its publisher describes; it was not installed.", status.Dependency.Name));
+                    "The {0} download is not the file its publisher describes; it was not installed.", status.Dependency.Name), false);
 
             if (!status.Dependency.SignatureIsTrusted(file))
-                return (false, Words.Get("S.Core.Dependency.Unsigned", "The {0} download is not signed by {1}; it was not installed.", status.Dependency.Name, status.Dependency.ExpectedSigner));
+                return (false, Words.Get("S.Core.Dependency.Unsigned", "The {0} download is not signed by {1}; it was not installed.", status.Dependency.Name, status.Dependency.ExpectedSigner), false);
 
-            return status.Dependency.Install(file)
-                ? (true, Words.Get("S.Core.Dependency.Installed", "{0} {1} is installed.", status.Dependency.Name, status.Latest.Version))
-                : (false, Words.Get("S.Core.Dependency.InstallerFailed", "The {0} installer did not finish successfully.", status.Dependency.Name));
+            var ok = status.Dependency.Install(file, out var restartRequired);
+            return ok
+                ? (true, Words.Get("S.Core.Dependency.Installed", "{0} {1} is installed.", status.Dependency.Name, status.Latest.Version), restartRequired)
+                : (false, Words.Get("S.Core.Dependency.InstallerFailed", "The {0} installer did not finish successfully.", status.Dependency.Name), false);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException)
         {
-            return (false, Words.Get("S.Core.Dependency.FetchFailed", "Could not fetch {0}: {1}", status.Dependency.Name, ex.Message));
+            return (false, Words.Get("S.Core.Dependency.FetchFailed", "Could not fetch {0}: {1}", status.Dependency.Name, ex.Message), false);
         }
         finally
         {

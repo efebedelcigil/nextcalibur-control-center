@@ -810,6 +810,12 @@
                                                FontWeight="Bold" FontSize="13" />
                                     <TextBlock x:Name="BannerBody" Style="{DynamicResource StatusTextStyle}"
                                                Margin="0,3,0,0" TextWrapping="Wrap" />
+                                    <StackPanel x:Name="BannerActions" Orientation="Horizontal" Margin="0,8,0,0" Visibility="Collapsed">
+                                        <Button x:Name="BannerRestartButton" Style="{DynamicResource DialogPrimaryButton}"
+                                                Content="{DynamicResource S.Banner.RestartNow}" Click="OnBannerRestartClicked" Margin="0,0,8,0" />
+                                        <Button x:Name="BannerDismissButton" Style="{DynamicResource DialogSecondaryButton}"
+                                                Content="{DynamicResource S.Banner.Later}" Click="OnBannerDismissClicked" />
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
 

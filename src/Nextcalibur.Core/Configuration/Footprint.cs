@@ -64,6 +64,11 @@ public static class Footprint
     /// <summary>
     /// The retirement list. Anything this application writes outside its own folder
     /// must be listed here before its code can be removed.
+    ///
+    /// Entries that have NeedsAsking = true are guarded: during startup (where askUser
+    /// is null), they are not removed without explicit permission. The asking happens
+    /// during uninstallation in RemoveMachineTraces(bool removeRepair), where the user
+    /// is asked whether to keep Windows repairs and that decision is passed to RetireOldVersions.
     /// </summary>
     public static IReadOnlyList<RetirementEntry> Retirements(string? executablePath = null)
     {
@@ -177,12 +182,13 @@ public static class Footprint
     public static IReadOnlyList<RetirementEntry> RetireOldVersions(
         Version? currentVersion = null,
         string? executablePath = null,
-        Func<RetirementEntry, bool>? askUser = null)
+        Func<RetirementEntry, bool>? askUser = null,
+        IEnumerable<RetirementEntry>? entries = null)
     {
         var running = currentVersion ?? typeof(Footprint).Assembly.GetName().Version ?? new Version(0, 5, 4);
         var removed = new List<RetirementEntry>();
 
-        foreach (var entry in Retirements(executablePath))
+        foreach (var entry in entries ?? Retirements(executablePath))
         {
             if (entry.RetiredIn is null || running < entry.RetiredIn)
                 continue;
@@ -192,7 +198,7 @@ public static class Footprint
                 if (!entry.Detect())
                     continue;
 
-                if (entry.NeedsAsking && askUser is not null && !askUser(entry))
+                if (entry.NeedsAsking && (askUser is null || !askUser(entry)))
                     continue;
 
                 entry.Remove();
@@ -332,6 +338,10 @@ public static class Footprint
         // The marker we leave in Windows' own key is ours and must be deleted either way.
         try { NduFix.RemoveBackupMarker(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+
+        // Retire old versions with the user's repair-retention decision
+        try { RetireOldVersions(askUser: _ => removeRepair); }
+        catch (Exception ex) when (ex is not OutOfMemoryException) { }
 
         if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }

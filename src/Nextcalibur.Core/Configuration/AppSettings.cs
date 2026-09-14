@@ -138,6 +138,70 @@ public sealed class AppSettings
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ThemePreference Theme { get; set; } = ThemePreference.System;
 
+    /// <summary>
+    /// Details of a pending restart across the application, or null when none is pending.
+    /// </summary>
+    public PendingRestartInfo? PendingRestart { get; set; }
+
+    /// <summary>True when a restart is currently pending for this boot session.</summary>
+    [JsonIgnore]
+    public bool HasPendingRestart => PendingRestart is not null && PendingRestart.Reasons.Count > 0
+        && IsRestartPending(PendingRestart.BootTimeUtc, CurrentBootTimeUtc());
+
+    /// <summary>
+    /// Computes the machine's boot time in UTC, rounded to the minute.
+    /// </summary>
+    public static DateTime CurrentBootTimeUtc()
+    {
+        var boot = DateTime.UtcNow - TimeSpan.FromMilliseconds(Environment.TickCount64);
+        return new DateTime(boot.Year, boot.Month, boot.Day, boot.Hour, boot.Minute, 0, DateTimeKind.Utc);
+    }
+
+    /// <summary>
+    /// Checks whether a stored boot time belongs to the current boot session.
+    /// Returns false if storedBootUtc is null, earlier than current boot, or significantly different.
+    /// </summary>
+    public static bool IsRestartPending(DateTime? storedBootUtc, DateTime currentBootUtc)
+    {
+        if (storedBootUtc is null) return false;
+        return Math.Abs((currentBootUtc - storedBootUtc.Value).TotalMinutes) <= 2.0;
+    }
+
+    /// <summary>Records a reason requiring a restart, binding it to the current boot time.</summary>
+    public void RequestRestart(string reasonId, string? argument = null)
+    {
+        var currentBoot = CurrentBootTimeUtc();
+        if (PendingRestart is null || !IsRestartPending(PendingRestart.BootTimeUtc, currentBoot))
+        {
+            PendingRestart = new PendingRestartInfo
+            {
+                BootTimeUtc = currentBoot,
+            };
+        }
+
+        if (!PendingRestart.Reasons.Contains(reasonId, StringComparer.OrdinalIgnoreCase))
+            PendingRestart.Reasons.Add(reasonId);
+
+        if (argument is not null)
+            PendingRestart.ReasonArguments[reasonId] = argument;
+    }
+
+    /// <summary>Clears a specific reason (e.g. if a setting was toggled back off before rebooting).</summary>
+    public void ClearRestartReason(string reasonId)
+    {
+        if (PendingRestart is null) return;
+        PendingRestart.Reasons.RemoveAll(r => string.Equals(r, reasonId, StringComparison.OrdinalIgnoreCase));
+        PendingRestart.ReasonArguments.Remove(reasonId);
+        if (PendingRestart.Reasons.Count == 0)
+            PendingRestart = null;
+    }
+
+    /// <summary>Clears all pending restart reasons.</summary>
+    public void ClearAllRestartReasons()
+    {
+        PendingRestart = null;
+    }
+
     private static string Path => System.IO.Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "Nextcalibur", "settings.json");
@@ -180,6 +244,15 @@ public sealed class AppSettings
         // A file edited by hand, or by something else: an interval of zero
         // would spin, a negative one would throw at the timer.
         if (settings.PollIntervalMs is < 500 or > 60000) settings.PollIntervalMs = new AppSettings().PollIntervalMs;
+
+        if (settings.PendingRestart is not null)
+        {
+            if (!IsRestartPending(settings.PendingRestart.BootTimeUtc, CurrentBootTimeUtc())
+                || settings.PendingRestart.Reasons.Count == 0)
+            {
+                settings.PendingRestart = null;
+            }
+        }
 
         return settings;
     }
@@ -274,4 +347,19 @@ public enum UiLanguage
 {
     English,
     Turkish,
+}
+
+/// <summary>
+/// Details of a pending restart: when it was requested and for what reasons.
+/// </summary>
+public sealed class PendingRestartInfo
+{
+    /// <summary>The UTC boot time of the machine when this restart was requested.</summary>
+    public DateTime BootTimeUtc { get; set; }
+
+    /// <summary>List of reason identifiers: "ndu", "installer", "pawnio", "gpu".</summary>
+    public List<string> Reasons { get; set; } = new();
+
+    /// <summary>Optional arguments for reasons, e.g. installer dependency name or gpu target mode.</summary>
+    public Dictionary<string, string> ReasonArguments { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }

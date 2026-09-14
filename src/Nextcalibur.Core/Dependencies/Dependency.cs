@@ -143,8 +143,12 @@ public abstract class Dependency
     public bool SignatureIsTrusted(string file) => Authenticode.IsSignedBy(file, ExpectedSigner);
 
     /// <summary>Runs the installer quietly and waits. True when it reported success.</summary>
-    public bool Install(string file)
+    public bool Install(string file) => Install(file, out _);
+
+    /// <summary>Runs the installer quietly and waits. True when it reported success, indicating whether a reboot is required.</summary>
+    public bool Install(string file, out bool restartRequired)
     {
+        restartRequired = false;
         try
         {
             using var process = Process.Start(new ProcessStartInfo
@@ -156,9 +160,18 @@ public abstract class Dependency
             });
             if (process is null) return false;
             process.WaitForExit(5 * 60 * 1000);
+            if (!process.HasExited) return false;
+
+            // 3010 is ERROR_SUCCESS_REBOOT_REQUIRED: the installation succeeded, but needs a reboot
+            if (process.ExitCode == 3010)
+            {
+                restartRequired = true;
+                return true;
+            }
+
             // 183 is ERROR_ALREADY_EXISTS: the same version was there, which
             // is the outcome wanted, not a failure.
-            return process.HasExited && process.ExitCode is 0 or 183;
+            return process.ExitCode is 0 or 183;
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {

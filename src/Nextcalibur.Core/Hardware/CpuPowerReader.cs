@@ -212,6 +212,16 @@ public sealed class CpuPowerReader : IDisposable
         return true;
     }
 
+    /// <summary>Allows a new attempt to open the PawnIO device, for example after the driver is installed.</summary>
+    public void Reset()
+    {
+        Close();
+        _tried = false;
+    }
+
+    /// <summary>Checks whether the driver can be opened and communicates right now.</summary>
+    public bool CanOpen() => Open();
+
     private void Close()
     {
         _device?.Dispose();

@@ -241,6 +241,131 @@ public class FootprintTests
         Assert.NotNull(first);
         Assert.NotNull(second);
     }
+
+    [Fact]
+    public void Retirement_pass_waits_when_entry_needs_asking_and_askUser_is_null()
+    {
+        var traceExists = true;
+        var entry = new RetirementEntry(
+            Description: "Mock guarded setting",
+            CreatedIn: new Version(0, 5, 0),
+            RetiredIn: new Version(0, 5, 4),
+            Detect: () => traceExists,
+            Remove: () => traceExists = false,
+            NeedsAsking: true);
+
+        var removed = Footprint.RetireOldVersions(
+            currentVersion: new Version(0, 5, 4),
+            askUser: null,
+            entries: new[] { entry });
+
+        Assert.Empty(removed);
+        Assert.True(traceExists, "Trace must still be there when askUser is null");
+    }
+
+    [Fact]
+    public void Retirement_pass_waits_when_entry_needs_asking_and_askUser_returns_false()
+    {
+        var traceExists = true;
+        var entry = new RetirementEntry(
+            Description: "Mock guarded setting",
+            CreatedIn: new Version(0, 5, 0),
+            RetiredIn: new Version(0, 5, 4),
+            Detect: () => traceExists,
+            Remove: () => traceExists = false,
+            NeedsAsking: true);
+
+        var removed = Footprint.RetireOldVersions(
+            currentVersion: new Version(0, 5, 4),
+            askUser: _ => false,
+            entries: new[] { entry });
+
+        Assert.Empty(removed);
+        Assert.True(traceExists, "Trace must still be there when user declines");
+    }
+
+    [Fact]
+    public void Retirement_pass_removes_when_entry_needs_asking_and_askUser_returns_true()
+    {
+        var traceExists = true;
+        var entry = new RetirementEntry(
+            Description: "Mock guarded setting",
+            CreatedIn: new Version(0, 5, 0),
+            RetiredIn: new Version(0, 5, 4),
+            Detect: () => traceExists,
+            Remove: () => traceExists = false,
+            NeedsAsking: true);
+
+        var removed = Footprint.RetireOldVersions(
+            currentVersion: new Version(0, 5, 4),
+            askUser: _ => true,
+            entries: new[] { entry });
+
+        Assert.Single(removed);
+        Assert.False(traceExists, "Trace must be gone when user permits removal");
+    }
+
+    [Fact]
+    public void IsRestartPending_comparison_with_equal_earlier_and_missing_boot()
+    {
+        var currentBoot = new DateTime(2026, 9, 14, 12, 0, 0, DateTimeKind.Utc);
+
+        // Equal to current boot: still pending
+        Assert.True(AppSettings.IsRestartPending(currentBoot, currentBoot));
+
+        // Within tolerance (e.g. clock rounding): still pending
+        Assert.True(AppSettings.IsRestartPending(currentBoot.AddMinutes(0.5), currentBoot));
+
+        // Earlier boot time (machine has rebooted): cleared
+        Assert.False(AppSettings.IsRestartPending(currentBoot.AddHours(-1), currentBoot));
+        Assert.False(AppSettings.IsRestartPending(currentBoot.AddMinutes(-5), currentBoot));
+
+        // Missing (null): cleared
+        Assert.False(AppSettings.IsRestartPending(null, currentBoot));
+    }
+
+    [Fact]
+    public void AppSettings_Migrate_clears_pending_restart_when_boot_time_differs()
+    {
+        var currentBoot = AppSettings.CurrentBootTimeUtc();
+        var oldBoot = currentBoot.AddHours(-2);
+
+        var settings = new AppSettings
+        {
+            PendingRestart = new PendingRestartInfo
+            {
+                BootTimeUtc = oldBoot,
+                Reasons = new List<string> { "ndu", "gpu" },
+                ReasonArguments = new Dictionary<string, string> { { "gpu", "Discrete" } },
+            },
+        };
+
+        var migrated = AppSettings.Migrate(settings);
+        Assert.Null(migrated.PendingRestart);
+    }
+
+    [Fact]
+    public void AppSettings_RequestRestart_and_ClearRestartReason_manage_reasons_properly()
+    {
+        var settings = new AppSettings();
+        Assert.False(settings.HasPendingRestart);
+
+        settings.RequestRestart("ndu");
+        Assert.True(settings.HasPendingRestart);
+        Assert.Contains("ndu", settings.PendingRestart!.Reasons);
+
+        settings.RequestRestart("gpu", "Discrete");
+        Assert.Contains("gpu", settings.PendingRestart.Reasons);
+        Assert.Equal("Discrete", settings.PendingRestart.ReasonArguments["gpu"]);
+
+        settings.ClearRestartReason("ndu");
+        Assert.DoesNotContain("ndu", settings.PendingRestart.Reasons);
+        Assert.True(settings.HasPendingRestart);
+
+        settings.ClearRestartReason("gpu");
+        Assert.Null(settings.PendingRestart);
+        Assert.False(settings.HasPendingRestart);
+    }
 }
 
 /// <summary>

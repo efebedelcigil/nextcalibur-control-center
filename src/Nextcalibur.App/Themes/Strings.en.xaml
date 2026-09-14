@@ -275,6 +275,13 @@
     <sys:String x:Key="S.Banner.VendorOpenBody">Both apps are talking to the same hardware, so readings may stall and lighting changes may not stick. Close it and this message will clear itself.</sys:String>
     <sys:String x:Key="S.Banner.ProfileCopyTitle">Asked for administrator rights at every start</sys:String>
     <sys:String x:Key="S.Banner.ProfileCopyBody">This copy runs from a folder your account can change, so it cannot be started as administrator without a prompt - that would let anything running as you run as administrator. Install it with the installer from the release page and it goes under Program Files, where the prompt is asked once.</sys:String>
+    <sys:String x:Key="S.Banner.RestartTitle">A restart is needed</sys:String>
+    <sys:String x:Key="S.Banner.RestartNow">Restart now</sys:String>
+    <sys:String x:Key="S.Banner.Later">Later</sys:String>
+    <sys:String x:Key="S.Restart.ReasonNdu">The network driver change takes effect after a restart.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonInstaller">The installer for {0} requested a restart to finish setting up.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonPawnIo">The sensor driver needs a restart before it can start reading.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonGpu">The graphics mode change to {0} takes effect at the next restart.</sys:String>
 
     <!-- Unsupported machine, the vendor's software -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - not supported here</sys:String>

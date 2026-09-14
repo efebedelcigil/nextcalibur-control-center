@@ -273,6 +273,13 @@
     <sys:String x:Key="S.Banner.VendorOpenBody">İki uygulama da aynı donanımla konuşuyor; okumalar duraksayabilir ve aydınlatma değişiklikleri tutmayabilir. Onu kapatın, bu ileti kendiliğinden kalkar.</sys:String>
     <sys:String x:Key="S.Banner.ProfileCopyTitle">Her açılışta yönetici izni sorulur</sys:String>
     <sys:String x:Key="S.Banner.ProfileCopyBody">Bu kopya hesabınızın değiştirebileceği bir klasörden çalışıyor; bu yüzden sormadan yönetici olarak başlatılamaz - aksi hâlde sizin adınıza çalışan her şey yönetici olabilirdi. Yayın sayfasındaki kurulum sihirbazıyla kurun; Program Files altına gider ve izin bir kez sorulur.</sys:String>
+    <sys:String x:Key="S.Banner.RestartTitle">Yeniden başlatma gerekiyor</sys:String>
+    <sys:String x:Key="S.Banner.RestartNow">Şimdi yeniden başlat</sys:String>
+    <sys:String x:Key="S.Banner.Later">Daha sonra</sys:String>
+    <sys:String x:Key="S.Restart.ReasonNdu">Ağ sürücüsü değişikliği yeniden başlattıktan sonra geçerli olur.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonInstaller">{0} yükleyicisi kurulumu tamamlamak için yeniden başlatma istedi.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonPawnIo">Sensör sürücüsünün okumaya başlayabilmesi için yeniden başlatma gerekiyor.</sys:String>
+    <sys:String x:Key="S.Restart.ReasonGpu">{0} grafik modu değişikliği bir sonraki yeniden başlatmada geçerli olur.</sys:String>
 
     <!-- Desteklenmeyen makine, üreticinin yazılımı -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - burada desteklenmiyor</sys:String>
