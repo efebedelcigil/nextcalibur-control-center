@@ -429,13 +429,13 @@ begin
     exit;
   end;
   Where := '';
-  if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'InstallLocation', Where) then
+  if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{7C1E2B3A-3B6E-4C1B-9A55-0F2D6A6C9E01}_is1', 'InstallLocation', Where) then
     if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where) then
       RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'InstallLocation', Where);
 
   if Where <> '' then
   begin
-    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion', Version) then
+    if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{7C1E2B3A-3B6E-4C1B-9A55-0F2D6A6C9E01}_is1', 'DisplayVersion', Version) then
       if not RegQueryStringValue(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version) then
         RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur', 'DisplayVersion', Version);
     if MsgBox(FmtMessage(CustomMessage('AlreadyInstalledRepair'), [Version, Where]), mbConfirmation, MB_YESNO) = IDYES then
