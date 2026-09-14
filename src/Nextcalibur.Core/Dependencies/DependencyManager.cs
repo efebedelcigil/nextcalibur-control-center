@@ -199,7 +199,7 @@ public sealed class DependencyManager
         finally
         {
             if (file is not null)
-                try { File.Delete(file); } catch (IOException) { }
+                try { File.Delete(file); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException) { }
         }
     }
 }

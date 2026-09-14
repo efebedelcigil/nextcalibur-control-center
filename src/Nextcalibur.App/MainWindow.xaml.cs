@@ -1238,9 +1238,19 @@ public partial class MainWindow : Window
     {
         if (_checkingByHand) return;
         _checkingByHand = true;
-        try { await _updates.CheckNowAsync(); }
-        finally { _checkingByHand = false; }
-        if (_updates.Available is not null) OfferUpdate();
+        try
+        {
+            await _updates.CheckNowAsync();
+            if (_updates.Available is not null) OfferUpdate();
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Log.Error("updates", "Manual update check failed", ex);
+        }
+        finally
+        {
+            _checkingByHand = false;
+        }
     }
 
     private void OnUpdateNowClick(object sender, RoutedEventArgs e) => OfferUpdate();
@@ -1258,20 +1268,27 @@ public partial class MainWindow : Window
     {
         if (_updating || _updates.Available is null) return;
 
-        var version = _updates.AvailableVersion ?? Strings.Get("S.Update.ANewVersion");
-        var pending = _gpuPendingRestart is { } mode
-            ? Strings.Get("S.Update.PendingGraphics", mode) + Environment.NewLine + Environment.NewLine
-            : string.Empty;
-        if (!Dialogs.Ask(Strings.Get("S.Update.OfferTitle", version),
-                pending + Strings.Get("S.Update.OfferBody", version),
-                defaultNo: _gpuPendingRestart is not null))
+        try
         {
-            // Declined: the corner button stays, nothing else will ask.
-            return;
-        }
+            var version = _updates.AvailableVersion ?? Strings.Get("S.Update.ANewVersion");
+            var pending = _gpuPendingRestart is { } mode
+                ? Strings.Get("S.Update.PendingGraphics", mode) + Environment.NewLine + Environment.NewLine
+                : string.Empty;
+            if (!Dialogs.Ask(Strings.Get("S.Update.OfferTitle", version),
+                    pending + Strings.Get("S.Update.OfferBody", version),
+                    defaultNo: _gpuPendingRestart is not null))
+            {
+                // Declined: the corner button stays, nothing else will ask.
+                return;
+            }
 
-        Log.Info("update", $"Accepted {version}; downloading");
-        await InstallUpdateAsync(version);
+            Log.Info("update", $"Accepted {version}; downloading");
+            await InstallUpdateAsync(version);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Log.Error("updates", "Offer update failed", ex);
+        }
     }
 
     /// <summary>The work, after the question or instead of it: download in front of them, restart into the new version.</summary>
@@ -1357,65 +1374,74 @@ public partial class MainWindow : Window
             return;
         }
 
-        var install = status.Missing;
-        if (!Dialogs.Ask(Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
-                status.Describe() + Environment.NewLine + Environment.NewLine +
-                Strings.Get("S.Dependency.How") +
-                Environment.NewLine + Environment.NewLine + Strings.Get(install ? "S.Dependency.InstallNow" : "S.Dependency.UpdateNow"),
-                defaultNo: false))
-        {
-            _updates.DeclineDependency(status);
-            OfferTheNextDependency();
-            return;
-        }
-
-        _updating = true;
         try
         {
-            ShowProgress(Strings.Get(install ? "S.Dependency.Installing" : "S.Dependency.Updating", status.Dependency.Name), Strings.Get("S.Progress.Downloading"));
-            var progress = new Progress<int>(p =>
+            var install = status.Missing;
+            if (!Dialogs.Ask(Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
+                    status.Describe() + Environment.NewLine + Environment.NewLine +
+                    Strings.Get("S.Dependency.How") +
+                    Environment.NewLine + Environment.NewLine + Strings.Get(install ? "S.Dependency.InstallNow" : "S.Dependency.UpdateNow"),
+                    defaultNo: false))
             {
-                DialogProgress.Value = p;
-                DialogBodyText.Text = p < 100 ? Strings.Get("S.Progress.DownloadingPercent", p) : Strings.Get("S.Progress.Installing");
-            });
-            var (ok, message, restartRequired) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
-            Log.Info("dependency", message);
-            HideProgress();
-            if (ok)
+                _updates.DeclineDependency(status);
+                OfferTheNextDependency();
+                return;
+            }
+
+            _updating = true;
+            try
             {
-                if (restartRequired)
+                ShowProgress(Strings.Get(install ? "S.Dependency.Installing" : "S.Dependency.Updating", status.Dependency.Name), Strings.Get("S.Progress.Downloading"));
+                var progress = new Progress<int>(p =>
                 {
-                    _settings.RequestRestart("installer", status.Dependency.Name);
-                    _settings.Save();
-                    _restartBannerDismissed = false;
-                    RefreshBanner();
-                }
-                else if (status.Dependency is Nextcalibur.Core.Dependencies.PawnIoDependency)
+                    DialogProgress.Value = p;
+                    DialogBodyText.Text = p < 100 ? Strings.Get("S.Progress.DownloadingPercent", p) : Strings.Get("S.Progress.Installing");
+                });
+                var (ok, message, restartRequired) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
+                Log.Info("dependency", message);
+                HideProgress();
+                if (ok)
                 {
-                    _cpuPower.Reset();
-                    if (!_cpuPower.CanOpen())
+                    if (restartRequired)
                     {
-                        _settings.RequestRestart("pawnio");
+                        _settings.RequestRestart("installer", status.Dependency.Name);
                         _settings.Save();
                         _restartBannerDismissed = false;
                         RefreshBanner();
                     }
-                }
+                    else if (status.Dependency is Nextcalibur.Core.Dependencies.PawnIoDependency)
+                    {
+                        _cpuPower.Reset();
+                        if (!_cpuPower.CanOpen())
+                        {
+                            _settings.RequestRestart("pawnio");
+                            _settings.Save();
+                            _restartBannerDismissed = false;
+                            RefreshBanner();
+                        }
+                    }
 
-                Dialogs.Tell(Strings.Get("S.Dependency.Title"), message);
+                    Dialogs.Tell(Strings.Get("S.Dependency.Title"), message);
+                }
+                else Dialogs.Warn(Strings.Get("S.Dependency.Title"), message);
             }
-            else Dialogs.Warn(Strings.Get("S.Dependency.Title"), message);
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                // Whatever the installer did, the progress panel must not be left
+                // over the window with no button: it takes every click.
+                Log.Error("dependency", "Install failed", ex);
+                HideProgress();
+                Dialogs.Warn(Strings.Get("S.Dependency.Title"), Strings.Get("S.Dependency.Failed", status.Dependency.Name) + " " + ex.Message);
+            }
+            finally
+            {
+                _updating = false;
+                OfferTheNextDependency();
+            }
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
-            // Whatever the installer did, the progress panel must not be left
-            // over the window with no button: it takes every click.
-            Log.Error("dependency", "Install failed", ex);
-            HideProgress();
-            Dialogs.Warn(Strings.Get("S.Dependency.Title"), Strings.Get("S.Dependency.Failed", status.Dependency.Name) + " " + ex.Message);
-        }
-        finally
-        {
+            Log.Error("dependency", "OfferDependency failed", ex);
             _updating = false;
             OfferTheNextDependency();
         }
@@ -2191,58 +2217,65 @@ public partial class MainWindow : Window
     private async void Sample()
     {
         if (_thermal is null || _sampling) return;
-        if (!ReadingsAreOnScreen())
-        {
-            _timer.Stop();
-            return;
-        }
-
-        ThermalSample s;
-        var reader = _thermal;
-
-        _sampling = true;
         try
         {
-            var reading = await Task.Run(
-                () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
-
-            if (reading is null)
+            if (!ReadingsAreOnScreen())
             {
-                // A single miss is normal when something else touches the mailbox.
-                if (++_consecutiveFailures >= 5)
-                {
-                    SubtitleText.Text = Strings.Get("S.Status.Stalled");
-                    _timer.Stop();
-                }
+                _timer.Stop();
                 return;
             }
 
-            s = reading.Value;
+            ThermalSample s;
+            var reader = _thermal;
 
-            _consecutiveFailures = 0;
-            _lastThermal = s;
-            CarryTheBacklightLevel(s);
+            _sampling = true;
+            try
+            {
+                var reading = await Task.Run(
+                    () => reader.TryRead(out var value) ? value : (ThermalSample?)null);
 
-            CpuTemp.Text = $"{s.CpuTemperatureC} °C";
-            GpuTemp.Text = $"{s.GpuTemperatureC} °C";
-            CpuFan.Text = $"{s.CpuFanRpm} rpm";
-            GpuFan.Text = $"{s.GpuFanRpm} rpm";
+                if (reading is null)
+                {
+                    // A single miss is normal when something else touches the mailbox.
+                    if (++_consecutiveFailures >= 5)
+                    {
+                        SubtitleText.Text = Strings.Get("S.Status.Stalled");
+                        _timer.Stop();
+                    }
+                    return;
+                }
 
-            ColourByTemperature(CpuTemp, s.CpuTemperatureC);
-            ColourByTemperature(GpuTemp, s.GpuTemperatureC);
+                s = reading.Value;
 
-            RefreshClocks();
-            _lastSampleAt = s.Timestamp;
-            ShowSubtitle();
+                _consecutiveFailures = 0;
+                _lastThermal = s;
+                CarryTheBacklightLevel(s);
+
+                CpuTemp.Text = $"{s.CpuTemperatureC} °C";
+                GpuTemp.Text = $"{s.GpuTemperatureC} °C";
+                CpuFan.Text = $"{s.CpuFanRpm} rpm";
+                GpuFan.Text = $"{s.GpuFanRpm} rpm";
+
+                ColourByTemperature(CpuTemp, s.CpuTemperatureC);
+                ColourByTemperature(GpuTemp, s.GpuTemperatureC);
+
+                RefreshClocks();
+                _lastSampleAt = s.Timestamp;
+                ShowSubtitle();
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                // This runs as async void off a timer: an escaping exception would
+                // take the process down rather than surface anywhere useful.
+                _consecutiveFailures++;
+                return;
+            }
+            finally
+            {
+                _sampling = false;
+            }
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
-        {
-            // This runs as async void off a timer: an escaping exception would
-            // take the process down rather than surface anywhere useful.
-            _consecutiveFailures++;
-            return;
-        }
-        finally
         {
             _sampling = false;
         }
