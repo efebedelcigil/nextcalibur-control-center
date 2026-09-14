@@ -173,10 +173,16 @@ public partial class MainWindow : Window
         StateChanged += OnStateChanged;
         Activated += (_, _) =>
         {
+            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal; } catch { }
             if (_slowTimer is not null && IsVisible && WindowState != WindowState.Minimized)
             {
                 _slowTimer.Interval = VisibleSlowInterval;
             }
+            SyncSamplingToScreen();
+        };
+        Deactivated += (_, _) =>
+        {
+            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal; } catch { }
             SyncSamplingToScreen();
         };
 
@@ -581,7 +587,13 @@ public partial class MainWindow : Window
     {
         KeepMinimiseBox();
         if (WindowState != WindowState.Minimized)
+        {
             TryShowDeferredOverheat();
+        }
+        else
+        {
+            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal; } catch { }
+        }
         SyncSamplingToScreen();
     }
 
@@ -620,7 +632,7 @@ public partial class MainWindow : Window
     private bool ReadingsAreOnScreen()
     {
         if (!IsVisible || WindowState == WindowState.Minimized) return false;
-        if (!IsActive && (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching())) return false;
+        if (!IsActive && (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching() || Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad())) return false;
         if (PageLighting is { Visibility: Visibility.Visible }) return false;
         if (PageSettings is { Visibility: Visibility.Visible }) return false;
         return true;
@@ -2362,7 +2374,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void WatchWindowsItself()
     {
-        if (!_settings.CompensateWindowsFaults)
+        if (!_settings.CompensateWindowsFaults || UserPresence.IsGamingOrHeavyLoad())
         {
             _currentGpuFaultText = null;
             _gpuClock.ResetAwakeFault();
@@ -2379,8 +2391,8 @@ public partial class MainWindow : Window
             }
         }
 
-        // Memory trimming when not in game / undisturbed (allowed while nobody is watching / locked)
-        if (!UserPresence.WouldRatherNotBeDisturbed())
+        // Memory trimming when not in game / undisturbed / not under heavy load (allowed while nobody is watching / locked)
+        if (!UserPresence.WouldRatherNotBeDisturbed() && !UserPresence.IsGamingOrHeavyLoad())
         {
             if (_settings.TrimDwmMemory)
                 Nextcalibur.Core.Hardware.MemoryTrimmer.TrimIfExceeds("dwm", 1536L * 1024 * 1024);
@@ -2390,8 +2402,8 @@ public partial class MainWindow : Window
 
         // §26, §28, §30: The graphics card held awake at full clocks with nothing to draw.
         // Controlled under the same switch, touches nothing on the card.
-        // Suppress and reset when in UMA mode, discrete card is off, discrete card is asleep, user is undisturbed, or nobody is watching.
-        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || !CardIsAwakeNow() || UserPresence.WouldRatherNotBeDisturbed() || UserPresence.NobodyIsWatching())
+        // Suppress and reset when in UMA mode, discrete card is off, discrete card is asleep, user is undisturbed, or heavy load / gaming.
+        if (!_settings.WatchGpuAwake || _currentGpuMode == GpuMode.Uma || _discreteWasEnabled == false || !CardIsAwakeNow() || UserPresence.WouldRatherNotBeDisturbed() || UserPresence.NobodyIsWatching() || UserPresence.IsGamingOrHeavyLoad())
         {
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;
@@ -2499,7 +2511,7 @@ public partial class MainWindow : Window
         // which is a frame in somebody's game. Windows suppresses our
         // notification in that state anyway, so the reads are only keeping
         // watch until they come back out.
-        return _overheatNotified || Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching()
+        return _overheatNotified || Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching() || Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad()
             ? HiddenHotInterval
             : HiddenInterval;
     }
@@ -2513,9 +2525,9 @@ public partial class MainWindow : Window
             try
             {
                 // Everything below the guard exists to keep the window truthful.
-                // While it is in the notification area or when undisturbed/nobody watching,
+                // While it is in the notification area or when undisturbed/nobody watching/gaming/heavy load,
                 // there is nothing to keep truthful, so none of it runs and the timer itself slows down.
-                var onScreen = IsVisible && WindowState != WindowState.Minimized && (IsActive || (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching()));
+                var onScreen = IsVisible && WindowState != WindowState.Minimized && (IsActive || (!Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching() && !Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad()));
                 _slowTimer.Interval = onScreen ? VisibleSlowInterval : HiddenIntervalNow();
 
                 if (onScreen)
@@ -2562,6 +2574,24 @@ public partial class MainWindow : Window
                 if (!_settings.WarnsAboutHeat && !onScreen) return;
 
                 if (_thermal is null) return;
+
+                // During gaming or heavy load, never trigger an SMI interrupt or freeze CPU cores from the background.
+                // If PawnIO sees an overheat, defer it quietly without stopping CPU cores.
+                if (Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad())
+                {
+                    if (_settings.WarnsAboutHeat)
+                    {
+                        var cpuTemp = _cpuPower.ReadPackageTemperatureC();
+                        if (cpuTemp is { } c && c >= _settings.CpuWarningTemperatureC)
+                        {
+                            if (_deferredOverheat is null || c > _deferredOverheat.MaxTemperatureC)
+                            {
+                                _deferredOverheat = new DeferredOverheat(true, c, DateTime.UtcNow);
+                            }
+                        }
+                    }
+                    return;
+                }
 
                 // And before paying for one: the two sensors that cost no
                 // interrupt. The processor's own thermal register through

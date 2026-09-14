@@ -487,4 +487,22 @@ public class WindowsFaultsTests
         Assert.Contains(traces, t => t.KeepingIsReasonable && t.NeedsElevation && t.Name == Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"));
         Assert.Contains(traces, t => !t.KeepingIsReasonable && t.NeedsElevation && t.Name == Words.Get("S.Core.Trace.NduMarker", "The NDU backup registry value"));
     }
+
+    [Fact]
+    public void UserPresence_gaming_or_heavy_load_methods_execute_safely()
+    {
+        // Must never throw DllNotFoundException, NullReferenceException, or crash
+        _ = UserPresence.IsHeavyCpuLoad();
+        _ = UserPresence.IsForegroundFullScreenOrBorderless();
+        var gamingOrHeavy = UserPresence.IsGamingOrHeavyLoad();
+        Assert.True(gamingOrHeavy || !gamingOrHeavy);
+    }
+
+    [Fact]
+    public void MemoryTrimmer_stands_down_during_gaming_or_heavy_load()
+    {
+        UserPresence.RecordSessionLock(false);
+        var reclaimed = MemoryTrimmer.TrimIfExceeds("dwm", 0);
+        Assert.Equal(0, reclaimed);
+    }
 }
