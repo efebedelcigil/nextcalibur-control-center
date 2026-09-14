@@ -355,6 +355,11 @@ public sealed class TrayPresence : IDisposable
         _disposed = true;
         _icon.Visible = false;
         _icon.ContextMenuStrip?.Dispose();
+        var icon = _icon.Icon;
         _icon.Dispose();
+        if (icon is not null && icon != SystemIcons.Application)
+        {
+            icon.Dispose();
+        }
     }
 }

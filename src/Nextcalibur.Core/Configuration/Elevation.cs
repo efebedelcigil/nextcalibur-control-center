@@ -75,7 +75,7 @@ public static class Elevation
         // is how one argument becomes two.
         try
         {
-            Process.Start(new ProcessStartInfo
+            using var process = Process.Start(new ProcessStartInfo
             {
                 FileName = executablePath,
                 Arguments = tray ? "--tray" : string.Empty,

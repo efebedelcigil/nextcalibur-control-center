@@ -152,7 +152,7 @@ public partial class MainWindow : Window
         // the first render; the choice is remembered, or Windows' language
         // the first time.
         Strings.Apply(Strings.Initial(_settings));
-        Strings.Changed += (_, _) => OnLanguageChanged();
+        Strings.Changed += OnLanguageChanged;
         InitializeComponent();
 
         // Every dialogue the application raises is owned by this window from
@@ -716,9 +716,15 @@ public partial class MainWindow : Window
         {
             _timer.Stop();
             _slowTimer?.Stop();
+            _settingsSaveDelay?.Stop();
+            _gpuCooldown?.Stop();
+            _lightingThrottle?.Stop();
             if (_tourActive) EndTour();
             Microsoft.Win32.SystemEvents.PowerModeChanged -= OnPowerSourceMayHaveChanged;
             Microsoft.Win32.SystemEvents.SessionSwitch -= OnSessionSwitch;
+            Strings.Changed -= OnLanguageChanged;
+            WindowsFaults.IsFaultEnabled = _ => true;
+            Dialogs.Owner = null;
             _tray?.Dispose();
             _backlightKey?.Dispose();
             _mailbox?.Dispose();
@@ -1010,7 +1016,7 @@ public partial class MainWindow : Window
     /// language just chosen. The markup's own texts follow the dictionary
     /// swap by themselves.
     /// </summary>
-    private void OnLanguageChanged()
+    private void OnLanguageChanged(object? sender = null, EventArgs? e = null)
     {
         if (PageSystem is null) return;   // before the tree is built
         RefreshModeStatus(_lastModeShown);

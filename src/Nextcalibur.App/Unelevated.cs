@@ -23,7 +23,7 @@ internal static class Unelevated
         if (TryStartAsDesktop($"\"{Nextcalibur.Core.Security.SystemTools.Explorer}\" \"{target}\"")) return;
 
         Log.Warn("shell", "No desktop token to borrow; opening elevated: " + target);
-        Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+        using var process = Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
     }
 
     private static bool TryStartAsDesktop(string commandLine)

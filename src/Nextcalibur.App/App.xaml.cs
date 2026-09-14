@@ -283,6 +283,7 @@ public partial class App : Application
         app.Run();
 
         _instanceLock?.ReleaseMutex();
+        _instanceLock?.Dispose();
     }
 
     /// <summary>Signals the running copy to bring its window forward.</summary>

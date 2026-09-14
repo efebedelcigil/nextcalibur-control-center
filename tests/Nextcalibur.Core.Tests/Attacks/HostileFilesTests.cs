@@ -47,7 +47,7 @@ public class HostileFilesTests
     /// </summary>
     private static bool TryLink(string link, string target)
     {
-        var cmd = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        using var cmd = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
         {
             FileName = Path.Combine(Environment.SystemDirectory, "cmd.exe"),
             Arguments = $"/c mklink /J \"{link}\" \"{target}\"",
