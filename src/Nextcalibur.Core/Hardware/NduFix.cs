@@ -133,7 +133,15 @@ public static class NduFix
         }
     }
 
-    /// <summary>Restores the original NDU Start value and removes the backup value.</summary>
+    /// <summary>
+    /// Restores the original NDU Start value and removes the backup value.
+    ///
+    /// Only what we recorded. With no backup there is nothing of ours to undo:
+    /// NDU disabled without a marker was disabled by somebody else, and the
+    /// guess this used to fall back on - 2, Automatic - turned it back on at
+    /// uninstall. The marker is read here, so it must still be there: delete
+    /// it after this, never before.
+    /// </summary>
     public static bool RestoreOriginal(int? fromSettings = null)
     {
         try
@@ -141,9 +149,8 @@ public static class NduFix
             using var key = Registry.LocalMachine.OpenSubKey(KeyPath, true);
             if (key is null) return false;
 
-            var original = fromSettings
-                ?? (key.GetValue(BackupValueName) as int?)
-                ?? 2;
+            var original = fromSettings ?? (key.GetValue(BackupValueName) as int?);
+            if (original is null) return false;
 
             key.SetValue(ValueName, original, RegistryValueKind.DWord);
             key.DeleteValue(BackupValueName, throwOnMissingValue: false);

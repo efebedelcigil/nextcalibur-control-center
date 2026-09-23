@@ -555,7 +555,7 @@ public partial class App : Application
         RepairPowerOverlayOnFirstRun();
     }
 
-    /// <summary>The wizard's one-line file beside the install root: {app}irst-run.ini.</summary>
+    /// <summary>The wizard's one-line file beside the install root: {app}\first-run.ini.</summary>
     private static string? FirstRunMarker(string executablePath)
     {
         var root = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(executablePath))

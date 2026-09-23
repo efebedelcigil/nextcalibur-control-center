@@ -66,9 +66,9 @@ public static class Footprint
     /// must be listed here before its code can be removed.
     ///
     /// Entries that have NeedsAsking = true are guarded: during startup (where askUser
-    /// is null), they are not removed without explicit permission. The asking happens
-    /// during uninstallation in RemoveMachineTraces(bool removeRepair), where the user
-    /// is asked whether to keep Windows repairs and that decision is passed to RetireOldVersions.
+    /// is null), they are not removed without explicit permission. The uninstall does
+    /// not run this list: RemoveMachineTraces removes each trace by name, and the
+    /// person's answer about keeping Windows repairs decides the repairs there.
     /// </summary>
     public static IReadOnlyList<RetirementEntry> Retirements(string? executablePath = null)
     {
@@ -166,16 +166,18 @@ public static class Footprint
                 RetiredIn: null, // Still active in 0.5.4; listed now so retiring the feature later only needs filling in a version.
                 Detect: () =>
                 {
-                    try { return NduFix.IsNduDisabled() || NduFix.HasBackupMarker(); }
+                    try { return NduFix.HasBackupMarker(); }
                     catch { return false; }
                 },
                 Remove: () =>
                 {
+                    // Restore first: it reads the marker. Then the marker,
+                    // which RestoreOriginal deletes already when it acts.
                     var acted = false;
-                    try { if (NduFix.HasBackupMarker()) { NduFix.RemoveBackupMarker(); acted = true; } }
+                    try { acted = NduFix.RestoreOriginal(); }
                     catch (Exception ex) when (ex is not OutOfMemoryException) { }
 
-                    try { if (NduFix.IsNduDisabled()) { NduFix.RestoreOriginal(); acted = true; } }
+                    try { if (NduFix.HasBackupMarker()) { NduFix.RemoveBackupMarker(); acted = true; } }
                     catch (Exception ex) when (ex is not OutOfMemoryException) { }
                     return acted;
                 },
@@ -263,8 +265,10 @@ public static class Footprint
                 // Undoing it silently would leave somebody worse off than
                 // before they ever installed us.
                 KeepingIsReasonable: true),
+            // Ours only with our marker: NDU disabled without one was
+            // disabled by somebody else, and is not ours to offer to undo.
             new(Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"),
-                NduFix.IsNduDisabled(),
+                NduFix.IsNduDisabled() && NduFix.HasBackupMarker(),
                 NeedsElevation: true,
                 // A fix to Windows network driver rather than part of this application.
                 // Asked before undoing so the user can choose to keep it.
@@ -369,21 +373,25 @@ public static class Footprint
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
 
-        // The marker we leave in Windows' own key is ours and must be deleted either way.
-        try { NduFix.RemoveBackupMarker(); }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
-
         // Not RetireOldVersions: everything on that list is removed above or
         // below by name, and one of its entries migrates an old Run entry to
         // the logon task - which, run here, put back the task this uninstall
         // had just deleted.
         RemoveRunEntry();
 
-        if (!removeRepair) return;
-        try { new PowerOverlayService().RemoveGuard(); }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+        if (removeRepair)
+        {
+            try { new PowerOverlayService().RemoveGuard(); }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
 
-        try { NduFix.RestoreOriginal(); }
+            // Before the marker goes: this reads it, and does nothing without it.
+            try { NduFix.RestoreOriginal(); }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+        }
+
+        // The marker we leave in Windows' own key is ours and must be deleted
+        // either way - last, because the restore above needs it.
+        try { NduFix.RemoveBackupMarker(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
     }
 

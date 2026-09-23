@@ -123,6 +123,8 @@ en.VelopackFailed=The application could not be installed (Velopack exit code %1)
 tr.VelopackFailed=Uygulama kurulamadı (Velopack çıkış kodu %1).
 en.FolderNotEmpty=%1 already contains other files. Choose an empty folder, or a new one - Nextcalibur takes the whole folder, and removes it when uninstalled.
 tr.FolderNotEmpty=%1 içinde başka dosyalar var. Boş ya da yeni bir klasör seçin - Nextcalibur klasörün tamamını kullanır ve kaldırılırken siler.
+en.RuntimeRequired=Nextcalibur cannot run without the .NET 8 desktop runtime, so the installation was stopped. Nothing was installed. Check the internet connection and run Setup again.
+tr.RuntimeRequired=Nextcalibur .NET 8 masaüstü çalışma zamanı olmadan çalışamaz; kurulum durduruldu, hiçbir şey kurulmadı. İnternet bağlantısını kontrol edip kurulumu yeniden çalıştırın.
 en.AskRemoveSettings=Do you want to delete your Nextcalibur settings, log files, and temporary trace files as well?
 tr.AskRemoveSettings=Nextcalibur ayarlarınızı, günlük dosyalarını ve artık sistem kayıtlarını da silmek istiyor musunuz?
 
@@ -140,7 +142,7 @@ Name: "deps"; Description: "{cm:CompDeps}"; Types: standard custom
 Name: "deps\dotnet"; Description: "{cm:CompDotNet}"; Types: standard custom; Flags: fixed; Check: not DesktopRuntimeInstalled
 Name: "deps\dotnet_present"; Description: "{cm:CompDotNetPresent}"; Types: standard custom; Flags: fixed; Check: DesktopRuntimeInstalled
 Name: "deps\pawnio"; Description: "{cm:CompPawnIO}"; Types: standard; Check: not PawnIOInstalled
-Name: "deps\pawnio_present"; Description: "{cm:CompPawnIOPresent}"; Flags: fixed; Check: PawnIOInstalled
+Name: "deps\pawnio_present"; Description: "{cm:CompPawnIOPresent}"; Types: standard custom; Flags: fixed; Check: PawnIOInstalled
 
 [Tasks]
 Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check: not Repairing
@@ -311,7 +313,8 @@ begin
   if CurStep = ssInstall then
   begin
     ForceDirectories(ExpandConstant('{app}'));
-    InstallDesktopRuntime();
+    if not InstallDesktopRuntime() then
+      RaiseException(CustomMessage('RuntimeRequired'));
     WizardForm.StatusLabel.Caption := CustomMessage('Installing');
     ExtractTemporaryFile('Nextcalibur-win-Setup.exe');
     if not Exec(ExpandConstant('{tmp}\Nextcalibur-win-Setup.exe'), '--silent --installto "' + ExpandConstant('{app}') + '"',
@@ -358,15 +361,6 @@ end;
 var
   RemoveTracesChoice: Boolean;
 
-function InitializeUninstall(): Boolean;
-var
-  Answer: Integer;
-begin
-  Result := True;
-  Answer := MsgBox(CustomMessage('AskRemoveSettings'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2);
-  RemoveTracesChoice := (Answer = IDYES);
-end;
-
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Code: Integer;
@@ -374,6 +368,7 @@ var
 begin
   if CurUninstallStep = usUninstall then
   begin
+    RemoveTracesChoice := SuppressibleMsgBox(CustomMessage('AskRemoveSettings'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES;
     Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM Nextcalibur.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
 
     // The application's own uninstall: it asks about the power plans, the

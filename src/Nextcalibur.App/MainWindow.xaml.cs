@@ -174,7 +174,12 @@ public partial class MainWindow : Window
         Activated += (_, _) =>
         {
             SetProcessPriority(PriorityNormal);
-            if (_slowTimer is not null && IsVisible && WindowState != WindowState.Minimized)
+            // Only when it differs: setting a DispatcherTimer's interval
+            // restarts its countdown, and somebody switching windows every
+            // few seconds would otherwise hold the slow tick - and with it
+            // the overheat check - off for as long as they kept doing it.
+            if (_slowTimer is not null && IsVisible && WindowState != WindowState.Minimized
+                && _slowTimer.Interval != VisibleSlowInterval)
             {
                 _slowTimer.Interval = VisibleSlowInterval;
             }
