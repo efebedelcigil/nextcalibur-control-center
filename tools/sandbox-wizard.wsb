@@ -5,7 +5,7 @@
        everywhere else. The person drives it from there. -->
   <MappedFolders>
     <MappedFolder>
-      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\installer\output</HostFolder>
+      <HostFolder>C:\Users\efeva\Documents\Nextcalibur\installer\output</HostFolder>
       <SandboxFolder>C:\Setup</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>

@@ -24,12 +24,12 @@
   -->
   <MappedFolders>
     <MappedFolder>
-      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\releases</HostFolder>
+      <HostFolder>C:\Users\efeva\Documents\Nextcalibur\releases</HostFolder>
       <SandboxFolder>C:\Setup</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>
     <MappedFolder>
-      <HostFolder>C:\Users\efeva\Desktop\Nextcalibur\tools</HostFolder>
+      <HostFolder>C:\Users\efeva\Documents\Nextcalibur\tools</HostFolder>
       <SandboxFolder>C:\Tools</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>

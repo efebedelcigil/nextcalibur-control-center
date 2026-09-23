@@ -8,11 +8,11 @@
 #         Power Mode cards; Open issues opens the browser unelevated.
 # Part 2: the Settings page writes the file; auto-install follows auto-check;
 #         the close button asks, Yes exits, the log says so.
-param([ValidateSet(1,2)][int]$Part = 1, [string]$Out = "C:\Users\efeva\Desktop\Nextcalibur\nc-uitest.txt")
+param([ValidateSet(1,2)][int]$Part = 1, [string]$Out = (Join-Path (Split-Path $PSScriptRoot) "nc-uitest.txt"))
 if ($Part -eq 1) {
 # Runs elevated from a scheduled task, because UIPI blocks an ordinary
 # process from touching an elevated window. Writes a report next to the repo.
-param([string]$Out = "C:\Users\efeva\Desktop\Nextcalibur\nc-uitest.txt")
+param([string]$Out = (Join-Path (Split-Path $PSScriptRoot) "nc-uitest.txt"))
 $ErrorActionPreference = 'Continue'
 Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Windows.Forms
 $report = New-Object System.Collections.Generic.List[string]
