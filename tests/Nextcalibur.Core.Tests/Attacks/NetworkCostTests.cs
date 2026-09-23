@@ -175,8 +175,8 @@ public class NetworkCostTests
             // A version far above anything installed, so the check always
             // wants the large index and the caching is what stops it.
             var body = key == "releases-index.json"
-                ? $$"""{"releases-index":[{"channel-version":"{{DotNetRuntimeDependency.Channel}}","latest-release":"{{Far}}","support-phase":"active","eol-date":"2030-01-01"}]}"""
-                : $$"""{"releases":[{"windowsdesktop":{"version":"{{Far}}","files":[{"name":"windowsdesktop-runtime-win-x64.exe","url":"https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/{{Far}}/windowsdesktop-runtime-{{Far}}-win-x64.exe","hash":"ab"}]}}]}""";
+                ? $$$"""{"releases-index":[{"channel-version":"{{{DotNetRuntimeDependency.Channel}}}","latest-release":"{{{Far}}}","support-phase":"active","eol-date":"2030-01-01"}]}"""
+                : $$$"""{"releases":[{"windowsdesktop":{"version":"{{{Far}}}","files":[{"name":"windowsdesktop-runtime-win-x64.exe","url":"https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/{{{Far}}}/windowsdesktop-runtime-{{{Far}}}-win-x64.exe","hash":"ab"}]}}]}""";
 
             var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
             return Task.FromResult(response);
