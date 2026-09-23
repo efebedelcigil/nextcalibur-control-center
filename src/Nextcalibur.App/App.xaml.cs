@@ -238,6 +238,18 @@ public partial class App : Application
         // Only a copy under Program Files gets one.
         if (self is not null)
         {
+            // Before the task: an uninstall that stopped after handing the
+            // folder to the account left it writable. See InstallFolderGuard.Reclaim.
+            try
+            {
+                if (InstallFolderGuard.RootOf(self) is { } pfRoot && InstallFolderGuard.Reclaim(pfRoot))
+                    Log.Warn("install", $"Took back the account's write access to {pfRoot}, left by an unfinished uninstall");
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException)
+            {
+                Log.Warn("install", "Could not check the install folder's permissions: " + ex.Message);
+            }
+
             Elevation.RegisterOpenTask(self);
             Footprint.EnsureUninstallRegistration(self);
 

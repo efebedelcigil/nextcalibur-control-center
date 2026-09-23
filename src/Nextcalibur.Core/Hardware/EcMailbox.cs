@@ -261,8 +261,13 @@ public sealed class EcMailbox : IDisposable
                     if (response.A0 == command.A0 && response.A1 == command.A1 && isValid(response))
                         return response;
                 }
-                catch (ManagementException ex)
+                catch (Exception ex) when (ex is ManagementException or System.Runtime.InteropServices.COMException)
                 {
+                    // A COMException too: when the WMI service restarts - Windows
+                    // Update does that - the held object's proxy is dead and Put
+                    // fails with RPC_E_DISCONNECTED, which System.Management does
+                    // not wrap. Caught only as ManagementException, the dead
+                    // object stayed cached and every read failed until restart.
                     last = ex;
                     Invalidate();   // stale handle - rebind on the next attempt
                 }

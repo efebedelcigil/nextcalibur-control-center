@@ -357,10 +357,18 @@ public static class Footprint
         Elevation.RemoveTasks();
 
         // So the uninstaller, which runs as the account, can delete the files.
+        // Only once the no-prompt tasks are really gone: a task that runs this
+        // folder's executable as administrator, in a folder the account can
+        // write, is the bypass the whole task design exists to prevent.
         try
         {
             if (Environment.ProcessPath is { } exe && InstallFolderGuard.RootOf(exe) is { } root)
-                InstallFolderGuard.Release(root);
+            {
+                if (Elevation.OpenTaskPointsAt(exe) || Elevation.StartsWithWindows(exe))
+                    Log.Warn("uninstall", "A no-prompt task is still registered; the install folder stays protected");
+                else
+                    InstallFolderGuard.Release(root);
+            }
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException) { }
 

@@ -1083,9 +1083,26 @@ public partial class MainWindow : Window
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
             _gpuClock.ResetAwakeFault();
             _currentGpuFaultText = null;
-            if (e.Mode == Microsoft.Win32.PowerModes.Resume)
+            if (e.Mode == Microsoft.Win32.PowerModes.Resume
+                && _led is { } led && _mailbox is { } mailbox && _support.AllowsWrites)
             {
-                Dispatcher.BeginInvoke(() => _led?.Apply());
+                // Off the interface thread - System.Management leaves a kernel
+                // handle behind for every call made from it - under the hold,
+                // like every other lighting write (see RunLighting), and quietly:
+                // straight after a resume the firmware or WMI may not answer
+                // yet, and that was an unhandled exception and an error
+                // dialogue at every wake-up.
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        using (mailbox.Hold()) led.Apply();
+                    }
+                    catch (Exception ex) when (ex is not OutOfMemoryException)
+                    {
+                        Log.Warn("lighting", "Could not restore the lighting after resume: " + ex.Message);
+                    }
+                });
             }
             return;
         }
@@ -2429,7 +2446,21 @@ public partial class MainWindow : Window
     private void KeepTheModesPlanAlive()
     {
         if (_currentMode is not { } mode || !_support.AllowsReads) return;
-        if (SystemModeService.HasPlanFor(mode)) return;
+        if (SystemModeService.HasPlanFor(mode))
+        {
+            // There again: if it goes a second time - the vendor's
+            // uninstaller, say - it is put back a second time.
+            _planRepairTriedFor = null;
+            return;
+        }
+
+        // Once per mode per disappearance. When the plan cannot be made - a policy, a
+        // powercfg that refuses - Apply still succeeds on Balanced, the plan
+        // is still missing, and every tick after did it all again: Balanced
+        // forced over whatever the person had picked, a powercfg process
+        // and a firmware write, every minute for as long as it ran.
+        if (_planRepairTriedFor == mode) return;
+        _planRepairTriedFor = mode;
 
         try
         {
@@ -2439,9 +2470,12 @@ public partial class MainWindow : Window
         }
         catch (Exception)
         {
-            // Next tick, or the person picks again; the tabs show what is.
+            // The person picks again, or the next start tries once more; the tabs show what is.
         }
     }
+
+    /// <summary>The mode <see cref="KeepTheModesPlanAlive"/> last tried to put a plan back for.</summary>
+    private SystemMode? _planRepairTriedFor;
 
     /// <summary>
     /// Notices the card being switched off or on behind our back - the

@@ -78,6 +78,14 @@ public static class NduFix
     }
 
     /// <summary>
+    /// The Start values a restore may write: automatic, on demand, disabled.
+    /// 0 and 1 make a driver load at boot or system start, which NDU is not;
+    /// a number from anywhere else - the settings file is the account's to
+    /// edit, and this runs elevated - is not written into a driver's key.
+    /// </summary>
+    internal static int? Valid(int? start) => start is 2 or 3 or 4 ? start : null;
+
+    /// <summary>
     /// Sets NDU Start to 4 (Disabled) or restores the original value.
     /// Preserves original value in settings and registry backup.
     /// </summary>
@@ -91,8 +99,8 @@ public static class NduFix
             if (disable)
             {
                 var currentVal = key.GetValue(ValueName) as int? ?? 2;
-                var backup = key.GetValue(BackupValueName) as int?;
-                var original = backup ?? settings?.OriginalNduStart ?? currentVal;
+                var backup = Valid(key.GetValue(BackupValueName) as int?);
+                var original = backup ?? Valid(settings?.OriginalNduStart) ?? Valid(currentVal) ?? 2;
 
                 if (backup is null)
                 {
@@ -109,8 +117,8 @@ public static class NduFix
             }
             else
             {
-                var original = (key.GetValue(BackupValueName) as int?)
-                    ?? settings?.OriginalNduStart
+                var original = Valid(key.GetValue(BackupValueName) as int?)
+                    ?? Valid(settings?.OriginalNduStart)
                     ?? 2;
 
                 key.SetValue(ValueName, original, RegistryValueKind.DWord);
@@ -149,7 +157,7 @@ public static class NduFix
             using var key = Registry.LocalMachine.OpenSubKey(KeyPath, true);
             if (key is null) return false;
 
-            var original = fromSettings ?? (key.GetValue(BackupValueName) as int?);
+            var original = Valid(fromSettings) ?? Valid(key.GetValue(BackupValueName) as int?);
             if (original is null) return false;
 
             key.SetValue(ValueName, original, RegistryValueKind.DWord);

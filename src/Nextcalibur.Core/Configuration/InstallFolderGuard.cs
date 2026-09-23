@@ -114,6 +114,35 @@ public static class InstallFolderGuard
         directory.SetAccessControl(security);
     }
 
+    /// <summary>
+    /// Takes back what <see cref="Release"/> gave, on a copy under Program
+    /// Files: the account's explicit full control on the root. Elevated only.
+    ///
+    /// Release runs partway through an uninstall. An uninstall that stopped
+    /// after it - cancelled, killed, a file in use - left the account able to
+    /// replace the executable, and the next start registered the no-prompt
+    /// task again, because that decision looks at where the copy is, not at
+    /// who can write there. So this runs before the task is registered.
+    /// </summary>
+    public static bool Reclaim(string root)
+    {
+        if (!Directory.Exists(root) || !IsUnderProgramFiles(root)) return false;
+        var user = WindowsIdentity.GetCurrent().User;
+        if (user is null) return false;
+
+        var directory = new DirectoryInfo(root);
+        var security = directory.GetAccessControl();
+        var changed = false;
+        foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(SecurityIdentifier)))
+        {
+            if (rule.AccessControlType != AccessControlType.Allow || rule.IdentityReference != user) continue;
+            security.RemoveAccessRuleSpecific(rule);
+            changed = true;
+        }
+        if (changed) directory.SetAccessControl(security);
+        return changed;
+    }
+
     private static void TrySetOwner(string path, SecurityIdentifier owner)
     {
         try

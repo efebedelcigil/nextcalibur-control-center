@@ -142,12 +142,7 @@ public sealed class LedState
             {
                 var loaded = JsonSerializer.Deserialize<LedState>(File.ReadAllText(Path));
                 if (loaded is not null)
-                {
-                    // A file written by an older build may be missing profiles.
-                    foreach (var name in ProfileNames)
-                        loaded.Profiles.TryAdd(name, new LedProfile());
-                    return loaded;
-                }
+                    return Sanitised(loaded);
             }
         }
         catch
@@ -155,6 +150,42 @@ public sealed class LedState
             // A corrupt file just means falling back to white, which is harmless.
         }
         return new LedState();
+    }
+
+    /// <summary>
+    /// What was read, made safe to write to the firmware.
+    ///
+    /// The file is the account's, and this process is elevated: anything
+    /// running as the account can write it, and what it says ends up in the
+    /// mode byte sent to the embedded controller. The string-enum converter
+    /// takes numbers too, so "Effect": 15 loaded as an effect no firmware
+    /// was ever seen given and went out as 0xF0. Only named effects pass;
+    /// anything missing or null - which threw later, outside this method's
+    /// catch - is put back to its default.
+    /// </summary>
+    internal static LedState Sanitised(LedState loaded)
+    {
+        loaded.Profiles ??= new LedState().Profiles;
+        foreach (var name in loaded.Profiles.Keys.ToList())
+            if (loaded.Profiles[name] is null) loaded.Profiles[name] = new LedProfile();
+
+        // A file written by an older build may be missing profiles.
+        foreach (var name in ProfileNames)
+            loaded.Profiles.TryAdd(name, new LedProfile());
+
+        if (loaded.ActiveProfile is null || !loaded.Profiles.ContainsKey(loaded.ActiveProfile))
+            loaded.ActiveProfile = UserDefine;
+
+        foreach (var profile in loaded.Profiles.Values)
+        {
+            if (!Enum.IsDefined(profile.Effect)) profile.Effect = LedEffect.Static;
+            profile.BrightnessPercent = Math.Clamp(profile.BrightnessPercent, 0, 100);
+            profile.Colours ??= new LedProfile().Colours;
+            foreach (var zone in profile.Colours.Keys.ToList())
+                profile.Colours[zone] &= 0xFFFFFF;
+        }
+
+        return loaded;
     }
 
     private static readonly object SaveLock = new();

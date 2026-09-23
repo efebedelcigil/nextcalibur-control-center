@@ -245,8 +245,14 @@ public sealed class AppSettings
         // would spin, a negative one would throw at the timer.
         if (settings.PollIntervalMs is < 500 or > 60000) settings.PollIntervalMs = new AppSettings().PollIntervalMs;
 
+        // Written into a driver's key by an elevated process: only what that
+        // key may hold. See NduFix.Valid.
+        settings.OriginalNduStart = Hardware.NduFix.Valid(settings.OriginalNduStart);
+
         if (settings.PendingRestart is not null)
         {
+            settings.PendingRestart.Reasons ??= new();
+            settings.PendingRestart.ReasonArguments ??= new(StringComparer.OrdinalIgnoreCase);
             if (!IsRestartPending(settings.PendingRestart.BootTimeUtc, CurrentBootTimeUtc())
                 || settings.PendingRestart.Reasons.Count == 0)
             {
