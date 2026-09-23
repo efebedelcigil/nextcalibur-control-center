@@ -22,6 +22,10 @@ dotnet publish src\Nextcalibur.App\Nextcalibur.App.csproj `
     -c Release -o publish --nologo /p:Version=$Version
 Remove-Item publish\*.pdb, publish\*.xml -ErrorAction SilentlyContinue
 
+# The list the installed application checks itself against; last, after
+# anything that changes a file.
+& "$PSScriptRoot\tools\Write-IntegrityManifest.ps1" -Path publish
+
 Write-Host "==> Packaging Setup.exe" -ForegroundColor Cyan
 
 # Velopack refuses to pack a version that already exists in the releases folder,

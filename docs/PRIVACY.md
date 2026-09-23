@@ -37,9 +37,14 @@ unless you press something that says it will.
 
 ## What stays on the machine
 
-- **Settings** - `%AppData%\Nextcalibur\settings.json`: your preferences
-  (mode, thresholds, lighting, the switches on the Settings page).
-- **Log** - `%AppData%\Nextcalibur\logs\`: one file a day, seven kept,
+- **Settings** - `%ProgramData%\Nextcalibur\<your account's SID>\settings.json`
+  and `led.json`: your preferences (mode, thresholds, lighting, the switches
+  on the Settings page). Only administrators can change them - you can read
+  them - and each has a record of its hash and a last-good copy beside it,
+  so a change made from outside the application is noticed and undone.
+  Versions up to 0.5.8 kept them in `%AppData%\Nextcalibur`; they are moved
+  from there once and the old folder removed.
+- **Log** - `%ProgramData%\Nextcalibur\<your account's SID>\logs\`: one file a day, seven kept,
   events only - starts, mode changes, graphics switches, updates, faults.
   Never sensor readings, never anything typed. It is yours: *Open log* in
   the corner shows it, and it is only ever sent anywhere if you attach it to

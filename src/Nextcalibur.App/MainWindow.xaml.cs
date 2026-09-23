@@ -281,6 +281,10 @@ public partial class MainWindow : Window
         _support = HardwareSupport.Check();
         Log.Info("support", $"{_support.Level}: {string.Join(" | ", _support.Reasons)}");
         ApplySupportVerdict();
+
+        // The application, its settings and its dependencies, checked now
+        // and kept checked; see MainWindow.Integrity.
+        StartIntegrityWatch();
         if (_support.Level == SupportLevel.Unsupported) return;
 
         _mailboxSupported = EcMailbox.IsSupported();
@@ -2693,6 +2697,9 @@ public partial class MainWindow : Window
                     WatchWindowsItself();
                 }
 
+                // The settings every five minutes, everything else hourly.
+                WatchIntegrity();
+
                 // Once a minute on screen, once every five while hidden: two
                 // registry scans for things that change once in a machine's
                 // life - the vendor's plans going, the vendor's software coming
@@ -3246,6 +3253,10 @@ public partial class MainWindow : Window
 
     private void RefreshBanner()
     {
+        // First: nothing below matters as much as the application not being
+        // what was released.
+        if (ShowIntegrityBanner()) return;
+
         if (_mailboxFailed || !_mailboxSupported)
         {
             // Two very different situations used to share one message. Telling
@@ -3305,6 +3316,18 @@ public partial class MainWindow : Window
                 GetRestartReasonText(),
                 (SolidColorBrush)FindResource("Warn"),
                 showRestartButtons: true);
+            return;
+        }
+
+        // Said by ApplySupportVerdict at start, and then taken away by the
+        // first refresh, which found nothing else to say and collapsed the
+        // banner: a machine held to readings only was never told why.
+        if (_support.Level == SupportLevel.ReadOnly)
+        {
+            ShowBanner(
+                Strings.Get("S.Banner.ReadOnlyTitle"),
+                Strings.Get("S.Banner.ReadOnlyBody") + " " + string.Join(" ", _support.Reasons),
+                (SolidColorBrush)FindResource("Warn"));
             return;
         }
 

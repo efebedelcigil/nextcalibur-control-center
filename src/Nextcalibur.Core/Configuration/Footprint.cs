@@ -232,7 +232,7 @@ public static class Footprint
     {
         var traces = new List<Trace>
         {
-            new(Words.Get("S.Core.Trace.Settings", "Your settings"), SettingsExist(), NeedsElevation: false, KeepingIsReasonable: false),
+            new(Words.Get("S.Core.Trace.Settings", "Your settings"), SettingsExist(), NeedsElevation: true, KeepingIsReasonable: false),
             new(Words.Get("S.Core.Trace.StartupTask", "The start-with-Windows task"), StartupRegistration.IsEnabled, NeedsElevation: true, KeepingIsReasonable: false),
             new(Words.Get("S.Core.Trace.OpenTask", "The task that starts Nextcalibur without a prompt"),
                 Environment.ProcessPath is { } self && CardSwitchTasks.SchtasksOutput($"/query /tn \"{Elevation.OpenTask}\"") is not null,
@@ -288,16 +288,57 @@ public static class Footprint
     }
 
     /// <summary>
-    /// Removes what belongs to this application and needs no privileges.
-    /// Safe to call at any time, including from an uninstall hook.
+    /// Removes the settings, the lighting and the log: the protected folder
+    /// under %ProgramData% (every account's - the application is installed
+    /// for the machine) and what versions up to 0.5.8 left in the profile.
+    /// The protected folder needs administrator; unelevated only the
+    /// profile's part goes, and the elevated helper does the rest.
     /// </summary>
     public static void RemoveUserTraces()
     {
         Log.Remove();
+        Security.ProtectedStore.RemoveAll();
+        RemoveLegacyProfileFolder();
+        RemoveRunEntry();
+    }
 
+    /// <summary>
+    /// Carries the settings and the lighting out of the profile, where
+    /// versions up to 0.5.8 kept them and anything running as the account
+    /// could rewrite them, into the protected folder - once, elevated, and
+    /// through the same sanitising load as always. Then the old folder goes.
+    /// </summary>
+    public static void MoveSettingsOutOfProfile()
+    {
+        if (!MailboxAccess.IsElevated()) return;
         try
         {
-            var directory = Path.GetDirectoryName(SettingsPath);
+            if (!Security.ProtectedStore.IsRecorded(AppSettings.FileName) && File.Exists(AppSettings.LegacyPath))
+            {
+                AppSettings.Load().Save();
+                Log.Info("store", "Settings moved out of the profile into the protected folder");
+            }
+            if (!Security.ProtectedStore.IsRecorded(LedState.FileName) && File.Exists(LedState.LegacyPath))
+                LedState.Load().Save();
+
+            // Only once both are safely on the record: a move that failed
+            // halfway leaves the old files to be read again next time.
+            if (Security.ProtectedStore.IsRecorded(AppSettings.FileName) || !File.Exists(AppSettings.LegacyPath))
+                if (Security.ProtectedStore.IsRecorded(LedState.FileName) || !File.Exists(LedState.LegacyPath))
+                    RemoveLegacyProfileFolder();
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Log.Warn("store", "Could not move the settings out of the profile: " + ex.Message);
+        }
+    }
+
+    /// <summary>%AppData%\Nextcalibur - settings, lighting and logs of versions up to 0.5.8.</summary>
+    private static void RemoveLegacyProfileFolder()
+    {
+        try
+        {
+            var directory = Path.GetDirectoryName(AppSettings.LegacyPath);
             if (directory is not null && Directory.Exists(directory)) Directory.Delete(directory, recursive: true);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -305,8 +346,6 @@ public static class Footprint
             // A settings file that will not delete is not worth failing an
             // uninstall over; Windows will not miss the kilobyte.
         }
-
-        RemoveRunEntry();
     }
 
     /// <summary>
@@ -502,9 +541,6 @@ public static class Footprint
         return path.Length > 0 && File.Exists(path);
     }
 
-    private static string SettingsPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Nextcalibur", "settings.json");
-
-    private static bool SettingsExist() => File.Exists(SettingsPath);
+    private static bool SettingsExist() =>
+        Directory.Exists(Security.ProtectedStore.Root) || File.Exists(AppSettings.LegacyPath);
 }

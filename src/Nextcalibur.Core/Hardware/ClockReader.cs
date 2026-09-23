@@ -267,6 +267,9 @@ public sealed class GpuClockReader : IDisposable
         _tried = true;
         try
         {
+            // Not loaded at all unless it is signed as Windows installed it:
+            // loading a library runs its code, in an elevated process.
+            if (!Security.Integrity.NvmlIsTrusted()) return false;
             if (Init() != Success) return false;
             if (GetHandle(0, out _device) != Success)
             {

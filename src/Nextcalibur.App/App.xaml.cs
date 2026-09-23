@@ -153,6 +153,11 @@ public partial class App : Application
             && !Elevation.EnsureElevated(args, self))
             return;
 
+        // The protected folder before anything reads or logs into it, with
+        // its permissions checked and put back. Unelevated (a Velopack hook)
+        // this only looks. See Security.ProtectedStore.
+        Nextcalibur.Core.Security.ProtectedStore.EnsureFolder();
+
         // The words, before anything can show one: the uninstall hook and
         // the first-run repair ask their questions before the window exists.
         // Read before the uninstall removes the settings file.
@@ -172,6 +177,9 @@ public partial class App : Application
         {
             if (!Elevation.IsElevated()) return;
             Footprint.RemoveMachineTraces(removeRepair: !args.Contains(KeepRepairArgument));
+            // The settings live where only administrators can write, so the
+            // unelevated uninstall hook cannot take them; this does.
+            if (!args.Contains(KeepSettingsArgument)) Footprint.RemoveUserTraces();
             for (var i = 0; i + 1 < args.Length; i++)
             {
                 if (args[i] != RemoveDependencyArgument) continue;
@@ -226,6 +234,10 @@ public partial class App : Application
             WakeRunningInstance();
             return;
         }
+
+        // Once, what earlier versions left in the profile is carried over
+        // into the protected folder. See Security.ProtectedStore.
+        Footprint.MoveSettingsOutOfProfile();
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
 

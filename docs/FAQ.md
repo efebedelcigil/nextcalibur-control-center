@@ -46,7 +46,8 @@ Three kinds of thing, all of them in the open:
 - *Firmware*: the thermal profile that goes with each mode - the same write
   the vendor makes - and, only when you ask for it and confirm, the graphics
   mode.
-- *Its own footprint*: settings and a log under `%AppData%\Nextcalibur`, and
+- *Its own footprint*: settings and a log under `%ProgramData%\Nextcalibur`
+  (a folder only administrators can write, checked at every start), and
   two scheduled tasks (start elevated, start with Windows). The files
   themselves live under Program Files, or - for a copy an earlier version
   installed into the profile - in a folder the application has made
@@ -169,7 +170,7 @@ about you or the machine is in them beyond what any download carries.
 says the same in the window.
 
 **Where is the log, and what is in it?**
-`%AppData%\Nextcalibur\logs\nextcalibur-YYYYMMDD.log` - one file a day,
+`%ProgramData%\Nextcalibur\<your account's SID>\logs\nextcalibur-YYYYMMDD.log` - one file a day,
 seven kept, events only: starts, the support verdict, mode changes, charger
 transitions, graphics switches, updates, dependency installs, the vendor
 coming and going, exits, and anything that went wrong. Never sensor

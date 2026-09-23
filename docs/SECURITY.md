@@ -66,12 +66,45 @@ rules the code follows.
   system folder only (`SetDefaultDllDirectories`, `DllImportSearchPath.System32`):
   never from the current directory, never from `PATH`, both of which the
   account controls.
-- **Files in the profile** - settings, the lighting state, the log - are
-  written by the elevated process into folders the account owns. A folder
-  or file that is a reparse point (a junction, a symbolic link) is not
-  written to. What is read from those files is validated: thresholds and
-  the polling interval are clamped, an effect number that is not an
-  effect is not sent to the firmware.
+- **Settings, lighting and the log live where only administrators can
+  write.** Up to 0.5.8 they were in `%AppData%`, the account's own folder:
+  anything running as the account could rewrite them, and the elevated
+  process turned what they said into firmware commands and a driver's
+  start type. Since 0.5.9 they are in `%ProgramData%\Nextcalibur\<account SID>`,
+  owned by Administrators and not inheriting - SYSTEM and Administrators
+  may write, the account may only read. The folder's permissions are
+  checked at every start and put back if they drifted; a folder whose name
+  was taken before the first start is secured, and anything in it the
+  application did not write is deleted rather than adopted. The old files
+  are carried over once, through the same validation, and removed.
+- **What the application saves, it can tell apart from what somebody else
+  saved.** Every file in that folder is recorded - its SHA-256, and a
+  last-good copy. On every load and every five minutes the file is compared
+  with the record; a file changed, replaced or deleted from outside is not
+  used, the last-good copy takes its place, and the person is told. What
+  is read is validated as well: thresholds and the polling interval are
+  clamped, only named lighting effects reach the firmware, and only the
+  start types a network driver may have are written to NDU's key.
+- **The application checks that it is what was released.** Each release
+  carries `Nextcalibur.integrity.json` beside the executable - the SHA-256
+  of every file, written by the release workflow after signing
+  (`tools/Write-IntegrityManifest.ps1`). At start and every hour the
+  installed copy compares itself with it, checks that nothing but
+  SYSTEM, Administrators and TrustedInstaller may write to its folder
+  (taking back any other write permission it finds), and checks that every
+  .NET runtime library loaded into it is signed by Microsoft. If any of
+  that fails, the application stops writing to the firmware until it is
+  reinstalled, and says so. The honest limit: a check inside a program
+  cannot guard that program against something able to replace it - the
+  folder's permissions are what stop that, which is why they are checked
+  and restored rather than trusted.
+- **The dependencies are checked before they are used.** NVIDIA's
+  `nvml.dll` and PawnIO's driver are signed the way Windows installs
+  driver packages - through a signed catalog, not in the file - and are
+  verified that way (`CryptCATAdmin*` and `WinVerifyTrust`, offline) before
+  the library is loaded or the device opened. One that fails is not used.
+  The .NET runtime and PawnIO are only ever installed from downloads
+  verified as described above.
 - **The firmware is written in three registers only** (LED, display mode,
   thermal profile), each documented in `docs/PROTOCOL.md`, each from a
   value the code chose - never a value read from a file or the network.

@@ -264,6 +264,19 @@
     <sys:String x:Key="S.Dependency.Failed">{0} kurulamadı:</sys:String>
 
     <!-- Sistem sayfasındaki bildirim şeridi -->
+    <sys:String x:Key="S.Banner.IntegrityTitle">Nextcalibur yayımlandığı gibi değil</sys:String>
+    <sys:String x:Key="S.Banner.IntegrityBody">Yeniden kurulana kadar firmware'e hiçbir şey yazılmaz - kurulum sihirbazını çalıştırıp Onar'ı seçin.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramTitle">Nextcalibur'un kendi dosyaları değiştirilmiş</sys:String>
+    <sys:String x:Key="S.Integrity.DependencyTitle">Bir bağımlılık denetimden geçemedi</sys:String>
+    <sys:String x:Key="S.Integrity.StoreTitle">Bir ayar dışarıdan değiştirildi</sys:String>
+    <sys:String x:Key="S.Integrity.StoreBody">{0}, Nextcalibur dışında bir şey tarafından değiştirildi. Değişiklik uygulanmadı; Nextcalibur'un kaydettiği son sürüm geri konuldu.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramChanged">Bu dosya sürümle gelen dosya değil: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramUnverified">Sürümün dosya özetleri listesi eksik: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.FolderWritable">Bu, yönetici izni olmadan değiştirilebiliyor ve Nextcalibur bu izni geri alamadı: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.RuntimeUntrusted">Nextcalibur'un üzerinde çalıştığı bir .NET kitaplığı Microsoft imzalı değil: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.ModuleUnsigned">Nextcalibur'a imzasız bir kitaplık yüklendi: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.NvmlUntrusted">NVIDIA'nın nvml.dll dosyası Windows'un kurduğu şekilde imzalı değil; yüklenmedi, ekran kartı okumaları kapalı: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.PawnIoUntrusted">PawnIO sürücüsü Windows'un kurduğu şekilde imzalı değil; kullanılmadı, işlemci güç okuması kapalı: {0}.</sys:String>
     <sys:String x:Key="S.Banner.ReadOnlyTitle">Bu dizüstünde yalnızca okuma</sys:String>
     <sys:String x:Key="S.Banner.ReadOnlyBody">Donanım yazılımı arayüzü var ama bu uygulamanın geliştirildiği makine gibi yanıt vermedi; bu yüzden ona yazan hiçbir şey sunulmuyor:</sys:String>
     <sys:String x:Key="S.Banner.UnsupportedTitle">Bu dizüstü desteklenmiyor</sys:String>

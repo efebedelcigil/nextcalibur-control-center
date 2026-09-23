@@ -170,16 +170,13 @@ public class FootprintTests
     }
 
     [Fact]
-    public void The_user_scope_traces_need_no_permission()
+    public void The_settings_need_administrator_to_remove()
     {
-        // Settings and the startup entry live under the current user, so an
-        // uninstall can always clear them - no prompt, no question.
-        // Start-with-Windows is a scheduled task now, elevated like the rest; settings are the user-scope trace.
-        foreach (var name in new[] { "Your settings" })
-        {
-            var trace = Footprint.Survey().Single(t => t.Name == name);
-            Assert.False(trace.NeedsElevation);
-        }
+        // They live where only administrators can write (Security.ProtectedStore),
+        // so the unelevated uninstall hook hands them to the elevated helper.
+        var trace = Footprint.Survey().Single(t => t.Name == "Your settings");
+        Assert.True(trace.NeedsElevation);
+        Assert.False(trace.KeepingIsReasonable);
     }
 
     [Fact]

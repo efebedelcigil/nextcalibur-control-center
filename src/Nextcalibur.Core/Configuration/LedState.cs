@@ -130,17 +130,24 @@ public sealed class LedState
         Current.Colours[zone.ToString()] = packed;
     }
 
-    private static string Path => System.IO.Path.Combine(
+    /// <summary>The file's name in <see cref="Security.ProtectedStore"/>.</summary>
+    public const string FileName = "led.json";
+
+    /// <summary>Where versions up to 0.5.8 kept it; see <see cref="AppSettings.LegacyPath"/>.</summary>
+    internal static string LegacyPath => System.IO.Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Nextcalibur", "led.json");
+        "Nextcalibur", FileName);
 
     public static LedState Load()
     {
         try
         {
-            if (File.Exists(Path))
+            var text = Security.ProtectedStore.Read(FileName);
+            if (text is null && !Security.ProtectedStore.IsRecorded(FileName) && File.Exists(LegacyPath))
+                text = File.ReadAllText(LegacyPath);
+            if (text is not null)
             {
-                var loaded = JsonSerializer.Deserialize<LedState>(File.ReadAllText(Path));
+                var loaded = JsonSerializer.Deserialize<LedState>(text);
                 if (loaded is not null)
                     return Sanitised(loaded);
             }
@@ -196,14 +203,7 @@ public sealed class LedState
         {
             try
             {
-                if (!Security.ProfileFiles.EnsureOrdinaryFolder(System.IO.Path.GetDirectoryName(Path)!)) return;
-                // Written beside and moved into place, so a write cut short - the
-                // battery giving out, a forced power-off - leaves the previous file
-                // whole rather than a truncated one that loads as defaults.
-                var temporary = Path + ".tmp";
-                if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
-                File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-                File.Move(temporary, Path, overwrite: true);
+                Security.ProtectedStore.Write(FileName, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
             }
             catch
             {

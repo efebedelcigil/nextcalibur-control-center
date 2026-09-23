@@ -15,7 +15,7 @@ on hardware or in a clean Windows Sandbox, not reasoned about.
 | Which chip drives the display, whether the card is asleep or disabled | WMI's video-controller class and the PnP manager (`cfgmgr32`) | no |
 | The card's clock and power draw | `nvml.dll`, from the NVIDIA driver | no - degrades to `--` |
 | The processor's package power | the PawnIO driver, offered and installed on a yes | no - degrades to `--` |
-| Settings, the log, the theme | `%AppData%` | no |
+| Settings, the log, the theme | `%ProgramData%\Nextcalibur`, writable by administrators only | no |
 | The .NET 8 desktop runtime | installed by the wizard from Microsoft when the machine has none; patched by Windows; kept current by the application | **yes** - the application does not start without it |
 
 Nothing the vendor installs is loaded, read or written. The only mention of

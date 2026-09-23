@@ -202,16 +202,30 @@ public sealed class AppSettings
         PendingRestart = null;
     }
 
-    private static string Path => System.IO.Path.Combine(
+    /// <summary>The file's name in <see cref="Security.ProtectedStore"/>.</summary>
+    public const string FileName = "settings.json";
+
+    /// <summary>
+    /// Where versions up to 0.5.8 kept it: the account's own folder, which
+    /// anything running as the account can rewrite. Read only until the
+    /// elevated start has carried it over (Footprint.MoveSettingsOutOfProfile).
+    /// </summary>
+    internal static string LegacyPath => System.IO.Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Nextcalibur", "settings.json");
+        "Nextcalibur", FileName);
 
     public static AppSettings Load()
     {
         try
         {
-            if (File.Exists(Path))
-                return Migrate(JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(Path)));
+            // The protected copy, checked against its record. The old file
+            // only when nothing was ever recorded - never as a fallback for a
+            // protected file that failed its check.
+            var text = Security.ProtectedStore.Read(FileName);
+            if (text is null && !Security.ProtectedStore.IsRecorded(FileName) && File.Exists(LegacyPath))
+                text = File.ReadAllText(LegacyPath);
+            if (text is not null)
+                return Migrate(JsonSerializer.Deserialize<AppSettings>(text));
         }
         catch
         {
@@ -271,16 +285,9 @@ public sealed class AppSettings
         {
             try
             {
-                var dir = System.IO.Path.GetDirectoryName(Path)!;
-                // Not through a link: this process is elevated and the folder is the account's.
-                if (!Security.ProfileFiles.EnsureOrdinaryFolder(dir)) return;
-                // Written beside and moved into place, so a write cut short - the
-                // battery giving out, a forced power-off - leaves the previous file
-                // whole rather than a truncated one that loads as defaults.
-                var temporary = Path + ".tmp";
-                if (!Security.ProfileFiles.IsOrdinaryFileOrAbsent(temporary)) return;
-                File.WriteAllText(temporary, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-                File.Move(temporary, Path, overwrite: true);
+                // Recorded, beside a last-good copy, in the folder only
+                // administrators can write; see ProtectedStore.
+                Security.ProtectedStore.Write(FileName, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
             }
             catch
             {

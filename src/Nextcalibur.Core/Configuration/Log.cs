@@ -23,9 +23,12 @@ public static class Log
     private static bool _folderReady;
     private static string? _currentFile;
 
-    /// <summary>Where the files live: %AppData%\Nextcalibur\logs.</summary>
-    public static string Folder { get; private set; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Nextcalibur", "logs");
+    /// <summary>
+    /// Where the files live: the account's protected folder (see
+    /// Security.ProtectedStore), so nothing unelevated can write lines into
+    /// the record of what happened. The account may read it.
+    /// </summary>
+    public static string Folder { get; private set; } = Path.Combine(Security.ProtectedStore.Folder, "logs");
 
     /// <summary>
     /// The tests write into a folder of their own: proving something

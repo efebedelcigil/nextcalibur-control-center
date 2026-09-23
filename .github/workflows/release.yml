@@ -84,10 +84,18 @@ jobs:
           & $signtool.FullName sign /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com /f "$env:RUNNER_TEMP\cert.pfx" /p $env:SIGNING_CERT_PASSWORD publish\Nextcalibur.exe
           Remove-Item "$env:RUNNER_TEMP\cert.pfx"
 
-      - name: Package (Velopack)
+      # After signing, which changes the executable, and before packaging:
+      # the list the installed application checks its own files against.
+      # Fails the release when the executable is not on it.
+      - name: Integrity list
         shell: pwsh
         run: |
           Remove-Item publish\*.pdb, publish\*.xml -ErrorAction SilentlyContinue
+          tools/Write-IntegrityManifest.ps1 -Path publish
+
+      - name: Package (Velopack)
+        shell: pwsh
+        run: |
           & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack --packId Nextcalibur --packVersion ${{ steps.version.outputs.version }} --packDir publish --mainExe Nextcalibur.exe --packTitle "Nextcalibur Control Center" --packAuthors "Efe Bedelcigil" --icon src\Nextcalibur.App\Assets\app.ico -o releases
 
       - name: Package (wizard)

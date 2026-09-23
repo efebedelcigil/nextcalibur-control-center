@@ -171,6 +171,11 @@ public sealed class CpuPowerReader : IDisposable
         _tried = true;
         if (!IsIntel()) return false;
 
+        // The device is PawnIO's only if the driver behind it is: its file
+        // signed as Windows installed it, checked before the device is
+        // opened and the module handed to it.
+        if (!Security.Integrity.PawnIoIsTrusted()) return false;
+
         try
         {
             var handle = CreateFile(DevicePath, 0xC0000000 /* GENERIC_READ|WRITE */, 3 /* share r/w */,

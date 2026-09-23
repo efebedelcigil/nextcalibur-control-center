@@ -387,8 +387,13 @@ begin
     RegDeleteKeyIncludingSubkeys(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
     RegDeleteKeyIncludingSubkeys(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur');
 
+    // The application removed them already when it could; these catch what
+    // it could not - no application to run, or an earlier version's folder.
+    // Settings, lighting and logs live in the protected folder under
+    // ProgramData since 0.5.9, and in the profile before that.
     if RemoveTracesChoice then
     begin
+      DelTree(ExpandConstant('{commonappdata}\Nextcalibur'), True, True, True);
       DelTree(ExpandConstant('{userappdata}\Nextcalibur'), True, True, True);
     end;
   end;

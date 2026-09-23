@@ -266,6 +266,19 @@
     <sys:String x:Key="S.Dependency.Failed">{0} could not be installed:</sys:String>
 
     <!-- Banners on the System page -->
+    <sys:String x:Key="S.Banner.IntegrityTitle">Nextcalibur is not as it was released</sys:String>
+    <sys:String x:Key="S.Banner.IntegrityBody">Nothing is written to the firmware until it is reinstalled - run its installer and choose Repair.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramTitle">Nextcalibur's own files were changed</sys:String>
+    <sys:String x:Key="S.Integrity.DependencyTitle">A dependency failed its check</sys:String>
+    <sys:String x:Key="S.Integrity.StoreTitle">A setting was changed from outside</sys:String>
+    <sys:String x:Key="S.Integrity.StoreBody">{0} was changed by something other than Nextcalibur. The change was not applied; the last version Nextcalibur saved was put back.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramChanged">This file is not the one the release shipped: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.ProgramUnverified">The release's list of file hashes is missing: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.FolderWritable">This can be changed without administrator rights, and Nextcalibur could not take that back: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.RuntimeUntrusted">A .NET runtime library Nextcalibur runs on is not signed by Microsoft: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.ModuleUnsigned">An unsigned library was loaded into Nextcalibur: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.NvmlUntrusted">NVIDIA's nvml.dll is not signed the way Windows installed it, so it is not loaded and the graphics card's readings are off: {0}.</sys:String>
+    <sys:String x:Key="S.Integrity.PawnIoUntrusted">PawnIO's driver is not signed the way Windows installed it, so it is not used and the processor's power reading is off: {0}.</sys:String>
     <sys:String x:Key="S.Banner.ReadOnlyTitle">Readings only on this laptop</sys:String>
     <sys:String x:Key="S.Banner.ReadOnlyBody">The firmware interface is there, but it did not answer the way the machine this was built against does, so nothing that writes to it is offered:</sys:String>
     <sys:String x:Key="S.Banner.UnsupportedTitle">This laptop isn't supported</sys:String>

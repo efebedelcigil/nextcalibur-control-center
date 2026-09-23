@@ -143,6 +143,95 @@ public static class InstallFolderGuard
         return changed;
     }
 
+    /// <summary>
+    /// Whether anyone but SYSTEM, Administrators and TrustedInstaller may
+    /// change this file or folder - its content, its entries, its
+    /// permissions or its owner - by an entry that applies to it.
+    /// </summary>
+    public static bool WritableByOthers(string path)
+    {
+        try
+        {
+            FileSystemSecurity security = Directory.Exists(path)
+                ? new DirectoryInfo(path).GetAccessControl()
+                : new FileInfo(path).GetAccessControl();
+            foreach (FileSystemAccessRule rule in security.GetAccessRules(true, true, typeof(SecurityIdentifier)))
+                if (GrantsWriteToOthers(rule)) return true;
+            if (security.GetOwner(typeof(SecurityIdentifier)) is SecurityIdentifier owner && !IsTrusted(owner))
+                return true;   // an owner may always rewrite the permissions
+            return false;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Removes the explicit entries that let anyone else write, and gives an
+    /// untrusted owner's place to Administrators. Elevated only. Inherited
+    /// entries come from the folder above and are that folder's business.
+    /// </summary>
+    public static void RemoveOthersWrite(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                var info = new DirectoryInfo(path);
+                var security = info.GetAccessControl();
+                if (Strip(security)) info.SetAccessControl(security);
+            }
+            else if (File.Exists(path))
+            {
+                var info = new FileInfo(path);
+                var security = info.GetAccessControl();
+                if (Strip(security)) info.SetAccessControl(security);
+            }
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or InvalidOperationException or System.Security.SecurityException)
+        {
+            Configuration.Log.Warn("integrity", $"Could not take back write access on {path}: {ex.Message}");
+        }
+
+        static bool Strip(FileSystemSecurity security)
+        {
+            var changed = false;
+            foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(SecurityIdentifier)))
+            {
+                if (!GrantsWriteToOthers(rule)) continue;
+                security.RemoveAccessRuleSpecific(rule);
+                changed = true;
+            }
+            if (security.GetOwner(typeof(SecurityIdentifier)) is SecurityIdentifier owner && !IsTrusted(owner))
+            {
+                security.SetOwner(Administrators);
+                changed = true;
+            }
+            return changed;
+        }
+    }
+
+    private const FileSystemRights WriteRights =
+        FileSystemRights.WriteData | FileSystemRights.AppendData | FileSystemRights.WriteExtendedAttributes
+        | FileSystemRights.WriteAttributes | FileSystemRights.Delete | FileSystemRights.DeleteSubdirectoriesAndFiles
+        | FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership;
+
+    /// <summary>GENERIC_WRITE and GENERIC_ALL, which the enum does not name.</summary>
+    private const int GenericWriteOrAll = 0x40000000 | 0x10000000;
+
+    private static bool GrantsWriteToOthers(FileSystemAccessRule rule) =>
+        rule.AccessControlType == AccessControlType.Allow
+        && (rule.PropagationFlags & PropagationFlags.InheritOnly) == 0
+        && rule.IdentityReference is SecurityIdentifier sid && !IsTrusted(sid)
+        && (((int)rule.FileSystemRights & (int)WriteRights) != 0 || ((int)rule.FileSystemRights & GenericWriteOrAll) != 0);
+
+    private static bool IsTrusted(SecurityIdentifier sid) =>
+        sid == LocalSystem || sid == Administrators || sid.Value == TrustedInstaller;
+
+    /// <summary>NT SERVICE\TrustedInstaller, which owns Windows' own folders and some of Program Files.</summary>
+    private const string TrustedInstaller = "S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464";
+
     private static void TrySetOwner(string path, SecurityIdentifier owner)
     {
         try
