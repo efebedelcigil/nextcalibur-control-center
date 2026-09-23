@@ -589,6 +589,8 @@
     <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Body">What the application does with data, in its own words: nothing collected, nothing sent about you; the only requests are to GitHub for updates, and none with automatic checks off. The full policy is one click further.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Title">Start with Windows</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartHow.Title">How it starts</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartHow.Body">When it starts with Windows: quietly in the notification area, or with the window open. Only chosen while Start with Windows is on; turning that off and on again keeps the choice.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Office mode on battery</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">When the charger comes out, drop to Office; when it goes back in, return to the mode you had. On by default, as the original software did it.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Overheat warning</sys:String>

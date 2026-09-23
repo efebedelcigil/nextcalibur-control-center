@@ -118,6 +118,7 @@ public partial class MainWindow
         new TourStep("SettingReportButton", TourPage.Settings, "SettingReportButton", "Settings"),
         new TourStep("SettingPrivacyButton", TourPage.Settings, "SettingPrivacyButton", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "SettingStartWithWindows", "Settings"),
+        new TourStep("SettingStartHow", TourPage.Settings, "SettingStartHow", "Settings"),
         new TourStep("SettingOfficeOnBattery", TourPage.Settings, "SettingOfficeOnBattery", "Settings"),
         new TourStep("SettingOverheatWarning", TourPage.Settings, "SettingOverheatWarning", "Settings"),
         new TourStep("SettingInterval2", TourPage.Settings, "SettingInterval2", "Settings"),

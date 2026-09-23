@@ -114,12 +114,11 @@ makes.
 
 ## Uninstalling
 
-Easily removed from Windows Settings (`Installed apps`) or the classic
-Control Panel through its unified uninstaller (`unins000.exe`).
-
-During uninstall, it cleanly cleans up all scheduled tasks, binaries, shortcuts,
-and system changes. It interactively prompts you whether you also wish to delete
-your settings, log files, and trace data (`%AppData%\Nextcalibur`).
+From Windows Settings (`Installed apps`) or Control Panel. It asks whether to
+delete your settings and logs, then - as the application itself - about what
+you may want to keep: the power plans it created, the Windows repairs it made,
+and each dependency (PawnIO) separately. Everything else of its own - files,
+shortcuts, scheduled tasks, the sensor permission - goes without asking.
 
 ## Hardware
 

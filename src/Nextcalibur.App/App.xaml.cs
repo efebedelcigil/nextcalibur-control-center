@@ -93,6 +93,19 @@ public partial class App : Application
     public const string RemoveDependencyArgument = "--remove-dependency";
 
     /// <summary>
+    /// The Inno Setup uninstaller's way in: the same questions and the same
+    /// removal as Velopack's uninstall hook - the power plans, the repairs
+    /// and each dependency asked about - from an uninstaller that is already
+    /// elevated. Before this, Inno's uninstaller called
+    /// <see cref="CleanUpArgument"/> directly, which undid the repairs
+    /// without asking and never offered to remove PawnIO.
+    /// </summary>
+    public const string UninstallFromSetupArgument = "--uninstall-from-setup";
+
+    /// <summary>With <see cref="UninstallFromSetupArgument"/>: the person chose to keep settings and logs.</summary>
+    public const string KeepSettingsArgument = "--keep-settings";
+
+    /// <summary>
     /// Velopack runs this executable with one of its own switches for the
     /// install, update and uninstall hooks. Those runs must not elevate:
     /// the uninstall hook in particular was being handed to the scheduled
@@ -135,7 +148,7 @@ public partial class App : Application
         // the scheduled task (no prompt) or to a relaunch (one prompt), and
         // exits. Helper modes below are already elevated when they run.
         var self = Environment.ProcessPath;
-        if (self is not null && !args.Contains(CleanUpArgument)
+        if (self is not null && !args.Contains(CleanUpArgument) && !args.Contains(UninstallFromSetupArgument)
             && !args.Contains(CardSwitchTasks.Argument) && !IsVelopackHook(args)
             && !Elevation.EnsureElevated(args, self))
             return;
@@ -168,6 +181,15 @@ public partial class App : Application
                         dependency.Uninstall();
             }
             FinishUninstall(self);
+            Environment.Exit(0);
+            return;
+        }
+
+        // Elevated only, for the same reason as the switch above.
+        if (args.Contains(UninstallFromSetupArgument))
+        {
+            if (!Elevation.IsElevated()) return;
+            CleanUpOnUninstall(keepSettings: args.Contains(KeepSettingsArgument));
             Environment.Exit(0);
             return;
         }
@@ -387,10 +409,11 @@ public partial class App : Application
     /// question that remains has a safe default: no answer means keep, because
     /// an unanswered dialogue must not undo a repair.
     /// </summary>
-    private static void CleanUpOnUninstall()
+    private static void CleanUpOnUninstall(bool keepSettings = false)
     {
         Log.Info("uninstall", "Uninstall hook running");
-        Footprint.RemoveUserTraces();
+        if (keepSettings) Footprint.RemoveRunEntry();
+        else Footprint.RemoveUserTraces();
 
         var present = Footprint.Survey().Where(t => t.Present).ToList();
         var ours = present.Where(t => !t.KeepingIsReasonable).ToList();       // tasks, permission: always go

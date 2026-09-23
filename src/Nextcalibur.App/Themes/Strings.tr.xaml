@@ -587,6 +587,8 @@
     <sys:String x:Key="S.Tour.Step.SettingPrivacyButton.Body">Uygulamanın verilerle ne yaptığı, kendi sözcükleriyle: hiçbir şey toplanmaz, hakkınızda hiçbir şey gönderilmez; tek istekler güncellemeler için GitHub'a gider, otomatik denetim kapalıyken hiç gitmez. Tam metin bir tık ötededir.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Title">Windows ile başlat</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Nextcalibur'u oturum açılınca yönetici olarak, sormadan başlatır - zamanlanmış bir görevle; yönetici bir programın Windows ile başlamasının tek yolu budur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartHow.Title">Nasıl başlasın</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingStartHow.Body">Windows ile başladığında: bildirim alanında sessizce ya da pencere açık olarak. Yalnızca Windows ile başlat açıkken seçilir; kapatıp yeniden açmak seçimi korur.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Pilde Office modu</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">Şarj çıkarıldığında Office'e düş; takıldığında önceki moda dön. Varsayılan olarak açık, özgün yazılımın yaptığı gibi.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Aşırı ısınma uyarısı</sys:String>

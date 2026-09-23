@@ -163,6 +163,14 @@ public static class UserPresence
                 }
             }
 
+            // A maximised window is somebody working, not a game: with the
+            // taskbar set to hide itself, a maximised browser covers the
+            // whole monitor too, and was being taken for one - which stood
+            // down update checks and every Windows fix for as long as it
+            // stayed open. Borderless games size themselves to the monitor
+            // without being maximised.
+            if (IsZoomed(hwnd)) return false;
+
             if (!GetWindowRect(hwnd, out var rect)) return false;
 
             var hMon = MonitorFromWindow(hwnd, MonitorDefaultToNearest);
@@ -230,6 +238,10 @@ public static class UserPresence
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsZoomed(IntPtr hWnd);
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetDesktopWindow();

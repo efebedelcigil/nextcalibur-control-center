@@ -491,18 +491,20 @@ public class WindowsFaultsTests
     [Fact]
     public void UserPresence_gaming_or_heavy_load_methods_execute_safely()
     {
-        // Must never throw DllNotFoundException, NullReferenceException, or crash
-        _ = UserPresence.IsHeavyCpuLoad();
-        _ = UserPresence.IsForegroundFullScreenOrBorderless();
-        var gamingOrHeavy = UserPresence.IsGamingOrHeavyLoad();
-        Assert.True(gamingOrHeavy || !gamingOrHeavy);
+        // Must never throw DllNotFoundException, NullReferenceException, or crash.
+        // The answers depend on the machine running the tests; that they come
+        // back at all is what is checked.
+        var exception = Record.Exception(() =>
+        {
+            _ = UserPresence.IsHeavyCpuLoad();
+            _ = UserPresence.IsForegroundFullScreenOrBorderless();
+            _ = UserPresence.IsGamingOrHeavyLoad();
+        });
+        Assert.Null(exception);
     }
 
-    [Fact]
-    public void MemoryTrimmer_stands_down_during_gaming_or_heavy_load()
-    {
-        UserPresence.RecordSessionLock(false);
-        var reclaimed = MemoryTrimmer.TrimIfExceeds("dwm", 0);
-        Assert.Equal(0, reclaimed);
-    }
+    // No test calls MemoryTrimmer.TrimIfExceeds on a real process: the one
+    // that was here asked it to trim dwm with no floor, and on a machine low
+    // on memory running the tests elevated it would have done so - and it
+    // passed only because an ordinary test run cannot open dwm.
 }

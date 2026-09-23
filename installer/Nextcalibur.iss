@@ -121,6 +121,8 @@ en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalib
 tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
 en.VelopackFailed=The application could not be installed (Velopack exit code %1).
 tr.VelopackFailed=Uygulama kurulamadı (Velopack çıkış kodu %1).
+en.FolderNotEmpty=%1 already contains other files. Choose an empty folder, or a new one - Nextcalibur takes the whole folder, and removes it when uninstalled.
+tr.FolderNotEmpty=%1 içinde başka dosyalar var. Boş ya da yeni bir klasör seçin - Nextcalibur klasörün tamamını kullanır ve kaldırılırken siler.
 en.AskRemoveSettings=Do you want to delete your Nextcalibur settings, log files, and temporary trace files as well?
 tr.AskRemoveSettings=Nextcalibur ayarlarınızı, günlük dosyalarını ve artık sistem kayıtlarını da silmek istiyor musunuz?
 
@@ -368,14 +370,20 @@ end;
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Code: Integer;
+  Params: String;
 begin
   if CurUninstallStep = usUninstall then
   begin
     Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM Nextcalibur.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
 
+    // The application's own uninstall: it asks about the power plans, the
+    // repairs and each dependency, as Velopack's uninstall hook does, and
+    // removes the rest. Shown, not hidden - it asks questions.
     if FileExists(ExpandConstant('{app}\current\Nextcalibur.exe')) then
     begin
-      Exec(ExpandConstant('{app}\current\Nextcalibur.exe'), '--remove-system-changes', '', SW_HIDE, ewWaitUntilTerminated, Code);
+      Params := '--uninstall-from-setup';
+      if not RemoveTracesChoice then Params := Params + ' --keep-settings';
+      Exec(ExpandConstant('{app}\current\Nextcalibur.exe'), Params, '', SW_SHOWNORMAL, ewWaitUntilTerminated, Code);
     end;
 
     Exec(ExpandConstant('{sys}\schtasks.exe'), '/delete /tn "\Nextcalibur\Open" /f', '', SW_HIDE, ewWaitUntilTerminated, Code);
@@ -484,6 +492,28 @@ begin
   Result := ((Pos(PF, D) = 1) and (D <> PF)) or ((Pos(PF32, D) = 1) and (D <> PF32));
 end;
 
+// Whether a folder has anything in it.
+function FolderHasContent(const Dir: String): Boolean;
+var
+  Search: TFindRec;
+begin
+  Result := False;
+  if FindFirst(AddBackslash(Dir) + '*', Search) then
+  begin
+    try
+      repeat
+        if (Search.Name <> '.') and (Search.Name <> '..') then
+        begin
+          Result := True;
+          Exit;
+        end;
+      until not FindNext(Search);
+    finally
+      FindClose(Search);
+    end;
+  end;
+end;
+
 // A folder Setup cannot write to is no place to install; say so before the
 // wizard goes on.
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -497,6 +527,15 @@ begin
     if not UnderProgramFiles(Dir) then
     begin
       MsgBox(FmtMessage(CustomMessage('MustBeProgramFiles'), [ExpandConstant('{commonpf}')]), mbError, MB_OK);
+      Result := False;
+      exit;
+    end;
+    // Empty, or ours already. Velopack clears the folder it installs into
+    // and the uninstaller removes it, so a folder shared with anything else
+    // - "Program Files\Tools", say - would lose what was in it.
+    if DirExists(Dir) and FolderHasContent(Dir) and not FileExists(AddBackslash(Dir) + 'Update.exe') then
+    begin
+      MsgBox(FmtMessage(CustomMessage('FolderNotEmpty'), [Dir]), mbError, MB_OK);
       Result := False;
       exit;
     end;

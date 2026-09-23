@@ -302,6 +302,16 @@ public static class Footprint
             // uninstall over; Windows will not miss the kilobyte.
         }
 
+        RemoveRunEntry();
+    }
+
+    /// <summary>
+    /// The Run entry versions before the logon task used. Not a setting: it
+    /// starts a program that is being removed, so it goes even when the
+    /// person keeps their settings.
+    /// </summary>
+    public static void RemoveRunEntry()
+    {
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
@@ -363,9 +373,11 @@ public static class Footprint
         try { NduFix.RemoveBackupMarker(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
 
-        // Retire old versions with the user's repair-retention decision
-        try { RetireOldVersions(askUser: _ => removeRepair); }
-        catch (Exception ex) when (ex is not OutOfMemoryException) { }
+        // Not RetireOldVersions: everything on that list is removed above or
+        // below by name, and one of its entries migrates an old Run entry to
+        // the logon task - which, run here, put back the task this uninstall
+        // had just deleted.
+        RemoveRunEntry();
 
         if (!removeRepair) return;
         try { new PowerOverlayService().RemoveGuard(); }
