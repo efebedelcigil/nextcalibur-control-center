@@ -128,12 +128,12 @@ public class NetworkCostTests
         {
             var found = await dotnet.LatestAsync(http, CancellationToken.None);
             Assert.NotNull(found);
-            Assert.Equal(new Version(8, 99, 99), found!.Version);
+            Assert.Equal(Far, found!.Version);
             Assert.Null(found.Sha512);   // not known yet, and not worth 310 kB to know
         }
 
         Assert.Equal(4, counting.Hits("releases-index.json"));
-        Assert.Equal(0, counting.Hits("8.0/releases.json"));
+        Assert.Equal(0, counting.Hits(ChannelFile));
     }
 
     /// <summary>And the hash is fetched when it is about to be used.</summary>
@@ -148,10 +148,16 @@ public class NetworkCostTests
         var found = await dotnet.LatestAsync(http, CancellationToken.None);
         var resolved = await dotnet.ResolveBeforeDownloadAsync(http, found!, CancellationToken.None);
 
-        Assert.Equal(1, counting.Hits("8.0/releases.json"));
+        Assert.Equal(1, counting.Hits(ChannelFile));
         Assert.Equal("ab", resolved.Sha512);
         Assert.Equal(found!.Version, resolved.Version);
     }
+
+    /// <summary>The channel's own file, whatever channel the application targets.</summary>
+    private static string ChannelFile => DotNetRuntimeDependency.Channel + "/releases.json";
+
+    /// <summary>A version far above anything installed, in the channel the application targets.</summary>
+    private static Version Far => new(Version.Parse(DotNetRuntimeDependency.Channel).Major, 99, 99);
 
     /// <summary>Answers both .NET indexes, and counts which was asked for.</summary>
     private sealed class CountingByUrl : HttpMessageHandler
@@ -163,14 +169,14 @@ public class NetworkCostTests
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
             var url = request.RequestUri!.ToString();
-            var key = url.EndsWith("releases-index.json", StringComparison.Ordinal) ? "releases-index.json" : "8.0/releases.json";
+            var key = url.EndsWith("releases-index.json", StringComparison.Ordinal) ? "releases-index.json" : ChannelFile;
             _hits[key] = Hits(key) + 1;
 
             // A version far above anything installed, so the check always
             // wants the large index and the caching is what stops it.
             var body = key == "releases-index.json"
-                ? """{"releases-index":[{"channel-version":"8.0","latest-release":"8.99.99","support-phase":"active","eol-date":"2030-01-01"}]}"""
-                : """{"releases":[{"windowsdesktop":{"version":"8.99.99","files":[{"name":"windowsdesktop-runtime-win-x64.exe","url":"https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.99.99/windowsdesktop-runtime-8.99.99-win-x64.exe","hash":"ab"}]}}]}""";
+                ? $$"""{"releases-index":[{"channel-version":"{{DotNetRuntimeDependency.Channel}}","latest-release":"{{Far}}","support-phase":"active","eol-date":"2030-01-01"}]}"""
+                : $$"""{"releases":[{"windowsdesktop":{"version":"{{Far}}","files":[{"name":"windowsdesktop-runtime-win-x64.exe","url":"https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/{{Far}}/windowsdesktop-runtime-{{Far}}-win-x64.exe","hash":"ab"}]}}]}""";
 
             var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
             return Task.FromResult(response);

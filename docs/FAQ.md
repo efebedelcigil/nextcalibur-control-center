@@ -104,7 +104,7 @@ other. Change it on the Settings page; the switch is immediate and
 remembered.
 
 **Does it need .NET installed?**
-Yes: the .NET 8 desktop runtime. The wizard installs it from Microsoft when
+Yes: the .NET 10 desktop runtime (.NET 8 until 0.5.8). The wizard installs it from Microsoft when
 the machine has none, so on a normal install there is nothing to do. It is
 worth knowing why, because it changed in 0.5.4: the runtime used to be
 carried inside Nextcalibur, and that meant a .NET security fix could only

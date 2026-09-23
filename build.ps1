@@ -3,7 +3,7 @@
 #   .\build.ps1                 build + package
 #   .\build.ps1 -Version 0.2.0  package a specific version
 #
-# Requires: .NET 8 SDK, and the Velopack CLI (dotnet tool install -g vpk)
+# Requires: .NET 10 SDK, and the Velopack CLI (dotnet tool install -g vpk)
 
 param([string]$Version = "0.5.8")
 
@@ -34,11 +34,16 @@ Write-Host "==> Packaging Setup.exe" -ForegroundColor Cyan
 # working on it, so the previous attempt is cleared first. Earlier versions stay,
 # because the delta is built against them.
 Remove-Item "releases\Nextcalibur-$Version-*.nupkg" -ErrorAction SilentlyContinue
+# --framework: the package names the runtime it needs. Velopack checks for it
+# when an update is applied and installs it first when it is missing - how a
+# copy on .NET 8 (0.5.8 and earlier) moves to one on .NET 10 without being
+# left unable to start.
 vpk pack `
     --packId Nextcalibur `
     --packVersion $Version `
     --packDir publish `
     --mainExe Nextcalibur.exe `
+    --framework net10.0-x64-desktop `
     --packTitle "Nextcalibur Control Center" `
     --packAuthors "Efe Bedelcigil" `
     --icon src\Nextcalibur.App\Assets\app.ico `

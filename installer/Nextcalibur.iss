@@ -93,10 +93,10 @@ en.CompApp=Nextcalibur Control Center
 tr.CompApp=Nextcalibur Control Center
 en.CompDeps=Dependencies
 tr.CompDeps=Bağımlılıklar
-en.CompDotNet=.NET 8 desktop runtime - downloaded from Microsoft, about 60 MB
-tr.CompDotNet=.NET 8 masaüstü çalışma zamanı - Microsoft'tan indirilir, yaklaşık 60 MB
-en.CompDotNetPresent=.NET 8 desktop runtime - already installed
-tr.CompDotNetPresent=.NET 8 masaüstü çalışma zamanı - zaten kurulu
+en.CompDotNet=.NET 10 desktop runtime - downloaded from Microsoft, about 60 MB
+tr.CompDotNet=.NET 10 masaüstü çalışma zamanı - Microsoft'tan indirilir, yaklaşık 60 MB
+en.CompDotNetPresent=.NET 10 desktop runtime - already installed
+tr.CompDotNetPresent=.NET 10 masaüstü çalışma zamanı - zaten kurulu
 en.CompPawnIO=PawnIO driver - reads the processor's power (signed, open source, pawnio.eu)
 tr.CompPawnIO=PawnIO sürücüsü - işlemcinin güç tüketimini okur (imzalı, açık kaynak, pawnio.eu)
 en.CompPawnIOPresent=PawnIO driver - already installed
@@ -111,10 +111,10 @@ en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur w
 tr.PawnIOFailed=PawnIO sürücüsü şu an kurulamadı (%1). Nextcalibur onsuz da çalışır; daha sonra yeniden önerecek.
 en.PawnIOBadSignature=the download is not signed by namazso.eu
 tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
-en.DownloadingRuntime=Downloading the .NET 8 desktop runtime from Microsoft...
-tr.DownloadingRuntime=.NET 8 masaüstü çalışma zamanı Microsoft'tan indiriliyor...
-en.RuntimeFailed=The .NET 8 desktop runtime could not be installed (%1).%n%nNextcalibur runs on it and will not start without it. Install it from%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) and start Nextcalibur again.
-tr.RuntimeFailed=.NET 8 masaüstü çalışma zamanı kurulamadı (%1).%n%nNextcalibur bunun üzerinde çalışır ve o olmadan başlamaz. Şu adresten kurun:%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) ve Nextcalibur'u yeniden başlatın.
+en.DownloadingRuntime=Downloading the .NET 10 desktop runtime from Microsoft...
+tr.DownloadingRuntime=.NET 10 masaüstü çalışma zamanı Microsoft'tan indiriliyor...
+en.RuntimeFailed=The .NET 10 desktop runtime could not be installed (%1).%n%nNextcalibur runs on it and will not start without it. Install it from%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) and start Nextcalibur again.
+tr.RuntimeFailed=.NET 10 masaüstü çalışma zamanı kurulamadı (%1).%n%nNextcalibur bunun üzerinde çalışır ve o olmadan başlamaz. Şu adresten kurun:%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) ve Nextcalibur'u yeniden başlatın.
 en.RuntimeBadSignature=the download is not signed by Microsoft
 tr.RuntimeBadSignature=indirilen dosya Microsoft imzalı değil
 en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
@@ -123,8 +123,8 @@ en.VelopackFailed=The application could not be installed (Velopack exit code %1)
 tr.VelopackFailed=Uygulama kurulamadı (Velopack çıkış kodu %1).
 en.FolderNotEmpty=%1 already contains other files. Choose an empty folder, or a new one - Nextcalibur takes the whole folder, and removes it when uninstalled.
 tr.FolderNotEmpty=%1 içinde başka dosyalar var. Boş ya da yeni bir klasör seçin - Nextcalibur klasörün tamamını kullanır ve kaldırılırken siler.
-en.RuntimeRequired=Nextcalibur cannot run without the .NET 8 desktop runtime, so the installation was stopped. Nothing was installed. Check the internet connection and run Setup again.
-tr.RuntimeRequired=Nextcalibur .NET 8 masaüstü çalışma zamanı olmadan çalışamaz; kurulum durduruldu, hiçbir şey kurulmadı. İnternet bağlantısını kontrol edip kurulumu yeniden çalıştırın.
+en.RuntimeRequired=Nextcalibur cannot run without the .NET 10 desktop runtime, so the installation was stopped. Nothing was installed. Check the internet connection and run Setup again.
+tr.RuntimeRequired=Nextcalibur .NET 10 masaüstü çalışma zamanı olmadan çalışamaz; kurulum durduruldu, hiçbir şey kurulmadı. İnternet bağlantısını kontrol edip kurulumu yeniden çalıştırın.
 en.AskRemoveSettings=Do you want to delete your Nextcalibur settings, log files, and temporary trace files as well?
 tr.AskRemoveSettings=Nextcalibur ayarlarınızı, günlük dosyalarını ve artık sistem kayıtlarını da silmek istiyor musunuz?
 
@@ -208,7 +208,7 @@ begin
         if (Search.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
         begin
           Major := StrToIntDef(Copy(Search.Name, 1, Pos('.', Search.Name + '.') - 1), 0);
-          if Major >= 8 then
+          if Major >= 10 then
           begin
             Result := True;
             Exit;
@@ -273,7 +273,7 @@ begin
   // Microsoft's evergreen link for the channel: it redirects to the newest
   // patch, so a wizard built months ago still installs a current runtime.
   // The application takes it from there, patch by patch, afterwards.
-  DownloadPage.Add('https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe', 'windowsdesktop-runtime-win-x64.exe', '');
+  DownloadPage.Add('https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe', 'windowsdesktop-runtime-win-x64.exe', '');
   DownloadPage.SetText(CustomMessage('DownloadingRuntime'), '');
   DownloadPage.Show;
   try

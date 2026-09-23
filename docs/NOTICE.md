@@ -26,7 +26,7 @@ this project interoperates with.
 | Velopack (installer and updater engine) | MIT | NuGet package reference; its `Update.exe` and stub are Velopack's signed binaries |
 | PawnIO `IntelMSR` module | LGPL-2.1, licence alongside | `src/Nextcalibur.Core/Resources/PawnIO/`; handed to the PawnIO driver through its documented interface, not linked into this code |
 | Inno Setup (the installer wizard) | Inno Setup licence | used at build time; not in the repository |
-| .NET 8 desktop runtime | MIT | carried inside the published package |
+| .NET 10 desktop runtime | MIT | installed on the machine from Microsoft; not carried in the package since 0.5.4 |
 
 ## Interoperability
 

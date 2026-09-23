@@ -5,7 +5,7 @@
     <!-- The Windows 10 SDK projection, for one thing: toast notifications with
          a button, which the tray's balloon cannot carry. Everything else in
          this project is plain WPF; the floor stays at 1809. -->
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -38,8 +38,11 @@
          button and notification as everything else. Windows patches a
          shared runtime by itself as well, which is the point.
 
-         RollForward=Major: if the 8.0 runtime is ever gone and a newer one
-         is there, the application runs on that rather than not at all. -->
+         RollForward=Major: if the 10.0 runtime is ever gone and a newer one
+         is there, the application runs on that rather than not at all.
+
+         .NET 10 since 0.5.9: .NET 8 left support on 10 November 2026, and
+         10 is the long-term release, supported until November 2028. -->
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <RollForward>Major</RollForward>
