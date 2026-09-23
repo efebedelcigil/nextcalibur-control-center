@@ -18,18 +18,18 @@
     8.0.31 fixed five CVEs, and this check exists because of it.
 
 .PARAMETER Channel
-    The .NET channel the application targets, e.g. 8.0.
+    The .NET channel the application targets, e.g. 10.0.
 
 .PARAMETER Path
     Optional: the published application. When it carries a runtime, the
     patch is checked as well.
 
 .EXAMPLE
-    tools\Check-Runtime.ps1 -Channel 8.0 -Path publish\Nextcalibur.exe
+    tools\Check-Runtime.ps1 -Channel 10.0 -Path publish\Nextcalibur.exe
 #>
 [CmdletBinding()]
 param(
-    [string]$Channel = "8.0",
+    [string]$Channel = "10.0",
     [string]$Path
 )
 
@@ -77,7 +77,7 @@ if ($Path) {
         }
     }
 
-    # The desktop assemblies keep their 8.0.0 identity across the channel's
+    # The desktop assemblies keep their x.0.0 identity across the channel's
     # life, so anything above that is the runtime's own patch - and a
     # framework-dependent build has nothing above it.
     $carried = $found.Keys | ForEach-Object { [version]$_ } | Where-Object { $_.Build -gt 0 } | Sort-Object -Descending | Select-Object -First 1

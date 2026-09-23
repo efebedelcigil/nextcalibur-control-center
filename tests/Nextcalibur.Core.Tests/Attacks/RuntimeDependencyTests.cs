@@ -29,15 +29,15 @@ public class RuntimeDependencyTests
             },
         });
 
-    private const string Real = "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.31/windowsdesktop-runtime-8.0.31-win-x64.exe";
+    private const string Real = "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/10.0.12/windowsdesktop-runtime-10.0.12-win-x64.exe";
 
     [Fact]
     public void The_newest_release_is_read_with_its_hash()
     {
-        var file = DotNetRuntimeDependency.Newest(Parse(Index("8.0.31", "windowsdesktop-runtime-win-x64.exe", Real)));
+        var file = DotNetRuntimeDependency.Newest(Parse(Index("10.0.12", "windowsdesktop-runtime-win-x64.exe", Real)));
 
         Assert.NotNull(file);
-        Assert.Equal(new Version(8, 0, 31), file!.Version);
+        Assert.Equal(new Version(10, 0, 12), file!.Version);
         Assert.Equal(new Uri(Real), file.Download);
         Assert.Equal("ab12", file.Sha512);
     }
@@ -61,14 +61,14 @@ public class RuntimeDependencyTests
     [Fact]
     public void A_release_whose_link_is_not_microsofts_is_no_release_at_all()
     {
-        Assert.Null(DotNetRuntimeDependency.Newest(Parse(Index("8.0.31", "windowsdesktop-runtime-win-x64.exe", "https://evil.example/x.exe"))));
+        Assert.Null(DotNetRuntimeDependency.Newest(Parse(Index("10.0.12", "windowsdesktop-runtime-win-x64.exe", "https://evil.example/x.exe"))));
     }
 
     [Theory]
     [InlineData("""{"releases":[]}""")]
     [InlineData("""{"releases":{}}""")]
     [InlineData("""{}""")]
-    [InlineData("""{"releases":[{"windowsdesktop":{"version":"8.0.31"}}]}""")]
+    [InlineData("""{"releases":[{"windowsdesktop":{"version":"10.0.12"}}]}""")]
     [InlineData("""{"releases":[{"windowsdesktop":{"version":"nonsense","files":[]}}]}""")]
     [InlineData("""{"releases":[{"windowsdesktop":{"version":"7.0.20","files":[{"name":"windowsdesktop-runtime-win-x64.exe","url":"https://builds.dotnet.microsoft.com/x.exe"}]}}]}""")]
     [InlineData("""[]""")]
@@ -79,13 +79,13 @@ public class RuntimeDependencyTests
 
     /// <summary>Only the x64 desktop installer; not the ASP.NET one, not arm64, not the zip.</summary>
     [Theory]
-    [InlineData("windowsdesktop-runtime-8.0.31-win-x64.exe", true)]
-    [InlineData("windowsdesktop-runtime-8.0.31-win-arm64.exe", false)]
-    [InlineData("windowsdesktop-runtime-8.0.31-win-x86.exe", false)]
-    [InlineData("windowsdesktop-runtime-8.0.31-win-x64.zip", false)]
+    [InlineData("windowsdesktop-runtime-10.0.12-win-x64.exe", true)]
+    [InlineData("windowsdesktop-runtime-10.0.12-win-arm64.exe", false)]
+    [InlineData("windowsdesktop-runtime-10.0.12-win-x86.exe", false)]
+    [InlineData("windowsdesktop-runtime-10.0.12-win-x64.zip", false)]
     public void Only_the_x64_installer(string name, bool found)
     {
-        var file = DotNetRuntimeDependency.Newest(Parse(Index("8.0.31", name, Real)));
+        var file = DotNetRuntimeDependency.Newest(Parse(Index("10.0.12", name, Real)));
         Assert.Equal(found, file is not null);
     }
 

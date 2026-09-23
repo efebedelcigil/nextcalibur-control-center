@@ -33,10 +33,10 @@ jobs:
           $v = "${{ github.ref_name }}".TrimStart('v')
           "version=$v" >> $env:GITHUB_OUTPUT
 
-      - name: .NET 8 SDK
+      - name: .NET 10 SDK
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68   # v6
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
           # Not the runner's preinstalled SDK: it lags, and a self-contained
           # build carries whatever runtime its SDK bundles. 0.5.3 went out
           # with 8.0.30 five days after 8.0.31 fixed five CVEs.
@@ -79,7 +79,7 @@ jobs:
       # stale one.
       - name: The runtime channel must be supported
         shell: pwsh
-        run: tools/Check-Runtime.ps1 -Channel 8.0 -Path publish/Nextcalibur.exe
+        run: tools/Check-Runtime.ps1 -Channel 10.0 -Path publish/Nextcalibur.exe
 
       - name: Sign the executable
         if: ${{ env.SIGNING_CERT_PFX_BASE64 != '' }}
@@ -105,7 +105,7 @@ jobs:
       - name: Package (Velopack)
         shell: pwsh
         run: |
-          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack --packId Nextcalibur --packVersion ${{ steps.version.outputs.version }} --packDir publish --mainExe Nextcalibur.exe --packTitle "Nextcalibur Control Center" --packAuthors "Efe Bedelcigil" --icon src\Nextcalibur.App\Assets\app.ico -o releases
+          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack --packId Nextcalibur --packVersion ${{ steps.version.outputs.version }} --packDir publish --mainExe Nextcalibur.exe --framework net10.0-x64-desktop --packTitle "Nextcalibur Control Center" --packAuthors "Efe Bedelcigil" --icon src\Nextcalibur.App\Assets\app.ico -o releases
 
       - name: Package (wizard)
         run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.version }}" installer\Nextcalibur.iss'

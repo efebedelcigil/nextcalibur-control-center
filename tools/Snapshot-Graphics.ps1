@@ -63,7 +63,7 @@ function Get-NvmlReachable {
     # Whether NVML still answers. A disabled device usually means it does not,
     # which matters because the clock reading depends on it.
     try {
-        $out = & "$PSScriptRoot\..\src\Nextcalibur.Cli\bin\Release\net8.0-windows\nextcalibur.exe" clocks 2>&1 |
+        $out = & "$PSScriptRoot\..\src\Nextcalibur.Cli\bin\Release\net10.0-windows\nextcalibur.exe" clocks 2>&1 |
                Select-Object -First 1
         return "$out"
     } catch {

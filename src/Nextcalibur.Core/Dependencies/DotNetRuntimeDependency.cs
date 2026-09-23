@@ -34,10 +34,10 @@ public sealed class DotNetRuntimeDependency : Dependency
     /// of the target framework in <c>Nextcalibur.App.csproj</c>. A test
     /// holds the two together.
     /// </summary>
-    public const string Channel = "8.0";
+    public const string Channel = "10.0";
 
     /// <summary>Nothing older than this can run the application.</summary>
-    public static readonly Version Minimum = new(8, 0, 0);
+    public static readonly Version Minimum = new(10, 0, 0);
 
     public override string Id => "dotnet";
     public override string Name => Words.Get("S.Core.DotNet.Name", ".NET {0} desktop runtime", Channel);

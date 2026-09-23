@@ -21,7 +21,7 @@ interface. Windows 11, English and Turkish.
 | `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - asks for administrator rights at every start (see *Why it runs as administrator*), and needs the [.NET 8 desktop runtime](https://dotnet.microsoft.com/download/dotnet/8.0) already installed, which the wizard would have put there for you. |
 | the rest | Read by the application's own updater; not for you. |
 
-About 12 MB. It needs the .NET 8 desktop runtime, and installs it from
+About 12 MB. It needs the .NET 10 desktop runtime, and installs it from
 Microsoft if the machine has none - after that Windows patches it like
 anything else, and Nextcalibur offers the newer one when there is one, the
 same way it offers its own updates. (Until 0.5.4 the runtime was carried
@@ -157,7 +157,7 @@ from an elevated prompt.
 
 ## Building
 
-Requires the .NET 8 SDK.
+Requires the .NET 10 SDK.
 
 ```
 dotnet build Nextcalibur.sln -c Release

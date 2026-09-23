@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
+    <!-- SYSLIB0057: the tests read signers out of signed files the way the
+         library does, and for the same reason - X509CertificateLoader has no
+         counterpart for Authenticode-signed files. See Security/Authenticode.cs. -->
+    <NoWarn>$(NoWarn);SYSLIB0057</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
