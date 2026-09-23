@@ -59,7 +59,7 @@ dialog.
 
 | | Cost | Notes |
 |---|---|---|
-| **SignPath Foundation** | free for open source | Applied for on 13 September 2026. Signing is done in their service from the CI build after their review; reputation builds on their certificate. The route this project is waiting on. |
+| **SignPath Foundation** | free for open source | Applied for on 13 September 2026 and **declined** in September: the project is not yet known well enough. Worth applying again once it is. Signing is done in their service from the CI build; reputation builds on their certificate. |
 | Azure Trusted Signing | ~$10/month | Microsoft's; individuals can be validated; reputation from the start. |
 | OV certificate | ~$200-400/year | Hardware token or cloud HSM since 2023. |
 | EV certificate | ~$300-600/year | Organisations only; immediate reputation. |

@@ -26,8 +26,9 @@ Microsoft if the machine has none - after that Windows patches it like
 anything else, and Nextcalibur offers the newer one when there is one, the
 same way it offers its own updates. (Until 0.5.4 the runtime was carried
 inside the package, which meant a .NET security fix could only reach you as
-a new Nextcalibur.) The installer is not code-signed, so SmartScreen
-warns: *More info → Run anyway*. Every release is built by a public GitHub
+a new Nextcalibur.) The installer is not code-signed - the free route for
+open-source projects was declined for now, the project not being known well
+enough yet - so SmartScreen warns: *More info → Run anyway*. Every release is built by a public GitHub
 Actions workflow from a tag, with a build-provenance attestation; any file on
 the release page can be checked with
 `gh attestation verify <file> --repo efebedelcigil/nextcalibur-control-center`.
@@ -77,9 +78,10 @@ so a server that answers "not modified" sends no body.
 | A Settings page | everything the tray menu has, kept in step with it; the language; start-up preference (tray or window); WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
 | Tray icon, start with Windows, self-update, dependency update, a log | |
 | Dark, light or Windows' theme; the application's own dialogues | |
+| Nothing outside it changes it | settings where only administrators can write, recorded and put back if changed from outside; the application checks its own files, its folder's permissions and the .NET runtime under it, and stops writing to the firmware if any of that fails; NVIDIA's and PawnIO's files verified before use - see [docs/SECURITY.md](docs/SECURITY.md) |
 | Fan control | **deliberately not implemented** - see the FAQ |
 
-The guided tour is the manual: sixty-six steps, one control at a time.
+The guided tour is the manual: sixty-eight steps, one control at a time.
 
 ## Why it runs as administrator
 
@@ -130,7 +132,8 @@ measured there:
 | Laptop | Casper Excalibur G870 (Tongfang **JS970** barebone) |
 | CPU / GPU | Intel Core i7-12650H / NVIDIA GeForce RTX 4050 Laptop GPU + Intel UHD Graphics |
 | Firmware | AMI BIOS `QQ141` |
-| Windows | Windows 11 Pro, Insider Dev channel, build 10.0.29661 |
+| Windows | Windows 11 Pro, Insider Dev channel, build 10.0.29667 |
+| Runtime | .NET 10 |
 | Interface | ACPI-WMI `RW_GMWMI` on `ACPI\PNP0C14`, through the in-box `wmiacpi.sys` |
 
 The model name is read at runtime and never written into the source. A
@@ -147,7 +150,7 @@ GUIDs or direct EC port I/O are not supported.
 - [docs/PRIVACY.md](docs/PRIVACY.md) - the privacy policy
 - [docs/PROTOCOL.md](docs/PROTOCOL.md) - the firmware interface, with the evidence for each claim
 - [docs/CLEAN-INSTALL.md](docs/CLEAN-INSTALL.md) - what the application needs on a machine that never had the vendor's software
-- [docs/RELEASING.md](docs/RELEASING.md) - how releases are built, verified and (one day) signed
+- [docs/RELEASING.md](docs/RELEASING.md) - how releases are built and verified, and the signing options
 - [docs/SECURITY.md](docs/SECURITY.md) - how to report a vulnerability
 - `docs/releases/` - the notes of every release
 
