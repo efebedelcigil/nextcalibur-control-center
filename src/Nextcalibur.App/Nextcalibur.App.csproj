@@ -67,8 +67,9 @@
     <!-- WFAC010 is a WinForms analyzer asking for ApplicationHighDpiMode instead of
          the manifest's dpiAware block. This is a WPF application; the manifest is
          the only route to PerMonitorV2 here, and WinForms is enabled only for the
-         tray icon. See app.manifest. -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+         tray icon. See app.manifest. WFO0003 is the same analyzer under its
+         .NET 10 name. -->
+    <NoWarn>$(NoWarn);WFAC010;WFO0003</NoWarn>
   </PropertyGroup>
 
   <!-- A custom Main is needed so Velopack's hooks run before any UI exists.
