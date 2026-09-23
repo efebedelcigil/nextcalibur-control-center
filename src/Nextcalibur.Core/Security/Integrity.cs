@@ -292,7 +292,9 @@ public static class Integrity
     {
         try
         {
+            #pragma warning disable SYSLIB0057
             using var certificate = System.Security.Cryptography.X509Certificates.X509Certificate.CreateFromSignedFile(file);
+            #pragma warning restore SYSLIB0057
             return true;
         }
         catch (Exception ex) when (ex is CryptographicException or IOException)

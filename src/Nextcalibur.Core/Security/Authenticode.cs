@@ -14,6 +14,9 @@ namespace Nextcalibur.Core.Security;
 /// chain and the revocation, the way Windows itself does before it trusts
 /// a driver; this is that call and nothing else.
 /// </summary>
+// SYSLIB0057 (.NET 9+): X509CertificateLoader has no counterpart for reading the
+// signer out of a signed PE file or catalog. The signature itself is verified
+// by WinVerifyTrust before this; the certificate is read only for its subject.
 public static class Authenticode
 {
     /// <summary>
@@ -26,7 +29,9 @@ public static class Authenticode
         if (!SignatureIsValid(file, offline)) return false;
         try
         {
+            #pragma warning disable SYSLIB0057
             using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(file));
+            #pragma warning restore SYSLIB0057
             return HasSubjectComponent(certificate, subjectComponent);
         }
         catch (Exception ex) when (ex is System.Security.Cryptography.CryptographicException or IOException)
@@ -58,7 +63,9 @@ public static class Authenticode
     {
         try
         {
+            #pragma warning disable SYSLIB0057
             using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(catalog));
+            #pragma warning restore SYSLIB0057
             return HasSubjectComponent(certificate, subjectComponent);
         }
         catch (Exception ex) when (ex is System.Security.Cryptography.CryptographicException or IOException)
