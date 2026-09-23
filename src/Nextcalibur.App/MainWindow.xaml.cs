@@ -2835,6 +2835,10 @@ public partial class MainWindow : Window
         var chipName = Strings.Get(overheat.IsCpu ? "S.Heat.ChipCpu" : "S.Heat.ChipGpu");
         var title = Strings.Get("S.Heat.WhileAway", overheat.MaxTemperatureC, chipName);
         _tray?.ShowMessage(title, Strings.Get("S.Heat.Body"));
+
+        // Told. If it is still over the line, the next tick must not say it
+        // again in other words; the warning re-arms after the usual clear drop.
+        _overheatNotified = true;
     }
 
     // ------------------------------------------------------------------ power
