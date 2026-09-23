@@ -42,8 +42,17 @@ jobs:
           # with 8.0.30 five days after 8.0.31 fixed five CVEs.
           check-latest: true
 
+      # The same version as the Velopack package the application is built
+      # with, read from the project file: Dependabot moves the package, and a
+      # packager of another version is not something to find out about from
+      # an update that does not apply.
       - name: Velopack CLI
-        run: dotnet tool install -g vpk --version 1.2.0
+        shell: pwsh
+        run: |
+          $version = ([xml](Get-Content src/Nextcalibur.App/Nextcalibur.App.csproj)).Project.ItemGroup.PackageReference |
+            Where-Object { $_.Include -eq 'Velopack' } | Select-Object -First 1 -ExpandProperty Version
+          if (-not $version) { throw 'No Velopack PackageReference in the project file.' }
+          dotnet tool install -g vpk --version $version
 
       - name: Inno Setup 6
         run: choco install innosetup --no-progress -y

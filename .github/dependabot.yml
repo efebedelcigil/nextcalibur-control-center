@@ -6,8 +6,8 @@
 # the source, and Nextcalibur keeps that one current on the machine
 # (DotNetRuntimeDependency).
 #
-# What may merge itself is decided in dependabot-merge.yml: a patch, once
-# the build and the tests have passed, and nothing else.
+# What may merge itself is decided in dependabot-merge.yml: everything, once
+# the build and the tests have passed, except a major version of Velopack.
 version: 2
 
 updates:
