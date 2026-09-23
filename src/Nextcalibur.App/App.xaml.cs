@@ -140,6 +140,19 @@ public partial class App : Application
         // and the current directory is the application's own.
         HardenSearchPaths();
 
+        // First, before anything that can fail: everything from here to the
+        // window - elevation, the settings, the retirement pass, the tasks,
+        // the first run - used to run before these were registered, and a
+        // fault there ended the process without a line anywhere (seen in the
+        // sandbox, 23 September 2026: started, logged its start, and nothing).
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            Log.Error("crash", "Unhandled exception; the process is ending", e.ExceptionObject as Exception);
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            Log.Error("task", "Unobserved task exception", e.Exception);
+            e.SetObserved();
+        };
+
         // One taskbar identity, claimed before anything can create a window -
         // Velopack's hooks included, since they may show one.
         AppIdentity.Claim();
@@ -243,7 +256,8 @@ public partial class App : Application
 
         // The retirement pass cleans up traces of features that have been dropped in this
         // or earlier versions (see Footprint.RetireOldVersions and docs/BRIEF.md §32).
-        Footprint.RetireOldVersions(executablePath: self);
+        var retired = Footprint.RetireOldVersions(executablePath: self);
+        Log.Info("start", $"Retirement pass: {retired.Count} trace(s) removed");
 
         // Elevated now. The on-demand task is what makes the next start
         // prompt-free; registering it is idempotent and costs a schtasks call.
@@ -262,7 +276,7 @@ public partial class App : Application
                 Log.Warn("install", "Could not check the install folder's permissions: " + ex.Message);
             }
 
-            Elevation.RegisterOpenTask(self);
+            Log.Info("start", Elevation.RegisterOpenTask(self) ? "No-prompt task registered" : "No-prompt task already in place, or not allowed for this copy");
             Footprint.EnsureUninstallRegistration(self);
 
             // An installed copy in the profile (the earlier versions' place)
@@ -290,13 +304,6 @@ public partial class App : Application
             Log.Info("first-run", "Marker from the installer found");
             FirstRun();
         }
-        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            Log.Error("crash", "Unhandled exception; the process is ending", e.ExceptionObject as Exception);
-        TaskScheduler.UnobservedTaskException += (_, e) =>
-        {
-            Log.Error("task", "Unobserved task exception", e.Exception);
-            e.SetObserved();
-        };
 
         var app = new App();
         app.InitializeComponent();
@@ -549,6 +556,14 @@ public partial class App : Application
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
+                // Not inherited: this process's current directory is its own
+                // folder (HardenSearchPaths), and a folder that is some
+                // process's current directory cannot be removed. The script
+                // spent its two minutes failing to delete the folder it was
+                // standing in, and left current\ and the root behind - the
+                // root still carrying the account's full control (sandbox,
+                // 23 September 2026).
+                WorkingDirectory = Environment.SystemDirectory,
             });
             Log.Info("uninstall", "Folder removal scheduled: " + root);
         }

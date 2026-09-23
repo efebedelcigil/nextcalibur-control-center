@@ -111,6 +111,8 @@ en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur w
 tr.PawnIOFailed=PawnIO sürücüsü şu an kurulamadı (%1). Nextcalibur onsuz da çalışır; daha sonra yeniden önerecek.
 en.PawnIOBadSignature=the download is not signed by namazso.eu
 tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
+en.DownloadingPawnIO=Downloading the PawnIO driver from its publisher...
+tr.DownloadingPawnIO=PawnIO sürücüsü yayıncısından indiriliyor...
 en.DownloadingRuntime=Downloading the .NET 10 desktop runtime from Microsoft...
 tr.DownloadingRuntime=.NET 10 masaüstü çalışma zamanı Microsoft'tan indiriliyor...
 en.RuntimeFailed=The .NET 10 desktop runtime could not be installed (%1).%n%nNextcalibur runs on it and will not start without it. Install it from%nhttps://dotnet.microsoft.com/download/dotnet/8.0 (Desktop Runtime, x64) and start Nextcalibur again.
@@ -327,6 +329,8 @@ begin
   begin
     DownloadPage.Clear;
     DownloadPage.Add('https://github.com/namazso/PawnIO.Setup/releases/latest/download/PawnIO_setup.exe', 'PawnIO_setup.exe', '');
+    // Its own words: the page still said the runtime was downloading.
+    DownloadPage.SetText(CustomMessage('DownloadingPawnIO'), '');
     DownloadPage.Show;
     try
       try

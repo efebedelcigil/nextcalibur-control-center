@@ -5,7 +5,7 @@
 #
 # Requires: .NET 10 SDK, and the Velopack CLI (dotnet tool install -g vpk)
 
-param([string]$Version = "0.5.8")
+param([string]$Version = "0.5.9")
 
 $ErrorActionPreference = 'Stop'
 $env:PATH += ";$env:USERPROFILE\.dotnet\tools"

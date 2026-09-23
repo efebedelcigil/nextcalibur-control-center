@@ -196,6 +196,26 @@ public static class Elevation
     private static string Xml(string text) => text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 
     /// <summary>
+    /// The Task Scheduler folder, or null when there is none. The missing
+    /// folder comes back as HRESULT 0x80070002, which the COM binder turned
+    /// into a COMException on .NET 8 and into a FileNotFoundException on .NET
+    /// 10 - uncaught, it ended the process on the first start of every fresh
+    /// install (the sandbox, 23 September 2026), where \Nextcalibur does
+    /// not exist yet.
+    /// </summary>
+    internal static dynamic? TryGetFolder(dynamic service, string path)
+    {
+        try
+        {
+            return service.GetFolder(path);
+        }
+        catch (Exception ex) when (ex is COMException or FileNotFoundException or DirectoryNotFoundException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Registers the task through the Task Scheduler's own interface, with
     /// the definition handed over in memory. It used to be written to a
     /// file in the account's temporary folder and given to schtasks by
@@ -260,15 +280,8 @@ public static class Elevation
             var type = Type.GetTypeFromProgID("Schedule.Service") ?? throw new InvalidOperationException("The Task Scheduler is not available.");
             dynamic service = Activator.CreateInstance(type)!;
             service.Connect();
-            dynamic folder;
-            try
-            {
-                folder = service.GetFolder(folderPath);
-            }
-            catch (COMException)
-            {
-                folder = service.GetFolder("\\").CreateFolder(folderPath.TrimStart('\\'));
-            }
+            dynamic folder = TryGetFolder(service, folderPath)
+                ?? service.GetFolder("\\").CreateFolder(folderPath.TrimStart('\\'));
             dynamic definition = service.NewTask(0);
             definition.XmlText = xml;
             const int createOrUpdate = 6;         // TASK_CREATE_OR_UPDATE
@@ -276,7 +289,7 @@ public static class Elevation
             folder.RegisterTaskDefinition(name, definition, createOrUpdate, null, null, interactiveToken, null);
             return true;
         }
-        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or IOException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
         {
             Log.Warn("tasks", $"Could not register {task}: {ex.Message}");
             return false;
