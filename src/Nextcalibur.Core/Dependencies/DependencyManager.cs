@@ -152,28 +152,36 @@ public sealed class DependencyManager
         string? file = null;
         try
         {
+            // Every await here lets go of the caller's context. The caller is
+            // the window, and what follows the download - a SHA-512 over 60 MB,
+            // a signature check that goes to the network for revocation, and
+            // an installer waited on for up to five minutes - ran on its
+            // thread: the window, the tray and the overheat timer all stood
+            // still for as long as Microsoft's installer took. Progress is
+            // reported through the IProgress the caller made, which posts
+            // back to the window on its own.
             // Anything the check was too thrifty to ask for is asked now.
-            var latest = await status.Dependency.ResolveBeforeDownloadAsync(Http, status.Latest, ct);
+            var latest = await status.Dependency.ResolveBeforeDownloadAsync(Http, status.Latest, ct).ConfigureAwait(false);
             status = status with { Latest = latest };
 
             await using (var target = SystemTools.CreateProtectedTemporaryFile(".exe", out file))
-            using (var response = await Http.GetAsync(status.Latest.Download, HttpCompletionOption.ResponseHeadersRead, ct))
+            using (var response = await Http.GetAsync(status.Latest.Download, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
                 var total = response.Content.Headers.ContentLength ?? -1;
                 if (total > LargestInstallerBytes) throw new IOException("The download is larger than any installer should be.");
-                await using var source = await response.Content.ReadAsStreamAsync(ct);
+                await using var source = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
                 var buffer = new byte[81920];
                 long done = 0;
                 int read;
-                while ((read = await source.ReadAsync(buffer, ct)) > 0)
+                while ((read = await source.ReadAsync(buffer, ct).ConfigureAwait(false)) > 0)
                 {
                     done += read;
                     if (done > LargestInstallerBytes) throw new IOException("The download is larger than any installer should be.");
-                    await target.WriteAsync(buffer.AsMemory(0, read), ct);
+                    await target.WriteAsync(buffer.AsMemory(0, read), ct).ConfigureAwait(false);
                     if (total > 0) progress.Report((int)(done * 100 / total));
                 }
-                await target.FlushAsync(ct);
+                await target.FlushAsync(ct).ConfigureAwait(false);
             }
             progress.Report(100);
 

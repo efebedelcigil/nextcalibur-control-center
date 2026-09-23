@@ -37,19 +37,6 @@ public static class CardSwitchTasks
     /// <summary>True when both tasks are registered.</summary>
     public static bool Registered() => Query(OffTask) && Query(OnTask);
 
-    /// <summary>
-    /// Registers both tasks to run the given executable. Needs administrator.
-    /// Idempotent: an existing task is replaced, so a moved executable is
-    /// picked up by registering again.
-    /// </summary>
-    public static bool Register(string executablePath)
-    {
-        var user = WindowsIdentity.GetCurrent().User?.Value
-            ?? throw new InvalidOperationException("Could not determine the current account.");
-
-        return Create(OffTask, executablePath, "off", user) && Create(OnTask, executablePath, "on", user);
-    }
-
     /// <summary>Removes both tasks. Needs administrator.</summary>
     public static void Unregister()
     {
@@ -64,51 +51,6 @@ public static class CardSwitchTasks
     public static bool Run(bool enable) => Schtasks($"/run /tn \"{(enable ? OnTask : OffTask)}\"") == 0;
 
     private static bool Query(string task) => Schtasks($"/query /tn \"{task}\"") == 0;
-
-    private static bool Create(string task, string executable, string direction, string userSid)
-    {
-        var xml = $"""
-            <?xml version="1.0" encoding="UTF-16"?>
-            <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
-              <RegistrationInfo>
-                <Description>Switches the discrete graphics card {direction} for Nextcalibur, without an elevation prompt. Started on demand only.</Description>
-              </RegistrationInfo>
-              <Principals>
-                <Principal id="Author">
-                  <UserId>{userSid}</UserId>
-                  <LogonType>InteractiveToken</LogonType>
-                  <RunLevel>HighestAvailable</RunLevel>
-                </Principal>
-              </Principals>
-              <Settings>
-                <AllowStartOnDemand>true</AllowStartOnDemand>
-                <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
-                <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
-                <Hidden>true</Hidden>
-                <ExecutionTimeLimit>PT1M</ExecutionTimeLimit>
-                <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
-                <StartWhenAvailable>false</StartWhenAvailable>
-              </Settings>
-              <Actions Context="Author">
-                <Exec>
-                  <Command>{executable}</Command>
-                  <Arguments>{Argument} {direction}</Arguments>
-                </Exec>
-              </Actions>
-            </Task>
-            """;
-
-        var file = Path.Combine(Path.GetTempPath(), $"nextcalibur-card-{direction}.xml");
-        File.WriteAllText(file, xml, System.Text.Encoding.Unicode);
-        try
-        {
-            return Schtasks($"/create /tn \"{task}\" /xml \"{file}\" /f") == 0;
-        }
-        finally
-        {
-            try { File.Delete(file); } catch (IOException) { }
-        }
-    }
 
     /// <summary>Runs schtasks and returns what it printed, or null when it failed.</summary>
     internal static string? SchtasksOutput(string arguments)

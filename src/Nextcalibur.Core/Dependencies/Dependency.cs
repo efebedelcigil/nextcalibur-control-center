@@ -169,9 +169,11 @@ public abstract class Dependency
                 return true;
             }
 
-            // 183 is ERROR_ALREADY_EXISTS: the same version was there, which
-            // is the outcome wanted, not a failure.
-            return process.ExitCode is 0 or 183;
+            // 183 is ERROR_ALREADY_EXISTS (PawnIO) and 1638 is "another version
+            // of this product is already installed" (Microsoft's bootstrapper,
+            // when a newer patch got there first): either way the machine has
+            // what was wanted - the wizard accepts both for the same reason.
+            return process.ExitCode is 0 or 183 or 1638;
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {

@@ -239,14 +239,10 @@ public sealed class GpuModeService
         if (DiscreteAdapterInstanceId() is null)
             throw new InvalidOperationException(Words.Get("S.Core.Gpu.NoCard", "No discrete graphics card was found."));
 
-        // Without a prompt when the tasks are registered - which the one
-        // elevation at first run does - and with Windows' prompt otherwise.
-        if (CardSwitchTasks.Registered())
-        {
-            if (!CardSwitchTasks.Run(enabled))
-                throw new InvalidOperationException("The card-switch task would not start.");
-        }
-        else
+        // Directly: the application runs elevated, so pnputil starts without
+        // a prompt. Not through the card-switch tasks any more - those are
+        // what the unelevated versions registered, retired at start, and a
+        // leftover one would run whatever executable it was pointed at.
         {
             try
             {

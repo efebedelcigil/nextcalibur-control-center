@@ -202,18 +202,6 @@ public static class MailboxAccess
     }
 
     /// <summary>
-    /// Removes this account's entry and leaves everyone else's alone.
-    ///
-    /// Not "restore the backup": on a machine where the vendor's software has
-    /// been installed since, restoring would delete its access as well. The
-    /// only thing this ever takes away is what it put there.
-    ///
-    /// When that leaves a descriptor holding nothing this machine had before,
-    /// the value goes entirely, so an uninstall leaves no trace - which is the
-    /// half the vendor's uninstaller does not do.
-    /// </summary>
-    /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
-    /// <summary>
     /// Whether an earlier version widened the interface's permission to this
     /// account by name. The elevated application does not need it, and a
     /// permission that lets any process running as the account send
@@ -231,6 +219,11 @@ public static class MailboxAccess
             foreach (var guid in new[] { BlockGuid, EventGuid })
             {
                 if (key.GetValue(guid) is not byte[] bytes) continue;
+                // Named before our grant: not ours, and Revoke leaves it.
+                if (key.GetValue(BackupValue(guid)) is byte[] backup
+                    && new RawSecurityDescriptor(backup, 0).DiscretionaryAcl is { } before
+                    && before.OfType<CommonAce>().Any(a => a.SecurityIdentifier == sid))
+                    continue;
                 var acl = new RawSecurityDescriptor(bytes, 0).DiscretionaryAcl;
                 if (acl is null) continue;
                 foreach (var entry in acl)
@@ -244,6 +237,18 @@ public static class MailboxAccess
         return false;
     }
 
+    /// <summary>
+    /// Removes this account's entry and leaves everyone else's alone.
+    ///
+    /// Not "restore the backup": on a machine where the vendor's software has
+    /// been installed since, restoring would delete its access as well. The
+    /// only thing this ever takes away is what it put there.
+    ///
+    /// When that leaves a descriptor holding nothing this machine had before,
+    /// the value goes entirely, so an uninstall leaves no trace - which is the
+    /// half the vendor's uninstaller does not do.
+    /// </summary>
+    /// <exception cref="UnauthorizedAccessException">Not running elevated.</exception>
     public static void Revoke()
     {
         Revoke(BlockGuid);
@@ -265,14 +270,29 @@ public static class MailboxAccess
 
         var descriptor = new RawSecurityDescriptor(current, 0);
         var acl = descriptor.DiscretionaryAcl;
-        if (acl is not null)
+        var backup = key.GetValue(BackupValue(guid)) as byte[];
+
+        // Ours only if the descriptor from before the grant did not already
+        // name this account: an entry somebody else put there is theirs.
+        var hadItBefore = false;
+        if (backup is not null)
+        {
+            try
+            {
+                var before = new RawSecurityDescriptor(backup, 0).DiscretionaryAcl;
+                if (before is not null)
+                    foreach (var entry in before)
+                        if (entry is CommonAce old && old.SecurityIdentifier == sid) { hadItBefore = true; break; }
+            }
+            catch (ArgumentException) { }
+        }
+
+        if (acl is not null && !hadItBefore)
         {
             for (var i = acl.Count - 1; i >= 0; i--)
                 if (acl[i] is CommonAce ace && ace.SecurityIdentifier == sid)
                     acl.RemoveAce(i);
         }
-
-        var backup = key.GetValue(BackupValue(guid)) as byte[];
         if (backup is null && (acl is null || acl.Count == 0))
         {
             // Nothing was here before us and nothing is left: take the value
