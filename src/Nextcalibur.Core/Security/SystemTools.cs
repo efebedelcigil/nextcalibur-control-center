@@ -21,6 +21,7 @@ public static class SystemTools
     public static string Pnputil => System32("pnputil.exe");
     public static string Powercfg => System32("powercfg.exe");
     public static string Cmd => System32("cmd.exe");
+    public static string Shutdown => System32("shutdown.exe");
     public static string PowerShell => System32(@"WindowsPowerShell\v1.0\powershell.exe");
     public static string Explorer => Windows("explorer.exe");
 

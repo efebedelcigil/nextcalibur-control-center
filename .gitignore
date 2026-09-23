@@ -31,3 +31,9 @@ docs/DESIGN-SPEC.md
 
 graphify-out/
 .agents/
+
+# The owner's local material moved into docs/: the earlier power analysis and
+# the backup of this machine's power plans and the vendor's registry entries.
+# Read off one machine; never published.
+docs/Excalibur-Guc/
+docs/Nextcalibur-yedek/

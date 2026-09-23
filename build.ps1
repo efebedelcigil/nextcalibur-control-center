@@ -1,4 +1,4 @@
-# build.ps1 - build, publish and package Nextcalibur into a Setup.exe
+﻿# build.ps1 - build, publish and package Nextcalibur into a Setup.exe
 #
 #   .\build.ps1                 build + package
 #   .\build.ps1 -Version 0.2.0  package a specific version

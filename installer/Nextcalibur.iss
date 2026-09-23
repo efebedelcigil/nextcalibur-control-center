@@ -1,4 +1,4 @@
-; Nextcalibur.iss - the installer's face.
+﻿; Nextcalibur.iss - the installer's face.
 ;
 ; Inno Setup draws the wizard: where to install, what is happening, a finish
 ; page. Velopack does the installing and keeps doing the updating afterwards.
@@ -119,6 +119,8 @@ en.RuntimeBadSignature=the download is not signed by Microsoft
 tr.RuntimeBadSignature=indirilen dosya Microsoft imzalı değil
 en.NoNvidiaDriver=The NVIDIA graphics driver was not found (nvml.dll). Nextcalibur reads the graphics card through it. Install the driver from nvidia.com first, then run this setup again.
 tr.NoNvidiaDriver=NVIDIA grafik sürücüsü bulunamadı (nvml.dll). Nextcalibur ekran kartını onun üzerinden okur. Önce nvidia.com'dan sürücüyü kurun, sonra bu kurulumu yeniden çalıştırın.
+en.VelopackFailed=The application could not be installed (Velopack exit code %1).
+tr.VelopackFailed=Uygulama kurulamadı (Velopack çıkış kodu %1).
 en.AskRemoveSettings=Do you want to delete your Nextcalibur settings, log files, and temporary trace files as well?
 tr.AskRemoveSettings=Nextcalibur ayarlarınızı, günlük dosyalarını ve artık sistem kayıtlarını da silmek istiyor musunuz?
 
@@ -142,19 +144,22 @@ Name: "deps\pawnio_present"; Description: "{cm:CompPawnIOPresent}"; Flags: fixed
 Name: "startup"; Description: "{cm:StartWithWindows}"; Flags: checkedonce; Check: not Repairing
 
 [Files]
-; The engine, carried inside and run once.
-Source: "..\releases\Nextcalibur-win-Setup.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+; The engine, carried inside and run once - by hand, at ssInstall, before
+; anything of Inno's own is written. Velopack clears the folder it installs
+; into, so run from [Run] it deleted the uninstaller and first-run.ini that
+; Inno had just put there (found 23 September 2026: Installed Apps pointing
+; at an unins000.exe that did not exist).
+Source: "..\releases\Nextcalibur-win-Setup.exe"; Flags: dontcopy
 
 [INI]
 ; The application reads this on its first run, registers (or not) its logon
 ; task accordingly, and deletes the file. Written after Velopack has made the
-; folder, so it lands beside Nextcalibur.exe.
+; folder (see ssInstall), so it lands beside Nextcalibur.exe and stays.
 Filename: "{app}\first-run.ini"; Section: "FirstRun"; Key: "StartWithWindows"; String: "{code:StartupChoice}"
 
 [Run]
-; Velopack installs into the chosen folder, quietly, and does not start the
-; application itself (the finish page offers that).
-Filename: "{tmp}\Nextcalibur-win-Setup.exe"; Parameters: "--silent --installto ""{app}"""; StatusMsg: "{cm:Installing}"; Flags: runhidden waituntilterminated
+; Velopack itself runs at ssInstall; see [Files]. The finish page only offers
+; to start the application.
 Filename: "{app}\current\Nextcalibur.exe"; WorkingDir: "{app}\current"; Description: "{cm:LaunchProgram,Nextcalibur}"; Flags: postinstall nowait skipifsilent
 
 
@@ -297,11 +302,21 @@ var
   File: String;
   Code: Integer;
 begin
-  // First, because the application does not start without it. This runs
-  // before the [Run] entries, so the runtime is in place before Velopack
-  // unpacks the application and before the finish page offers to start it.
-  if CurStep = ssPostInstall then
+  // Before anything of Inno's is written: the runtime first, because
+  // Velopack runs the application's install hook and the application does
+  // not start without it; then Velopack, which clears the folder it installs
+  // into. Inno's own files - the uninstaller, first-run.ini - come after both.
+  if CurStep = ssInstall then
+  begin
+    ForceDirectories(ExpandConstant('{app}'));
     InstallDesktopRuntime();
+    WizardForm.StatusLabel.Caption := CustomMessage('Installing');
+    ExtractTemporaryFile('Nextcalibur-win-Setup.exe');
+    if not Exec(ExpandConstant('{tmp}\Nextcalibur-win-Setup.exe'), '--silent --installto "' + ExpandConstant('{app}') + '"',
+                '', SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
+      RaiseException(FmtMessage(CustomMessage('VelopackFailed'), [IntToStr(Code)]));
+    DeleteFile(ExpandConstant('{tmp}\Nextcalibur-win-Setup.exe'));
+  end;
 
   if (CurStep = ssPostInstall) and WizardIsComponentSelected('deps\pawnio') and (not PawnIOInstalled) then
   begin
@@ -375,9 +390,17 @@ begin
     end;
   end;
 
+  // Only what is ours, by name, and the folder itself only once it is
+  // empty. Never DelTree({app}): it is whatever folder the person typed.
   if CurUninstallStep = usPostUninstall then
   begin
-    DelTree(ExpandConstant('{app}'), True, True, True);
+    DelTree(ExpandConstant('{app}\current'), True, True, True);
+    DelTree(ExpandConstant('{app}\packages'), True, True, True);
+    DeleteFile(ExpandConstant('{app}\Update.exe'));
+    DeleteFile(ExpandConstant('{app}\Nextcalibur.exe'));
+    DeleteFile(ExpandConstant('{app}\first-run.ini'));
+    DeleteFile(ExpandConstant('{app}\sq.version'));
+    RemoveDir(ExpandConstant('{app}'));
   end;
 end;
 
@@ -456,7 +479,9 @@ begin
   D := AddBackslash(Lowercase(Dir));
   PF := AddBackslash(Lowercase(ExpandConstant('{commonpf}')));
   PF32 := AddBackslash(Lowercase(ExpandConstant('{commonpf32}')));
-  Result := (Pos(PF, D) = 1) or (Pos(PF32, D) = 1);
+  // A folder under it, never Program Files itself: Velopack clears the
+  // folder it installs into, and the uninstaller removes it.
+  Result := ((Pos(PF, D) = 1) and (D <> PF)) or ((Pos(PF32, D) = 1) and (D <> PF32));
 end;
 
 // A folder Setup cannot write to is no place to install; say so before the

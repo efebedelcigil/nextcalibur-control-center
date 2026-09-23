@@ -1965,7 +1965,7 @@ public partial class MainWindow : Window
         Log.Warn("restart", $"ExitWindowsEx returned false (error {err}); attempting fallback via shutdown.exe");
         try
         {
-            using var proc = Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 0")
+            using var proc = Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.Shutdown, "/r /t 0")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false
@@ -2677,24 +2677,6 @@ public partial class MainWindow : Window
 
                 if (_thermal is null) return;
 
-                // During gaming or heavy load, never trigger an SMI interrupt or freeze CPU cores from the background.
-                // If PawnIO sees an overheat, defer it quietly without stopping CPU cores.
-                if (Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad())
-                {
-                    if (_settings.WarnsAboutHeat)
-                    {
-                        var cpuTemp = _cpuPower.ReadPackageTemperatureC();
-                        if (cpuTemp is { } c && c >= _settings.CpuWarningTemperatureC)
-                        {
-                            if (_deferredOverheat is null || c > _deferredOverheat.MaxTemperatureC)
-                            {
-                                _deferredOverheat = new DeferredOverheat(true, c, DateTime.UtcNow);
-                            }
-                        }
-                    }
-                    return;
-                }
-
                 // And before paying for one: the two sensors that cost no
                 // interrupt. The processor's own thermal register through
                 // PawnIO, and the card's through NVML. Both a long way below
@@ -2705,6 +2687,17 @@ public partial class MainWindow : Window
                 // A gate, not a replacement: the moment either is anywhere near
                 // the line, the tick goes on to read the controller and decides
                 // on its number, which is the one the window shows.
+                //
+                // A game or a heavy load is not a reason to stop watching: it is
+                // when the chips get hot. It is only a reason to lean harder on
+                // the gate, which it gets through onScreen being false, and on
+                // the slower hidden interval. The card is watched too - under a
+                // game it is the likelier of the two to reach its line - and the
+                // warning itself waits only where Windows says a game has the
+                // screen (the busy/away check below), not for a compile in a
+                // window beside this one (23 September 2026: the branch that
+                // was here read the processor alone and deferred every warning,
+                // game or not, for as long as the load lasted).
                 if (!onScreen && NothingNearTheThresholds()) return;
 
                 // Off the user-interface thread for the same reason as Sample: see

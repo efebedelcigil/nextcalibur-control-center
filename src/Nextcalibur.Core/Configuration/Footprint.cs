@@ -410,13 +410,26 @@ public static class Footprint
 
         try
         {
-            var version = typeof(Footprint).Assembly.GetName().Version?.ToString(3) ?? "0.5.7";
+            var version = typeof(Footprint).Assembly.GetName().Version?.ToString(3);
+            if (version is null) return;
 
             // If Inno Setup registered the official uninstaller, keep DisplayVersion in sync
             // and remove any duplicate Velopack keys so exactly one entry shows in Control Panel.
+            //
+            // Only while the uninstaller it names is really there. Setups up to
+            // 0.5.8 ran Velopack after Inno had written unins000.exe, and
+            // Velopack cleared the folder: the entry stayed in Installed Apps
+            // and led nowhere. Such an entry is dropped, and the registration
+            // below - Velopack's uninstaller - takes its place.
             using (var innoKey = Registry.LocalMachine.OpenSubKey(InnoUninstallRegKey, writable: true))
             {
-                if (innoKey is not null)
+                if (innoKey is not null && !InnoUninstallerExists(innoKey))
+                {
+                    innoKey.Dispose();
+                    Registry.LocalMachine.DeleteSubKeyTree(InnoUninstallRegKey, throwOnMissingSubKey: false);
+                    Log.Warn("uninstall", "Installed Apps entry named an uninstaller that is not there; registering Update.exe instead");
+                }
+                else if (innoKey is not null)
                 {
                     innoKey.SetValue("DisplayVersion", version);
                     try
@@ -451,6 +464,14 @@ public static class Footprint
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException)
         {
         }
+    }
+
+    /// <summary>Whether the uninstaller an Inno entry names exists on disk.</summary>
+    private static bool InnoUninstallerExists(RegistryKey innoKey)
+    {
+        if (innoKey.GetValue("UninstallString") is not string command) return false;
+        var path = command.Trim().Trim('"');
+        return path.Length > 0 && File.Exists(path);
     }
 
     private static string SettingsPath => Path.Combine(

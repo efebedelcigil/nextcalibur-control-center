@@ -1,8 +1,13 @@
 name: Graphify
 
-# Automatically updates the Graphify code knowledge graph whenever changes
-# are pushed to main, and publishes the graph data and interactive HTML to
-# a dedicated 'graphify' branch.
+# Rebuilds the Graphify code knowledge graph whenever changes are pushed to
+# main, and publishes the graph data and interactive HTML to a dedicated
+# 'graphify' branch.
+#
+# Two jobs on purpose. Graphify is a third-party package from PyPI; the job
+# that installs and runs it gets a read-only token and nothing else, and the
+# job that holds the write token runs no code but git. A package pulled from
+# PyPI with contents: write in reach could push to main.
 
 on:
   push:
@@ -17,28 +22,29 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: graphify-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  graphify:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38   # v5
         with:
           python-version: '3.11'
 
+      # Pinned: an unpinned install runs whatever was published last.
       - name: Install Graphify
-        run: pip install --upgrade graphifyy
+        run: pip install graphifyy==0.9.66
 
       - name: Rebuild Code Graph
         run: graphify update .
@@ -50,29 +56,41 @@ jobs:
           path: graphify-out/
           retention-days: 30
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the graphify branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
+        with:
+          fetch-depth: 0
+
+      - name: Download Graph Artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8.0.1
+        with:
+          name: graphify-out
+          path: ${{ runner.temp }}/graph
+
       - name: Deploy to graphify branch
+        env:
+          GRAPH: ${{ runner.temp }}/graph
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Temporarily store generated graph artifacts
-          TEMP_GRAPH=$(mktemp -d)
-          cp -r graphify-out/* "$TEMP_GRAPH/"
-
-          # Fetch remote graphify branch if it already exists
-          git fetch origin graphify:graphify 2>/dev/null || true
-
-          if git show-ref --quiet refs/heads/graphify; then
-            git checkout graphify
+          if git ls-remote --exit-code --heads origin graphify >/dev/null; then
+            git fetch origin graphify
+            git checkout -B graphify origin/graphify
           else
             git checkout --orphan graphify
-            git rm -rf .
+            git rm -rf --quiet .
           fi
 
-          # Reset root files for the branch
           rm -rf graphify-out
           mkdir -p graphify-out
-          cp -r "$TEMP_GRAPH"/* graphify-out/
+          cp -r "$GRAPH"/. graphify-out/
 
           # Root artifacts for quick navigation and GitHub Pages compatibility
           if [ -f "graphify-out/graph.html" ]; then
