@@ -527,6 +527,12 @@ public static class Footprint
             key.SetValue("NoModify", 1, RegistryValueKind.DWord);
             key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
             key.SetValue("EstimatedSize", 35000, RegistryValueKind.DWord);
+
+            // One entry, as on the Inno path: Velopack writes its own under
+            // HKCU at every update it applies, and the two showed side by side
+            // in Installed apps (seen 23 September 2026, 0.5.8 -> 0.5.9).
+            try { Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Nextcalibur", throwOnMissingSubKey: false); }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException)
         {

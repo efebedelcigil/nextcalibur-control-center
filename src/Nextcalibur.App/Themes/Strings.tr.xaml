@@ -225,6 +225,7 @@
     <sys:String x:Key="S.Update.Title">Nextcalibur - güncellemeler</sys:String>
     <sys:String x:Key="S.Update.ANewVersion">yeni bir sürüm</sys:String>
     <sys:String x:Key="S.Update.PortableCurrent">Bu kopya kurulum sihirbazıyla kurulmadığından kendini güncelleyemez; bağımlı olduğu bileşenler güncel.</sys:String>
+    <sys:String x:Key="S.Update.Checking">Nextcalibur ve bağımlı olduğu bileşenler için güncellemeler denetleniyor...</sys:String>
     <sys:String x:Key="S.Update.Latest">En son sürüme sahipsiniz; bağımlı olduğu bileşenler de öyle.</sys:String>
     <sys:String x:Key="S.Update.Unreachable">Denetlemek için GitHub'a ulaşılamadı:</sys:String>
     <sys:String x:Key="S.Update.AutoTitle">Nextcalibur {0} sürümüne güncelleniyor</sys:String>

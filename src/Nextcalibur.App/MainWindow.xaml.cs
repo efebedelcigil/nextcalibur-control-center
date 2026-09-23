@@ -262,7 +262,11 @@ public partial class MainWindow : Window
         LoadOverheatThresholds();
         WireSettingsPage();
         VersionText.Text = RunningVersion();
-        _updates.CheckedByHand += (_, what) => Dialogs.Tell(Strings.Get("S.Update.Title"), what);
+        _updates.CheckedByHand += async (_, what) =>
+        {
+            await EndCheckingPanelAsync();
+            Dialogs.Tell(Strings.Get("S.Update.Title"), what);
+        };
         _updates.Start();
 
         if (_settings.StartMinimised &&
@@ -1259,14 +1263,26 @@ public partial class MainWindow : Window
     /// <summary>Set while a check the person asked for runs, so the offer comes as a dialogue rather than a balloon.</summary>
     private bool _checkingByHand;
 
-    /// <summary>A check the person asked for, from the tray or the Settings page: the answer is a dialogue either way.</summary>
+    /// <summary>
+    /// A check the person asked for, from the tray or the Settings page: the
+    /// window comes up, says it is checking while it does, and the answer is
+    /// a dialogue either way. It used to say nothing until the answer came -
+    /// several requests, some seconds on a slow connection - and a click that
+    /// seems to do nothing gets clicked again.
+    /// </summary>
     private async void CheckForUpdatesByHand()
     {
         if (_checkingByHand) return;
         _checkingByHand = true;
         try
         {
+            if (!IsVisible || WindowState == WindowState.Minimized) _tray?.ShowWindowFromOutside();
+            _checkingShownAt = DateTime.UtcNow;
+            ShowProgress(Strings.Get("S.Update.Title"), Strings.Get("S.Update.Checking"));
+            DialogProgress.IsIndeterminate = true;
+
             await _updates.CheckNowAsync();
+            await EndCheckingPanelAsync();
             if (_updates.Available is not null) OfferUpdate();
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
@@ -1275,8 +1291,27 @@ public partial class MainWindow : Window
         }
         finally
         {
+            await EndCheckingPanelAsync();
             _checkingByHand = false;
         }
+    }
+
+    /// <summary>When the "checking" panel went up; null while it is not showing.</summary>
+    private DateTime? _checkingShownAt;
+
+    /// <summary>
+    /// Takes the "checking" panel down before any answer: the answer is a
+    /// dialogue in the same overlay. Held for at least a moment, so a check
+    /// that answers at once does not flash.
+    /// </summary>
+    private async Task EndCheckingPanelAsync()
+    {
+        if (_checkingShownAt is not { } shown) return;
+        _checkingShownAt = null;
+        var left = TimeSpan.FromMilliseconds(600) - (DateTime.UtcNow - shown);
+        if (left > TimeSpan.Zero) await Task.Delay(left);
+        DialogProgress.IsIndeterminate = false;
+        HideProgress();
     }
 
     private void OnUpdateNowClick(object sender, RoutedEventArgs e) => OfferUpdate();

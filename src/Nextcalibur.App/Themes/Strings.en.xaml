@@ -227,6 +227,7 @@
     <sys:String x:Key="S.Update.Title">Nextcalibur - updates</sys:String>
     <sys:String x:Key="S.Update.ANewVersion">a new version</sys:String>
     <sys:String x:Key="S.Update.PortableCurrent">This copy was not installed by Setup, so it cannot update itself; the things it depends on are current.</sys:String>
+    <sys:String x:Key="S.Update.Checking">Checking for updates to Nextcalibur and what it depends on...</sys:String>
     <sys:String x:Key="S.Update.Latest">You have the latest version, and so do the things it depends on.</sys:String>
     <sys:String x:Key="S.Update.Unreachable">Could not reach GitHub to check:</sys:String>
     <sys:String x:Key="S.Update.AutoTitle">Updating to Nextcalibur {0}</sys:String>
