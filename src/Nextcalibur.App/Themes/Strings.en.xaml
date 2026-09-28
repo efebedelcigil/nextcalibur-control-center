@@ -426,6 +426,7 @@
     <!-- From the library: the graphics modes -->
     <sys:String x:Key="S.Core.Gpu.CardOff">The graphics card is switched off (UMA). Turn it back on first - handing the screen to a card Windows will not start leaves the next boot dark.</sys:String>
     <sys:String x:Key="S.Core.Gpu.CardDrivesScreen">The graphics card is driving your screen right now. Switch to Hybrid first, restart, and then it can be turned off.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.MonitorOnCard">A monitor is plugged into a port the graphics card drives. Unplug it first - turning the card off would leave that monitor dark.</sys:String>
     <sys:String x:Key="S.Core.Gpu.NoCard">No discrete graphics card was found.</sys:String>
     <sys:String x:Key="S.Core.Gpu.AlreadyIn">Already in {0}.</sys:String>
     <sys:String x:Key="S.Core.Gpu.NotSwitchedOff">Windows did not switch the card off.</sys:String>
@@ -438,6 +439,7 @@
     <sys:String x:Key="S.Core.Gpu.DiscreteDesc">Your screen is driven by the {0} directly. This gives the best performance in games, but the card never powers down, so the laptop runs hotter and the battery drains faster.</sys:String>
     <sys:String x:Key="S.Core.Gpu.DiscreteWarning">You can change this below. Before you do: find your BitLocker recovery key. Switching which chip drives the screen changes what the TPM measures at startup, and the next boot can ask for that key - without it the drive does not open. Your Windows PIN will need setting up again as well. Casper's own Control Center makes the same change without mentioning either.</sys:String>
     <sys:String x:Key="S.Core.Gpu.HybridDesc">Your screen is driven by the built-in graphics, and the graphics card wakes only when an application needs it. This is the best setting for battery life and running cool.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridMonitorOnCard">A monitor is plugged into a port the graphics card drives, so the card stays awake while it is connected.</sys:String>
     <sys:String x:Key="S.Core.Gpu.UmaDesc">Only the built-in graphics are in use. The coolest and quietest setting, but games will run considerably slower.</sys:String>
     <sys:String x:Key="S.Core.Gpu.Unknown">Nextcalibur could not work out how your graphics are currently set up.</sys:String>
     <sys:String x:Key="S.Core.Gpu.Drawing">drawing {0:N1} W</sys:String>

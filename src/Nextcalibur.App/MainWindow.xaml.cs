@@ -197,6 +197,7 @@ public partial class MainWindow : Window
         {
             if (e.NewValue is true)
             {
+                KeepOnScreen();
                 RefreshLightingFromHardware();
                 TryShowDeferredOverheat();
             }
@@ -210,6 +211,27 @@ public partial class MainWindow : Window
         DriveList.ItemsSource = _drives;
         Application.Current.SessionEnding += (_, _) => _sessionEnding = true;
     }
+
+    /// <summary>
+    /// Brings the window back when the monitor it was last on is gone. Hidden
+    /// to the tray on an external monitor that is then unplugged, it kept its
+    /// place there - Windows moves visible windows off a removed monitor, not
+    /// hidden ones - and came back from the tray where nothing could show it.
+    /// </summary>
+    private void KeepOnScreen()
+    {
+        var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+        if (hwnd == IntPtr.Zero || MonitorFromWindow(hwnd, MonitorDefaultToNull) != IntPtr.Zero) return;
+
+        var area = SystemParameters.WorkArea;
+        Left = area.Left + Math.Max(0, (area.Width - ActualWidth) / 2);
+        Top = area.Top + Math.Max(0, (area.Height - ActualHeight) / 2);
+    }
+
+    private const uint MonitorDefaultToNull = 0;
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
 
     /// <summary>
     /// Blanks every figure the markup starts with, before any reading arrives.
@@ -1178,6 +1200,14 @@ public partial class MainWindow : Window
         Task.Run(() =>
         {
             var config = _gpu.Detect();
+
+            // The firmware's answer at start is the running mode and nothing
+            // but a restart changes it; Windows' picture only guesses it, and
+            // guesses Discrete when the card drives an external monitor with
+            // the panel shut. UMA is Windows' own and stays as detected.
+            if (config.Mode != GpuMode.Uma && config.DiscretePresent && _support.FirmwareGpuMode is { } running)
+                config = config with { Mode = running };
+
             return (config, load: IdleWatts(config));
         }).ContinueWith(t =>
         {

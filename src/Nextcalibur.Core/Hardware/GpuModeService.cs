@@ -71,8 +71,9 @@ public sealed class GpuModeService
     public readonly record struct FirmwareModeReading(GpuMode? Mode, byte[] Raw);
 
     /// <summary>
-    /// Reads the mode the firmware has stored - which is the mode the machine
-    /// will be in after the next restart, not necessarily the one it is in now.
+    /// Reads the mode the machine is running in. A write made since the boot
+    /// does not show here - measured 11 September 2026, see WriteFirmwareMode -
+    /// so this is the running mode, not the staged one.
     ///
     /// The vendor's Display Mode button does this read before showing its
     /// dialogue. Its reply was only ever caught as a residue, after the
@@ -233,8 +234,15 @@ public sealed class GpuModeService
     {
         var current = Detect();
         if (!enabled && current.DiscreteDrivesDisplay)
+        {
+            // In Hybrid the card drives only what is plugged into the ports
+            // wired to it; the way out then is the cable, not a restart.
+            if (PanelOnDiscrete() == false)
+                throw new InvalidOperationException(Words.Get("S.Core.Gpu.MonitorOnCard",
+                    "A monitor is plugged into a port the graphics card drives. Unplug it first - turning the card off would leave that monitor dark."));
             throw new InvalidOperationException(Words.Get("S.Core.Gpu.CardDrivesScreen",
                 "The graphics card is driving your screen right now. Switch to Hybrid first, restart, and then it can be turned off."));
+        }
 
         if (DiscreteAdapterInstanceId() is null)
             throw new InvalidOperationException(Words.Get("S.Core.Gpu.NoCard", "No discrete graphics card was found."));
@@ -412,10 +420,24 @@ public sealed class GpuModeService
             // An unreadable WMI answer is reported as "unknown", not as an error.
         }
 
+        // Which chip has the built-in panel is the mode. "The card drives a
+        // display" is not: the HDMI port is wired to the card, so an external
+        // monitor made Hybrid read as Discrete (28 September 2026). Only when
+        // the panel cannot be placed - lid shut, panel off - does this fall
+        // back to who drives what.
+        if (discretePresent && discreteEnabled && PanelOnDiscrete() is { } onDiscrete)
+        {
+            return new GpuConfiguration(
+                onDiscrete ? GpuMode.Discrete : GpuMode.Hybrid,
+                discreteName, true, discreteDrives, integratedDrives);
+        }
+
         var mode = (discretePresent, discreteEnabled, discreteDrives, integratedDrives) switch
         {
             (false, _, _, true) => GpuMode.Uma,
-            (true, false, _, true) => GpuMode.Uma,
+            // A switched-off card is UMA whatever the screens are doing - with
+            // the lid shut nothing may be driving anything at that moment.
+            (true, false, _, _) => GpuMode.Uma,
             (true, true, true, _) => GpuMode.Discrete,
             (true, true, false, true) => GpuMode.Hybrid,
             _ => (GpuMode?)null,
@@ -423,6 +445,47 @@ public sealed class GpuModeService
 
         return new GpuConfiguration(
             mode, discreteName, discretePresent && discreteEnabled, discreteDrives, integratedDrives);
+    }
+
+    /// <summary>DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL: the built-in panel.</summary>
+    private const uint OutputInternal = 0x80000000;
+
+    /// <summary>DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED: eDP, also the built-in panel.</summary>
+    private const uint OutputEmbeddedDisplayPort = 11;
+
+    /// <summary>
+    /// Whether the built-in panel is attached to the discrete card; null when
+    /// no active built-in panel is found or its adapter cannot be told.
+    /// </summary>
+    private static bool? PanelOnDiscrete()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(@"root\wmi",
+                "SELECT InstanceName, VideoOutputTechnology FROM WmiMonitorConnectionParams");
+            using var results = searcher.Get();
+            foreach (ManagementObject monitor in results)
+            {
+                using (monitor)
+                {
+                    // Not filtered on Active: a panel switched off or behind a
+                    // shut lid is still attached to the chip it is attached to.
+                    if (monitor["VideoOutputTechnology"] is not uint tech
+                        || tech is not (OutputInternal or OutputEmbeddedDisplayPort)) continue;
+                    if (monitor["InstanceName"] is not string name) continue;
+
+                    // "DISPLAY\CMN1521\4&e802d21&0&UID8388688_0": the device path plus a WMI index.
+                    var cut = name.LastIndexOf('_');
+                    var device = cut > 0 ? name[..cut] : name;
+                    if (DevicePowerState.ParentOf(device) is not { } adapter) return null;
+                    return adapter.Contains("VEN_10DE", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+        }
+        catch (ManagementException)
+        {
+        }
+        return null;
     }
 
     /// <summary>
@@ -460,7 +523,11 @@ public sealed class GpuModeService
 
         GpuMode.Hybrid =>
             Words.Get("S.Core.Gpu.HybridDesc",
-                "Your screen is driven by the built-in graphics, and the graphics card wakes only when an application needs it. This is the best setting for battery life and running cool."),
+                "Your screen is driven by the built-in graphics, and the graphics card wakes only when an application needs it. This is the best setting for battery life and running cool.") +
+            (c.DiscreteDrivesDisplay
+                ? "\n\n" + Words.Get("S.Core.Gpu.HybridMonitorOnCard",
+                    "A monitor is plugged into a port the graphics card drives, so the card stays awake while it is connected.")
+                : string.Empty),
 
         GpuMode.Uma =>
             Words.Get("S.Core.Gpu.UmaDesc",

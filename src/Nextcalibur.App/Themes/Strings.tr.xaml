@@ -424,6 +424,7 @@
     <!-- Kütüphaneden: grafik modları -->
     <sys:String x:Key="S.Core.Gpu.CardOff">Ekran kartı kapalı (UMA). Önce geri açın - Windows'un başlatmayacağı bir karta ekranı vermek bir sonraki açılışı karanlıkta bırakır.</sys:String>
     <sys:String x:Key="S.Core.Gpu.CardDrivesScreen">Ekranınızı şu an ekran kartı sürüyor. Önce Hybrid'e geçin, yeniden başlatın; sonra kapatılabilir.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.MonitorOnCard">Ekran kartının sürdüğü bir porta monitör takılı. Önce onu çıkarın - kartı kapatmak o monitörü karanlıkta bırakır.</sys:String>
     <sys:String x:Key="S.Core.Gpu.NoCard">Ayrık ekran kartı bulunamadı.</sys:String>
     <sys:String x:Key="S.Core.Gpu.AlreadyIn">Zaten {0} modunda.</sys:String>
     <sys:String x:Key="S.Core.Gpu.NotSwitchedOff">Windows kartı kapatmadı.</sys:String>
@@ -436,6 +437,7 @@
     <sys:String x:Key="S.Core.Gpu.DiscreteDesc">Ekranınızı doğrudan {0} sürüyor. Oyunlarda en iyi performansı verir ama kart hiç uyumaz; dizüstü daha sıcak çalışır ve pil daha hızlı biter.</sys:String>
     <sys:String x:Key="S.Core.Gpu.DiscreteWarning">Bunu aşağıdan değiştirebilirsiniz. Önce BitLocker kurtarma anahtarınızı bulun: ekranı hangi çipin sürdüğünü değiştirmek TPM'in açılışta ölçtüğü şeyi değiştirir ve bir sonraki açılış o anahtarı isteyebilir - o olmadan disk açılmaz. Windows PIN'inizi de yeniden ayarlamanız gerekir. Casper'ın kendi Control Center'ı aynı değişikliği ikisini de söylemeden yapar.</sys:String>
     <sys:String x:Key="S.Core.Gpu.HybridDesc">Ekranınızı tümleşik grafik sürüyor; ekran kartı yalnızca bir uygulama ihtiyaç duyduğunda uyanıyor. Pil ömrü ve serin çalışma için en iyi ayar.</sys:String>
+    <sys:String x:Key="S.Core.Gpu.HybridMonitorOnCard">Ekran kartının sürdüğü bir porta monitör takılı; takılı kaldıkça kart uyanık kalır.</sys:String>
     <sys:String x:Key="S.Core.Gpu.UmaDesc">Yalnızca tümleşik grafik kullanımda. En serin ve en sessiz ayar; ama oyunlar belirgin biçimde yavaş çalışır.</sys:String>
     <sys:String x:Key="S.Core.Gpu.Unknown">Nextcalibur grafiklerinizin şu an nasıl ayarlı olduğunu çözemedi.</sys:String>
     <sys:String x:Key="S.Core.Gpu.Drawing">{0:N1} W çekiyor</sys:String>

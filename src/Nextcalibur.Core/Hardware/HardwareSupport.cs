@@ -23,6 +23,13 @@ public readonly record struct SupportVerdict(SupportLevel Level, IReadOnlyList<s
 {
     public bool AllowsWrites => Level == SupportLevel.Supported;
     public bool AllowsReads => Level != SupportLevel.Unsupported;
+
+    /// <summary>
+    /// The graphics mode the firmware answered at the check - the mode the
+    /// machine is running in, which only a restart changes. Null when it was
+    /// not read.
+    /// </summary>
+    public GpuMode? FirmwareGpuMode { get; init; }
 }
 
 /// <summary>
@@ -68,6 +75,7 @@ public static class HardwareSupport
         reasons.Add(Words.Get("S.Core.Support.MailboxPresent", "Firmware mailbox present."));
 
         ThermalSample thermal;
+        GpuMode? running;
         try
         {
             using var mailbox = new EcMailbox();
@@ -90,6 +98,7 @@ public static class HardwareSupport
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
             reasons.Add(Words.Get("S.Core.Support.DisplayRegister", "Display-mode register reads {0}.", mode.Mode));
+            running = mode.Mode;
 
             // The other register a mode writes. Same argument: a machine whose
             // profile register holds a value never seen is not this machine.
@@ -107,7 +116,7 @@ public static class HardwareSupport
             return new SupportVerdict(SupportLevel.ReadOnly, reasons);
         }
 
-        return new SupportVerdict(SupportLevel.Supported, reasons);
+        return new SupportVerdict(SupportLevel.Supported, reasons) { FirmwareGpuMode = running };
     }
 
     /// <summary>

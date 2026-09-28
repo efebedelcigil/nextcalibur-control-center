@@ -100,6 +100,25 @@ public static class DevicePowerState
         return (status & DnHasProblem) != 0 ? problem : 0;
     }
 
+    [DllImport("cfgmgr32.dll")]
+    private static extern int CM_Get_Parent(out uint parent, uint devInst, uint flags);
+
+    [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
+    private static extern int CM_Get_Device_IDW(uint devInst, char[] buffer, int bufferLength, uint flags);
+
+    /// <summary>
+    /// The instance path of the device's parent in the PnP tree - for a
+    /// monitor, the adapter it is attached to. Null when either cannot be found.
+    /// </summary>
+    public static string? ParentOf(string deviceInstanceId)
+    {
+        if (CM_Locate_DevNodeW(out var node, deviceInstanceId, 0) != 0) return null;
+        if (CM_Get_Parent(out var parent, node, 0) != 0) return null;
+        var buffer = new char[400];
+        if (CM_Get_Device_IDW(parent, buffer, buffer.Length, 0) != 0) return null;
+        return new string(buffer).TrimEnd('\0');
+    }
+
     /// <summary>A disabled device is still a devnode, but only if asked for with this flag.</summary>
     private const uint CmLocateDevNodePhantom = 0x00000001;
 }
