@@ -23,11 +23,19 @@ public sealed class AppSettings
     public bool QuietOnBattery { get; set; } = true;
 
     /// <summary>
-    /// No longer read: since 0.5.12 every copy checks and installs updates
-    /// itself (the owner's decision, 28 September 2026). Kept so settings
-    /// files written by earlier versions still read the same.
+    /// No longer read: since 0.5.12 every copy checks for updates, and an
+    /// update can be put off once but not refused (the owner's decision, 28
+    /// September 2026). Kept so settings files written by earlier versions
+    /// still read the same.
     /// </summary>
     public bool AutoCheckForUpdates { get; set; } = true;
+
+    /// <summary>
+    /// The newest version already put to the person, so the next time it
+    /// comes up - even after a restart - it is installed rather than asked
+    /// about again. Null until a release is offered.
+    /// </summary>
+    public string? UpdateOfferedVersion { get; set; }
 
     /// <summary>No longer read; see <see cref="AutoCheckForUpdates"/>.</summary>
     public bool AutoInstallUpdates { get; set; }

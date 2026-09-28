@@ -168,8 +168,8 @@
     <sys:String x:Key="S.Settings.Interval5">5 s</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 s</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Updates</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateTitle">Updates install themselves</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateDesc">Every copy looks for a new version every quarter of an hour and after waking from sleep - a question GitHub answers "nothing new" to without sending anything else. A new version is downloaded and installed straight away; the restart waits while a game has the screen, and waits for your restart while a graphics change is pending.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Updates</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">Looked for every quarter of an hour and a minute after waking from sleep - a question GitHub answers "nothing new" to without sending anything else. A new version is offered once and can be put off that once; the next time it comes up it is installed, never in the middle of a game.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Check for updates now</sys:String>
     <sys:String x:Key="S.Settings.CheckNowDesc">Asks GitHub right away and tells you the answer either way.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Check now</sys:String>
@@ -234,11 +234,13 @@
     <sys:String x:Key="S.Update.Now">Update now</sys:String>
     <sys:String x:Key="S.Update.PendingGraphics">A graphics mode change to {0} is waiting for a restart of Windows. Updating restarts Nextcalibur, not Windows, and the pending change is dropped: choose it again afterwards, or restart Windows first.</sys:String>
     <sys:String x:Key="S.Update.OfferTitle">Update to {0}?</sys:String>
-    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} is ready to download from GitHub. It will be installed and the application will restart itself; your settings stay as they are.&#10;&#10;Update now?</sys:String>
+    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} is ready to install. Keeping it current matters more here than for most software: this application writes to your laptop's firmware, watches its temperatures and runs as administrator, and every release carries fixes to exactly those parts. An older version keeps the mistakes that have since been found - and, in a public project, published for anyone to read.&#10;&#10;You can put it off this once. The next time it comes up it is installed.&#10;&#10;Update now?</sys:String>
     <sys:String x:Key="S.Update.Progress">Updating to {0}</sys:String>
     <sys:String x:Key="S.Update.InstallingRestarting">Installing and restarting...</sys:String>
     <sys:String x:Key="S.Update.NoRestart">The update was downloaded but the application could not restart into it. Close and reopen Nextcalibur to finish.</sys:String>
     <sys:String x:Key="S.Update.Failed">The update could not be installed:</sys:String>
+    <sys:String x:Key="S.Update.RequiredBody" xml:space="preserve">This update was put off once, and it is not put off twice. Nextcalibur writes to your laptop's firmware and runs as administrator; the fixes in each release are to those parts, and an older version keeps mistakes that are already known and published.&#10;&#10;It is downloaded now, and the application restarts into it. Your settings stay as they are.</sys:String>
+    <sys:String x:Key="S.Update.RequiredTitle">Nextcalibur {0} is being installed</sys:String>
     <sys:String x:Key="S.Update.AtWindowsRestart">Nextcalibur {0} is downloaded. A graphics mode change to {1} is waiting for Windows to restart, and restarting Nextcalibur now would drop it - so the update goes in at that restart.</sys:String>
 
     <!-- Progress panel -->
@@ -610,8 +612,8 @@
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">How often to read the sensors</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Updates install themselves</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Every quarter of an hour, and after waking from sleep, the application asks GitHub whether there is a new version - an empty "nothing new" when there is not. A new version is downloaded, verified and installed straight away, and the application restarts into it; while a game has the screen it waits for the game to end, and while a graphics change waits for a restart it installs at that restart.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Updates</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Every quarter of an hour, and after waking from sleep, the application asks GitHub whether there is a new version - an empty "nothing new" when there is not. A new version is offered with a question you can answer no, once. The next time it comes up - six hours later, or at the next start - it is installed, with one button and no question, when no game has the screen. Nothing is downloaded before that.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Language</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Check now</sys:String>

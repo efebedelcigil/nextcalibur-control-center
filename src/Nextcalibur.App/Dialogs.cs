@@ -42,6 +42,13 @@ public static class Dialogs
         return answer == MessageBoxResult.Yes;
     }
 
+    /// <summary>
+    /// Something that will happen, with one button that names it. Closing the
+    /// box or pressing Escape is the same as the button: there is no other answer.
+    /// </summary>
+    public static void Require(string title, string body, string buttonText) =>
+        Show(title, body, MessageBoxButton.OK, MessageBoxResult.OK, buttonText);
+
     /// <summary>An OK-or-cancel confirmation. Cancel is the default.</summary>
     public static bool Confirm(string title, string body)
     {
@@ -49,7 +56,8 @@ public static class Dialogs
         return answer == MessageBoxResult.OK;
     }
 
-    private static MessageBoxResult Show(string title, string body, MessageBoxButton buttons, MessageBoxResult fallback)
+    private static MessageBoxResult Show(string title, string body, MessageBoxButton buttons, MessageBoxResult fallback,
+        string? primaryText = null)
     {
         // The owner may be on another thread's dispatcher when this is called
         // from the tray; marshal rather than assume.
@@ -60,7 +68,7 @@ public static class Dialogs
                 return fallback;
             try
             {
-                return owner.Dispatcher.Invoke(() => Show(title, body, buttons, fallback));
+                return owner.Dispatcher.Invoke(() => Show(title, body, buttons, fallback, primaryText));
             }
             catch (Exception ex) when (ex is OperationCanceledException or InvalidOperationException)
             {
@@ -77,7 +85,7 @@ public static class Dialogs
         // entry and nothing else, which is what a clean machine got from
         // 0.5.1's first build. Until the first frame, Windows' box.
         if (owner is MainWindow { IsVisible: true, HasRendered: true } main && main.WindowState != WindowState.Minimized)
-            return main.ShowOverlayDialog(title, body, buttons, fallback);
+            return main.ShowOverlayDialog(title, body, buttons, fallback, primaryText);
 
         return owner is not null && owner.IsVisible
             ? MessageBox.Show(owner, body, title, buttons, MessageBoxImage.None, fallback)

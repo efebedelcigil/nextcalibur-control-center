@@ -87,18 +87,22 @@ Windows' own records instead, and reads the clock and watts only when it is.
 "Asleep" is the true state, and the cheapest one.
 
 **How do updates work?**
-By themselves, and there is no switch to stop them: every copy should run
-the version with the latest fixes. The application asks GitHub a minute
-after start, every quarter of an hour after that and a minute after every
-wake from sleep. Until something is published GitHub answers "not
-modified", with no body, which GitHub says does not count against its rate
-limit. A new
-release is downloaded in the background and the application restarts into
-it on its own; it waits while a game or a presentation has the screen, and
-while a graphics change is waiting for Windows to restart it is installed
-at that restart instead, since restarting Nextcalibur would drop the change.
-*Check for updates now* (Settings page and tray menu) asks at once and
-installs with the progress in view.
+The application asks GitHub a minute after start, every quarter of an hour
+after that and a minute after every wake from sleep; there is no switch to
+stop it. Until something is published GitHub answers "not modified", with
+no body, which GitHub says does not count against its rate limit.
+
+A new release is offered once - a notification with an *Update now* button,
+and a question that can be answered no. That no puts it off, it does not
+refuse it: six hours later, or at the next start, the window comes up with
+one button and the update is installed. This application writes to the
+laptop's firmware and runs as administrator, and the fixes in each release
+are to those parts, so an old version is not left running. The second offer
+waits while a game or a presentation has the screen; while a graphics
+change is waiting for Windows to restart, the update is downloaded and goes
+in at that restart, since restarting Nextcalibur first would drop the
+change. Nothing is downloaded before one of the two. *Check for updates
+now* (Settings page and tray menu) asks at once.
 
 **Which language does it come up in?**
 The one Windows is set to - Turkish on a Turkish Windows, English on every

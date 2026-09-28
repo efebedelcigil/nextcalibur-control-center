@@ -166,8 +166,8 @@
     <sys:String x:Key="S.Settings.Interval5">5 sn</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 sn</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Güncellemeler</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateTitle">Güncellemeler kendiliğinden kurulur</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateDesc">Her kopya çeyrek saatte bir ve uykudan uyanınca yeni sürüme bakar - yeni bir şey yoksa GitHub başka hiçbir şey göndermeden "yeni yok" der. Yeni sürüm hemen indirilir ve kurulur; ekranda oyun varken yeniden başlatma bekler, bekleyen bir grafik değişikliği varsa sizin yeniden başlatmanızı bekler.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Güncellemeler</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">Çeyrek saatte bir ve uykudan uyanınca bir dakika sonra bakılır - yeni bir şey yoksa GitHub başka hiçbir şey göndermeden "yeni yok" der. Yeni sürüm bir kez sorulur ve o bir kez ertelenebilir; bir dahaki çıkışında kurulur, hiçbir zaman oyunun ortasında değil.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Güncellemeleri şimdi denetle</sys:String>
     <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve her durumda sonucu bildirir.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Şimdi denetle</sys:String>
@@ -232,11 +232,13 @@
     <sys:String x:Key="S.Update.Now">Şimdi güncelle</sys:String>
     <sys:String x:Key="S.Update.PendingGraphics">{0} yönünde bir grafik modu değişikliği Windows'un yeniden başlatılmasını bekliyor. Güncelleme Windows'u değil Nextcalibur'u yeniden başlatır ve bekleyen değişiklik düşer: sonra yeniden seçin ya da önce Windows'u yeniden başlatın.</sys:String>
     <sys:String x:Key="S.Update.OfferTitle">{0} sürümüne güncellensin mi?</sys:String>
-    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} GitHub'dan indirilmeye hazır. Kurulacak ve uygulama kendini yeniden başlatacak; ayarlarınız olduğu gibi kalır.&#10;&#10;Şimdi güncellensin mi?</sys:String>
+    <sys:String x:Key="S.Update.OfferBody" xml:space="preserve">Nextcalibur {0} kurulmaya hazır. Güncel tutmak burada çoğu yazılımdan daha önemli: bu uygulama dizüstünüzün firmware'ine yazıyor, sıcaklıklarını izliyor ve yönetici olarak çalışıyor; her sürüm tam da bu kısımlara düzeltmeler getiriyor. Eski bir sürüm, o zamandan beri bulunmuş - ve açık kaynak bir projede herkesin okuyabileceği şekilde yayımlanmış - hataları taşımaya devam eder.&#10;&#10;Bu seferlik erteleyebilirsiniz. Bir dahaki çıkışında kurulur.&#10;&#10;Şimdi güncellensin mi?</sys:String>
     <sys:String x:Key="S.Update.Progress">{0} sürümüne güncelleniyor</sys:String>
     <sys:String x:Key="S.Update.InstallingRestarting">Kuruluyor ve yeniden başlatılıyor...</sys:String>
     <sys:String x:Key="S.Update.NoRestart">Güncelleme indirildi ama uygulama ona geçemedi. Bitirmek için Nextcalibur'u kapatıp yeniden açın.</sys:String>
     <sys:String x:Key="S.Update.Failed">Güncelleme kurulamadı:</sys:String>
+    <sys:String x:Key="S.Update.RequiredBody" xml:space="preserve">Bu güncelleme bir kez ertelendi; ikinci kez ertelenmez. Nextcalibur dizüstünüzün firmware'ine yazıyor ve yönetici olarak çalışıyor; her sürümdeki düzeltmeler bu kısımlara ait ve eski bir sürüm, bilinen ve yayımlanmış hataları taşır.&#10;&#10;Şimdi indirilir ve uygulama yeni sürümle yeniden başlar. Ayarlarınız olduğu gibi kalır.</sys:String>
+    <sys:String x:Key="S.Update.RequiredTitle">Nextcalibur {0} kuruluyor</sys:String>
     <sys:String x:Key="S.Update.AtWindowsRestart">Nextcalibur {0} indirildi. {1} moduna geçiş Windows'un yeniden başlamasını bekliyor ve Nextcalibur'u şimdi yeniden başlatmak bu geçişi düşürür - güncelleme o yeniden başlatmada kurulur.</sys:String>
 
     <!-- İlerleme paneli -->
@@ -608,8 +610,8 @@
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">Okumalar panelindeki anahtarın aynısı: çiplerden biri eşiğini aştığında tepsiden bir uyarı. Eşiklerin kendisi sıcaklıkların yanındadır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">Sensörler ne sıklıkla okunsun</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">Saniyede bir, iki, beş veya on saniyede bir okuma. Her okuma bir donanım yazılımı çağrısıdır; iki saniye varsayılandır ve bir çekirdeğin yüzde onda birine mal olur.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Güncellemeler kendiliğinden kurulur</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Uygulama çeyrek saatte bir ve uykudan uyanınca GitHub'a yeni sürüm olup olmadığını sorar - yoksa boş bir "yeni yok" cevabı. Yeni sürüm hemen indirilir, doğrulanır, kurulur ve uygulama yeni sürümle yeniden başlar; ekranda oyun varken oyunun bitmesini bekler, yeniden başlatma bekleyen bir grafik değişikliği varsa o yeniden başlatmada kurulur.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Güncellemeler</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Uygulama çeyrek saatte bir ve uykudan uyanınca GitHub'a yeni sürüm olup olmadığını sorar - yoksa boş bir "yeni yok" cevabı. Yeni sürüm, bir kez hayır diyebileceğiniz bir soruyla gelir. Bir dahaki çıkışında - altı saat sonra ya da bir sonraki açılışta - ekranda oyun yokken, sorusuz ve tek düğmeyle kurulur. O ana kadar hiçbir şey indirilmez.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Dil</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Şimdi denetle</sys:String>

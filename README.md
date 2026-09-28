@@ -36,10 +36,11 @@ the release page can be checked with
 The wizard shows a notice you have to accept, asks whether to start with
 Windows, refuses to install without the NVIDIA driver, and installs one copy
 per machine (a second run offers to repair the first). The application then
-keeps itself current, and not optionally: it looks for a new release every
-quarter of an hour and after every wake - a request GitHub answers "not
-modified", with no body, until there is one - then downloads it and
-restarts into it by itself, waiting while a game has the screen.
+keeps itself current: it looks for a new release every quarter of an hour
+and after every wake - a request GitHub answers "not modified", with no
+body, until there is one. A new release is offered once and can be put off
+that once; the next time it comes up it is installed, never in the middle
+of a game.
 
 ## What it costs while it sits there
 

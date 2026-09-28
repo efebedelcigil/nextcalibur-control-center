@@ -13,15 +13,15 @@ namespace Nextcalibur.App;
 /// area and be forgotten - nobody is going to think to check.
 ///
 /// The shape, set by the owner on 28 September 2026 (it replaces "find
-/// quietly, then ask" of 12 September): every copy updates itself, at once
-/// and without a switch to turn it off. A release reached machines only when
-/// somebody clicked "Check now" - the checks were six hours apart. Now the
+/// quietly, then ask" of 12 September): checking cannot be switched off, and
+/// an update can be put off once but not refused. A release reached machines
+/// only when somebody clicked "Check now" - the checks were six hours apart. Now the
 /// question is asked every quarter of an hour and after every wake, and it
 /// costs next to nothing: GitHub answers "not modified", with no body, to a
 /// conditional request, and documents that answer as not counting against
 /// its rate limit.
-/// What is found is downloaded straight away; when the application restarts
-/// into it is the window's decision (see MainWindow.ForcedUpdateTick).
+/// Nothing is downloaded here: the window asks first, and the second time
+/// installs without asking (see MainWindow.OnUpdateFound).
 /// </summary>
 public sealed class UpdateService : IDisposable
 {
@@ -99,9 +99,9 @@ public sealed class UpdateService : IDisposable
                 // Only when it differs: assigning the interval restarts the countdown.
                 if (_timer.Interval != CheckInterval) _timer.Interval = CheckInterval;
 
-                // Checked and downloaded even while a game has the screen: a
-                // request and a few megabytes in the background. What waits
-                // for the game is the restart, and that is the window's call.
+                // Checked even while a game has the screen: one conditional
+                // request. What waits for the game is the offer, and that is
+                // the window's call.
                 await CheckAsync(report: false);
 
                 // The dependencies' answer is a question on screen, so it
