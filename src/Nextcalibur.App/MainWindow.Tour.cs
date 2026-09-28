@@ -122,8 +122,7 @@ public partial class MainWindow
         new TourStep("SettingOfficeOnBattery", TourPage.Settings, "SettingOfficeOnBattery", "Settings"),
         new TourStep("SettingOverheatWarning", TourPage.Settings, "SettingOverheatWarning", "Settings"),
         new TourStep("SettingInterval2", TourPage.Settings, "SettingInterval2", "Settings"),
-        new TourStep("SettingAutoCheckUpdates", TourPage.Settings, "SettingAutoCheckUpdates", "Settings"),
-        new TourStep("SettingAutoInstallUpdates", TourPage.Settings, "SettingAutoInstallUpdates", "Settings"),
+        new TourStep("SettingUpdatesAutomatic", TourPage.Settings, "SettingUpdatesAutomatic", "Settings"),
         new TourStep("SettingLanguageEnglish", TourPage.Settings, "SettingLanguageEnglish", "Settings"),
         new TourStep("SettingCheckNowButton", TourPage.Settings, "SettingCheckNowButton", "Settings"),
         // ---- Readings

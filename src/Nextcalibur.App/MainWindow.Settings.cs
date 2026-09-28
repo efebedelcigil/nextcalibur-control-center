@@ -24,8 +24,7 @@ public partial class MainWindow
     private ToggleButton? _settingFixTextInputHost, _settingFixCrossDevice, _settingFixWidgets,
         _settingWatchGpuAwake, _settingTrimDwmMemory, _settingTrimExplorerMemory, _settingDisableNdu;
     private StackPanel? _panelWindowsFaultsSubOptions;
-    private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
-        _settingAutoCheckUpdates, _settingAutoInstallUpdates;
+    private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning;
     private RadioButton? _settingStartInTray, _settingStartOnScreen;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
     private RadioButton? _settingLanguageEnglish, _settingLanguageTurkish;
@@ -55,8 +54,6 @@ public partial class MainWindow
         _settingDisableNdu = FindName("SettingDisableNdu") as ToggleButton;
         _panelWindowsFaultsSubOptions = FindName("PanelWindowsFaultsSubOptions") as StackPanel;
         _settingOverheatWarning = FindName("SettingOverheatWarning") as ToggleButton;
-        _settingAutoCheckUpdates = FindName("SettingAutoCheckUpdates") as ToggleButton;
-        _settingAutoInstallUpdates = FindName("SettingAutoInstallUpdates") as ToggleButton;
         _settingCheckNowButton = FindName("SettingCheckNowButton") as Button;
         _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
         _settingDriversButton = FindName("SettingDriversButton") as Button;
@@ -121,12 +118,6 @@ public partial class MainWindow
             OverheatWarningToggle.IsChecked = on;
             SetOverheatWarning(on);
         });
-        Wire(_settingAutoCheckUpdates, on =>
-        {
-            _settings.AutoCheckForUpdates = on;
-            if (_settingAutoInstallUpdates is not null) _settingAutoInstallUpdates.IsEnabled = on;
-        });
-        Wire(_settingAutoInstallUpdates, on => _settings.AutoInstallUpdates = on);
         foreach (var (button, ms) in _settingIntervals)
             button.Checked += (_, _) => ChangeSetting(() => _settings.PollIntervalMs = ms);
 
@@ -209,12 +200,6 @@ public partial class MainWindow
             if (_settingDisableNdu is not null)
                 _settingDisableNdu.IsChecked = _settings.DisableNdu || Nextcalibur.Core.Hardware.NduFix.IsNduDisabled();
             if (_settingOverheatWarning is not null) _settingOverheatWarning.IsChecked = _settings.OverheatWarningEnabled;
-            if (_settingAutoCheckUpdates is not null) _settingAutoCheckUpdates.IsChecked = _settings.AutoCheckForUpdates;
-            if (_settingAutoInstallUpdates is not null)
-            {
-                _settingAutoInstallUpdates.IsChecked = _settings.AutoInstallUpdates;
-                _settingAutoInstallUpdates.IsEnabled = _settings.AutoCheckForUpdates;
-            }
             foreach (var (button, ms) in _settingIntervals)
                 button.IsChecked = _settings.PollIntervalMs == ms;
             if (_settingLanguageEnglish is not null) _settingLanguageEnglish.IsChecked = Strings.Current == UiLanguage.English;

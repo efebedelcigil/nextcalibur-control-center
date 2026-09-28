@@ -30,8 +30,6 @@
     <sys:String x:Key="S.Tray.Interval.2">2 seconds</sys:String>
     <sys:String x:Key="S.Tray.Interval.5">5 seconds</sys:String>
     <sys:String x:Key="S.Tray.Interval.10">10 seconds</sys:String>
-    <sys:String x:Key="S.Tray.AutoCheck">Check for updates automatically</sys:String>
-    <sys:String x:Key="S.Tray.AutoInstall">Install updates automatically</sys:String>
     <sys:String x:Key="S.Tray.CheckNow">Check for updates now</sys:String>
     <sys:String x:Key="S.Tray.OpenLog">Open the log folder</sys:String>
     <sys:String x:Key="S.Tray.Exit">Exit</sys:String>
@@ -170,10 +168,8 @@
     <sys:String x:Key="S.Settings.Interval5">5 s</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 s</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Updates</sys:String>
-    <sys:String x:Key="S.Settings.AutoCheckTitle">Check for updates automatically</sys:String>
-    <sys:String x:Key="S.Settings.AutoCheckDesc">A minute after start, then every six hours; one small request.</sys:String>
-    <sys:String x:Key="S.Settings.AutoInstallTitle">Install updates automatically</sys:String>
-    <sys:String x:Key="S.Settings.AutoInstallDesc">Download, verify and restart into it without asking. Waits while a graphics change is pending.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Updates install themselves</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">Every copy looks for a new version every quarter of an hour and after waking from sleep - a question GitHub answers "nothing new" to without sending anything else. A new version is downloaded and installed straight away; the restart waits while a game has the screen, and waits for your restart while a graphics change is pending.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Check for updates now</sys:String>
     <sys:String x:Key="S.Settings.CheckNowDesc">Asks GitHub right away and tells you the answer either way.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Check now</sys:String>
@@ -243,6 +239,7 @@
     <sys:String x:Key="S.Update.InstallingRestarting">Installing and restarting...</sys:String>
     <sys:String x:Key="S.Update.NoRestart">The update was downloaded but the application could not restart into it. Close and reopen Nextcalibur to finish.</sys:String>
     <sys:String x:Key="S.Update.Failed">The update could not be installed:</sys:String>
+    <sys:String x:Key="S.Update.AtWindowsRestart">Nextcalibur {0} is downloaded. A graphics mode change to {1} is waiting for Windows to restart, and restarting Nextcalibur now would drop it - so the update goes in at that restart.</sys:String>
 
     <!-- Progress panel -->
     <sys:String x:Key="S.Progress.Downloading">Downloading...</sys:String>
@@ -613,10 +610,8 @@
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">How often to read the sensors</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Title">Check for updates automatically</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Body">A minute after start and every six hours, one small request to GitHub. A release found is offered, never installed on its own - unless the next switch is on.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Title">Install updates automatically</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Body">Goes one step further: a release found is downloaded, verified and installed without asking, and the application restarts into it. Off by default. It waits while a graphics change is pending a restart, since that restart is yours to time.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Updates install themselves</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Every quarter of an hour, and after waking from sleep, the application asks GitHub whether there is a new version - an empty "nothing new" when there is not. A new version is downloaded, verified and installed straight away, and the application restarts into it; while a game has the screen it waits for the game to end, and while a graphics change waits for a restart it installs at that restart.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Language</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Check now</sys:String>

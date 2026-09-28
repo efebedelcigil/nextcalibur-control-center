@@ -23,20 +23,20 @@ public sealed class AppSettings
     public bool QuietOnBattery { get; set; } = true;
 
     /// <summary>
-    /// Look for a new release on GitHub: once a minute after start, then every
-    /// six hours - one small request each time, nothing between. Off means no
-    /// request at all; the tray still offers a check by hand.
+    /// No longer read: since 0.5.12 every copy checks and installs updates
+    /// itself (the owner's decision, 28 September 2026). Kept so settings
+    /// files written by earlier versions still read the same.
     /// </summary>
     public bool AutoCheckForUpdates { get; set; } = true;
 
-    /// <summary>
-    /// Go further than checking: when a release is found, download it,
-    /// verify it and restart into it without asking. Off by default - the
-    /// ask-first flow is the default - and it never runs while a graphics
-    /// change is waiting for a restart, since that restart is the person's
-    /// to time. Meaningless with <see cref="AutoCheckForUpdates"/> off.
-    /// </summary>
+    /// <summary>No longer read; see <see cref="AutoCheckForUpdates"/>.</summary>
     public bool AutoInstallUpdates { get; set; }
+
+    /// <summary>
+    /// The version a downloaded update was last applied for at start, so a
+    /// failing apply is tried once rather than at every start. Null until then.
+    /// </summary>
+    public string? UpdateApplyTried { get; set; }
 
     /// <summary>
     /// The language of the interface: English or Turkish, switched live.

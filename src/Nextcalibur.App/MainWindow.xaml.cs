@@ -265,6 +265,10 @@ public partial class MainWindow : Window
 
         // Said once, through the tray, because that is where this application
         // lives when it has something to say and no window on screen.
+        // What an earlier run downloaded and could not apply - it was waiting
+        // for Windows to restart for a graphics change - goes in first.
+        _updates.ApplyPendingAtStart(_settings, Environment.GetCommandLineArgs().Skip(1).ToArray());
+
         _updates.UpdateFound += (_, version) => OnUpdateFound(version);
         _updates.DependencyFound += (_, status) => AnnounceDependency(status);
         _tray.BalloonClicked += (_, _) =>
@@ -273,7 +277,7 @@ public partial class MainWindow : Window
             else if (_updates.Available is not null) OfferUpdate();
         };
         _tray.CheckForUpdatesRequested += (_, _) => CheckForUpdatesByHand();
-        _updates.AutomaticChecksEnabled = () => _settings.AutoCheckForUpdates;
+        _forcedUpdateTimer.Tick += (_, _) => ForcedUpdateTick();
 
         // The window's switch and the tray's menu are two faces of one setting.
         OverheatWarningToggle.IsChecked = _settings.OverheatWarningEnabled;
@@ -291,8 +295,9 @@ public partial class MainWindow : Window
         };
         _updates.Start();
 
-        if (_settings.StartMinimised &&
-            Environment.GetCommandLineArgs().Contains("--tray", StringComparer.OrdinalIgnoreCase))
+        if ((_settings.StartMinimised &&
+             Environment.GetCommandLineArgs().Contains("--tray", StringComparer.OrdinalIgnoreCase))
+            || Environment.GetCommandLineArgs().Contains(UpdateService.StayHiddenArgument, StringComparer.OrdinalIgnoreCase))
         {
             Hide();
         }
@@ -1112,6 +1117,8 @@ public partial class MainWindow : Window
         {
             Nextcalibur.Core.Hardware.WindowsFaults.Forget();
             _gpuClock.ResetAwakeFault();
+            if (e.Mode == Microsoft.Win32.PowerModes.Resume)
+                Dispatcher.BeginInvoke(() => _updates.CheckSoon());
             _currentGpuFaultText = null;
             if (e.Mode == Microsoft.Win32.PowerModes.Resume
                 && _led is { } led && _mailbox is { } mailbox && _support.AllowsWrites)
@@ -1255,15 +1262,10 @@ public partial class MainWindow : Window
     // ------------------------------------------------------------- updates
 
     /// <summary>
-    /// A release was found. Say so through the tray and light the corner
-    /// button; the offer itself waits for a click, because a question that
-    /// pops up on its own is the thing the person asked not to have.
-    ///
-    /// Said once per process. A "no" is remembered for the rest of the
-    /// session - the six-hourly checks find the same release and say
-    /// nothing more - and forgotten at the next start, where the first
-    /// check says it again, once. The owner's rule, 12 September 2026: remind
-    /// at startup, never nag in between.
+    /// A release was found: it is installed, not offered - the owner's rule
+    /// since 28 September 2026. Downloaded at once in the background; the
+    /// restart into it waits for a moment that does not interrupt (see
+    /// <see cref="ReadyToRestartForUpdate"/>), checked every minute.
     /// </summary>
     private void OnUpdateFound(string version)
     {
@@ -1271,23 +1273,91 @@ public partial class MainWindow : Window
         UpdateNowButton.Content = Strings.Get("S.Corner.UpdateTo", version);
         if (_checkingByHand) return;
 
-        // Installing without asking is a setting of its own, off by default,
-        // and it steps aside while a graphics change waits for a restart:
-        // that restart is the person's to time.
-        if (_settings.AutoInstallUpdates && _gpuPendingRestart is null)
-        {
-            Log.Info("update", $"{version} found; installing automatically (the setting is on)");
-            _tray?.ShowMessage(Strings.Get("S.Update.AutoTitle", version), Strings.Get("S.Update.AutoBody"));
-            _ = InstallUpdateAsync(version);
-            return;
-        }
+        Log.Info("update", $"{version} found; installing automatically");
+        _forcedUpdateTimer.Start();
+        ForcedUpdateTick();
+    }
 
-        // A toast with an "Update now" button; the balloon when a toast
-        // cannot be shown. Either way a click brings the window and the
-        // question, and the answer is the person's.
-        if (!Toasts.TryShow(Strings.Get("S.Update.AvailableTitle", version), Strings.Get("S.Update.AvailableToast"), Strings.Get("S.Update.Now"),
-                () => { _tray?.ShowWindowFromOutside(); OfferUpdate(); }))
-            _tray?.ShowMessage(Strings.Get("S.Update.AvailableTitle", version), Strings.Get("S.Update.AvailableBalloon"));
+    private readonly DispatcherTimer _forcedUpdateTimer = new() { Interval = TimeSpan.FromMinutes(1) };
+    private bool _forcedUpdateBusy;
+    private DateTime _nextUpdateDownload = DateTime.MinValue;
+    private string? _updateWaitLogged;
+
+    /// <summary>Downloads the release if it is not yet, and restarts into it when nothing would be interrupted.</summary>
+    private async void ForcedUpdateTick()
+    {
+        if (_forcedUpdateBusy || _updating || _updates.Available is null) return;
+        _forcedUpdateBusy = true;
+        try
+        {
+            var version = _updates.AvailableVersion ?? Strings.Get("S.Update.ANewVersion");
+            if (!_updates.Downloaded)
+            {
+                // A failed download is tried again in a quarter of an hour, not every minute.
+                if (DateTime.UtcNow < _nextUpdateDownload) return;
+                try
+                {
+                    await _updates.DownloadAsync();
+                    Log.Info("update", $"{version} downloaded");
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    _nextUpdateDownload = DateTime.UtcNow.AddMinutes(15);
+                    Log.Warn("update", $"Download of {version} failed: {ex.Message}");
+                    return;
+                }
+            }
+
+            if (ReadyToRestartForUpdate() is { } wait)
+            {
+                if (_updateWaitLogged != wait) Log.Info("update", $"{version} waits: {wait}");
+                _updateWaitLogged = wait;
+                return;
+            }
+
+            _forcedUpdateTimer.Stop();
+            var hidden = !IsVisible || WindowState == WindowState.Minimized;
+            Log.Info("update", $"Restarting into {version}{(hidden ? " (window away)" : string.Empty)}");
+            if (hidden)
+                _tray?.ShowMessage(Strings.Get("S.Update.AutoTitle", version), Strings.Get("S.Update.AutoBody"));
+            else
+                ShowProgress(Strings.Get("S.Update.Progress", version), Strings.Get("S.Update.InstallingRestarting"));
+
+            _exiting = true;
+            _settings.Save();
+            _updates.ApplyAndRestart(hidden ? [UpdateService.StayHiddenArgument] : []);
+
+            // Only reached if the restart did not happen; the next start applies it.
+            _exiting = false;
+            if (!hidden) HideProgress();
+            Log.Warn("update", "The restart into the update did not happen; it is applied at the next start");
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            _exiting = false;
+            Log.Warn("update", "Automatic update failed: " + ex.Message);
+        }
+        finally
+        {
+            _forcedUpdateBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Null when the application may restart into an update now; otherwise
+    /// what it waits for. A game or a presentation is not interrupted; a
+    /// question on screen is answered first; and a graphics change waiting
+    /// for Windows' restart lives only in this process - restarting it drops
+    /// the change - so that update is applied at the next start instead.
+    /// </summary>
+    private string? ReadyToRestartForUpdate()
+    {
+        if (_gpuPendingRestart is not null) return "a graphics change waits for Windows to restart; applied at the next start";
+        if (_dialogOpen || _checkingByHand || _updating) return "a dialogue is open";
+        if (_tourActive) return "the tour is running";
+        if (Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad()) return "a game or a heavy load";
+        if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed()) return "do not disturb";
+        return null;
     }
 
     /// <summary>Set while a check the person asked for runs, so the offer comes as a dialogue rather than a balloon.</summary>
@@ -1354,7 +1424,12 @@ public partial class MainWindow : Window
 
     private bool _updating;
 
-    /// <summary>The question, then the work: download in front of them, restart into the new version.</summary>
+    /// <summary>
+    /// The corner button, the notification or a check by hand: installed at
+    /// once with the progress in view. No question - updates are not optional -
+    /// except that a graphics change waiting for Windows' restart is kept: the
+    /// update is downloaded and goes in at that restart.
+    /// </summary>
     private async void OfferUpdate()
     {
         if (_updating || _updates.Available is null) return;
@@ -1362,18 +1437,14 @@ public partial class MainWindow : Window
         try
         {
             var version = _updates.AvailableVersion ?? Strings.Get("S.Update.ANewVersion");
-            var pending = _gpuPendingRestart is { } mode
-                ? Strings.Get("S.Update.PendingGraphics", mode) + Environment.NewLine + Environment.NewLine
-                : string.Empty;
-            if (!Dialogs.Ask(Strings.Get("S.Update.OfferTitle", version),
-                    pending + Strings.Get("S.Update.OfferBody", version),
-                    defaultNo: _gpuPendingRestart is not null))
+            if (_gpuPendingRestart is { } mode)
             {
-                // Declined: the corner button stays, nothing else will ask.
+                await _updates.DownloadAsync();
+                Dialogs.Tell(Strings.Get("S.Update.Title"), Strings.Get("S.Update.AtWindowsRestart", version, mode));
                 return;
             }
 
-            Log.Info("update", $"Accepted {version}; downloading");
+            Log.Info("update", $"Installing {version} now (asked for)");
             await InstallUpdateAsync(version);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
@@ -1397,7 +1468,8 @@ public partial class MainWindow : Window
             });
             _exiting = true;
             _settings.Save();
-            await _updates.DownloadAndRestartAsync(progress);
+            await _updates.DownloadAsync(progress);
+            _updates.ApplyAndRestart([]);
             // Only reached if the restart did not happen.
             _exiting = false;
             HideProgress();

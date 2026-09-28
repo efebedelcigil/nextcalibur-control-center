@@ -68,8 +68,6 @@ public sealed class TrayPresence : IDisposable
         menu.Items.Add(OverheatWarningMenu());
         menu.Items.Add(ReadingIntervalMenu());
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add(AutoUpdateItem());
-        menu.Items.Add(AutoInstallItem());
         menu.Items.Add(Strings.Get("S.Tray.CheckNow"), null, (_, _) => CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty));
         menu.Items.Add(Strings.Get("S.Tray.OpenLog"), null, (_, _) =>
         {
@@ -102,7 +100,7 @@ public sealed class TrayPresence : IDisposable
     /// </summary>
     public event EventHandler? SettingsChanged;
 
-    private Forms.ToolStripMenuItem? _quietItem, _autoCheckItem, _autoInstallItem;
+    private Forms.ToolStripMenuItem? _quietItem;
     private readonly List<(Forms.ToolStripMenuItem Item, int Ms)> _intervalItems = new();
 
     /// <summary>Re-ticks every item from the settings, for when the window changed one.</summary>
@@ -111,12 +109,6 @@ public sealed class TrayPresence : IDisposable
         if (_disposed) return;
         Quietly(_startupItem, OnStartupToggled, StartupRegistration.IsEnabled);
         if (_quietItem is not null) Quietly(_quietItem, OnQuietToggled, _settings.QuietOnBattery);
-        if (_autoCheckItem is not null) Quietly(_autoCheckItem, OnAutoCheckToggled, _settings.AutoCheckForUpdates);
-        if (_autoInstallItem is not null)
-        {
-            Quietly(_autoInstallItem, OnAutoInstallToggled, _settings.AutoInstallUpdates);
-            _autoInstallItem.Enabled = _settings.AutoCheckForUpdates;
-        }
         foreach (var (item, ms) in _intervalItems) item.Checked = _settings.PollIntervalMs == ms;
         SyncOverheatMenu();
     }
@@ -142,45 +134,6 @@ public sealed class TrayPresence : IDisposable
     // rather than caching them. The close behaviour applies immediately, the
     // warning threshold at the next slow tick, and the sampling interval when
     // that tick next reconsiders it — a few seconds at worst.
-
-    private Forms.ToolStripMenuItem AutoUpdateItem()
-    {
-        _autoCheckItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.AutoCheck"))
-        {
-            CheckOnClick = true,
-            Checked = _settings.AutoCheckForUpdates,
-        };
-        _autoCheckItem.CheckedChanged += OnAutoCheckToggled;
-        return _autoCheckItem;
-    }
-
-    private void OnAutoCheckToggled(object? sender, EventArgs e)
-    {
-        _settings.AutoCheckForUpdates = _autoCheckItem!.Checked;
-        if (_autoInstallItem is not null) _autoInstallItem.Enabled = _autoCheckItem.Checked;
-        _settings.Save();
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    /// <summary>Install without asking - a step beyond checking, and only meaningful with checking on.</summary>
-    private Forms.ToolStripMenuItem AutoInstallItem()
-    {
-        _autoInstallItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.AutoInstall"))
-        {
-            CheckOnClick = true,
-            Checked = _settings.AutoInstallUpdates,
-            Enabled = _settings.AutoCheckForUpdates,
-        };
-        _autoInstallItem.CheckedChanged += OnAutoInstallToggled;
-        return _autoInstallItem;
-    }
-
-    private void OnAutoInstallToggled(object? sender, EventArgs e)
-    {
-        _settings.AutoInstallUpdates = _autoInstallItem!.Checked;
-        _settings.Save();
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
-    }
 
     private Forms.ToolStripMenuItem QuietOnBatteryItem()
     {

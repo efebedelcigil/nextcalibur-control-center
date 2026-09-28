@@ -60,7 +60,7 @@
     <Company>Efe Bedelcigil</Company>
     <Authors>Efe Bedelcigil</Authors>
     <Copyright>Efe Bedelcigil, MIT licence</Copyright>
-    <Version>0.5.11</Version>
+    <Version>0.5.12</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
 

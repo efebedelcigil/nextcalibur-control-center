@@ -87,16 +87,18 @@ Windows' own records instead, and reads the clock and watts only when it is.
 "Asleep" is the true state, and the cheapest one.
 
 **How do updates work?**
-The application checks GitHub's releases quietly (a minute after start,
-then every six hours) and, when a newer one exists, tells you once through a
-notification with an *Update now* button and lights the button in the
-bottom-left corner. Nothing is downloaded until you say so; then a progress
-bar, and the application restarts into the new version. Declined, it stays
-quiet until the next start. *Check for updates automatically* turns the
-checking off, *Install updates automatically* makes the whole thing happen
-without asking (never while a graphics change is waiting for a restart),
-and *Check for updates now* asks on demand - all three on the Settings page
-and in the tray menu, which are kept in step.
+By themselves, and there is no switch to stop them: every copy should run
+the version with the latest fixes. The application asks GitHub a minute
+after start, every quarter of an hour after that and a minute after every
+wake from sleep. Until something is published GitHub answers "not
+modified", with no body, which GitHub says does not count against its rate
+limit. A new
+release is downloaded in the background and the application restarts into
+it on its own; it waits while a game or a presentation has the screen, and
+while a graphics change is waiting for Windows to restart it is installed
+at that restart instead, since restarting Nextcalibur would drop the change.
+*Check for updates now* (Settings page and tray menu) asks at once and
+installs with the progress in view.
 
 **Which language does it come up in?**
 The one Windows is set to - Turkish on a Turkish Windows, English on every

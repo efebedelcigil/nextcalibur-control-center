@@ -28,8 +28,6 @@
     <sys:String x:Key="S.Tray.Interval.2">2 saniyede bir</sys:String>
     <sys:String x:Key="S.Tray.Interval.5">5 saniyede bir</sys:String>
     <sys:String x:Key="S.Tray.Interval.10">10 saniyede bir</sys:String>
-    <sys:String x:Key="S.Tray.AutoCheck">Güncellemeleri otomatik denetle</sys:String>
-    <sys:String x:Key="S.Tray.AutoInstall">Güncellemeleri otomatik kur</sys:String>
     <sys:String x:Key="S.Tray.CheckNow">Güncellemeleri şimdi denetle</sys:String>
     <sys:String x:Key="S.Tray.OpenLog">Günlük klasörünü aç</sys:String>
     <sys:String x:Key="S.Tray.Exit">Çıkış</sys:String>
@@ -168,10 +166,8 @@
     <sys:String x:Key="S.Settings.Interval5">5 sn</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 sn</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Güncellemeler</sys:String>
-    <sys:String x:Key="S.Settings.AutoCheckTitle">Güncellemeleri otomatik denetle</sys:String>
-    <sys:String x:Key="S.Settings.AutoCheckDesc">Başlangıçtan bir dakika sonra, ardından her altı saatte bir; küçük bir istek.</sys:String>
-    <sys:String x:Key="S.Settings.AutoInstallTitle">Güncellemeleri otomatik kur</sys:String>
-    <sys:String x:Key="S.Settings.AutoInstallDesc">Sormadan indirir, doğrular ve yeni sürümle yeniden başlar. Bekleyen bir grafik modu değişikliği varsa erteler.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Güncellemeler kendiliğinden kurulur</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">Her kopya çeyrek saatte bir ve uykudan uyanınca yeni sürüme bakar - yeni bir şey yoksa GitHub başka hiçbir şey göndermeden "yeni yok" der. Yeni sürüm hemen indirilir ve kurulur; ekranda oyun varken yeniden başlatma bekler, bekleyen bir grafik değişikliği varsa sizin yeniden başlatmanızı bekler.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Güncellemeleri şimdi denetle</sys:String>
     <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve her durumda sonucu bildirir.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Şimdi denetle</sys:String>
@@ -241,6 +237,7 @@
     <sys:String x:Key="S.Update.InstallingRestarting">Kuruluyor ve yeniden başlatılıyor...</sys:String>
     <sys:String x:Key="S.Update.NoRestart">Güncelleme indirildi ama uygulama ona geçemedi. Bitirmek için Nextcalibur'u kapatıp yeniden açın.</sys:String>
     <sys:String x:Key="S.Update.Failed">Güncelleme kurulamadı:</sys:String>
+    <sys:String x:Key="S.Update.AtWindowsRestart">Nextcalibur {0} indirildi. {1} moduna geçiş Windows'un yeniden başlamasını bekliyor ve Nextcalibur'u şimdi yeniden başlatmak bu geçişi düşürür - güncelleme o yeniden başlatmada kurulur.</sys:String>
 
     <!-- İlerleme paneli -->
     <sys:String x:Key="S.Progress.Downloading">İndiriliyor...</sys:String>
@@ -611,10 +608,8 @@
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">Okumalar panelindeki anahtarın aynısı: çiplerden biri eşiğini aştığında tepsiden bir uyarı. Eşiklerin kendisi sıcaklıkların yanındadır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">Sensörler ne sıklıkla okunsun</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">Saniyede bir, iki, beş veya on saniyede bir okuma. Her okuma bir donanım yazılımı çağrısıdır; iki saniye varsayılandır ve bir çekirdeğin yüzde onda birine mal olur.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Title">Güncellemeleri otomatik denetle</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCheckUpdates.Body">Başlangıçtan bir dakika sonra ve her altı saatte bir GitHub'a küçük bir istek. Bulunan sürüm önerilir, kendiliğinden kurulmaz - bir sonraki anahtar açık değilse.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Title">Güncellemeleri otomatik kur</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoInstallUpdates.Body">Bir adım daha ileri gider: bulunan sürüm sormadan indirilir, doğrulanır, kurulur ve uygulama yeni sürümle yeniden başlar. Varsayılan olarak kapalı. Yeniden başlatma bekleyen bir grafik değişikliği varsa bekler; o yeniden başlatmanın zamanı sizindir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Güncellemeler kendiliğinden kurulur</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Uygulama çeyrek saatte bir ve uykudan uyanınca GitHub'a yeni sürüm olup olmadığını sorar - yoksa boş bir "yeni yok" cevabı. Yeni sürüm hemen indirilir, doğrulanır, kurulur ve uygulama yeni sürümle yeniden başlar; ekranda oyun varken oyunun bitmesini bekler, yeniden başlatma bekleyen bir grafik değişikliği varsa o yeniden başlatmada kurulur.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Dil</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Şimdi denetle</sys:String>

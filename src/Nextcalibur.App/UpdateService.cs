@@ -12,12 +12,16 @@ namespace Nextcalibur.App;
 /// than for most software, because this is meant to sit in the notification
 /// area and be forgotten - nobody is going to think to check.
 ///
-/// The shape, set by the owner on 12 September 2026 after the first update
-/// arrived: find quietly, then ask. A check costs one small request; finding
-/// a release costs nothing more until the person says yes. Yes means download
-/// with a progress bar in front of them, then restart into the new version.
-/// No means a button stays in the corner for later. Nothing is downloaded and
-/// nothing restarts without that yes.
+/// The shape, set by the owner on 28 September 2026 (it replaces "find
+/// quietly, then ask" of 12 September): every copy updates itself, at once
+/// and without a switch to turn it off. A release reached machines only when
+/// somebody clicked "Check now" - the checks were six hours apart. Now the
+/// question is asked every quarter of an hour and after every wake, and it
+/// costs next to nothing: GitHub answers "not modified", with no body, to a
+/// conditional request, and documents that answer as not counting against
+/// its rate limit.
+/// What is found is downloaded straight away; when the application restarts
+/// into it is the window's decision (see MainWindow.ForcedUpdateTick).
 /// </summary>
 public sealed class UpdateService : IDisposable
 {
@@ -34,27 +38,39 @@ public sealed class UpdateService : IDisposable
     private static readonly TimeSpan FirstCheckDelay = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    /// How often to look afterwards. Releases are days apart at the fastest;
-    /// six hours finds one the same day without troubling GitHub.
+    /// How often to look afterwards. The look is a conditional request that
+    /// GitHub answers "not modified" until something is published, so a
+    /// quarter of an hour costs nothing worth counting.
     /// </summary>
-    private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(6);
+    private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(15);
 
-    /// <summary>How soon to look again after leaving a game alone. Costs nothing: the check does not run.</summary>
-    private static readonly TimeSpan WhileBusyDelay = TimeSpan.FromMinutes(20);
+    /// <summary>
+    /// The dependencies are asked after less often: several sources, and a
+    /// driver or a runtime a few hours late is no emergency.
+    /// </summary>
+    private static readonly TimeSpan DependencyInterval = TimeSpan.FromHours(6);
+
+    /// <summary>After a wake the network needs a moment before the first look.</summary>
+    private static readonly TimeSpan AfterWakeDelay = TimeSpan.FromMinutes(1);
+
+    /// <summary>Passed to the restarted copy when the window was away, so it stays away.</summary>
+    public const string StayHiddenArgument = "--stay-hidden";
+
+    private DateTime _lastDependencyCheck = DateTime.MinValue;
 
     private readonly UpdateManager? _manager;
     private readonly DispatcherTimer? _timer;
     private bool _busy;
     private bool _disposed;
 
-    /// <summary>Whether the timer is allowed to check. Read on every tick, so a change takes effect at the next one.</summary>
-    public Func<bool> AutomaticChecksEnabled { get; set; } = () => true;
-
     /// <summary>True when this copy was installed and can update itself at all.</summary>
     public bool CanUpdate => _manager is not null;
 
     /// <summary>The release found and not yet installed, if any.</summary>
     public UpdateInfo? Available { get; private set; }
+
+    /// <summary>True once <see cref="Available"/> has been downloaded and only waits to be applied.</summary>
+    public bool Downloaded { get; private set; }
 
     /// <summary>The version of <see cref="Available"/>, for the person: "v0.5.2".</summary>
     public string? AvailableVersion => Available?.TargetFullRelease?.Version is { } v ? "v" + v : null;
@@ -80,24 +96,24 @@ public sealed class UpdateService : IDisposable
         {
             try
             {
-                _timer.Interval = CheckInterval;
-                if (!AutomaticChecksEnabled()) return;
+                // Only when it differs: assigning the interval restarts the countdown.
+                if (_timer.Interval != CheckInterval) _timer.Interval = CheckInterval;
 
-                // Not while a game has the screen. A check is a few requests and
-                // a few hundred bytes, but it can end in a download, an
-                // installer and a question - none of which belong in the middle
-                // of a round, and the tab-out alone would cost more than the
-                // update is worth. Windows is asked, rather than guessed at, and
-                // the next look is soon rather than in six hours so the end of
-                // the session is not missed.
-                if (Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching() || Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad())
-                {
-                    _timer.Interval = WhileBusyDelay;
-                    return;
-                }
-
+                // Checked and downloaded even while a game has the screen: a
+                // request and a few megabytes in the background. What waits
+                // for the game is the restart, and that is the window's call.
                 await CheckAsync(report: false);
-                await CheckDependenciesAsync();
+
+                // The dependencies' answer is a question on screen, so it
+                // waits for a quiet moment and comes at most every six hours.
+                if (DateTime.UtcNow - _lastDependencyCheck >= DependencyInterval
+                    && !Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed()
+                    && !Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching()
+                    && !Nextcalibur.Core.Hardware.UserPresence.IsGamingOrHeavyLoad())
+                {
+                    _lastDependencyCheck = DateTime.UtcNow;
+                    await CheckDependenciesAsync();
+                }
             }
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {
@@ -148,6 +164,48 @@ public sealed class UpdateService : IDisposable
     }
 
     public void Start() => _timer?.Start();
+
+    /// <summary>
+    /// Looks again in a minute - after a wake, when a machine that slept
+    /// through a release should not wait out the rest of a quarter hour.
+    /// </summary>
+    public void CheckSoon()
+    {
+        if (_timer is null || _disposed) return;
+        _timer.Stop();
+        _timer.Interval = AfterWakeDelay;
+        _timer.Start();
+    }
+
+    /// <summary>
+    /// A release downloaded by an earlier run and never applied - that run
+    /// was waiting on a graphics change's restart, or ended first. Applied
+    /// now, before anything else starts, and the process restarts into it.
+    /// Tried once per version: an apply that fails and comes back to the old
+    /// version must not turn every start into another attempt.
+    /// </summary>
+    /// <returns>False when there is nothing to apply, or it was already tried.</returns>
+    public bool ApplyPendingAtStart(Nextcalibur.Core.Configuration.AppSettings settings, string[] restartArgs)
+    {
+        if (_manager is null) return false;
+        try
+        {
+            if (_manager.UpdatePendingRestart is not { } pending) return false;
+            var version = pending.Version?.ToString() ?? string.Empty;
+            if (settings.UpdateApplyTried == version) return false;
+
+            settings.UpdateApplyTried = version;
+            settings.Save();
+            Nextcalibur.Core.Configuration.Log.Info("update", $"Applying {version}, downloaded by an earlier run");
+            _manager.ApplyUpdatesAndRestart(pending, restartArgs);
+            return true;
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Nextcalibur.Core.Configuration.Log.Warn("update", "Could not apply the downloaded update at start: " + ex.Message);
+            return false;
+        }
+    }
 
     /// <summary>A check now, because somebody clicked. Reports either way.</summary>
     public async Task CheckNowAsync()
@@ -212,6 +270,12 @@ public sealed class UpdateService : IDisposable
             }
 
             var announce = Available is null;
+            if (!announce && Available?.TargetFullRelease?.Version != available.TargetFullRelease?.Version)
+            {
+                // A newer release than the one found before, perhaps already downloaded.
+                announce = true;
+                Downloaded = false;
+            }
             Available = available;
             if (announce) UpdateFound?.Invoke(this, AvailableVersion ?? Strings.Get("S.Update.ANewVersion"));
             return true;
@@ -230,18 +294,27 @@ public sealed class UpdateService : IDisposable
     }
 
     /// <summary>
-    /// Downloads the found release, reporting progress 0-100, and restarts
-    /// the application into it. Returns only on failure; on success the
-    /// process is gone.
+    /// Downloads the found release, reporting progress 0-100 when asked to.
+    /// Velopack checks the package against the release's hash before keeping it.
     /// </summary>
     /// <exception cref="InvalidOperationException">Nothing has been found.</exception>
-    public async Task DownloadAndRestartAsync(IProgress<int> progress)
+    public async Task DownloadAsync(IProgress<int>? progress = null)
     {
         if (_manager is null || Available is not { } update)
             throw new InvalidOperationException("There is no update to install.");
+        if (Downloaded) { progress?.Report(100); return; }
 
-        await _manager.DownloadUpdatesAsync(update, p => progress.Report(p));
-        _manager.ApplyUpdatesAndRestart(update);
+        await _manager.DownloadUpdatesAsync(update, p => progress?.Report(p));
+        Downloaded = true;
+    }
+
+    /// <summary>Restarts into the downloaded release. Returns only on failure; on success the process is gone.</summary>
+    /// <exception cref="InvalidOperationException">Nothing has been downloaded.</exception>
+    public void ApplyAndRestart(string[] restartArgs)
+    {
+        if (_manager is null || Available is not { } update || !Downloaded)
+            throw new InvalidOperationException("There is no downloaded update to install.");
+        _manager.ApplyUpdatesAndRestart(update.TargetFullRelease, restartArgs);
     }
 
     public void Dispose()

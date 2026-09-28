@@ -1734,39 +1734,13 @@
                                 <TextBlock Text="{DynamicResource S.Settings.GroupUpdates}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
-                                        <!-- SettingAutoCheckUpdates -->
-                                        <Grid Margin="0,3">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoCheckTitle}" FontSize="12" FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoCheckDesc}"
-                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
-                                            </StackPanel>
-                                            <ToggleButton x:Name="SettingAutoCheckUpdates" Grid.Column="1"
-                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
-                                        </Grid>
-
-                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
-
-                                        <!-- SettingAutoInstallUpdates -->
-                                        <Grid Margin="0,3">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoInstallTitle}" FontSize="12" FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoInstallDesc}"
-                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
-                                            </StackPanel>
-                                            <ToggleButton x:Name="SettingAutoInstallUpdates" Grid.Column="1"
-                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
-                                        </Grid>
+                                        <!-- SettingUpdatesAutomatic: not a switch - every copy updates itself -->
+                                        <StackPanel x:Name="SettingUpdatesAutomatic" Margin="0,3">
+                                            <TextBlock Text="{DynamicResource S.Settings.AutoUpdateTitle}" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Text="{DynamicResource S.Settings.AutoUpdateDesc}" TextWrapping="Wrap"
+                                                       Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                        </StackPanel>
 
                                         <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
 
