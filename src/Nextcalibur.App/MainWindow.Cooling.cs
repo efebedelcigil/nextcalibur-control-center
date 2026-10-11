@@ -21,6 +21,9 @@ public partial class MainWindow
     /// <summary>What cooling has done this time, so stopping undoes exactly that.</summary>
     private bool _coolingCapped, _coolingTurbo;
 
+    /// <summary>The turbo as the firmware last said; false until it has said anything.</summary>
+    private bool _fanTurboOn;
+
     /// <summary>
     /// Once, at start, after the plans exist. A run that ended mid-cooling -
     /// a crash, a power cut - left a lowered ceiling behind; it goes first.
@@ -123,6 +126,7 @@ public partial class MainWindow
     /// </summary>
     private void OnFanTurboEvent(bool on)
     {
+        _fanTurboOn = on;
         Log.Info("cooling", $"Fan turbo is now {(on ? "on" : "off")} (firmware event)");
         if (!on && _coolingTurbo) _coolingTurbo = false;
     }
@@ -138,35 +142,6 @@ public partial class MainWindow
             || !Toasts.TryShow(title, body, Strings.Get("S.Heat.SwitchOffice"),
                 () => Dispatcher.BeginInvoke(() => { Log.Info("mode", "Office chosen from the heat warning"); ModeOffice.IsChecked = true; })))
             _tray?.ShowMessage(title, body);
-    }
-
-    private System.Management.ManagementEventWatcher? _firmwareEvents;
-
-    /// <summary>
-    /// The firmware's own events: Fn+1 and any change to the fan turbo arrive
-    /// here (PROTOCOL.md). Listening costs nothing until one comes.
-    /// </summary>
-    private void StartFirmwareEvents()
-    {
-        if (_support.Level == SupportLevel.Unsupported) return;
-        try
-        {
-            _firmwareEvents = new System.Management.ManagementEventWatcher(
-                new System.Management.ManagementScope(@"root\wmi"),
-                new System.Management.WqlEventQuery("SELECT * FROM GMC_WMIEvent"));
-            _firmwareEvents.EventArrived += (_, e) =>
-            {
-                if (FanTurbo.FromEvent(e.NewEvent["EventDetail"] as byte[]) is { } on)
-                    Dispatcher.BeginInvoke(() => OnFanTurboEvent(on));
-            };
-            _firmwareEvents.Start();
-        }
-        catch (Exception ex) when (ex is System.Management.ManagementException or UnauthorizedAccessException or System.Runtime.InteropServices.COMException)
-        {
-            Log.Warn("firmware", "Could not listen for firmware events: " + ex.Message);
-            _firmwareEvents?.Dispose();
-            _firmwareEvents = null;
-        }
     }
 
     // ---------------------------------------------------------------- runaways

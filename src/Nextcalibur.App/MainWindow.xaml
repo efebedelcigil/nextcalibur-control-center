@@ -1766,6 +1766,34 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- External keyboard: shortcuts for the Fn keys -->
+                                <TextBlock Text="{DynamicResource S.Settings.GroupFnKeys}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
+                                    <StackPanel>
+                                        <!-- SettingFnShortcuts -->
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.FnShortcutsTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.FnShortcutsDesc}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <ToggleButton x:Name="SettingFnShortcuts" Grid.Column="1"
+                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
+                                        <CheckBox x:Name="FnSelectAll" IsThreeState="False" Margin="0,3"
+                                                  Content="{DynamicResource S.Settings.FnSelectAll}" Foreground="{DynamicResource Ink}" />
+                                        <StackPanel x:Name="FnShortcutRows" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Section 3: Updates -->
                                 <TextBlock Text="{DynamicResource S.Settings.GroupUpdates}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">

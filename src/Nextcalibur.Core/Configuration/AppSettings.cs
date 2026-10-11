@@ -33,6 +33,16 @@ public sealed class AppSettings
     public bool AutoFanTurbo { get; set; } = true;
 
     /// <summary>
+    /// Shortcuts for the Fn keys, for an external keyboard - off until asked
+    /// for: a shortcut registered with Windows is taken from every other
+    /// program, and that is the person's to decide.
+    /// </summary>
+    public bool FnShortcutsEnabled { get; set; }
+
+    /// <summary>One entry per action; see <see cref="Input.FnShortcuts"/>.</summary>
+    public List<Input.FnShortcut> FnShortcuts { get; set; } = Input.FnShortcuts.Defaults();
+
+    /// <summary>
     /// Drop to Office when the charger comes out and put the previous mode
     /// back when it returns. On by default because the vendor does it.
     /// </summary>
@@ -270,6 +280,20 @@ public sealed class AppSettings
     internal static AppSettings Migrate(AppSettings? loaded)
     {
         var settings = loaded ?? new AppSettings();
+
+        // Exactly one shortcut per known action, whatever the file says:
+        // unknown actions dropped, a missing one given its default, keys
+        // outside what a virtual-key code can be cleared.
+        var shortcuts = new List<Input.FnShortcut>();
+        foreach (var fallback in Input.FnShortcuts.Defaults())
+        {
+            var found = settings.FnShortcuts?.FirstOrDefault(f => f is not null && f.Action == fallback.Action);
+            if (found is null) { shortcuts.Add(fallback); continue; }
+            found.Modifiers &= Input.HotkeyModifiers.Alt | Input.HotkeyModifiers.Control | Input.HotkeyModifiers.Shift | Input.HotkeyModifiers.Windows;
+            if (found.Key is 0 or > 0xFE) found.Key = fallback.Key;
+            shortcuts.Add(found);
+        }
+        settings.FnShortcuts = shortcuts;
 
         if (settings.CpuWarningTemperatureC <= 0)
         {

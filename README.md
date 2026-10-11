@@ -84,7 +84,7 @@ so a server that answers "not modified" sends no body.
 | Nothing outside it changes it | settings where only administrators can write, recorded and put back if changed from outside; the application checks its own files, its folder's permissions and the .NET runtime under it, and stops writing to the firmware if any of that fails; NVIDIA's and PawnIO's files verified before use - see [docs/SECURITY.md](docs/SECURITY.md) |
 | Fan control | **deliberately not implemented** - see the FAQ |
 
-The guided tour is the manual: sixty-seven steps, one control at a time.
+The guided tour is the manual: seventy steps, one control at a time.
 
 ## Why it runs as administrator
 

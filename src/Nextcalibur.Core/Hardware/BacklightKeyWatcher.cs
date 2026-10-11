@@ -22,6 +22,9 @@ public sealed class BacklightKeyWatcher : IDisposable
     /// <summary>Raised on the watcher's thread with the level the firmware moved to.</summary>
     public event Action<LedBrightness>? LevelChanged;
 
+    /// <summary>Raised on the watcher's thread when the firmware says the fan turbo went on or off (Fn+1, or software).</summary>
+    public event Action<bool>? FanTurboChanged;
+
     /// <exception cref="ManagementException">The class is not readable by this account.</exception>
     /// <exception cref="UnauthorizedAccessException">Same, phrased by a different layer.</exception>
     public BacklightKeyWatcher()
@@ -40,6 +43,11 @@ public sealed class BacklightKeyWatcher : IDisposable
             using (e.NewEvent)
             {
                 if (e.NewEvent?["EventDetail"] is not byte[] { Length: > 0 } detail) return;
+
+                // The same buffer carries every key's news; byte 1 says
+                // which. 3 is the fan turbo (PROTOCOL.md) - its byte 0 is
+                // the backlight as it already was, not a change.
+                if (FanTurbo.FromEvent(detail) is { } turbo) { FanTurboChanged?.Invoke(turbo); return; }
                 if (Parse(detail[0]) is { } level) LevelChanged?.Invoke(level);
             }
         }

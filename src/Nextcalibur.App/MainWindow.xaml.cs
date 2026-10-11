@@ -328,7 +328,7 @@ public partial class MainWindow : Window
         // one. Making our own costs nothing and needs no administrator.
         SystemModeService.EnsurePlansExist();
         TunePlansAtStart();
-        StartFirmwareEvents();
+        StartFnShortcuts();
 
         RefreshOverlay();
         LoadPowerModes();
@@ -352,6 +352,10 @@ public partial class MainWindow : Window
         LoadSystemMode();
         RestoreModeAtStartup();
         LoadLightingUi();
+
+        // Registered once already without the mailbox; the shortcuts that
+        // need it - the light, the turbo - can be had now.
+        ApplyFnShortcuts();
 
         _timer.Tick += (_, _) => Sample();
         Sample();
@@ -605,6 +609,7 @@ public partial class MainWindow : Window
         try
         {
             _backlightKey = new BacklightKeyWatcher();
+            _backlightKey.FanTurboChanged += on => Dispatcher.BeginInvoke(() => OnFanTurboEvent(on));
             _backlightKey.LevelChanged += level =>
             {
                 if (_led is not { } led) return;
@@ -772,7 +777,7 @@ public partial class MainWindow : Window
             _tray?.Dispose();
             _backlightKey?.Dispose();
             if (_cooling.Engaged) StopCooling("exit");
-            _firmwareEvents?.Dispose();
+            StopFnShortcuts();
             _mailbox?.Dispose();
             _cpuClock.Dispose();
             _gpuClock.Dispose();
@@ -2907,6 +2912,7 @@ public partial class MainWindow : Window
                 // The overheat warning is the one thing worth a firmware read while
                 // hidden — it is the reason the application stays resident at all.
                 RunawayTick();
+                RetryTakenShortcuts();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

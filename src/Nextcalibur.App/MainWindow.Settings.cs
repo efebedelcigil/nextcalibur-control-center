@@ -146,6 +146,7 @@ public partial class MainWindow
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
+        WireFnShortcutsPage();
         _settingsPageWired = true;
         LoadSettingsPage();
     }
