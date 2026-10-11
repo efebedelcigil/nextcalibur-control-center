@@ -50,8 +50,75 @@ public static class RestorePoint
     [DllImport("srclient.dll", CharSet = CharSet.Unicode)]
     private static extern bool SRSetRestorePointW(ref RestorePointInfo info, out StateManagerStatus status);
 
-    /// <summary>Asks for a restore point and says what came of it. Slow - seconds to a minute; never on the interface thread.</summary>
+    private const string SystemRestoreKey = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore";
+    private const string FrequencyValue = "SystemRestorePointCreationFrequency";
+
+    /// <summary>
+    /// Asks for a restore point and says what came of it. Slow - seconds to a
+    /// minute; never on the interface thread.
+    ///
+    /// Windows makes at most one a day unless told otherwise - the
+    /// SystemRestorePointCreationFrequency value, in minutes, 1440 when absent.
+    /// The way Microsoft documents around it is that value set to 0: so it is,
+    /// for the length of this one request, and put back exactly as it was -
+    /// a value restored, or no value - straight after. Both are recorded in
+    /// the audit log.
+    /// </summary>
     public static RestorePointOutcome Create(string description)
+    {
+        var original = ReadFrequency();
+        var lifted = SetFrequency(0);
+        AuditLog.Record("restore-point-limit", new Dictionary<string, object?>
+        {
+            ["step"] = "lifted", ["original"] = original?.ToString() ?? "absent (Windows default: 1440 minutes)", ["ok"] = lifted,
+        });
+        try
+        {
+            return CreateOnce(description);
+        }
+        finally
+        {
+            var restored = original is { } value ? SetFrequency(value) : DeleteFrequency();
+            AuditLog.Record("restore-point-limit", new Dictionary<string, object?>
+            {
+                ["step"] = "put back", ["to"] = original?.ToString() ?? "absent", ["ok"] = restored,
+            });
+        }
+    }
+
+    private static int? ReadFrequency()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(SystemRestoreKey);
+            return key?.GetValue(FrequencyValue) is int minutes ? minutes : null;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { return null; }
+    }
+
+    private static bool SetFrequency(int minutes)
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(SystemRestoreKey, writable: true);
+            key.SetValue(FrequencyValue, minutes, Microsoft.Win32.RegistryValueKind.DWord);
+            return true;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { return false; }
+    }
+
+    private static bool DeleteFrequency()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(SystemRestoreKey, writable: true);
+            key?.DeleteValue(FrequencyValue, throwOnMissingValue: false);
+            return true;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { return false; }
+    }
+
+    private static RestorePointOutcome CreateOnce(string description)
     {
         var before = Newest();
         StateManagerStatus status;
@@ -79,9 +146,25 @@ public static class RestorePoint
             return new RestorePointOutcome(false, null, null, -1, Words.Get("S.Core.Restore.Missing", "System Restore is not available on this Windows."));
         }
 
-        var after = Newest();
-        if (after is { } made && (before is null || made.Sequence > before.Value.Sequence))
-            return new RestorePointOutcome(true, made.Sequence, made.CreatedAt, status.Status, null);
+        // Windows lists the new point only once it has finished writing it -
+        // seconds later, not when the call returns. Looked for by the number
+        // the call gave, for up to a minute: looking at once said "none made"
+        // for two points Windows had made (tour, 12 October 2026).
+        var wanted = status.SequenceNumber;
+        var deadline = DateTime.UtcNow.AddSeconds(60);
+        while (true)
+        {
+            var after = Newest();
+            if (after is { } made && (made.Sequence >= wanted && wanted > 0 || before is null || made.Sequence > before.Value.Sequence))
+                return new RestorePointOutcome(true, made.Sequence, made.CreatedAt, status.Status, null);
+            if (DateTime.UtcNow >= deadline) break;
+            Thread.Sleep(1000);
+        }
+
+        // Not listed within the minute, but Windows said it was made: that is
+        // what it said, with the number it gave.
+        if (status.Status == 0 && wanted > 0 && (before is null || wanted > before.Value.Sequence))
+            return new RestorePointOutcome(true, wanted, null, status.Status, null);
 
         // Said yes, made nothing: Windows' once-a-day limit.
         return new RestorePointOutcome(false, before?.Sequence, before?.CreatedAt, status.Status,

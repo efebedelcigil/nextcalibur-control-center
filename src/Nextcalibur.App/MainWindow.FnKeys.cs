@@ -114,6 +114,54 @@ public partial class MainWindow
         RefreshShortcutRows();
     }
 
+    /// <summary>What would stop these keys working, checked the way registration checks them - without keeping them.</summary>
+    private (ShortcutProblem Problem, string? Detail)? ProblemWith(FnShortcut s)
+    {
+        if (FnShortcuts.CheckShape(s, _settings.FnShortcuts) is { } shape) return (shape, null);
+        if (FnShortcuts.CharacterOnSomeLayout(s.Modifiers, s.Key) is { } typed) return (ShortcutProblem.TypesACharacter, typed);
+
+        // Asked of Windows itself, and let go at once: the real registration follows.
+        var handle = _hotkeySource?.Handle ?? IntPtr.Zero;
+        if (handle == IntPtr.Zero) return null;
+        const int probe = HotkeyIdBase + 0x100;
+        if (!RegisterHotKey(handle, probe, (uint)s.Modifiers | ModNoRepeat, s.Key))
+            return (ShortcutProblem.TakenByAnotherProgram, null);
+        UnregisterHotKey(handle, probe);
+        return null;
+    }
+
+    private static string ReasonText((ShortcutProblem Problem, string? Detail) p) =>
+        p.Problem == ShortcutProblem.TypesACharacter
+            ? Strings.Get("S.Fn.Problem.TypesACharacter", p.Detail ?? "?")
+            : Strings.Get($"S.Fn.Problem.{p.Problem}");
+
+    /// <summary>
+    /// A shortcut that stopped working because something else took its keys
+    /// - another program, a keyboard layout added - is moved to keys that are
+    /// free, rather than left for the person to notice: Ctrl+Alt with a
+    /// function key first, then Ctrl+Alt+Shift with one.
+    /// </summary>
+    private bool MoveToFreeKeys(FnShortcut s)
+    {
+        var candidates = new List<(HotkeyModifiers, uint)>();
+        foreach (var m in new[] { HotkeyModifiers.Control | HotkeyModifiers.Alt, HotkeyModifiers.Control | HotkeyModifiers.Alt | HotkeyModifiers.Shift })
+            for (uint f = 0x70; f <= 0x7B; f++) candidates.Add((m, f));
+
+        var (oldModifiers, oldKey) = (s.Modifiers, s.Key);
+        foreach (var (m, key) in candidates)
+        {
+            (s.Modifiers, s.Key) = (m, key);
+            if (ProblemWith(s) is null)
+            {
+                _settings.Save();
+                Log.Info("keys", $"{s.Action} moved from {FnShortcuts.Describe(oldModifiers, oldKey)} to {FnShortcuts.Describe(m, key)}");
+                return true;
+            }
+        }
+        (s.Modifiers, s.Key) = (oldModifiers, oldKey);
+        return false;
+    }
+
     /// <summary>
     /// A shortcut that has just stopped working says so - another program
     /// took it, a new keyboard layout types with it, or it was set to keys
@@ -123,19 +171,30 @@ public partial class MainWindow
     private void WarnAboutNewConflicts(Dictionary<FnAction, (ShortcutProblem? Problem, string? Detail)> before)
     {
         if (!_settings.FnShortcutsEnabled) return;
-        foreach (var (action, now) in _shortcutState)
+        var moved = false;
+        foreach (var (action, now) in _shortcutState.ToList())
         {
             if (now.Problem is not { } problem) continue;
             if (before.TryGetValue(action, out var was) && was.Problem == problem) continue;
             if (_settings.FnShortcuts.FirstOrDefault(s => s.Action == action) is not { } s) continue;
 
-            var reason = problem == ShortcutProblem.TypesACharacter
-                ? Strings.Get("S.Fn.Problem.TypesACharacter", now.Detail ?? "?")
-                : Strings.Get($"S.Fn.Problem.{problem}");
-            var body = Strings.Get("S.Fn.ConflictBody", FnShortcuts.Describe(s.Modifiers, s.Key), Strings.Get($"S.Fn.{action}"), reason);
+            var was_ = FnShortcuts.Describe(s.Modifiers, s.Key);
+            var reason = ReasonText((problem, now.Detail));
+            string body;
+            if (problem is ShortcutProblem.TakenByAnotherProgram or ShortcutProblem.TypesACharacter && MoveToFreeKeys(s))
+            {
+                body = Strings.Get("S.Fn.Moved", was_, Strings.Get($"S.Fn.{action}"), reason, FnShortcuts.Describe(s.Modifiers, s.Key));
+                moved = true;
+            }
+            else
+            {
+                body = Strings.Get("S.Fn.ConflictBody", was_, Strings.Get($"S.Fn.{action}"), reason);
+            }
             Log.Warn("keys", body);
-            _tray?.ShowMessage(Strings.Get("S.Fn.ConflictTitle"), body);
+            if (!Toasts.TryShow(Strings.Get("S.Fn.ConflictTitle"), body, Strings.Get("S.Dialog.OK"), () => { }))
+                _tray?.ShowMessage(Strings.Get("S.Fn.ConflictTitle"), body);
         }
+        if (moved) Dispatcher.BeginInvoke(ApplyFnShortcuts);
     }
 
     /// <summary>Once a minute from the slow timer: a shortcut another program held may be free now.</summary>
@@ -180,8 +239,14 @@ public partial class MainWindow
                     };
                     var mb = _mailbox;
                     _ = Task.Run(() => { try { using (mb?.Hold()) led.Apply(); } catch (Exception ex) when (ex is not OutOfMemoryException) { Log.Warn("keys", ex.Message); } });
+                    // The slider shows what the keyboard shows, set without its
+                    // handler: left to run, it took "off" as a brightness of 0
+                    // and saved it, and the light never came back (tour, 12 October).
+                    var wasReady = _ledUiReady;
+                    _ledUiReady = false;
                     BrightnessSlider.Value = led.EffectiveBrightnessPercent;
                     BrightnessValue.Text = $"{led.EffectiveBrightnessPercent}%";
+                    _ledUiReady = wasReady;
                     break;
 
                 case FnAction.SystemMode:
@@ -287,7 +352,8 @@ public partial class MainWindow
 
                 var keys = new Button
                 {
-                    Content = _recording == s ? Strings.Get("S.Fn.PressKeys") : FnShortcuts.Describe(s.Modifiers, s.Key),
+                    Content = _recording == s ? Strings.Get("S.Fn.PressKeys") : FnShortcuts.Describe(s.Modifiers, s.Key) + "  \u270E",
+                    ToolTip = Strings.Get("S.Settings.FnChangeHint"),
                     MinWidth = 130, Height = 28, VerticalAlignment = VerticalAlignment.Center, IsEnabled = available,
                 };
                 keys.Click += (_, _) => StartRecording(shortcut);
@@ -341,10 +407,25 @@ public partial class MainWindow
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) m |= HotkeyModifiers.Shift;
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Windows)) m |= HotkeyModifiers.Windows;
 
+        var (oldModifiers, oldKey) = (s.Modifiers, s.Key);
         s.Modifiers = m;
         s.Key = (uint)KeyInterop.VirtualKeyFromKey(key);
         s.Enabled = true;
         _recording = null;
+
+        // Keys that cannot be used are not kept: the shortcut goes back to
+        // what it was, and the reason is said (the owner's rule, 12 October).
+        if (ProblemWith(s) is { } problem)
+        {
+            var refused = FnShortcuts.Describe(s.Modifiers, s.Key);
+            (s.Modifiers, s.Key) = (oldModifiers, oldKey);
+            Log.Info("keys", $"{s.Action}: {refused} refused ({problem.Problem}); kept {FnShortcuts.Describe(s.Modifiers, s.Key)}");
+            Dialogs.Tell(Strings.Get("S.Fn.ConflictTitle"),
+                Strings.Get("S.Fn.Refused", refused, ReasonText(problem), FnShortcuts.Describe(s.Modifiers, s.Key)));
+            ApplyFnShortcuts();
+            return;
+        }
+
         _settings.Save();
         Log.Info("keys", $"{s.Action} set to {FnShortcuts.Describe(s.Modifiers, s.Key)}");
         ApplyFnShortcuts();

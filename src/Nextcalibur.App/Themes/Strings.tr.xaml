@@ -351,6 +351,9 @@
     <sys:String x:Key="S.Fn.Problem.NotAKey">Değiştiricilerle birlikte bir tuşa basın.</sys:String>
     <sys:String x:Key="S.Fn.ConflictTitle">Kısayol çakışması</sys:String>
     <sys:String x:Key="S.Fn.ConflictBody">{0} ({1}) çalışmıyor: {2}</sys:String>
+    <sys:String x:Key="S.Fn.Refused">{0} kullanılamaz: {1} Kısayol {2} olarak kalıyor.</sys:String>
+    <sys:String x:Key="S.Fn.Moved">{0} ({1}) çalışmayı bıraktı: {2} {3} kısayoluna taşındı.</sys:String>
+    <sys:String x:Key="S.Settings.FnChangeHint">Kendi tuşlarınızı atamak için bir kısayola tıklayın.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Title">Fn tuşları için kısayollar</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Body">Harici klavye için: dizüstü klavyesinin Fn+1, Fn+Space ve mod tuşu, kısayol olarak. Siz açana kadar kapalı; her biri tek tek ya da hepsi birden açılabilir, başka tuşlar atanabilir. Başka bir programın, Windows'un ya da klavye düzeninizin zaten kullandığı bir kısayol reddedilir ve nedeni gösterilir.</sys:String>
     <sys:String x:Key="S.Heat.SwitchOffice">Office'e geç</sys:String>
@@ -414,7 +417,10 @@
     <sys:String x:Key="S.Restore.Creating">Windows geri yükleme noktası oluşturuluyor. Bir dakika sürebilir...</sys:String>
     <sys:String x:Key="S.Restore.Title">Geri yükleme noktası</sys:String>
     <sys:String x:Key="S.Restore.Made">#{0} numaralı geri yükleme noktası {1} saatinde oluşturuldu. Bir şey ters giderse Windows ona geri dönebilir: Ayarlar > Sistem > Kurtarma > Sistem Geri Yükleme.</sys:String>
-    <sys:String x:Key="S.Restore.NotMade" xml:space="preserve">Geri yükleme noktası oluşturulmadı. {0}&#10;&#10;Değişiklikle yine de devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.Restore.NoPointTitle">Geri yükleme noktası yok</sys:String>
+    <sys:String x:Key="S.Restore.NotMadeWhy">Windows geri yükleme noktası oluşturmadı. {0}</sys:String>
+    <sys:String x:Key="S.Restore.Unticked">Geri yükleme noktası olmadan devam etmeyi seçtiniz.</sys:String>
+    <sys:String x:Key="S.Restore.NotRecommended" xml:space="preserve">Bu riskli bir değişiklik ve geri yükleme noktası olmadan bir şey ters giderse kolay bir dönüş yolu yok. Nextcalibur bunu geri yükleme noktası olmadan yapmayı önermiyor.&#10;&#10;Yine de devam edilsin mi?</sys:String>
     <sys:String x:Key="S.Gpu.ConfirmDevice">{0} moduna geçilsin mi? Ekran kartı Windows'ta bir aygıt olarak hemen, yeniden başlatmadan kapatılır ya da açılır.</sys:String>
     <sys:String x:Key="S.Overlay.ConfirmTitle">Güç modunu onar</sys:String>
     <sys:String x:Key="S.Overlay.ConfirmBody">Bu bir Windows güç ayarını değiştirir: En iyi performans modunun en düşük işlemci durumu %5 ile sınırlanır ve ona takılı kalmış bir güç modu Dengeli'ye döndürülür. Devam edilsin mi?</sys:String>

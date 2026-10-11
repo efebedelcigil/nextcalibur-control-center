@@ -1709,7 +1709,7 @@
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
                                                 <TextBlock Text="{DynamicResource S.Settings.AutoFanTurboTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoFanTurboDesc}"
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoFanTurboDesc}" TextWrapping="Wrap"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingAutoFanTurbo" Grid.Column="1"
@@ -1727,7 +1727,7 @@
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
                                                 <TextBlock Text="{DynamicResource S.Settings.AutoCoolingTitle}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Ink}" />
-                                                <TextBlock Text="{DynamicResource S.Settings.AutoCoolingDesc}"
+                                                <TextBlock Text="{DynamicResource S.Settings.AutoCoolingDesc}" TextWrapping="Wrap"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingAutoCooling" Grid.Column="1"
@@ -1790,6 +1790,8 @@
 
                                         <CheckBox x:Name="FnSelectAll" IsThreeState="False" Margin="0,3"
                                                   Content="{DynamicResource S.Settings.FnSelectAll}" Foreground="{DynamicResource Ink}" />
+                                        <TextBlock Text="{DynamicResource S.Settings.FnChangeHint}" TextWrapping="Wrap"
+                                                   Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,4" />
                                         <StackPanel x:Name="FnShortcutRows" />
                                     </StackPanel>
                                 </Border>

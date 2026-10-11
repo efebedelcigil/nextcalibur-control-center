@@ -25,7 +25,10 @@ public partial class MainWindow
         AuditLog.Record("asked", With(details, ("change", action), ("question", title), ("answer", yes ? "yes" : "no"),
             ("restorePointTicked", restore)));
         if (!yes) return false;
-        if (!restore) return true;
+
+        // Unticked: the same warning as when Windows makes none - the change
+        // is not one this application recommends making without a way back.
+        if (!restore) return ConfirmWithoutRestorePoint(action, Strings.Get("S.Restore.Unticked"));
 
         ShowProgress(Strings.Get("S.Restore.Title"), Strings.Get("S.Restore.Creating"));
         DialogProgress.IsIndeterminate = true;
@@ -57,11 +60,22 @@ public partial class MainWindow
             return true;
         }
 
-        var goOn = Dialogs.Ask(Strings.Get("S.Restore.Title"), Strings.Get("S.Restore.NotMade", outcome.Reason ?? ""), defaultNo: true);
+        return ConfirmWithoutRestorePoint(action, Strings.Get("S.Restore.NotMadeWhy", outcome.Reason ?? ""));
+    }
+
+    /// <summary>
+    /// The second question, with "no" as its default: there is no restore
+    /// point to go back to, the change is a risky one, and this application
+    /// does not recommend it without one.
+    /// </summary>
+    private static bool ConfirmWithoutRestorePoint(string action, string why)
+    {
+        var goOn = Dialogs.Ask(Strings.Get("S.Restore.NoPointTitle"), why + Environment.NewLine + Environment.NewLine + Strings.Get("S.Restore.NotRecommended"), defaultNo: true);
         AuditLog.Record("asked", new Dictionary<string, object?>
         {
             ["change"] = action,
-            ["question"] = "go on without a restore point",
+            ["question"] = "go on without a restore point (warned: not recommended)",
+            ["why"] = why,
             ["answer"] = goOn ? "yes" : "no",
         });
         return goOn;
