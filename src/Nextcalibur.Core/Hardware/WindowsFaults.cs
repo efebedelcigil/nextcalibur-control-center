@@ -339,19 +339,10 @@ public static class WindowsFaults
         var eval = Evaluate(evidence);
         Log.Info("windows", eval.LogSummary);
 
-        if (!onList)
-        {
-            var id = "busy-" + who.Name.ToLowerInvariant();
-            if (ReportedAt.TryGetValue(id, out var last) && (now - last) < NotAgainWithin)
-                return [];
-
-            ReportedAt[id] = now;
-            return [new FaultFound(id,
-                Words.Get("S.Core.Fault.Unknown",
-                    "{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.",
-                    who.Name),
-                Fixed: false)];
-        }
+        // Anything not on the list is RunawayWatch's to name, since 11
+        // October 2026: it looks at every program, busy machine or not, and
+        // saying the same thing from two places would be one warning twice.
+        if (!onList) return [];
 
         if (!eval.AllowedToAct || !mayAct)
         {

@@ -327,6 +327,8 @@ public partial class MainWindow : Window
         // that software every mode falls back to Balanced and the three become
         // one. Making our own costs nothing and needs no administrator.
         SystemModeService.EnsurePlansExist();
+        TunePlansAtStart();
+        StartFirmwareEvents();
 
         RefreshOverlay();
         LoadPowerModes();
@@ -769,6 +771,8 @@ public partial class MainWindow : Window
             Dialogs.Owner = null;
             _tray?.Dispose();
             _backlightKey?.Dispose();
+            if (_cooling.Engaged) StopCooling("exit");
+            _firmwareEvents?.Dispose();
             _mailbox?.Dispose();
             _cpuClock.Dispose();
             _gpuClock.Dispose();
@@ -1009,7 +1013,7 @@ public partial class MainWindow : Window
 
     private void ApplyMode(SystemMode mode)
     {
-        _modes.Apply(mode);
+        CarryCoolingAcrossModeChange(() => _modes.Apply(mode));
 
         if (_mailbox is null || !_support.AllowsWrites) return;
         try
@@ -2902,7 +2906,9 @@ public partial class MainWindow : Window
 
                 // The overheat warning is the one thing worth a firmware read while
                 // hidden — it is the reason the application stays resident at all.
-                if (!_settings.WarnsAboutHeat && !onScreen) return;
+                RunawayTick();
+
+                if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 
                 if (_thermal is null) return;
 
@@ -2927,7 +2933,9 @@ public partial class MainWindow : Window
                 // window beside this one (23 September 2026: the branch that
                 // was here read the processor alone and deferred every warning,
                 // game or not, for as long as the load lasted).
-                if (!onScreen && NothingNearTheThresholds()) return;
+                // While cooling is on, every reading is wanted: it is what
+                // tells the cooling it may stop.
+                if (!onScreen && !_cooling.Engaged && NothingNearTheThresholds()) return;
 
                 // Off the user-interface thread for the same reason as Sample: see
                 // the note there. This read is the one that keeps the tray tooltip
@@ -2969,6 +2977,7 @@ public partial class MainWindow : Window
                 }
 
                 _lastThermal = s;
+                CoolingTick(s);
                 _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
 
                 // Done after the read, so this tick's own leavings are included.
@@ -3010,7 +3019,7 @@ public partial class MainWindow : Window
                         {
                             _overheatNotified = true;
                             var isCpu = s.CpuTemperatureC >= cpuLimit;
-                            _tray?.ShowMessage(hot, HeatBody(await HeatCulpritsAsync(isCpu)));
+                            ShowHeatWarning(hot, HeatBody(await HeatCulpritsAsync(isCpu)));
                         }
                     }
                 }
@@ -3062,7 +3071,7 @@ public partial class MainWindow : Window
 
         var chipName = Strings.Get(overheat.IsCpu ? "S.Heat.ChipCpu" : "S.Heat.ChipGpu");
         var title = Strings.Get("S.Heat.WhileAway", overheat.MaxTemperatureC, chipName);
-        _tray?.ShowMessage(title, HeatBody(overheat.Culprits));
+        ShowHeatWarning(title, HeatBody(overheat.Culprits));
 
         // Told. If it is still over the line, the next tick must not say it
         // again in other words; the warning re-arms after the usual clear drop.

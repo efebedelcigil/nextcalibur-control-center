@@ -24,7 +24,8 @@ public partial class MainWindow
     private ToggleButton? _settingFixTextInputHost, _settingFixCrossDevice, _settingFixWidgets,
         _settingWatchGpuAwake, _settingTrimDwmMemory, _settingTrimExplorerMemory, _settingDisableNdu;
     private StackPanel? _panelWindowsFaultsSubOptions;
-    private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning;
+    private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
+        _settingAutoCooling, _settingAutoFanTurbo;
     private RadioButton? _settingStartInTray, _settingStartOnScreen;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
     private RadioButton? _settingLanguageEnglish, _settingLanguageTurkish;
@@ -54,6 +55,8 @@ public partial class MainWindow
         _settingDisableNdu = FindName("SettingDisableNdu") as ToggleButton;
         _panelWindowsFaultsSubOptions = FindName("PanelWindowsFaultsSubOptions") as StackPanel;
         _settingOverheatWarning = FindName("SettingOverheatWarning") as ToggleButton;
+        _settingAutoCooling = FindName("SettingAutoCooling") as ToggleButton;
+        _settingAutoFanTurbo = FindName("SettingAutoFanTurbo") as ToggleButton;
         _settingCheckNowButton = FindName("SettingCheckNowButton") as Button;
         _settingWinUtilButton = FindName("SettingWinUtilButton") as Button;
         _settingDriversButton = FindName("SettingDriversButton") as Button;
@@ -118,6 +121,9 @@ public partial class MainWindow
             OverheatWarningToggle.IsChecked = on;
             SetOverheatWarning(on);
         });
+        // Turned off while cooling is on: CoolingTick undoes it at the next reading.
+        Wire(_settingAutoCooling, on => _settings.AutoCooling = on);
+        Wire(_settingAutoFanTurbo, on => _settings.AutoFanTurbo = on);
         foreach (var (button, ms) in _settingIntervals)
             button.Checked += (_, _) => ChangeSetting(() => _settings.PollIntervalMs = ms);
 
@@ -200,6 +206,8 @@ public partial class MainWindow
             if (_settingDisableNdu is not null)
                 _settingDisableNdu.IsChecked = _settings.DisableNdu || Nextcalibur.Core.Hardware.NduFix.IsNduDisabled();
             if (_settingOverheatWarning is not null) _settingOverheatWarning.IsChecked = _settings.OverheatWarningEnabled;
+            if (_settingAutoCooling is not null) _settingAutoCooling.IsChecked = _settings.AutoCooling;
+            if (_settingAutoFanTurbo is not null) _settingAutoFanTurbo.IsChecked = _settings.AutoFanTurbo;
             foreach (var (button, ms) in _settingIntervals)
                 button.IsChecked = _settings.PollIntervalMs == ms;
             if (_settingLanguageEnglish is not null) _settingLanguageEnglish.IsChecked = Strings.Current == UiLanguage.English;

@@ -17,6 +17,22 @@ public sealed class AppSettings
     public bool OverheatWarningEnabled { get; set; } = true;
 
     /// <summary>
+    /// Lower the processor's ceiling to the Office plan's 70% while a chip is
+    /// heading for its warning line, and put it back once it has cooled
+    /// (<see cref="Power.CoolingPolicy"/>). On by default - the owner's choice,
+    /// 11 October 2026.
+    /// </summary>
+    public bool AutoCooling { get; set; } = true;
+
+    /// <summary>
+    /// Turn the fans' full-speed mode (Fn+1) on at the same moment, and off
+    /// again with it. On by default, the owner's choice of 11 October 2026;
+    /// it does nothing until the firmware's direction is measured
+    /// (<see cref="Hardware.FanTurbo.Known"/>).
+    /// </summary>
+    public bool AutoFanTurbo { get; set; } = true;
+
+    /// <summary>
     /// Drop to Office when the charger comes out and put the previous mode
     /// back when it returns. On by default because the vendor does it.
     /// </summary>

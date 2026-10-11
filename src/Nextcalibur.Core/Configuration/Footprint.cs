@@ -265,6 +265,11 @@ public static class Footprint
                 // Undoing it silently would leave somebody worse off than
                 // before they ever installed us.
                 KeepingIsReasonable: true),
+            new(Words.Get("S.Core.Trace.Floor", "The power plans' minimum processor state repair"),
+                PlanTuning.FloorRepaired(),
+                NeedsElevation: true,
+                // The same kind of repair as the overlay guard, in a plan.
+                KeepingIsReasonable: true),
             // Ours only with our marker: NDU disabled without one was
             // disabled by somebody else, and is not ours to offer to undo.
             new(Words.Get("S.Core.Trace.Ndu", "The NDU network driver fix"),
@@ -425,6 +430,17 @@ public static class Footprint
         // the logon task - which, run here, put back the task this uninstall
         // had just deleted.
         RemoveRunEntry();
+
+        // A ceiling lowered for cooling is never something to keep.
+        try { PlanTuning.StopCooling(); }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+
+        try
+        {
+            if (removeRepair) PlanTuning.RestoreFloors();
+            else PlanTuning.ForgetFloors();
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
 
         if (removeRepair)
         {
