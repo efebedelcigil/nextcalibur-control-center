@@ -102,6 +102,9 @@ public partial class App : Application
     /// </summary>
     public const string UninstallFromSetupArgument = "--uninstall-from-setup";
 
+    /// <summary>Setup's machine scan: records the verdict and answers it in the exit code.</summary>
+    public const string ScanArgument = "--scan";
+
     /// <summary>With <see cref="UninstallFromSetupArgument"/>: the person chose to keep settings and logs.</summary>
     public const string KeepSettingsArgument = "--keep-settings";
 
@@ -162,7 +165,7 @@ public partial class App : Application
         // exits. Helper modes below are already elevated when they run.
         var self = Environment.ProcessPath;
         if (self is not null && !args.Contains(CleanUpArgument) && !args.Contains(UninstallFromSetupArgument)
-            && !args.Contains(CardSwitchTasks.Argument) && !IsVelopackHook(args)
+            && !args.Contains(CardSwitchTasks.Argument) && !args.Contains(ScanArgument) && !IsVelopackHook(args)
             && !Elevation.EnsureElevated(args, self))
             return;
 
@@ -212,6 +215,19 @@ public partial class App : Application
             if (!Elevation.IsElevated()) return;
             CleanUpOnUninstall(keepSettings: args.Contains(KeepSettingsArgument));
             Environment.Exit(0);
+            return;
+        }
+
+        // Run by Setup after installing: which parts of the application this
+        // machine may have, kept for every later start to compare with, and
+        // said in the exit code - 0 everything, 1 readings only, 2 nothing -
+        // so the wizard can tell the person before they ever open it.
+        if (args.Contains(ScanArgument))
+        {
+            if (!Elevation.IsElevated()) { Environment.Exit(3); return; }
+            var verdict = MachineScan.RunAndRecord("setup", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "");
+            Log.Info("support", $"Setup scan: {verdict.Level}: {string.Join(" | ", verdict.Reasons)}");
+            Environment.Exit(verdict.Level switch { SupportLevel.Supported => 0, SupportLevel.ReadOnly => 1, _ => 2 });
             return;
         }
 

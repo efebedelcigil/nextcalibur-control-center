@@ -125,6 +125,8 @@ public partial class MainWindow
         };
         Log.Warn("integrity", "Firmware writes stopped until the application is reinstalled");
         ApplySupportVerdict();
+        if (_cooling.Engaged) StopCooling("integrity");
+        ApplyFnShortcuts();
     }
 
     private static string Describe(IntegrityFinding finding) => Strings.Get(finding.Kind switch

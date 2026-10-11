@@ -311,7 +311,7 @@ public partial class MainWindow : Window
         // The gate. Everything below is allowed or not by what the machine has
         // just said about itself, and an unsupported one is locked before a
         // single control is wired.
-        _support = HardwareSupport.Check();
+        _support = MachineScan.RunAndRecord("start", RunningVersion());
         Log.Info("support", $"{_support.Level}: {string.Join(" | ", _support.Reasons)}");
         ApplySupportVerdict();
 
@@ -326,8 +326,14 @@ public partial class MainWindow : Window
         // the vendor's, created by its installer. On a machine that never had
         // that software every mode falls back to Balanced and the three become
         // one. Making our own costs nothing and needs no administrator.
-        SystemModeService.EnsurePlansExist();
-        TunePlansAtStart();
+        // Plans named after the vendor's modes, and the changes made to them,
+        // are for the vendor's machine only: anywhere else Windows keeps its
+        // own (the owner's rule, 11 October 2026).
+        if (_support.AllowsWrites)
+        {
+            SystemModeService.EnsurePlansExist();
+            TunePlansAtStart();
+        }
         StartFnShortcuts();
 
         RefreshOverlay();
@@ -463,6 +469,11 @@ public partial class MainWindow : Window
                 NavLighting.IsEnabled = false;
                 foreach (var button in new[] { ModeDiscrete, ModeHybrid, ModeUma })
                     button.IsEnabled = false;
+                // The system modes are the vendor's - its plans and its
+                // firmware profile - and so is everything built on them.
+                foreach (var button in new[] { ModeOffice, ModeGaming, ModePerformance })
+                    button.IsEnabled = false;
+                LockCasperOnlySettings();
                 ShowBanner(
                     Strings.Get("S.Banner.ReadOnlyTitle"),
                     Strings.Get("S.Banner.ReadOnlyBody") + " " + string.Join(" ", _support.Reasons),
@@ -967,7 +978,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void RestoreModeAtStartup()
     {
-        if (_settings.LastSystemMode is not { } last || !_support.AllowsReads) return;
+        if (_settings.LastSystemMode is not { } last || !_support.AllowsWrites) return;
 
         var target = _onBattery && _settings.QuietOnBattery
             ? _battery.OnUnplugged(last) ?? BatteryModePolicy.QuietMode
@@ -1165,7 +1176,7 @@ public partial class MainWindow : Window
         {
             try
             {
-                if (!_settings.QuietOnBattery || !_support.AllowsReads)
+                if (!_settings.QuietOnBattery || !_support.AllowsWrites)
                 {
                     RefreshModeStatus(_currentMode);
                     return;

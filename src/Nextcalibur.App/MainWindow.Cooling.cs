@@ -48,7 +48,7 @@ public partial class MainWindow
     }
 
     /// <summary>Whether a reading is wanted for cooling even where the warning alone would not need one.</summary>
-    private bool CoolingWantsReadings => (_settings.AutoCooling || _settings.AutoFanTurbo) && _settings.CpuWarningTemperatureC > 0;
+    private bool CoolingWantsReadings => _support.AllowsWrites && (_settings.AutoCooling || _settings.AutoFanTurbo) && _settings.CpuWarningTemperatureC > 0;
 
     /// <summary>One reading's worth of the cooling decision.</summary>
     private void CoolingTick(ThermalSample s)

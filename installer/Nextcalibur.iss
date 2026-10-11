@@ -109,6 +109,12 @@ en.DownloadingPawnIO=Downloading the PawnIO driver...
 tr.DownloadingPawnIO=PawnIO sürücüsü indiriliyor...
 en.PawnIOFailed=The PawnIO driver could not be installed now (%1). Nextcalibur works without it; it will offer it again later.
 tr.PawnIOFailed=PawnIO sürücüsü şu an kurulamadı (%1). Nextcalibur onsuz da çalışır; daha sonra yeniden önerecek.
+en.Scanning=Checking which parts of Nextcalibur this laptop can use...
+tr.Scanning=Nextcalibur'un bu dizüstünde hangi bölümlerinin kullanılabileceğine bakılıyor...
+en.ScanReadOnly=This laptop's firmware interface answers, but not quite the way a Casper Excalibur's does.%n%nNextcalibur will show its readings; everything that is Casper's own - system modes, fans, keyboard lighting, graphics mode, the Fn shortcuts - stays off, and Windows keeps its own settings.
+tr.ScanReadOnly=Bu dizüstünün donanım yazılımı arayüzü cevap veriyor, ama bir Casper Excalibur'unki gibi değil.%n%nNextcalibur okumaları gösterecek; Casper'a özgü her şey - sistem modları, fanlar, klavye aydınlatması, grafik modu, Fn kısayolları - kapalı kalır ve Windows kendi ayarlarını korur.
+en.ScanUnsupported=This laptop does not have the firmware interface of a Casper Excalibur.%n%nNextcalibur will not change anything on it: every control stays off and Windows keeps its own settings. You can remove it from Installed apps.
+tr.ScanUnsupported=Bu dizüstünde bir Casper Excalibur'un donanım yazılımı arayüzü yok.%n%nNextcalibur onda hiçbir şeyi değiştirmeyecek: her denetim kapalı kalır ve Windows kendi ayarlarını korur. Yüklü uygulamalar'dan kaldırabilirsiniz.
 en.PawnIOBadSignature=the download is not signed by namazso.eu
 tr.PawnIOBadSignature=indirilen dosya namazso.eu imzalı değil
 en.DownloadingPawnIO=Downloading the PawnIO driver from its publisher...
@@ -352,6 +358,23 @@ begin
       end;
     finally
       DownloadPage.Hide;
+    end;
+  end;
+
+  // Which parts of the application this machine may have: the application
+  // scans and keeps the verdict (--scan), and says it in the exit code -
+  // 0 everything, 1 readings only, 2 not the laptop it was made for. The
+  // vendor-specific parts stay off and Windows keeps its own settings on
+  // anything but 0; the person is told so here, before they open it.
+  if CurStep = ssPostInstall then
+  begin
+    WizardForm.StatusLabel.Caption := CustomMessage('Scanning');
+    if Exec(ExpandConstant('{app}\current\Nextcalibur.exe'), '--scan', '', SW_HIDE, ewWaitUntilTerminated, Code) then
+    begin
+      if Code = 1 then
+        SuppressibleMsgBox(CustomMessage('ScanReadOnly'), mbInformation, MB_OK, IDOK)
+      else if Code = 2 then
+        SuppressibleMsgBox(CustomMessage('ScanUnsupported'), mbInformation, MB_OK, IDOK);
     end;
   end;
 

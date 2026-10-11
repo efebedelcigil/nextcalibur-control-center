@@ -132,7 +132,7 @@ public partial class MainWindow
     {
         FnAction.FanTurbo => FanTurbo.Known && _support.AllowsWrites,
         FnAction.KeyboardBacklight => _led is not null && _support.AllowsWrites,
-        FnAction.SystemMode => _support.AllowsReads,
+        FnAction.SystemMode => _support.AllowsWrites,
         _ => false,
     };
 
@@ -233,11 +233,14 @@ public partial class MainWindow
         _fnUiLoading = true;
         try
         {
+            // The vendor's keys stand in for the vendor's machine only.
+            var casper = _support.AllowsWrites;
             _fnMaster.IsChecked = _settings.FnShortcutsEnabled;
-            _fnRows.IsEnabled = _settings.FnShortcutsEnabled;
+            _fnMaster.IsEnabled = casper;
+            _fnRows.IsEnabled = casper && _settings.FnShortcutsEnabled;
             if (_fnSelectAll is not null)
             {
-                _fnSelectAll.IsEnabled = _settings.FnShortcutsEnabled;
+                _fnSelectAll.IsEnabled = casper && _settings.FnShortcutsEnabled;
                 var on = _settings.FnShortcuts.Count(s => s.Enabled);
                 _fnSelectAll.IsChecked = on == _settings.FnShortcuts.Count ? true : on == 0 ? false : null;
             }

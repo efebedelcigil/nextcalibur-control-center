@@ -298,6 +298,17 @@ public partial class MainWindow
     }
 
     /// <summary>On an unsupported machine the page shows the settings and lets none of them be changed.</summary>
+    /// <summary>
+    /// On a machine that reads but is not the vendor's: the settings that
+    /// drive its modes, its fans or stand in for its keys cannot be clicked;
+    /// the rest of the page - Windows' own repairs, updates, language - stays.
+    /// </summary>
+    private void LockCasperOnlySettings()
+    {
+        foreach (var name in new[] { "SettingOfficeOnBattery", "SettingAutoFanTurbo", "SettingAutoCooling", "SettingFnShortcuts", "FnSelectAll", "FnShortcutRows" })
+            if (FindName(name) is UIElement element) element.IsEnabled = false;
+    }
+
     private void LockSettingsPage()
     {
         if (FindName("NavSettings") is RadioButton nav) nav.IsEnabled = false;
