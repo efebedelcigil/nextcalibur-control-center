@@ -18,7 +18,8 @@ internal static class Program
         {
             // The same gate the window applies: nothing that writes to firmware
             // is offered to a machine that has not shown it speaks this protocol.
-            var writes = (command == "led" && args.Length > 1) || (command == "gpu" && args.Length > 1) || command == "fanmax";
+            var writes = (command == "led" && args.Length > 1) || (command == "gpu" && args.Length > 1) || command == "fanmax"
+                         || command == "ecturbo";
             if (writes)
             {
                 var verdict = HardwareSupport.Check();
@@ -43,6 +44,7 @@ internal static class Program
                 "fanmax" => FanMaxTest(),
                 "events" => Events(args),
                 "plans" => Plans(),
+                "ecturbo" => EcTurbo(args),
                 _ => Help(),
             };
         }
@@ -173,6 +175,33 @@ internal static class Program
         Console.WriteLine($"Listening for GMC_WMIEvent for {seconds} s. Press Fn keys now.");
         Thread.Sleep(TimeSpan.FromSeconds(seconds));
         watcher.Stop();
+        return 0;
+    }
+
+    /// <summary>
+    /// The diagnostic before any write: every two seconds, the controller
+    /// byte the BIOS names as the fan turbo's (0xC3, bit 0) and the fans,
+    /// while the person presses Fn+1. Reads only - see FanTurboBit for what
+    /// it refuses to do.
+    /// </summary>
+    private static int EcTurbo(string[] args)
+    {
+        var seconds = args.Length > 1 && int.TryParse(args[1], out var n) && n is > 0 and <= 300 ? n : 60;
+        using var bit = new FanTurboBit();
+        using var mailbox = new EcMailbox();
+        Console.WriteLine($"Reading EC 0xC3 bit 0 and the fans every 2 s for {seconds} s. Press Fn+1 on the laptop's keyboard now.");
+        var clock = Stopwatch.StartNew();
+        while (clock.Elapsed.TotalSeconds < seconds)
+        {
+            var reading = bit.Read();
+            var fans = ReadRegister(mailbox, 0x0200) is { } r ? $"{r.A4}/{r.A5} rpm" : "?";
+            Console.WriteLine(reading.Value is { } v
+                ? $"{DateTime.Now:HH:mm:ss}  0xC3 = 0x{v:X2}  turbo bit = {(v & 1)}  fans {fans}"
+                : $"{DateTime.Now:HH:mm:ss}  no reading ({reading.Refusal})  fans {fans}");
+            if (reading.Refusal is EcReadRefusal.PawnIoMissingOrUntrusted or EcReadRefusal.ModuleNotAsShipped or EcReadRefusal.ModuleRefused)
+                return 3;
+            Thread.Sleep(2000);
+        }
         return 0;
     }
 
