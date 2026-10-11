@@ -152,10 +152,12 @@ more often because the machine is hot - which was the first shape of this
 and is precisely backwards: a laptop that is overheating is a laptop that
 can least afford the work.
 
-When a check does run it is a few kilobytes: the three questions together
-are about 9 kB with headers, and each is asked conditionally so an unchanged
-answer sends no body. Four checks a day is under 40 kB. Turn *Check for
-updates automatically* off and it is nothing at all.
+When a check does run it is small, and each question is asked
+conditionally, so an unchanged answer sends no body. This project's
+releases are asked every fifteen minutes - "not modified" until there is
+one; the runtime's and PawnIO's, about 5 kB together, at most four times a
+day. The release check cannot be switched off since 0.5.12: an old version
+of software that writes to the firmware is not left running.
 
 **How does this compare with the software it replaces?**
 On the thing that costs the machine most - how often the firmware is
