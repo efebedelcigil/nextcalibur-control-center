@@ -349,6 +349,8 @@
     <sys:String x:Key="S.Fn.Problem.TakenByAnotherProgram">Bu kısayolu başka bir program kullanıyor. Başka bir tane seçin ya da o program bırakınca devralınır.</sys:String>
     <sys:String x:Key="S.Fn.Problem.Duplicate">Buradaki başka bir kısayol aynı tuşları kullanıyor.</sys:String>
     <sys:String x:Key="S.Fn.Problem.NotAKey">Değiştiricilerle birlikte bir tuşa basın.</sys:String>
+    <sys:String x:Key="S.Fn.ConflictTitle">Kısayol çakışması</sys:String>
+    <sys:String x:Key="S.Fn.ConflictBody">{0} ({1}) çalışmıyor: {2}</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Title">Fn tuşları için kısayollar</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Body">Harici klavye için: dizüstü klavyesinin Fn+1, Fn+Space ve mod tuşu, kısayol olarak. Siz açana kadar kapalı; her biri tek tek ya da hepsi birden açılabilir, başka tuşlar atanabilir. Başka bir programın, Windows'un ya da klavye düzeninizin zaten kullandığı bir kısayol reddedilir ve nedeni gösterilir.</sys:String>
     <sys:String x:Key="S.Heat.SwitchOffice">Office'e geç</sys:String>

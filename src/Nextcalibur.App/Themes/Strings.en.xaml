@@ -351,6 +351,8 @@
     <sys:String x:Key="S.Fn.Problem.TakenByAnotherProgram">Another program is using this shortcut. Choose another, or it is taken over once that program lets it go.</sys:String>
     <sys:String x:Key="S.Fn.Problem.Duplicate">Another shortcut here uses the same keys.</sys:String>
     <sys:String x:Key="S.Fn.Problem.NotAKey">Press a key together with the modifiers.</sys:String>
+    <sys:String x:Key="S.Fn.ConflictTitle">Shortcut conflict</sys:String>
+    <sys:String x:Key="S.Fn.ConflictBody">{0} ({1}) is not working: {2}</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Title">Shortcuts for the Fn keys</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Body">For an external keyboard: the laptop keyboard's Fn+1, Fn+Space and the mode key, as shortcuts. Off until you switch them on; each can be switched on alone, or all at once, and given other keys. A shortcut another program, Windows or your keyboard layout already uses is refused and the reason shown.</sys:String>
     <sys:String x:Key="S.Heat.SwitchOffice">Switch to Office</sys:String>

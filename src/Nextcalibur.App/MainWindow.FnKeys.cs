@@ -79,6 +79,7 @@ public partial class MainWindow
     /// <summary>Registers every enabled shortcut that passes the checks, and records why for those that do not.</summary>
     private void ApplyFnShortcuts()
     {
+        var before = new Dictionary<FnAction, (ShortcutProblem? Problem, string? Detail)>(_shortcutState);
         UnregisterAllShortcuts();
         _shortcutState.Clear();
         var handle = _hotkeySource?.Handle ?? IntPtr.Zero;
@@ -105,10 +106,36 @@ public partial class MainWindow
             }
         }
 
+        WarnAboutNewConflicts(before);
+
         var taken = _shortcutState.Count(p => p.Value.Problem is not null);
         if (_settings.FnShortcutsEnabled)
             Log.Info("keys", $"Shortcuts: {_registered.Count} registered, {taken} not ({string.Join(", ", _shortcutState.Where(p => p.Value.Problem is not null).Select(p => $"{p.Key}: {p.Value.Problem}"))})");
         RefreshShortcutRows();
+    }
+
+    /// <summary>
+    /// A shortcut that has just stopped working says so - another program
+    /// took it, a new keyboard layout types with it, or it was set to keys
+    /// that cannot be used. Once per change: a conflict that stays is in its
+    /// row on the Settings page, not in a notification every minute.
+    /// </summary>
+    private void WarnAboutNewConflicts(Dictionary<FnAction, (ShortcutProblem? Problem, string? Detail)> before)
+    {
+        if (!_settings.FnShortcutsEnabled) return;
+        foreach (var (action, now) in _shortcutState)
+        {
+            if (now.Problem is not { } problem) continue;
+            if (before.TryGetValue(action, out var was) && was.Problem == problem) continue;
+            if (_settings.FnShortcuts.FirstOrDefault(s => s.Action == action) is not { } s) continue;
+
+            var reason = problem == ShortcutProblem.TypesACharacter
+                ? Strings.Get("S.Fn.Problem.TypesACharacter", now.Detail ?? "?")
+                : Strings.Get($"S.Fn.Problem.{problem}");
+            var body = Strings.Get("S.Fn.ConflictBody", FnShortcuts.Describe(s.Modifiers, s.Key), Strings.Get($"S.Fn.{action}"), reason);
+            Log.Warn("keys", body);
+            _tray?.ShowMessage(Strings.Get("S.Fn.ConflictTitle"), body);
+        }
     }
 
     /// <summary>Once a minute from the slow timer: a shortcut another program held may be free now.</summary>
