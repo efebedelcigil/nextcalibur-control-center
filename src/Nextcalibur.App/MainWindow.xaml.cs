@@ -111,7 +111,7 @@ public partial class MainWindow : Window
     private ThermalSample? _lastThermal;
 
     private bool _overheatNotified;
-    private sealed record DeferredOverheat(bool IsCpu, int MaxTemperatureC, DateTime TimestampUtc);
+    private sealed record DeferredOverheat(bool IsCpu, int MaxTemperatureC, DateTime TimestampUtc, string? Culprits);
     private DeferredOverheat? _deferredOverheat;
     private bool _mailboxFailed;
 
@@ -2997,7 +2997,10 @@ public partial class MainWindow : Window
 
                         if (_deferredOverheat is null || temp > _deferredOverheat.MaxTemperatureC)
                         {
-                            _deferredOverheat = new DeferredOverheat(isCpu, temp, DateTime.UtcNow);
+                            // What was making it hot is taken now, at the peak:
+                            // by the time somebody is back it will have finished.
+                            var culprits = await HeatCulpritsAsync(isCpu);
+                            _deferredOverheat = new DeferredOverheat(isCpu, temp, DateTime.UtcNow, culprits);
                         }
                     }
                     else
@@ -3006,7 +3009,8 @@ public partial class MainWindow : Window
                         if (!_overheatNotified)
                         {
                             _overheatNotified = true;
-                            _tray?.ShowMessage(hot, Strings.Get("S.Heat.Body"));
+                            var isCpu = s.CpuTemperatureC >= cpuLimit;
+                            _tray?.ShowMessage(hot, HeatBody(await HeatCulpritsAsync(isCpu)));
                         }
                     }
                 }
@@ -3058,12 +3062,44 @@ public partial class MainWindow : Window
 
         var chipName = Strings.Get(overheat.IsCpu ? "S.Heat.ChipCpu" : "S.Heat.ChipGpu");
         var title = Strings.Get("S.Heat.WhileAway", overheat.MaxTemperatureC, chipName);
-        _tray?.ShowMessage(title, Strings.Get("S.Heat.Body"));
+        _tray?.ShowMessage(title, HeatBody(overheat.Culprits));
 
         // Told. If it is still over the line, the next tick must not say it
         // again in other words; the warning re-arms after the usual clear drop.
         _overheatNotified = true;
     }
+
+    /// <summary>
+    /// What is making the chip hot, for the warning: the processor's busiest
+    /// programs over one second, or the programs NVIDIA says are on the card.
+    /// Null when nothing stands out or it cannot be told. Off the interface
+    /// thread - it opens every process twice - and only when a warning is
+    /// about to be given, never on a timer of its own.
+    /// </summary>
+    private async Task<string?> HeatCulpritsAsync(bool cpu)
+    {
+        try
+        {
+            if (cpu)
+            {
+                var loads = await Task.Run(() => Nextcalibur.Core.Hardware.TopProcesses.Measure());
+                return Nextcalibur.Core.Hardware.TopProcesses.Describe(loads) is { } list
+                    ? Strings.Get("S.Heat.CpuBusy", list) : null;
+            }
+
+            var names = await Task.Run(() => _gpuClock.ReadGraphicsRunningProcessNames());
+            return names.Count == 0 ? null : Strings.Get("S.Heat.GpuBusy", string.Join(", ", names.Take(3)));
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Log.Warn("heat", "Could not tell what was using the chip: " + ex.Message);
+            return null;
+        }
+    }
+
+    /// <summary>The warning's text: what is using the chip, when known, then the advice.</summary>
+    private static string HeatBody(string? culprits) =>
+        culprits is null ? Strings.Get("S.Heat.Body") : culprits + "\n" + Strings.Get("S.Heat.Body");
 
     // ------------------------------------------------------------------ power
 
