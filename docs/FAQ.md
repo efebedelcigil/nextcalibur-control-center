@@ -207,6 +207,15 @@ the same. A fan curve is only safe relative to how clean the cooling is,
 which a program cannot see: a curve tuned for a clean heatsink is a wrong
 curve for a dusty one, and the program cannot tell which it has.
 
+**And the fan turbo, Fn+1?**
+Only from the laptop's own keyboard. The turbo is the embedded controller's
+own switch, worked by its own scan of the built-in keys: nothing in the BIOS
+sets it from software (measured), and reaching the controller directly
+would race Windows' own driver for it - so Nextcalibur does not. It reads
+the turbo's state from the firmware's event instead, and *Cool down before
+it gets hot* tells you to press Fn+1 while there is still time. An external
+keyboard cannot do it at all: no keyboard sends its Fn key to the computer.
+
 **Does it change the screen's refresh rate?**
 No. NVIDIA's and Windows' own settings do that.
 

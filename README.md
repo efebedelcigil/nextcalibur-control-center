@@ -56,9 +56,8 @@ release build, hidden in the tray:
 | Firmware reads | one a minute while hidden, **one every two minutes while the machine is hot, a game has the screen or the processor is under heavy load**, none at all on the Lighting and Settings pages, none with the overheat warning off. Each read is one write to the mailbox, which raises a system-management interrupt - 21 ms on this laptop, measured - so the count matters more than anything else here. Before paying for one, the processor's own thermal register (through PawnIO) and the graphics card's (through NVML, only while the card is awake) are read, and while both are well below their thresholds the firmware is not asked at all. Watching never stops: a game is when the chips get hot. The warning itself waits while Windows says a game has the screen, and is shown when it ends. The vendor's Control Center polls the same mailbox every 6.1 seconds, measured by capture, whatever it is doing |
 | Discrete GPU sleep | in Hybrid mode, the discrete card is never probed or woken from runtime D3 sleep by background health checks |
 | Memory | around 24–35 MB of working set while hidden in the tray (and ~35–45 MB with the window open); memory trimming stands down during gaming |
-| Network, one check | about 9 kB, four times a day: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB), this project's newest release (3.6 kB) |
-| Network, while a game has the screen | nothing. Windows is asked whether a game is running full screen or borderless, and while one is, no check runs and no notification appears |
-| Network, with automatic checks off | nothing at all |
+| Network, this project's releases | every fifteen minutes and a minute after waking: the newest release once (3.6 kB), then a conditional request GitHub answers "not modified", with no body, until something is published - a game on screen included; what waits for the game is the offer |
+| Network, dependencies | about 5 kB, at most four times a day and never while a game has the screen: Microsoft's channel index (813 bytes compressed), PawnIO's release (1.4 kB) |
 
 Nothing is downloaded until you accept it, and each request is conditional,
 so a server that answers "not modified" sends no body.
@@ -75,14 +74,19 @@ so a server that answers "not modified" sends no body.
 | The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |
 | Staying out of the way of games and heavy work | borderless and full-screen game detection, lower process priority in the background, fewer firmware reads - never none |
 | Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected |
-| Overheat warning | a threshold per chip, typeable |
+| Overheat warning | a threshold per chip, typeable; names the programs using the chip; from Gaming or Performance, a button that switches to Office |
+| Cool down before it gets hot | the temperature followed, not just compared: heading for the line, a notification says to press Fn+1 for the fan turbo before it gets there - the turbo is the controller's own and only its keyboard switches it (see [docs/PROTOCOL.md](docs/PROTOCOL.md)); *Emergency Office*, off unless chosen, also holds the processor to 70% |
+| Programs heating the machine for nothing | a program keeping a core or the graphics card busy, flat, for fifteen minutes in the background is named, with Task Manager a click away; nothing is ended |
+| The Fn keys from an external keyboard | the keyboard light and the system mode as shortcuts, off until switched on, any keys; refused when Windows, another program or a keyboard layout already uses them, and moved to free keys if that changes later |
+| Only on the laptop it was made for | the machine is scanned at setup and every start and the verdict kept; on any other laptop everything that is Casper's own stays off and Windows keeps its settings |
+| A record of every risky change, and a restore point first | graphics mode, drivers, repairs, WinUtil: asked with "create a restore point first" ticked; the question, the answer, the restore point's number and what was done kept with their times, in a file only administrators can write and in Windows' event log |
 | Memory and every fixed drive | |
 | A guided tour | `?` in the title bar walks every page and every control, and ends at the tray |
 | A Settings page | everything the tray menu has, kept in step with it; the language; start-up preference (tray or window); WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
 | Tray icon, start with Windows, self-update, dependency update, a log | |
 | Dark, light or Windows' theme; the application's own dialogues | |
 | Nothing outside it changes it | settings where only administrators can write, recorded and put back if changed from outside; the application checks its own files, its folder's permissions and the .NET runtime under it, and stops writing to the firmware if any of that fails; NVIDIA's and PawnIO's files verified before use - see [docs/SECURITY.md](docs/SECURITY.md) |
-| Fan control | **deliberately not implemented** - see the FAQ |
+| Fan curves | **deliberately not implemented** - see the FAQ |
 
 The guided tour is the manual: seventy steps, one control at a time.
 

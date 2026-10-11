@@ -31,6 +31,17 @@ verified with `gh attestation verify <file> --repo efebedelcigil/nextcalibur-con
 
 ## The threat model, and what the code does about it
 
+**Since 0.6.0**, in short: the embedded controller is reached only through
+the BIOS's own mailbox, and only with the commands documented in
+[PROTOCOL.md](PROTOCOL.md) - the application carries no code that talks to
+the controller's ports directly (a read-only attempt was made for the fan
+turbo, found to race Windows' own EC driver, and removed with its module).
+There is no service, pipe or port through which another program could ask
+the application to do anything. What it does change is offered only on the
+laptop it was made for (scanned at setup and every start), asked about
+with a restore point ticked, and written to an audit log kept in a folder
+only administrators write and in Windows' event log.
+
 The application runs as administrator, from a scheduled task, without a
 prompt. The threat that matters is therefore anything already running as
 the account - ordinary, unelevated - using the application to become

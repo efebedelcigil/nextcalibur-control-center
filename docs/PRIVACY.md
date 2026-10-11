@@ -31,9 +31,11 @@ is ever included. There is no account, no sign-in, no telemetry, no crash
 reporting, no analytics, no advertising, and no third-party library that
 phones home.
 
-Turn *Check for updates automatically* off in the tray menu or on the
-Settings page and the application makes **no network request at all**
-unless you press something that says it will.
+The check for this project's releases cannot be switched off since 0.5.12:
+an old version of software that writes to the firmware is not left
+running. Between releases it is a conditional request answered "not
+modified" with no body. Nothing else on the list above runs without the
+event named in its row.
 
 ## What stays on the machine
 
@@ -49,6 +51,18 @@ unless you press something that says it will.
   Never sensor readings, never anything typed. It is yours: *Open log* in
   the corner shows it, and it is only ever sent anywhere if you attach it to
   a report yourself.
+- **Audit log** - `%ProgramData%\Nextcalibur\<your account's SID>\audit.jsonl`,
+  and the same lines in Windows' Application event log under the source
+  "Nextcalibur": every change that could need undoing - what you were
+  asked, what you answered, whether a restore point was ticked and made
+  (its number), what was done - with the time and the Windows account's
+  name. It exists so that what happened to the machine, and who chose it,
+  can be read afterwards. The file goes with your settings at uninstall;
+  the event log entries are Windows' and stay.
+- **Machine scan** - `%ProgramData%\Nextcalibur\machine-scan.json`: whether
+  this laptop answers like a Casper Excalibur, the BIOS's maker and
+  version, the board's name, and when the verdict last changed - read at
+  setup and every start, kept to compare one scan with the next.
 - **Scheduled tasks** and, on a laptop the firmware interface exists on,
   the changes to Windows' power settings described in the README.
 
