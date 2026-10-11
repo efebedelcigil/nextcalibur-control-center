@@ -35,7 +35,10 @@ public partial class MainWindow
             if (PlanTuning.StopCooling()) Log.Info("cooling", "A ceiling lowered by an earlier run was put back");
 
             foreach (var name in PlanTuning.RepairPinnedFloors())
+            {
                 Log.Info("power", $"Repaired the pinned minimum processor state of {name}");
+                Audit("plan-floor-repair", "done-automatically", ("plan", name), ("to", PlanTuning.SafeFloor));
+            }
 
             if (SystemModeService.EnumeratePlans().TryGetValue("Nextcalibur Office", out var office)
                 && PlanTuning.CapOfficePlan(office))
@@ -81,6 +84,9 @@ public partial class MainWindow
 
         _cooling.Engaged = _coolingCapped || _coolingTurbo;
         if (!_cooling.Engaged) return;
+        if (_coolingCapped)
+            Audit("emergency-office", "started-automatically", ("ceiling", PlanTuning.CoolCeiling),
+                ("cpu", s.CpuTemperatureC), ("gpu", s.GpuTemperatureC));
 
         var what = _coolingCapped && _coolingTurbo ? Strings.Get("S.Cooling.Both", PlanTuning.CoolCeiling)
                  : _coolingTurbo ? Strings.Get("S.Cooling.Fans")
@@ -103,6 +109,7 @@ public partial class MainWindow
             Log.Warn("cooling", "Could not stop cooling: " + ex.Message);
         }
         Log.Info("cooling", $"Stopped ({why}); capped={_coolingCapped} turbo={_coolingTurbo}");
+        if (_coolingCapped) Audit("emergency-office", "stopped-automatically", ("why", why));
         _coolingCapped = _coolingTurbo = false;
         _cooling.Engaged = false;
     }

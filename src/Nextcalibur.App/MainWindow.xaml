@@ -2136,6 +2136,9 @@
                                    Foreground="{DynamicResource Ink}" Margin="0,0,0,10" />
                         <TextBlock x:Name="DialogBodyText" Style="{DynamicResource StatusTextStyle}"
                                    FontSize="13" LineHeight="19" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <!-- An offer that goes with the question - a restore point first - when there is one -->
+                        <CheckBox x:Name="DialogCheck" Margin="0,-6,0,18" Visibility="Collapsed"
+                                  Foreground="{DynamicResource Ink}" />
                         <!-- Progress Bar (§17) -->
                         <ProgressBar x:Name="DialogProgress" Minimum="0" Maximum="100" Height="6"
                                      Foreground="{DynamicResource Accent}"

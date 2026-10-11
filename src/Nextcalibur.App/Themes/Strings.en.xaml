@@ -405,6 +405,22 @@
     <sys:String x:Key="S.Core.Trace.PowerPlans">The power plans it created</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">The Windows power-mode repair</sys:String>
     <sys:String x:Key="S.Core.Trace.Floor">The power plans' minimum processor state repair</sys:String>
+    <sys:String x:Key="S.Core.Restore.Disabled">System Protection is off for the system drive, so Windows makes no restore points.</sys:String>
+    <sys:String x:Key="S.Core.Restore.Refused">Windows refused (status {0}).</sys:String>
+    <sys:String x:Key="S.Core.Restore.Missing">System Restore is not available on this Windows.</sys:String>
+    <sys:String x:Key="S.Core.Restore.Daily">Windows made no new one: it allows one a day, and #{0} was made at {1}.</sys:String>
+    <sys:String x:Key="S.Core.Restore.None">Windows made no restore point.</sys:String>
+    <sys:String x:Key="S.Restore.Checkbox">Create a Windows restore point first (recommended)</sys:String>
+    <sys:String x:Key="S.Restore.Creating">Creating a Windows restore point. This can take a minute...</sys:String>
+    <sys:String x:Key="S.Restore.Title">Restore point</sys:String>
+    <sys:String x:Key="S.Restore.Made">Restore point #{0} created at {1}. If anything goes wrong, Windows can go back to it: Settings > System > Recovery > System Restore.</sys:String>
+    <sys:String x:Key="S.Restore.NotMade" xml:space="preserve">No restore point was created. {0}&#10;&#10;Go on with the change anyway?</sys:String>
+    <sys:String x:Key="S.Gpu.ConfirmDevice">Switch to {0}? The graphics card is switched off or on as a device in Windows, straight away and without a restart.</sys:String>
+    <sys:String x:Key="S.Overlay.ConfirmTitle">Repair the power mode</sys:String>
+    <sys:String x:Key="S.Overlay.ConfirmBody">This changes a Windows power setting: the Best performance mode's minimum processor state is capped at 5%, and a power mode stuck on it is put back to Balanced. Go ahead?</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmTitle">The NDU network driver</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmOff">This stops Windows' network usage monitor (NDU) from starting, which ends the memory it leaks. It takes effect after a restart, and the original setting is kept so it can be put back. Go ahead?</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmOn">This puts Windows' network usage monitor (NDU) back to how it started before. It takes effect after a restart. Go ahead?</sys:String>
     <sys:String x:Key="S.Core.Trace.Ndu">The NDU network driver fix</sys:String>
     <sys:String x:Key="S.Core.Trace.NduMarker">The NDU backup registry value</sys:String>
     <sys:String x:Key="S.Core.Trace.UninstallKey">The Windows Installed Apps registration</sys:String>

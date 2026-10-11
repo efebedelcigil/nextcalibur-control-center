@@ -49,6 +49,38 @@ public static class Dialogs
     public static void Require(string title, string body, string buttonText) =>
         Show(title, body, MessageBoxButton.OK, MessageBoxResult.OK, buttonText);
 
+    /// <summary>
+    /// A yes-or-no question with a check box beneath it - the restore point
+    /// offered with a change that could need undoing. Without the window to
+    /// draw it in, Windows' box has no check box, so the offer comes as a
+    /// second question after a yes, with the box's default as its default.
+    /// </summary>
+    public static bool AskWithCheck(string title, string body, string checkText, bool checkDefault, out bool isChecked, bool defaultNo = true)
+    {
+        var owner = Owner;
+        if (owner is not null && !owner.Dispatcher.CheckAccess())
+        {
+            var result = false;
+            var ticked = false;
+            owner.Dispatcher.Invoke(() => result = AskWithCheck(title, body, checkText, checkDefault, out ticked, defaultNo));
+            isChecked = ticked;
+            return result;
+        }
+
+        if (owner is MainWindow { IsVisible: true, HasRendered: true } main && main.WindowState != WindowState.Minimized)
+        {
+            var answer = main.ShowOverlayDialog(title, body, MessageBoxButton.YesNo,
+                defaultNo ? MessageBoxResult.No : MessageBoxResult.Yes, null, checkText, checkDefault);
+            isChecked = main.LastDialogChecked;
+            return answer == MessageBoxResult.Yes;
+        }
+
+        isChecked = false;
+        if (!Ask(title, body, defaultNo)) return false;
+        isChecked = Ask(title, checkText + "?", defaultNo: !checkDefault);
+        return true;
+    }
+
     /// <summary>An OK-or-cancel confirmation. Cancel is the default.</summary>
     public static bool Confirm(string title, string body)
     {

@@ -102,7 +102,27 @@ public partial class MainWindow
         Wire(_settingWatchGpuAwake, on => _settings.WatchGpuAwake = on);
         Wire(_settingTrimDwmMemory, on => _settings.TrimDwmMemory = on);
         Wire(_settingTrimExplorerMemory, on => _settings.TrimExplorerMemory = on);
-        Wire(_settingDisableNdu, on =>
+        if (_settingDisableNdu is not null)
+        {
+            // Asked first, with a restore point offered: it changes how a
+            // Windows driver starts. A "no" puts the switch back.
+            _settingDisableNdu.Checked += async (_, _) => await ConfirmNdu(true);
+            _settingDisableNdu.Unchecked += async (_, _) => await ConfirmNdu(false);
+        }
+        async Task ConfirmNdu(bool on)
+        {
+            if (_settingsPageLoading) return;
+            if (await ConfirmRiskyAsync("ndu", Strings.Get("S.Ndu.ConfirmTitle"), Strings.Get(on ? "S.Ndu.ConfirmOff" : "S.Ndu.ConfirmOn")))
+            {
+                ChangeSetting(() => ApplyNdu(on));
+                Audit("ndu", "done", ("disabled", on));
+                return;
+            }
+            _settingsPageLoading = true;
+            _settingDisableNdu!.IsChecked = !on;
+            _settingsPageLoading = false;
+        }
+        void ApplyNdu(bool on)
         {
             _settings.DisableNdu = on;
             Nextcalibur.Core.Hardware.NduFix.SetNduDisabled(on, _settings);
@@ -113,7 +133,7 @@ public partial class MainWindow
             _settings.Save();
             _restartBannerDismissed = false;
             RefreshBanner();
-        });
+        }
         Wire(_settingOverheatWarning, on =>
         {
             // The readings panel's toggle is the same setting; its handler
@@ -228,9 +248,9 @@ public partial class MainWindow
     /// the PowerShell inherits this process's elevation, so no second
     /// prompt. What is done inside it is the person's.
     /// </summary>
-    private void OpenWinUtil()
+    private async void OpenWinUtil()
     {
-        if (!Dialogs.Ask(Strings.Get("S.WinUtil.Title"), Strings.Get("S.WinUtil.Body"), defaultNo: true))
+        if (!await ConfirmRiskyAsync("winutil", Strings.Get("S.WinUtil.Title"), Strings.Get("S.WinUtil.Body")))
             return;
 
         try
@@ -241,6 +261,7 @@ public partial class MainWindow
                 UseShellExecute = true,
             });
             Log.Info("winutil", "Opened WinUtil in an administrator PowerShell");
+            Audit("winutil", "done");
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {

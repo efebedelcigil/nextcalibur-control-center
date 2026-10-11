@@ -403,6 +403,22 @@
     <sys:String x:Key="S.Core.Trace.PowerPlans">Oluşturduğu güç planları</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">Windows güç modu onarımı</sys:String>
     <sys:String x:Key="S.Core.Trace.Floor">Güç planlarının en düşük işlemci durumu onarımı</sys:String>
+    <sys:String x:Key="S.Core.Restore.Disabled">Sistem diski için Sistem Koruması kapalı, bu yüzden Windows geri yükleme noktası oluşturmuyor.</sys:String>
+    <sys:String x:Key="S.Core.Restore.Refused">Windows reddetti (durum {0}).</sys:String>
+    <sys:String x:Key="S.Core.Restore.Missing">Sistem Geri Yükleme bu Windows'ta yok.</sys:String>
+    <sys:String x:Key="S.Core.Restore.Daily">Windows yenisini oluşturmadı: günde bir taneye izin veriyor ve #{0} {1} saatinde oluşturulmuş.</sys:String>
+    <sys:String x:Key="S.Core.Restore.None">Windows geri yükleme noktası oluşturmadı.</sys:String>
+    <sys:String x:Key="S.Restore.Checkbox">Önce bir Windows geri yükleme noktası oluştur (önerilir)</sys:String>
+    <sys:String x:Key="S.Restore.Creating">Windows geri yükleme noktası oluşturuluyor. Bir dakika sürebilir...</sys:String>
+    <sys:String x:Key="S.Restore.Title">Geri yükleme noktası</sys:String>
+    <sys:String x:Key="S.Restore.Made">#{0} numaralı geri yükleme noktası {1} saatinde oluşturuldu. Bir şey ters giderse Windows ona geri dönebilir: Ayarlar > Sistem > Kurtarma > Sistem Geri Yükleme.</sys:String>
+    <sys:String x:Key="S.Restore.NotMade" xml:space="preserve">Geri yükleme noktası oluşturulmadı. {0}&#10;&#10;Değişiklikle yine de devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.Gpu.ConfirmDevice">{0} moduna geçilsin mi? Ekran kartı Windows'ta bir aygıt olarak hemen, yeniden başlatmadan kapatılır ya da açılır.</sys:String>
+    <sys:String x:Key="S.Overlay.ConfirmTitle">Güç modunu onar</sys:String>
+    <sys:String x:Key="S.Overlay.ConfirmBody">Bu bir Windows güç ayarını değiştirir: En iyi performans modunun en düşük işlemci durumu %5 ile sınırlanır ve ona takılı kalmış bir güç modu Dengeli'ye döndürülür. Devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmTitle">NDU ağ sürücüsü</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmOff">Bu, Windows'un ağ kullanımı izleyicisinin (NDU) başlamasını engeller; sızdırdığı bellek de biter. Yeniden başlatmadan sonra geçerli olur ve özgün ayar geri konabilmesi için saklanır. Devam edilsin mi?</sys:String>
+    <sys:String x:Key="S.Ndu.ConfirmOn">Bu, Windows'un ağ kullanımı izleyicisini (NDU) önceki başlama ayarına döndürür. Yeniden başlatmadan sonra geçerli olur. Devam edilsin mi?</sys:String>
     <sys:String x:Key="S.Core.Trace.Ndu">NDU ağ sürücüsü onarımı</sys:String>
     <sys:String x:Key="S.Core.Trace.NduMarker">NDU yedek kayıt defteri değeri</sys:String>
     <sys:String x:Key="S.Core.Trace.UninstallKey">Windows Yüklü Uygulamalar kaydı</sys:String>

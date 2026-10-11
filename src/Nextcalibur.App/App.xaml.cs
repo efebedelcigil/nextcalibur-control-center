@@ -269,6 +269,7 @@ public partial class App : Application
         Footprint.MoveSettingsOutOfProfile();
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
+        Nextcalibur.Core.Security.AuditLog.AppVersion = typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?";
 
         // The retirement pass cleans up traces of features that have been dropped in this
         // or earlier versions (see Footprint.RetireOldVersions and docs/BRIEF.md §32).

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Management" Version="10.0.12" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="10.0.12" />
   </ItemGroup>
 
   <!-- PawnIO's IntelMSR module, loaded into the driver to read the CPU's

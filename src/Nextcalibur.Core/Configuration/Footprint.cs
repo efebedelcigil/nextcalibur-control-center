@@ -431,6 +431,10 @@ public static class Footprint
         // had just deleted.
         RemoveRunEntry();
 
+        // The event log's source registration is ours; the entries written
+        // under it stay in Windows' log, which is the point of them.
+        Security.AuditLog.RemoveEventSource();
+
         // A ceiling lowered for cooling is never something to keep.
         try { PlanTuning.StopCooling(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }

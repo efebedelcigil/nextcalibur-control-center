@@ -1605,11 +1605,13 @@ public partial class MainWindow : Window
         try
         {
             var install = status.Missing;
-            if (!Dialogs.Ask(Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
+            if (!await ConfirmRiskyAsync("dependency-" + status.Dependency.Id,
+                    Strings.Get(install ? "S.Dependency.InstallTitle" : "S.Dependency.UpdateTitle", status.Dependency.Name),
                     status.Describe() + Environment.NewLine + Environment.NewLine +
                     Strings.Get("S.Dependency.How") +
                     Environment.NewLine + Environment.NewLine + Strings.Get(install ? "S.Dependency.InstallNow" : "S.Dependency.UpdateNow"),
-                    defaultNo: false))
+                    defaultNo: false,
+                    details: new Dictionary<string, object?> { ["version"] = status.Latest.Version.ToString(), ["install"] = install }))
             {
                 _updates.DeclineDependency(status);
                 OfferTheNextDependency();
@@ -1627,6 +1629,7 @@ public partial class MainWindow : Window
                 });
                 var (ok, message, restartRequired) = await Nextcalibur.Core.Dependencies.DependencyManager.InstallAsync(status, progress);
                 Log.Info("dependency", message);
+                Audit("dependency-" + status.Dependency.Id, ok ? "done" : "failed", ("message", message), ("restartRequired", restartRequired));
                 HideProgress();
                 if (ok)
                 {
@@ -1716,8 +1719,11 @@ public partial class MainWindow : Window
     /// overlay covers the whole window and takes every click; Escape gives
     /// the fallback, which every caller has chosen as the safe answer.
     /// </summary>
+    /// <summary>Whether the last dialogue's check box was ticked when it closed.</summary>
+    public bool LastDialogChecked { get; private set; }
+
     public MessageBoxResult ShowOverlayDialog(string title, string body, MessageBoxButton buttons, MessageBoxResult fallback,
-        string? primaryLabel = null)
+        string? primaryLabel = null, string? checkText = null, bool checkDefault = false)
     {
         var (primary, secondary, primaryText, secondaryText) = buttons switch
         {
@@ -1743,9 +1749,13 @@ public partial class MainWindow : Window
         if (_dialogOpen)
         {
             Log.Warn("ui", $"A dialogue was raised over another and answered with its default: {title}");
+            LastDialogChecked = false;
             return fallback;
         }
         _dialogOpen = true;
+        DialogCheck.Content = checkText;
+        DialogCheck.IsChecked = checkDefault;
+        DialogCheck.Visibility = checkText is null ? Visibility.Collapsed : Visibility.Visible;
 
         var result = fallback;
         var frame = new DispatcherFrame();
@@ -1777,6 +1787,8 @@ public partial class MainWindow : Window
             _dialogOpen = false;
         }
 
+        LastDialogChecked = DialogCheck.IsChecked == true;
+        DialogCheck.Visibility = Visibility.Collapsed;
         return result;
     }
 
@@ -2008,7 +2020,7 @@ public partial class MainWindow : Window
     private static string SettlingText(int seconds) =>
         Strings.Get(seconds == 1 ? "S.Gpu.SettlingOne" : "S.Gpu.Settling", seconds);
 
-    private void OnGpuModeChanged(object sender, RoutedEventArgs e)
+    private async void OnGpuModeChanged(object sender, RoutedEventArgs e)
     {
         if (!_gpuUiReady) return;
 
@@ -2035,7 +2047,13 @@ public partial class MainWindow : Window
         // the TPM measures. The firmware modes are the ones that cost a PIN.
         var touchesFirmware = target != GpuMode.Uma && !(current == GpuMode.Uma && target == GpuMode.Hybrid);
 
-        if (touchesFirmware && !ConfirmFirmwareSwitch(target))
+        // Both are changes worth a restore point: the firmware one costs a
+        // PIN and may ask for the BitLocker key; the device one switches a
+        // card off in Device Manager.
+        var change = touchesFirmware ? "gpu-firmware-mode" : "gpu-card-device";
+        var question = touchesFirmware ? Strings.Get("S.Gpu.ConfirmSwitch", target) : Strings.Get("S.Gpu.ConfirmDevice", target);
+        if (!await ConfirmRiskyAsync(change, Strings.Get("S.Gpu.Title"), question,
+                details: new Dictionary<string, object?> { ["from"] = current.ToString(), ["to"] = target.ToString() }))
         {
             GpuButtonFor(current).IsChecked = true;
             return;
@@ -2051,6 +2069,8 @@ public partial class MainWindow : Window
         {
             var outcome = _gpu.Switch(_mailbox, target);
             Log.Info("gpu", $"Switch to {target}: changed={outcome.Changed} restart={outcome.RestartNeeded}; {outcome.Summary}");
+            Audit(change, outcome.Changed ? "done" : "not-done", ("from", current.ToString()), ("to", target.ToString()),
+                ("restartNeeded", outcome.RestartNeeded), ("summary", outcome.Summary));
 
             if (!outcome.Changed)
             {
@@ -2103,18 +2123,6 @@ public partial class MainWindow : Window
             // a fresh enumeration rather than a handle that may name nothing.
             _gpuClock.Reset();
         }
-    }
-
-    /// <summary>
-    /// The conversation the vendor's software never has. Its dialogue asks
-    /// "restart?" and mentions neither the PIN nor BitLocker; both were learned
-    /// here by losing the PIN, four times in one night.
-    /// </summary>
-    private bool ConfirmFirmwareSwitch(GpuMode target)
-    {
-        var answer = Dialogs.Ask(Strings.Get("S.Gpu.Title"), Strings.Get("S.Gpu.ConfirmSwitch", target), defaultNo: true);
-
-        return answer;
     }
 
     private void OfferRestart(string summary)
@@ -3153,11 +3161,15 @@ public partial class MainWindow : Window
         FixButton.Visibility = Visibility.Visible;
     }
 
-    private void OnRepairClick(object sender, RoutedEventArgs e)
+    private async void OnRepairClick(object sender, RoutedEventArgs e)
     {
         try
         {
+            if (!await ConfirmRiskyAsync("power-overlay-repair", Strings.Get("S.Overlay.ConfirmTitle"), Strings.Get("S.Overlay.ConfirmBody")))
+                return;
             var outcome = _power.Repair();
+            Audit("power-overlay-repair", outcome.Blocked is null ? "done" : "partly-done",
+                ("done", string.Join(" | ", outcome.Done)), ("blocked", outcome.Blocked));
             RefreshOverlay();
 
             var body = outcome.Done.Count > 0
