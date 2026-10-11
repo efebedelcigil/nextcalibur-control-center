@@ -60,6 +60,11 @@
     <Company>Efe Bedelcigil</Company>
     <Authors>Efe Bedelcigil</Authors>
     <Copyright>Efe Bedelcigil, MIT licence</Copyright>
+    <!-- The Details tab's "File description", and a product version that is
+         the version: without this the build appends the commit's hash. -->
+    <AssemblyTitle>Nextcalibur Control Center</AssemblyTitle>
+    <Description>Nextcalibur Control Center - an open-source replacement for the Casper Excalibur Control Center</Description>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Version>0.5.12</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>

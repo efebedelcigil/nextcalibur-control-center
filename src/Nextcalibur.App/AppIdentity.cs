@@ -26,6 +26,46 @@ public static class AppIdentity
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern int SetCurrentProcessExplicitAppUserModelID(string appId);
 
+    /// <summary>
+    /// The same identity on the window itself, with what pinning it should
+    /// start. The process's identity alone did not hold: started elevated
+    /// through the scheduled task, or shown again from the tray, the window
+    /// came up beside the pinned icon instead of on it (owner, 12 October
+    /// 2026). A window's own property outranks the process's, and the
+    /// relaunch values make a pin taken from the running window the same as
+    /// the installed shortcut.
+    /// </summary>
+    public static void ClaimWindow(IntPtr hwnd)
+    {
+        if (hwnd == IntPtr.Zero || Environment.ProcessPath is not { } exe) return;
+        var iid = typeof(IPropertyStore).GUID;
+        if (SHGetPropertyStoreForWindow(hwnd, ref iid, out var obj) != 0 || obj is not IPropertyStore store) return;
+        try
+        {
+            Set(store, 5, Id);                              // System.AppUserModel.ID
+            Set(store, 2, "\"" + exe + "\"");               // System.AppUserModel.RelaunchCommand
+            Set(store, 3, exe + ",0");                      // System.AppUserModel.RelaunchIconResource
+            Set(store, 4, "Nextcalibur Control Center");    // System.AppUserModel.RelaunchDisplayNameResource
+            store.Commit();
+        }
+        catch (Exception ex) when (ex is COMException or UnauthorizedAccessException) { }
+        finally
+        {
+            Marshal.FinalReleaseComObject(store);
+        }
+    }
+
+    private static void Set(IPropertyStore store, uint pid, string text)
+    {
+        var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), pid);
+        var value = new PropVariant { vt = 31 /* VT_LPWSTR */, p = Marshal.StringToCoTaskMemUni(text) };
+        try { store.SetValue(ref key, ref value); }
+        finally { PropVariantClear(ref value); }
+    }
+
+    [DllImport("shell32.dll")]
+    private static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [MarshalAs(UnmanagedType.Interface)] out object propertyStore);
+
     /// <summary>Called first thing in <c>Main</c>, before Velopack and before any window.</summary>
     public static void Claim()
     {
@@ -133,19 +173,30 @@ public static class AppIdentity
             store.GetValue(ref key, out var current);
             var existing = current.vt == 31 /* VT_LPWSTR */ ? Marshal.PtrToStringUni(current.p) : null;
             PropVariantClear(ref current);
-            if (existing == Id) return;
 
-            var value = new PropVariant { vt = 31, p = Marshal.StringToCoTaskMemUni(Id) };
-            try
+            // The comment a shortcut shows in its Details tab and on hover:
+            // what it opens, and which version - renewed after every update.
+            var version = typeof(AppIdentity).Assembly.GetName().Version?.ToString(3) ?? "";
+            var description = $"Nextcalibur Control Center {version}";
+            var comment = new System.Text.StringBuilder(260);
+            shellLink.GetDescription(comment, comment.Capacity);
+            if (existing == Id && comment.ToString() == description) return;
+
+            shellLink.SetDescription(description);
+            if (existing != Id)
             {
-                store.SetValue(ref key, ref value);
-                store.Commit();
-                persist.Save(linkPath, true);
+                var value = new PropVariant { vt = 31, p = Marshal.StringToCoTaskMemUni(Id) };
+                try
+                {
+                    store.SetValue(ref key, ref value);
+                    store.Commit();
+                }
+                finally
+                {
+                    PropVariantClear(ref value);
+                }
             }
-            finally
-            {
-                PropVariantClear(ref value);
-            }
+            persist.Save(linkPath, true);
         }
         finally
         {

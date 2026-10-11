@@ -2238,9 +2238,10 @@ public partial class MainWindow : Window
         // this makes the taskbar agree.
         KeepMinimiseBox();
 
-        // Our shortcuts carry the same identity as this process, so the
-        // pinned icon and the running window are one button. Off the
-        // interface thread; it touches a few files.
+        // Our shortcuts carry the same identity as this window, so the
+        // pinned icon and the running window are one button. The window's
+        // own, first; the shortcuts off the interface thread - a few files.
+        AppIdentity.ClaimWindow(hwnd);
         Task.Run(AppIdentity.StampShortcuts);
     }
 
