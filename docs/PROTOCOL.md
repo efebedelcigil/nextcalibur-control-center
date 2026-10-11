@@ -148,10 +148,38 @@ confirming the clear-then-fill sequence is observable and that readers must
 tolerate torn reads. **Treat an all-zero or partially-zero response as invalid
 and retry.**
 
-### Write (`a0 = 0xFB00`) — NOT YET DOCUMENTED
+### Write (`a0 = 0xFB00`) — the fan turbo, from the BIOS's own code
 
-Fan control writes have not been observed and must not be guessed. See
-§6 Safety.
+There is no fan *curve* to write; there is the full-speed mode Fn+1 toggles
+on the laptop's keyboard. Its path was read out of the BIOS's ACPI code on
+11 October 2026 (the DSDT, decompiled with ACPICA's `iasl`; the tables
+themselves stay on the machine) - the handler behind this mailbox, method
+`WSAA`:
+
+```
+FB00 / 0x0200, a2 = 1:  a6 bit 0 set   -> EC request bit FAND = 1
+                        a6 bit 0 clear -> EC request bit FANE = 1
+FB00 / 0x0200, a2 = 0:  EC DWNK = a6 bit 0          (the Windows-key lock)
+FB00 / 0x0202, a2 = 0 / 1:  EC TPOF / TPON = 1       (touchpad off / on)
+```
+
+The turbo's state is the controller's own bit (`FANM`); no `0xFA00` read
+returns it - confirmed by watching every readable register while Fn+1 was
+pressed: none moved, while the fans went from ~4000/3600 to ~5340/5280 rpm
+and back. The firmware *says* it instead, as a WMI event: on Fn+1 its
+key handler (`_Q60`, key code `0x11`) fills the event buffer and notifies,
+and `GMC_WMIEvent.EventDetail` arrives with byte 1 = `3` (which field
+changed) and byte 3 = the new state. The same buffer carries the backlight
+level in byte 0, which is how Fn+Space was read (§4).
+
+Which request means "on" is not in the names, and is **not yet measured**:
+Nextcalibur sends neither until it is (`nextcalibur fanmax` sends each in
+turn and prints the fans). The two are the firmware's own request bits, set
+the way its own handler sets them; nothing else is written. The touchpad
+and Windows-key requests are documented here and not used.
+
+Other keys the same handler answers, for reference: `0x0F` touchpad,
+`0x18` camera, `0x04`/`0x05` panel brightness, `0x10` a backlight flag.
 
 ## 4. LED — `a1 = 0x0100`
 
@@ -626,8 +654,10 @@ The mailbox reaches the embedded controller. Rules for this project:
    three registers only: LED (`0x0100`), the display mode (`0x0203`) and the
    thermal profile (`0x0300`), each documented here with the capture that
    established it.
-3. **No fan control.** The vendor's software has none; what it writes with
-   each mode is the thermal profile, and that is copied exactly.
+3. **No fan curves.** The vendor's software has none; what it writes with
+   each mode is the thermal profile, and that is copied exactly. The one fan
+   write is the turbo request of §3, the BIOS's own, once its direction is
+   measured.
 4. **Tolerate torn reads.** Reject all-zero and partially-zero responses.
 5. **The mailbox is shared.** The stock software, if running, writes to the same
    buffer. Do not run both at once; detect and warn.
