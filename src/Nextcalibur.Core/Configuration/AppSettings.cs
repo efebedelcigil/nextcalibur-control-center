@@ -17,18 +17,19 @@ public sealed class AppSettings
     public bool OverheatWarningEnabled { get; set; } = true;
 
     /// <summary>
-    /// Lower the processor's ceiling to the Office plan's 70% while a chip is
-    /// heading for its warning line, and put it back once it has cooled
-    /// (<see cref="Power.CoolingPolicy"/>). On by default - the owner's choice,
-    /// 11 October 2026.
+    /// "Emergency Office": while a chip is heading for its warning line, also
+    /// hold the processor to the Office plan's 70%, and let it go once it
+    /// has cooled. Off by default - the owner's correction of 11 October
+    /// 2026: the thing asked for was the fans, not a slower processor.
     /// </summary>
-    public bool AutoCooling { get; set; } = true;
+    public bool AutoCooling { get; set; }
 
     /// <summary>
-    /// Turn the fans' full-speed mode (Fn+1) on at the same moment, and off
-    /// again with it. On by default, the owner's choice of 11 October 2026;
-    /// it does nothing until the firmware's direction is measured
-    /// (<see cref="Hardware.FanTurbo.Known"/>).
+    /// Cool down before it gets hot: the fans' full-speed mode (Fn+1) on
+    /// when the temperature is heading for the warning line
+    /// (<see cref="Power.CoolingPolicy"/>), off again once it has cooled. On
+    /// by default, the owner's choice of 11 October 2026; it does nothing
+    /// until the firmware's direction is measured (<see cref="Hardware.FanTurbo.Known"/>).
     /// </summary>
     public bool AutoFanTurbo { get; set; } = true;
 
