@@ -18,8 +18,8 @@ public partial class MainWindow
     private readonly RunawayWatch _runaways = new();
     private DateTime _runawaysLookedAt = DateTime.MinValue;
 
-    /// <summary>What cooling has done this time, so stopping undoes exactly that.</summary>
-    private bool _coolingCapped, _coolingTurbo;
+    /// <summary>What cooling has done this time: the ceiling lowered, the turbo suggested.</summary>
+    private bool _coolingCapped, _coolingSuggested;
 
     /// <summary>The turbo as the firmware last said; false until it has said anything.</summary>
     private bool _fanTurboOn;
@@ -74,25 +74,29 @@ public partial class MainWindow
         try
         {
             _coolingCapped = _settings.AutoCooling && PlanTuning.StartCooling();
-            _coolingTurbo = _settings.AutoFanTurbo && _support.AllowsWrites && _mailbox is { } mailbox
-                            && FanTurbo.Set(mailbox, on: true);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
             Log.Warn("cooling", "Could not start cooling: " + ex.Message);
         }
 
-        _cooling.Engaged = _coolingCapped || _coolingTurbo;
+        // The fans' turbo is the controller's own, switched only by Fn+1 on
+        // the built-in keyboard: nothing in the BIOS sets it, and reaching
+        // the controller directly races Windows' own driver (PROTOCOL.md,
+        // measured 11-12 October 2026). So it is suggested, not set.
+        _coolingSuggested = _settings.AutoFanTurbo && !_fanTurboOn;
+
+        _cooling.Engaged = _coolingCapped || _coolingSuggested;
         if (!_cooling.Engaged) return;
         if (_coolingCapped)
             Audit("emergency-office", "started-automatically", ("ceiling", PlanTuning.CoolCeiling),
                 ("cpu", s.CpuTemperatureC), ("gpu", s.GpuTemperatureC));
 
-        var what = _coolingCapped && _coolingTurbo ? Strings.Get("S.Cooling.Both", PlanTuning.CoolCeiling)
-                 : _coolingTurbo ? Strings.Get("S.Cooling.Fans")
+        var what = _coolingCapped && _coolingSuggested ? Strings.Get("S.Cooling.Both", PlanTuning.CoolCeiling)
+                 : _coolingSuggested ? Strings.Get("S.Cooling.Fans")
                  : Strings.Get("S.Cooling.Cap", PlanTuning.CoolCeiling);
         var rate = _cooling.DegreesPerMinute;
-        Log.Info("cooling", $"Started at CPU {s.CpuTemperatureC} °C / GPU {s.GpuTemperatureC} °C, {rate:+0.0;-0.0} °C/min; capped={_coolingCapped} turbo={_coolingTurbo}");
+        Log.Info("cooling", $"Started at CPU {s.CpuTemperatureC} °C / GPU {s.GpuTemperatureC} °C, {rate:+0.0;-0.0} °C/min; capped={_coolingCapped} turbo suggested={_coolingSuggested}");
         _tray?.ShowMessage(Strings.Get("S.Cooling.Title"),
             Strings.Get("S.Cooling.Body", s.CpuTemperatureC, s.GpuTemperatureC, rate.ToString("+0.0;-0.0"), what));
     }
@@ -102,15 +106,18 @@ public partial class MainWindow
         try
         {
             if (_coolingCapped) PlanTuning.StopCooling();
-            if (_coolingTurbo && _mailbox is { } mailbox) FanTurbo.Set(mailbox, on: false);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
             Log.Warn("cooling", "Could not stop cooling: " + ex.Message);
         }
-        Log.Info("cooling", $"Stopped ({why}); capped={_coolingCapped} turbo={_coolingTurbo}");
+        Log.Info("cooling", $"Stopped ({why}); capped={_coolingCapped} turbo suggested={_coolingSuggested}");
         if (_coolingCapped) Audit("emergency-office", "stopped-automatically", ("why", why));
-        _coolingCapped = _coolingTurbo = false;
+
+        // Cooled, with the turbo still on: it can go back the same way.
+        if (why == "cooled down" && _coolingSuggested && _fanTurboOn)
+            _tray?.ShowMessage(Strings.Get("S.Cooling.CooledTitle"), Strings.Get("S.Cooling.TurboStillOn"));
+        _coolingCapped = _coolingSuggested = false;
         _cooling.Engaged = false;
     }
 
@@ -126,16 +133,12 @@ public partial class MainWindow
         if (recap) _coolingCapped = PlanTuning.StartCooling();
     }
 
-    /// <summary>
-    /// The firmware said the turbo changed - Fn+1, or us. When the person
-    /// turned it off themselves while cooling had it on, that is theirs to
-    /// decide: cooling stops asking for it.
-    /// </summary>
+    /// <summary>The firmware said the turbo changed: Fn+1 on the built-in keyboard. Nothing listens with the setting off.</summary>
     private void OnFanTurboEvent(bool on)
     {
+        if (!_settings.AutoFanTurbo) return;
         _fanTurboOn = on;
-        Log.Info("cooling", $"Fan turbo is now {(on ? "on" : "off")} (firmware event)");
-        if (!on && _coolingTurbo) _coolingTurbo = false;
+        Log.Info("cooling", $"Fan turbo is now {(on ? "on" : "off")} (Fn+1)");
     }
 
     /// <summary>

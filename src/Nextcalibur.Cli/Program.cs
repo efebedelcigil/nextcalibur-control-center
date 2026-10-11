@@ -18,8 +18,7 @@ internal static class Program
         {
             // The same gate the window applies: nothing that writes to firmware
             // is offered to a machine that has not shown it speaks this protocol.
-            var writes = (command == "led" && args.Length > 1) || (command == "gpu" && args.Length > 1) || command == "fanmax"
-                         || command == "ecturbo";
+            var writes = (command == "led" && args.Length > 1) || (command == "gpu" && args.Length > 1);
             if (writes)
             {
                 var verdict = HardwareSupport.Check();
@@ -40,11 +39,8 @@ internal static class Program
                 "clocks" => Clocks(),
                 "access" => Access(args),
                 "gpu" => Gpu(args),
-                "regs" => Registers(args),
-                "fanmax" => FanMaxTest(),
                 "events" => Events(args),
                 "plans" => Plans(),
-                "ecturbo" => EcTurbo(args),
                 _ => Help(),
             };
         }
@@ -63,92 +59,6 @@ internal static class Program
             Error(ex.Message);
             return 1;
         }
-    }
-
-    /// <summary>
-    /// Watches the registers PROTOCOL.md's sweep covers - 0x0200-0x0207 and
-    /// 0x0300-0x0302 - once a second, through the read command only, and
-    /// prints every one that changes. Made to find which register a key
-    /// combination moves (Fn+1, 11 October 2026), the way Fn+Space was found
-    /// to move 0x0200 a6. Writes nothing to the controller; needs administrator.
-    /// </summary>
-    private static int Registers(string[] args)
-    {
-        var seconds = args.Length > 1 && int.TryParse(args[1], out var n) && n > 0 ? n : 60;
-        ushort[] registers = [0x0200, 0x0201, 0x0202, 0x0203, 0x0204, 0x0205, 0x0206, 0x0207, 0x0300, 0x0301, 0x0302];
-
-        using var mailbox = new EcMailbox();
-        var last = new Dictionary<ushort, string>();
-        var clock = Stopwatch.StartNew();
-        Console.WriteLine($"Watching {registers.Length} registers for {seconds} s, reads only. Press the keys now.");
-
-        while (clock.Elapsed.TotalSeconds < seconds)
-        {
-            foreach (var register in registers)
-            {
-                if (ReadRegister(mailbox, register) is not { } reply) continue;
-
-                // The thermal block's temperatures and fan speeds move every
-                // second; shown on their own line, the rest compared whole.
-                var text = register == 0x0200
-                    ? $"a6={reply.A6}  (cpu {reply.A2} gpu {reply.A3} fan {reply.A4}/{reply.A5})"
-                    : $"a2={reply.A2} a3={reply.A3} a4={reply.A4} a5={reply.A5} a6={reply.A6}";
-                var key = register == 0x0200 ? $"a6={reply.A6}" : text;
-
-                if (register == 0x0200)
-                    Console.WriteLine($"{DateTime.Now:HH:mm:ss}  fans {reply.A4}/{reply.A5} rpm  cpu {reply.A2} gpu {reply.A3}");
-                if (!last.TryGetValue(register, out var before))
-                    Console.WriteLine($"{DateTime.Now:HH:mm:ss}  {register:X4}  {text}");
-                else if (before != key)
-                    Console.WriteLine($"{DateTime.Now:HH:mm:ss}  {register:X4}  CHANGED  {text}");
-                last[register] = key;
-            }
-            Thread.Sleep(1000);
-        }
-        return 0;
-    }
-
-    /// <summary>
-    /// Finds which way round the firmware's fan-max request goes. The BIOS's
-    /// own mailbox handler (DSDT, WSAA) answers FB00/0x0200 with a2=1 by
-    /// setting one of two request bits in the controller: FAND when a6 bit 0
-    /// is set, FANE when it is clear - the turbo Fn+1 toggles, whose state
-    /// is the controller's FANM bit. Which of the two is "on" is not in the
-    /// names, so this sends each in turn and prints the fans for twenty
-    /// seconds after each, then sends the other once more so the machine is
-    /// left as the second half found it... and finally FANE/FAND to settle
-    /// on whichever read lower. Both requests are the firmware's own; nothing
-    /// else is written.
-    /// </summary>
-    private static int FanMaxTest()
-    {
-        using var mailbox = new EcMailbox();
-        void Fans(string label, int seconds)
-        {
-            for (var i = 0; i < seconds; i += 2)
-            {
-                if (ReadRegister(mailbox, 0x0200) is { } r)
-                    Console.WriteLine($"{DateTime.Now:HH:mm:ss}  {label,-10} fans {r.A4}/{r.A5} rpm  cpu {r.A2}");
-                Thread.Sleep(2000);
-            }
-        }
-        void Request(uint a6)
-        {
-            using (mailbox.Hold())
-            {
-                mailbox.Write(new SmiCommand { A0 = (ushort)SmiFamily.Write, A1 = 0x0200, A2 = 1, A6 = a6 });
-                Thread.Sleep(60);
-            }
-            Console.WriteLine($"{DateTime.Now:HH:mm:ss}  sent FB00/0200 a2=1 a6={a6} ({(a6 == 1 ? "FAND" : "FANE")})");
-        }
-
-        Fans("before", 10);
-        Request(0); Fans("a6=0", 20);
-        Request(1); Fans("a6=1", 20);
-        Request(0); Fans("a6=0", 20);
-        Request(1); Fans("a6=1", 20);
-        Console.WriteLine("Done. If the fans are still at full speed, press Fn+1 once on the laptop's own keyboard.");
-        return 0;
     }
 
     /// <summary>
@@ -178,33 +88,6 @@ internal static class Program
         return 0;
     }
 
-    /// <summary>
-    /// The diagnostic before any write: every two seconds, the controller
-    /// byte the BIOS names as the fan turbo's (0xC3, bit 0) and the fans,
-    /// while the person presses Fn+1. Reads only - see FanTurboBit for what
-    /// it refuses to do.
-    /// </summary>
-    private static int EcTurbo(string[] args)
-    {
-        var seconds = args.Length > 1 && int.TryParse(args[1], out var n) && n is > 0 and <= 300 ? n : 60;
-        using var bit = new FanTurboBit();
-        using var mailbox = new EcMailbox();
-        Console.WriteLine($"Reading EC 0xC3 bit 0 and the fans every 2 s for {seconds} s. Press Fn+1 on the laptop's keyboard now.");
-        var clock = Stopwatch.StartNew();
-        while (clock.Elapsed.TotalSeconds < seconds)
-        {
-            var reading = bit.Read();
-            var fans = ReadRegister(mailbox, 0x0200) is { } r ? $"{r.A4}/{r.A5} rpm" : "?";
-            Console.WriteLine(reading.Value is { } v
-                ? $"{DateTime.Now:HH:mm:ss}  0xC3 = 0x{v:X2}  turbo bit = {(v & 1)}  fans {fans}"
-                : $"{DateTime.Now:HH:mm:ss}  no reading ({reading.Refusal})  fans {fans}");
-            if (reading.Refusal is EcReadRefusal.PawnIoMissingOrUntrusted or EcReadRefusal.ModuleNotAsShipped or EcReadRefusal.ModuleRefused)
-                return 3;
-            Thread.Sleep(2000);
-        }
-        return 0;
-    }
-
     /// <summary>Every plan's processor floor and ceiling, and what the thermal repairs would change. Reads only.</summary>
     private static int Plans()
     {
@@ -219,23 +102,6 @@ internal static class Program
             Console.WriteLine($"Pinned floor: {name} at {floor.Ac}/{floor.Dc} - the app sets it to {PlanTuning.SafeFloor}");
         Console.WriteLine($"Cooling marker present: {PlanTuning.Cooling}; floor repaired: {PlanTuning.FloorRepaired()}");
         return 0;
-    }
-
-    private static SmiCommand? ReadRegister(EcMailbox mailbox, ushort register)
-    {
-        using (mailbox.Hold())
-        {
-            var command = new SmiCommand { A0 = (ushort)SmiFamily.Read, A1 = register };
-            mailbox.Write(command);
-            for (var attempt = 0; attempt < 8; attempt++)
-            {
-                Thread.Sleep(40);
-                var reply = SmiCommand.FromBytes(mailbox.ReadRaw());
-                if ((reply.A0 == command.A0 && reply.A1 == command.A1) || (reply.A0 == 0 && reply.A1 == 0))
-                    return reply;
-            }
-            return null;
-        }
     }
 
     /// <summary>

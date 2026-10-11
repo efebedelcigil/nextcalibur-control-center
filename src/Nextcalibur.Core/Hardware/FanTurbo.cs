@@ -2,51 +2,19 @@ namespace Nextcalibur.Core.Hardware;
 
 /// <summary>
 /// The fans' full-speed mode - what Fn+1 toggles on the laptop's own
-/// keyboard - asked for through the firmware mailbox.
+/// keyboard - as far as software can know it: from the firmware's event.
 ///
-/// Found in the BIOS's own ACPI code on 11 October 2026 (PROTOCOL.md): the
-/// mailbox handler answers <c>FB00/0x0200</c> with <c>a2 = 1</c> by setting
-/// one of two request bits in the embedded controller, FAND when <c>a6</c>
-/// bit 0 is set and FANE when it is clear. The controller keeps the state
-/// itself (its FANM bit), which no mailbox read returns; the firmware says
-/// it in an event instead, <c>GMC_WMIEvent</c> with byte 1 = 3 and byte 3 =
-/// the new state, both when Fn+1 is pressed and when software changes it.
-///
-/// Measured 11 October 2026: neither request turns the turbo on - the fans
-/// stayed at their idle speed through both, twice. Nothing in the BIOS writes
-/// FANM; the controller switches it only from its own keyboard scan. So
-/// <see cref="OnA6"/> stays null and nothing here writes; the event is read,
-/// so the application knows when the person has turned it on.
+/// Measured 11-12 October 2026 (PROTOCOL.md): the state is the controller's
+/// own bit (FANM, EC 0xC3 bit 0). Nothing in the BIOS writes it - its
+/// mailbox requests FANE and FAND were each sent and the fans did not move -
+/// and the ports to the controller itself (0x62/0x66) are Windows' ACPI
+/// driver's: a read there timed out every time, its answer taken by that
+/// driver first. Racing it to write would be forcing it, so nothing here
+/// writes. The event is reliable: <c>GMC_WMIEvent</c>, byte 1 = 3 and
+/// byte 3 = the new state, on every Fn+1.
 /// </summary>
 public static class FanTurbo
 {
-    /// <summary>The <c>a6</c> that turns the turbo on; the other value turns it off. Null until measured.</summary>
-    public static readonly uint? OnA6 = null;
-
-    /// <summary>Whether the direction is known, and so whether anything here may write.</summary>
-    public static bool Known => OnA6 is not null;
-
-    /// <summary>Asks the controller for full-speed fans, or for its own curve back.</summary>
-    /// <returns>False when the direction is not known yet; nothing was sent.</returns>
-    public static bool Set(EcMailbox mailbox, bool on)
-    {
-        ArgumentNullException.ThrowIfNull(mailbox);
-        if (OnA6 is not { } onValue) return false;
-
-        using (mailbox.Hold())
-        {
-            mailbox.Write(new SmiCommand
-            {
-                A0 = (ushort)SmiFamily.Write,
-                A1 = (ushort)SmiSubsystem.Thermal,
-                A2 = 1,
-                A6 = on ? onValue : onValue ^ 1,
-            });
-            Thread.Sleep(60);
-        }
-        return true;
-    }
-
     /// <summary>
     /// Reads a firmware event: true or false when it says the turbo is now on
     /// or off, null when the event is about something else.

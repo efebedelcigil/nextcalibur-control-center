@@ -157,7 +157,7 @@ public partial class MainWindow
     /// <summary>Whether this machine can do the action at all - the turbo only once its direction is measured.</summary>
     private bool ActionAvailable(FnAction action) => action switch
     {
-        FnAction.FanTurbo => FanTurbo.Known && _support.AllowsWrites,
+        FnAction.FanTurbo => false,   // no software path to it; see FanTurbo
         FnAction.KeyboardBacklight => _led is not null && _support.AllowsWrites,
         FnAction.SystemMode => _support.AllowsWrites,
         _ => false,
@@ -170,14 +170,6 @@ public partial class MainWindow
         {
             switch (action)
             {
-                case FnAction.FanTurbo when _mailbox is { } mailbox:
-                    var on = !_fanTurboOn;
-                    _ = Task.Run(() => FanTurbo.Set(mailbox, on));
-                    _fanTurboOn = on;
-                    // Pressed by hand: the person's choice outranks cooling's.
-                    if (!on) _coolingTurbo = false;
-                    break;
-
                 case FnAction.KeyboardBacklight when _led is { } led:
                     // Fn+Space's own order: full, off, half.
                     led.HardwareLevel = led.HardwareLevel switch

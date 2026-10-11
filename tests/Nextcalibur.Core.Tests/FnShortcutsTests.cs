@@ -15,7 +15,8 @@ public class FnShortcutsTests
     {
         var all = FnShortcuts.Defaults();
         Assert.All(all, s => Assert.Null(FnShortcuts.CheckShape(s, all)));
-        Assert.Equal(Enum.GetValues<FnAction>().Length, all.Select(s => s.Action).Distinct().Count());
+        Assert.Equal(Enum.GetValues<FnAction>().Length - 1, all.Select(s => s.Action).Distinct().Count());
+        Assert.DoesNotContain(all, s => s.Action == FnAction.FanTurbo);
     }
 
     [Fact]

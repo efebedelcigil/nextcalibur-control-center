@@ -6,7 +6,11 @@ namespace Nextcalibur.Core.Input;
 /// <summary>What a shortcut does: the laptop keyboard's Fn keys, for a keyboard that has no way to send them.</summary>
 public enum FnAction
 {
-    /// <summary>Fn+1: the fans at full speed, or back.</summary>
+    /// <summary>
+    /// Fn+1, the fan turbo. Kept so stored numbers keep their meaning, never
+    /// offered: the controller switches it only from its own keyboard
+    /// (PROTOCOL.md), so no shortcut can.
+    /// </summary>
     FanTurbo,
 
     /// <summary>Fn+Space: the keyboard light, full - off - half.</summary>
@@ -90,7 +94,6 @@ public static class FnShortcuts
     /// <summary>The shortcuts offered at first: Ctrl+Alt with function keys, which no layout types with.</summary>
     public static List<FnShortcut> Defaults() =>
     [
-        new() { Action = FnAction.FanTurbo, Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt, Key = 0x70 + 0 },       // F1
         new() { Action = FnAction.KeyboardBacklight, Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt, Key = 0x70 + 1 }, // F2
         new() { Action = FnAction.SystemMode, Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt, Key = 0x70 + 2 },        // F3
     ];

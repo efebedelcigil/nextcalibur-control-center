@@ -179,7 +179,16 @@ setting's requests, and nothing in the BIOS writes `FANM`: the turbo is the
 embedded controller's own, switched only by its own scan of the built-in
 keyboard. Software can read it (the event above, confirmed: Fn+1 twice gave
 byte 1 = 3 and byte 3 = 1, then 0) but not set it through ACPI. An external
-keyboard's Fn+1 sends nothing at all - also confirmed. The touchpad and
+keyboard's Fn+1 sends nothing at all - also confirmed.
+
+The controller itself was asked too, read only (12 October 2026): offset
+`0xC3` through the ACPI EC ports, the standard read transaction, with every
+wait limited and nothing forced. Every read timed out while the fans went to
+turbo and back. Windows' own EC driver serves those ports from the
+controller's interrupt, so the answer is taken before anybody else can read
+it; a write there would race the same driver. Nextcalibur does neither:
+the turbo is read from the event, suggested in a notification (Fn+1), and
+never written. The touchpad and
 Windows-key requests are documented here and not used.
 
 Other keys the same handler answers, for reference: `0x0F` touchpad,

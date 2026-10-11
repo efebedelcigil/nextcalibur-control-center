@@ -20,9 +20,6 @@
        the licence sits beside it. -->
   <ItemGroup>
     <EmbeddedResource Include="Resources\PawnIO\IntelMSR.bin" LogicalName="Nextcalibur.Core.Resources.PawnIO.IntelMSR.bin" />
-    <!-- LpcACPIEC, same release and licence: the two ACPI EC ports only. Read
-         by FanTurboBit, its hash pinned there. -->
-    <EmbeddedResource Include="Resources\PawnIO\LpcACPIEC.bin" LogicalName="Nextcalibur.Core.Resources.PawnIO.LpcACPIEC.bin" />
   </ItemGroup>
 
   <ItemGroup>

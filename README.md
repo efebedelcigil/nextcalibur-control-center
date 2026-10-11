@@ -212,11 +212,10 @@ redistributed by this project.
 
 `nvml.dll` is loaded from the installed NVIDIA driver at runtime and is not
 redistributed. The PawnIO driver is not redistributed either; the
-application downloads it from its own releases. The two files of PawnIO's
-shipped here are the `IntelMSR` and `LpcACPIEC` modules
-(`src/Nextcalibur.Core/Resources/PawnIO/`), LGPL-2.1, travelling with their
-licence and byte for byte the published release (a test checks the hashes);
-they are handed to the driver through its documented interface and nothing
-of them is linked into this code. Inno
+application downloads it from its own releases. The one file of PawnIO's
+shipped here is the `IntelMSR` module (`src/Nextcalibur.Core/Resources/PawnIO/`),
+LGPL-2.1, travelling with its licence and byte for byte the published
+release (a test checks the hash); it is handed to the driver through its
+documented interface and nothing of it is linked into this code. Inno
 Setup, used for the wizard, is free software under its own licence and is
 not part of the repository.
