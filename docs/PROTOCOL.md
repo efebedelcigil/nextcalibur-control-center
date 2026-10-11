@@ -172,11 +172,15 @@ and `GMC_WMIEvent.EventDetail` arrives with byte 1 = `3` (which field
 changed) and byte 3 = the new state. The same buffer carries the backlight
 level in byte 0, which is how Fn+Space was read (§4).
 
-Which request means "on" is not in the names, and is **not yet measured**:
-Nextcalibur sends neither until it is (`nextcalibur fanmax` sends each in
-turn and prints the fans). The two are the firmware's own request bits, set
-the way its own handler sets them; nothing else is written. The touchpad
-and Windows-key requests are documented here and not used.
+**Measured 11 October 2026: neither request is the turbo.** Each was sent
+twice (`nextcalibur fanmax`), twenty seconds apart, at idle: the fans stayed
+at ~3600/3300 rpm through all four. FANE and FAND are some other fan
+setting's requests, and nothing in the BIOS writes `FANM`: the turbo is the
+embedded controller's own, switched only by its own scan of the built-in
+keyboard. Software can read it (the event above, confirmed: Fn+1 twice gave
+byte 1 = 3 and byte 3 = 1, then 0) but not set it through ACPI. An external
+keyboard's Fn+1 sends nothing at all - also confirmed. The touchpad and
+Windows-key requests are documented here and not used.
 
 Other keys the same handler answers, for reference: `0x0F` touchpad,
 `0x18` camera, `0x04`/`0x05` panel brightness, `0x10` a backlight flag.
@@ -655,9 +659,8 @@ The mailbox reaches the embedded controller. Rules for this project:
    thermal profile (`0x0300`), each documented here with the capture that
    established it.
 3. **No fan curves.** The vendor's software has none; what it writes with
-   each mode is the thermal profile, and that is copied exactly. The one fan
-   write is the turbo request of §3, the BIOS's own, once its direction is
-   measured.
+   each mode is the thermal profile, and that is copied exactly. Nothing in the
+   BIOS sets the fan turbo (§3); it is read, never written.
 4. **Tolerate torn reads.** Reject all-zero and partially-zero responses.
 5. **The mailbox is shared.** The stock software, if running, writes to the same
    buffer. Do not run both at once; detect and warn.

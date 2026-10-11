@@ -12,9 +12,11 @@ namespace Nextcalibur.Core.Hardware;
 /// it in an event instead, <c>GMC_WMIEvent</c> with byte 1 = 3 and byte 3 =
 /// the new state, both when Fn+1 is pressed and when software changes it.
 ///
-/// Which of the two requests means "on" is not in their names. Until it is
-/// measured on the machine - <c>nextcalibur fanmax</c> - <see cref="OnA6"/>
-/// is null and nothing here writes.
+/// Measured 11 October 2026: neither request turns the turbo on - the fans
+/// stayed at their idle speed through both, twice. Nothing in the BIOS writes
+/// FANM; the controller switches it only from its own keyboard scan. So
+/// <see cref="OnA6"/> stays null and nothing here writes; the event is read,
+/// so the application knows when the person has turned it on.
 /// </summary>
 public static class FanTurbo
 {

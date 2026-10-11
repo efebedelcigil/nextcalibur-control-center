@@ -343,7 +343,7 @@
     <sys:String x:Key="S.Fn.PressKeys">Press the keys... (Esc: cancel)</sys:String>
     <sys:String x:Key="S.Fn.Working">Registered with Windows and working.</sys:String>
     <sys:String x:Key="S.Fn.Unavailable">Not available on this machine.</sys:String>
-    <sys:String x:Key="S.Fn.TurboUnknown">Not yet: which of the firmware's two fan commands means "on" still has to be measured on this laptop.</sys:String>
+    <sys:String x:Key="S.Fn.TurboUnknown">Not on this laptop: its firmware switches the fan turbo only from Fn+1 on the built-in keyboard, and offers software no way to do it.</sys:String>
     <sys:String x:Key="S.Fn.Problem.TooFewModifiers">Use two of Ctrl, Alt and Shift: programs keep single-modifier shortcuts for themselves, and those cannot be seen from outside.</sys:String>
     <sys:String x:Key="S.Fn.Problem.WindowsKey">Windows keeps the Windows-key shortcuts for itself.</sys:String>
     <sys:String x:Key="S.Fn.Problem.ReservedBySystem">Windows answers this one itself.</sys:String>

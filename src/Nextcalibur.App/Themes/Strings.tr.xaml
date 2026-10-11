@@ -341,7 +341,7 @@
     <sys:String x:Key="S.Fn.PressKeys">Tuşlara basın... (Esc: vazgeç)</sys:String>
     <sys:String x:Key="S.Fn.Working">Windows'a kaydedildi ve çalışıyor.</sys:String>
     <sys:String x:Key="S.Fn.Unavailable">Bu makinede kullanılamıyor.</sys:String>
-    <sys:String x:Key="S.Fn.TurboUnknown">Henüz değil: firmware'in iki fan komutundan hangisinin "aç" olduğu bu dizüstünde ölçülmeli.</sys:String>
+    <sys:String x:Key="S.Fn.TurboUnknown">Bu dizüstünde değil: donanım yazılımı fan turbosunu yalnızca dahili klavyedeki Fn+1 ile açıyor, yazılıma bir yol vermiyor.</sys:String>
     <sys:String x:Key="S.Fn.Problem.TooFewModifiers">Ctrl, Alt ve Shift'ten ikisini kullanın: programlar tek değiştiricili kısayolları kendine ayırır ve bunlar dışarıdan görülemez.</sys:String>
     <sys:String x:Key="S.Fn.Problem.WindowsKey">Windows tuşlu kısayolları Windows kendine ayırır.</sys:String>
     <sys:String x:Key="S.Fn.Problem.ReservedBySystem">Bunu Windows kendisi yanıtlar.</sys:String>
