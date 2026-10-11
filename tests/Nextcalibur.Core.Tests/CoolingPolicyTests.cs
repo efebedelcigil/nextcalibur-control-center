@@ -39,6 +39,17 @@ public class CoolingPolicyTests
     }
 
     [Fact]
+    public void A_burst_read_every_five_seconds_is_not_enough()
+    {
+        // The window reads every five seconds; a start-up climb from 68 to
+        // 82 in twenty seconds, then settling, must not start anything.
+        var p = new CoolingPolicy();
+        int[] temps = [68, 72, 76, 80, 82, 81, 79, 77, 75, 74];
+        var steps = temps.Select((t, i) => p.Next(t, 90, 50, 85, T0.AddSeconds(5 * i))).ToList();
+        Assert.DoesNotContain(CoolingStep.Start, steps);
+    }
+
+    [Fact]
     public void One_spike_is_not_enough() =>
         Assert.DoesNotContain(CoolingStep.Start, Run(new CoolingPolicy(), 70, 93, 70, 70, 93, 70));
 

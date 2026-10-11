@@ -20,7 +20,10 @@ public enum CoolingStep
 /// - the margin is within <see cref="WatchFrom"/> degrees of the line and,
 ///   at its present rate, would cross it within <see cref="Lookahead"/>; or
 /// - it is over the line already.
-/// Either has to hold on two readings in a row: one reading is a spike.
+/// Either has to hold on two readings in a row, and for at least
+/// <see cref="HeadingFor"/>: one reading is a spike, and so is the burst of
+/// work at a start - the window reads every five seconds, so "two readings"
+/// alone was five seconds of a start-up climb (0.6.0, its first minute).
 ///
 /// It stops when the margin has been <see cref="ReleaseMargin"/> degrees
 /// under the line and not rising for <see cref="CoolFor"/> - far enough
@@ -33,6 +36,7 @@ public sealed class CoolingPolicy
     // The same ten degrees as the window's cheap-sensor gate
     // (MainWindow.CheapGateMarginC): further out, hidden, nothing is read.
     public const int WatchFrom = 10;
+    public static readonly TimeSpan HeadingFor = TimeSpan.FromSeconds(30);
     public static readonly TimeSpan Lookahead = TimeSpan.FromMinutes(2);
     public static readonly TimeSpan History = TimeSpan.FromMinutes(3);
     public static readonly TimeSpan CoolFor = TimeSpan.FromMinutes(5);
@@ -41,6 +45,7 @@ public sealed class CoolingPolicy
 
     private readonly List<(DateTime At, double Margin)> _readings = new();
     private int _heading;
+    private DateTime _headingSince = DateTime.MinValue;
     private DateTime _coolSince = DateTime.MinValue;
 
     /// <summary>Whether the cooling is on now, as far as this policy knows.</summary>
@@ -60,6 +65,7 @@ public sealed class CoolingPolicy
         {
             _readings.Clear();
             _heading = 0;
+            _headingSince = DateTime.MinValue;
             _coolSince = DateTime.MinValue;
         }
         _readings.Add((now, margin));
@@ -70,9 +76,11 @@ public sealed class CoolingPolicy
         {
             var projected = margin + DegreesPerMinute * Lookahead.TotalMinutes;
             var heading = margin >= 0 || (margin >= -WatchFrom && projected >= 0 && DegreesPerMinute > 0);
-            _heading = heading ? _heading + 1 : 0;
-            if (_heading < 2) return CoolingStep.Nothing;
+            if (!heading) { _heading = 0; _headingSince = DateTime.MinValue; return CoolingStep.Nothing; }
+            if (_heading++ == 0) _headingSince = now;
+            if (_heading < 2 || now - _headingSince < HeadingFor) return CoolingStep.Nothing;
             _heading = 0;
+            _headingSince = DateTime.MinValue;
             return CoolingStep.Start;
         }
 
