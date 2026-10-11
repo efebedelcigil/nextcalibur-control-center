@@ -139,7 +139,8 @@ public sealed class RunawayWatch
         var lasted = at - _gpuBusySince;
         _gpuBusySince = DateTime.MinValue;
         var found = new List<Runaway>();
-        foreach (var name in names.Where(n => !string.Equals(n, Process.GetCurrentProcess().ProcessName, StringComparison.OrdinalIgnoreCase)).Take(3))
+        var self = Path.GetFileNameWithoutExtension(Environment.ProcessPath) ?? "";
+        foreach (var name in names.Where(n => !string.Equals(n, self, StringComparison.OrdinalIgnoreCase)).Take(3))
         {
             if (_reported.TryGetValue("gpu:" + name, out var last) && at - last < NotAgainWithin) continue;
             _reported["gpu:" + name] = at;

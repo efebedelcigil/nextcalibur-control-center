@@ -39,6 +39,7 @@ public partial class MainWindow
     private readonly Dictionary<FnAction, (ShortcutProblem? Problem, string? Detail)> _shortcutState = new();
     private readonly HashSet<FnAction> _registered = new();
     private DateTime _shortcutsRetriedAt = DateTime.MinValue;
+    private string? _layoutsSeen;
 
     /// <summary>The shortcut being recorded on the Settings page, if any.</summary>
     private FnShortcut? _recording;
@@ -203,7 +204,12 @@ public partial class MainWindow
         if (!_settings.FnShortcutsEnabled || _recording is not null) return;
         if (DateTime.UtcNow - _shortcutsRetriedAt < TimeSpan.FromMinutes(1)) return;
         _shortcutsRetriedAt = DateTime.UtcNow;
-        if (_shortcutState.Values.Any(v => v.Problem == ShortcutProblem.TakenByAnotherProgram)) ApplyFnShortcuts();
+        // A layout added while the window was hidden sends no message here;
+        // the list itself is compared instead.
+        var layouts = FnShortcuts.LayoutSignature();
+        var layoutsChanged = _layoutsSeen is not null && _layoutsSeen != layouts;
+        _layoutsSeen = layouts;
+        if (layoutsChanged || _shortcutState.Values.Any(v => v.Problem == ShortcutProblem.TakenByAnotherProgram)) ApplyFnShortcuts();
     }
 
     private void UnregisterAllShortcuts()
@@ -371,7 +377,7 @@ public partial class MainWindow
 
     private string StatusFor(FnShortcut s, bool available)
     {
-        if (!available) return Strings.Get(s.Action == FnAction.FanTurbo ? "S.Fn.TurboUnknown" : "S.Fn.Unavailable");
+        if (!available) return Strings.Get("S.Fn.Unavailable");
         if (!_settings.FnShortcutsEnabled || !s.Enabled) return Strings.Get($"S.Fn.{s.Action}Desc");
         if (!_shortcutState.TryGetValue(s.Action, out var state)) return Strings.Get($"S.Fn.{s.Action}Desc");
         return state.Problem switch

@@ -67,6 +67,11 @@ public static class RestorePoint
     public static RestorePointOutcome Create(string description)
     {
         var original = ReadFrequency();
+
+        // The original first, beside the value, so a crash or a power cut in
+        // the seconds between lifting and putting back is undone at the next
+        // start (RecoverLimit) rather than left as a machine without a limit.
+        if (!WriteMarker(original)) return CreateOnce(description);
         var lifted = SetFrequency(0);
         AuditLog.Record("restore-point-limit", new Dictionary<string, object?>
         {
@@ -79,11 +84,55 @@ public static class RestorePoint
         finally
         {
             var restored = original is { } value ? SetFrequency(value) : DeleteFrequency();
+            if (restored) DeleteMarker();
             AuditLog.Record("restore-point-limit", new Dictionary<string, object?>
             {
                 ["step"] = "put back", ["to"] = original?.ToString() ?? "absent", ["ok"] = restored,
             });
         }
+    }
+
+    private const string MarkerValue = "NextcaliburOriginalFrequency";
+
+    /// <summary>
+    /// At start and at uninstall: a limit lifted by a run that never put it
+    /// back is put back now, from the marker written before lifting it.
+    /// </summary>
+    public static void RecoverLimit()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(SystemRestoreKey);
+            if (key?.GetValue(MarkerValue) is not string marker) return;
+            var ok = int.TryParse(marker, out var minutes) ? SetFrequency(minutes) : DeleteFrequency();
+            if (ok) DeleteMarker();
+            AuditLog.Record("restore-point-limit", new Dictionary<string, object?>
+            {
+                ["step"] = "put back after an interrupted run", ["to"] = marker, ["ok"] = ok,
+            });
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
+    }
+
+    private static bool WriteMarker(int? original)
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(SystemRestoreKey, writable: true);
+            key.SetValue(MarkerValue, original?.ToString() ?? "absent", Microsoft.Win32.RegistryValueKind.String);
+            return true;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { return false; }
+    }
+
+    private static void DeleteMarker()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(SystemRestoreKey, writable: true);
+            key?.DeleteValue(MarkerValue, throwOnMissingValue: false);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
     }
 
     private static int? ReadFrequency()

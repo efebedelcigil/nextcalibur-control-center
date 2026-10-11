@@ -318,6 +318,10 @@ public partial class MainWindow : Window
         // The application, its settings and its dependencies, checked now
         // and kept checked; see MainWindow.Integrity.
         StartIntegrityWatch();
+
+        // Windows' once-a-day restore point limit, if a run was cut off while
+        // it was lifted: put back before anything else (see RestorePoint).
+        Task.Run(Nextcalibur.Core.Security.RestorePoint.RecoverLimit);
         if (_support.Level == SupportLevel.Unsupported) return;
 
         _mailboxSupported = EcMailbox.IsSupported();
@@ -2718,6 +2722,7 @@ public partial class MainWindow : Window
     }
 
     private DateTime _registryLookedAt = DateTime.MinValue;
+    private bool _slowTickRunning;
     private DateTime _windowsFaultsLookedAt = DateTime.MinValue;
     private DateTime _lastGpuFaultNotified = DateTime.MinValue;
     private string? _currentGpuFaultText;
@@ -2879,6 +2884,12 @@ public partial class MainWindow : Window
         _slowTimer.Tick += async (_, _) =>
         {
             if (_exiting || _sessionEnding) return;
+
+            // One tick at a time: a tick waits on reads - the controller, a
+            // second of process times for a heat warning - and the next could
+            // start in the middle and say the same warning twice.
+            if (_slowTickRunning) return;
+            _slowTickRunning = true;
             try
             {
                 // Everything below the guard exists to keep the window truthful.
@@ -3067,6 +3078,10 @@ public partial class MainWindow : Window
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {
                 Log.Warn("slow-timer", ex.Message);
+            }
+            finally
+            {
+                _slowTickRunning = false;
             }
         };
         _slowTimer.Start();

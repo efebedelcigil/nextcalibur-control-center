@@ -435,6 +435,9 @@ public static class Footprint
         // under it stay in Windows' log, which is the point of them.
         Security.AuditLog.RemoveEventSource();
 
+        // The restore point limit, should a run have been cut off with it lifted.
+        Security.RestorePoint.RecoverLimit();
+
         // A ceiling lowered for cooling is never something to keep.
         try { PlanTuning.StopCooling(); }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }

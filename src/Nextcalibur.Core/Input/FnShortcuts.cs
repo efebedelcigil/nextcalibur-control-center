@@ -163,6 +163,16 @@ public static class FnShortcuts
         return null;
     }
 
+    /// <summary>The installed keyboard layouts, as one string to compare: a layout added changes what AltGr types.</summary>
+    public static string LayoutSignature()
+    {
+        var count = GetKeyboardLayoutList(0, null);
+        if (count <= 0) return string.Empty;
+        var layouts = new IntPtr[count];
+        GetKeyboardLayoutList(count, layouts);
+        return string.Join(",", layouts.Select(l => l.ToInt64().ToString("X")).Order());
+    }
+
     private static bool IsModifierKey(uint vk) => vk is 0x10 or 0x11 or 0x12 or 0x5B or 0x5C or (>= 0xA0 and <= 0xA5);
 
     /// <summary>"Ctrl+Alt+F1", in the order Windows itself writes them.</summary>

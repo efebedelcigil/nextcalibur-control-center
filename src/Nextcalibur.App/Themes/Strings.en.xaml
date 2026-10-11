@@ -226,8 +226,6 @@
     <sys:String x:Key="S.Update.Checking">Checking for updates to Nextcalibur and what it depends on...</sys:String>
     <sys:String x:Key="S.Update.Latest">You have the latest version, and so do the things it depends on.</sys:String>
     <sys:String x:Key="S.Update.Unreachable">Could not reach GitHub to check:</sys:String>
-    <sys:String x:Key="S.Update.AutoTitle">Updating to Nextcalibur {0}</sys:String>
-    <sys:String x:Key="S.Update.AutoBody">Installing automatically; the application will restart.</sys:String>
     <sys:String x:Key="S.Update.AvailableTitle">Nextcalibur {0} is available</sys:String>
     <sys:String x:Key="S.Update.AvailableToast">Download it and restart into it?</sys:String>
     <sys:String x:Key="S.Update.AvailableBalloon">Click here to update.</sys:String>
@@ -298,7 +296,6 @@
     <sys:String x:Key="S.Restart.ReasonNdu">The network driver change takes effect after a restart.</sys:String>
     <sys:String x:Key="S.Restart.ReasonInstaller">The installer for {0} requested a restart to finish setting up.</sys:String>
     <sys:String x:Key="S.Restart.ReasonPawnIo">The sensor driver needs a restart before it can start reading.</sys:String>
-    <sys:String x:Key="S.Restart.ReasonGpu">The graphics mode change to {0} takes effect at the next restart.</sys:String>
 
     <!-- Unsupported machine, the vendor's software -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - not supported here</sys:String>
@@ -333,8 +330,6 @@
     <sys:String x:Key="S.Settings.FnShortcutsTitle">Shortcuts for the Fn keys</sys:String>
     <sys:String x:Key="S.Settings.FnShortcutsDesc">An external keyboard cannot send Fn - every keyboard keeps its Fn key to itself. These shortcuts do the laptop keyboard's Fn jobs from any keyboard. Each is checked against Windows' own shortcuts, every other program's and the characters your keyboard layouts type.</sys:String>
     <sys:String x:Key="S.Settings.FnSelectAll">All of them</sys:String>
-    <sys:String x:Key="S.Fn.FanTurbo">Fan turbo (Fn+1)</sys:String>
-    <sys:String x:Key="S.Fn.FanTurboDesc">The fans at full speed, or back to normal.</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklight">Keyboard light (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Full, off, half - the order Fn+Space uses.</sys:String>
     <sys:String x:Key="S.Fn.SystemMode">System mode</sys:String>
@@ -343,7 +338,6 @@
     <sys:String x:Key="S.Fn.PressKeys">Press the keys... (Esc: cancel)</sys:String>
     <sys:String x:Key="S.Fn.Working">Registered with Windows and working.</sys:String>
     <sys:String x:Key="S.Fn.Unavailable">Not available on this machine.</sys:String>
-    <sys:String x:Key="S.Fn.TurboUnknown">Not on this laptop: its firmware switches the fan turbo only from Fn+1 on the built-in keyboard, and offers software no way to do it.</sys:String>
     <sys:String x:Key="S.Fn.Problem.TooFewModifiers">Use two of Ctrl, Alt and Shift: programs keep single-modifier shortcuts for themselves, and those cannot be seen from outside.</sys:String>
     <sys:String x:Key="S.Fn.Problem.WindowsKey">Windows keeps the Windows-key shortcuts for itself.</sys:String>
     <sys:String x:Key="S.Fn.Problem.ReservedBySystem">Windows answers this one itself.</sys:String>
@@ -523,7 +517,6 @@
     <sys:String x:Key="S.Core.Dependency.BadHash">The {0} download is not the file its publisher describes; it was not installed.</sys:String>
 
     <!-- Windows' own faults -->
-    <sys:String x:Key="S.Core.Fault.Unknown">{0} has been using a whole processor core for several minutes while nothing else is busy. Nextcalibur has not touched it - it may be doing its job.</sys:String>
     <sys:String x:Key="S.Core.Fault.InputHost">Windows' input host (TextInputHost) was stuck using a whole processor core. Nextcalibur restarted it; Windows starts it again by itself when the touch keyboard or the emoji panel is needed.</sys:String>
     <sys:String x:Key="S.Core.Fault.CrossDevice">Windows' Phone Link service (CrossDeviceService) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again on demand.</sys:String>
     <sys:String x:Key="S.Core.Fault.Widgets">Windows' Widgets board (Widgets) was stuck in a background processor loop. Nextcalibur restarted it; Windows starts it again when opened.</sys:String>

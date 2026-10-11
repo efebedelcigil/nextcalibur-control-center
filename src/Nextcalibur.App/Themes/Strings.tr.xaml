@@ -224,8 +224,6 @@
     <sys:String x:Key="S.Update.Checking">Nextcalibur ve bağımlı olduğu bileşenler için güncellemeler denetleniyor...</sys:String>
     <sys:String x:Key="S.Update.Latest">En son sürüme sahipsiniz; bağımlı olduğu bileşenler de öyle.</sys:String>
     <sys:String x:Key="S.Update.Unreachable">Denetlemek için GitHub'a ulaşılamadı:</sys:String>
-    <sys:String x:Key="S.Update.AutoTitle">Nextcalibur {0} sürümüne güncelleniyor</sys:String>
-    <sys:String x:Key="S.Update.AutoBody">Otomatik kuruluyor; uygulama yeniden başlayacak.</sys:String>
     <sys:String x:Key="S.Update.AvailableTitle">Nextcalibur {0} hazır</sys:String>
     <sys:String x:Key="S.Update.AvailableToast">İndirilip ona geçilsin mi?</sys:String>
     <sys:String x:Key="S.Update.AvailableBalloon">Güncellemek için buraya tıklayın.</sys:String>
@@ -296,7 +294,6 @@
     <sys:String x:Key="S.Restart.ReasonNdu">Ağ sürücüsü değişikliği yeniden başlattıktan sonra geçerli olur.</sys:String>
     <sys:String x:Key="S.Restart.ReasonInstaller">{0} yükleyicisi kurulumu tamamlamak için yeniden başlatma istedi.</sys:String>
     <sys:String x:Key="S.Restart.ReasonPawnIo">Sensör sürücüsünün okumaya başlayabilmesi için yeniden başlatma gerekiyor.</sys:String>
-    <sys:String x:Key="S.Restart.ReasonGpu">{0} grafik modu değişikliği bir sonraki yeniden başlatmada geçerli olur.</sys:String>
 
     <!-- Desteklenmeyen makine, üreticinin yazılımı -->
     <sys:String x:Key="S.Unsupported.Title">Nextcalibur - burada desteklenmiyor</sys:String>
@@ -331,8 +328,6 @@
     <sys:String x:Key="S.Settings.FnShortcutsTitle">Fn tuşları için kısayollar</sys:String>
     <sys:String x:Key="S.Settings.FnShortcutsDesc">Harici bir klavye Fn gönderemez - her klavye Fn tuşunu kendi içinde tutar. Bu kısayollar dizüstü klavyesinin Fn işlerini herhangi bir klavyeden yapar. Her biri Windows'un kendi kısayollarına, diğer programlarınkine ve klavye düzenlerinizin yazdığı karakterlere karşı denetlenir.</sys:String>
     <sys:String x:Key="S.Settings.FnSelectAll">Tümü</sys:String>
-    <sys:String x:Key="S.Fn.FanTurbo">Fan turbo (Fn+1)</sys:String>
-    <sys:String x:Key="S.Fn.FanTurboDesc">Fanlar tam hızda ya da normale dönük.</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklight">Klavye ışığı (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Tam, kapalı, yarım - Fn+Space'in sırası.</sys:String>
     <sys:String x:Key="S.Fn.SystemMode">Sistem modu</sys:String>
@@ -341,7 +336,6 @@
     <sys:String x:Key="S.Fn.PressKeys">Tuşlara basın... (Esc: vazgeç)</sys:String>
     <sys:String x:Key="S.Fn.Working">Windows'a kaydedildi ve çalışıyor.</sys:String>
     <sys:String x:Key="S.Fn.Unavailable">Bu makinede kullanılamıyor.</sys:String>
-    <sys:String x:Key="S.Fn.TurboUnknown">Bu dizüstünde değil: donanım yazılımı fan turbosunu yalnızca dahili klavyedeki Fn+1 ile açıyor, yazılıma bir yol vermiyor.</sys:String>
     <sys:String x:Key="S.Fn.Problem.TooFewModifiers">Ctrl, Alt ve Shift'ten ikisini kullanın: programlar tek değiştiricili kısayolları kendine ayırır ve bunlar dışarıdan görülemez.</sys:String>
     <sys:String x:Key="S.Fn.Problem.WindowsKey">Windows tuşlu kısayolları Windows kendine ayırır.</sys:String>
     <sys:String x:Key="S.Fn.Problem.ReservedBySystem">Bunu Windows kendisi yanıtlar.</sys:String>
@@ -521,7 +515,6 @@
     <sys:String x:Key="S.Core.Dependency.BadHash">İndirilen {0}, yayıncısının tarif ettiği dosya değil; kurulmadı.</sys:String>
 
     <!-- Windows'un kendi hataları -->
-    <sys:String x:Key="S.Core.Fault.Unknown">{0}, birkaç dakikadır başka hiçbir şey meşgul değilken bir işlemci çekirdeğini tamamen kullanıyor. Nextcalibur ona dokunmadı - işini yapıyor olabilir.</sys:String>
     <sys:String x:Key="S.Core.Fault.InputHost">Windows'un giriş bileşeni (TextInputHost) bir işlemci çekirdeğini tamamen tüketir hâlde takılmıştı. Nextcalibur onu yeniden başlattı; dokunmatik klavye veya emoji paneli gerektiğinde Windows kendisi tekrar başlatır.</sys:String>
     <sys:String x:Key="S.Core.Fault.CrossDevice">Windows'un Telefon Bağlantısı hizmeti (CrossDeviceService) bir arka plan işlemci döngüsünde takılmıştı. Nextcalibur onu yeniden başlattı; Windows gerektiğinde tekrar başlatır.</sys:String>
     <sys:String x:Key="S.Core.Fault.Widgets">Windows'un Pencere Öğeleri paneli (Widgets) bir arka plan işlemci döngüsünde takılmıştı. Nextcalibur onu yeniden başlattı; açıldığında Windows tekrar başlatır.</sys:String>

@@ -61,7 +61,14 @@ public static class PlanTuning
 
         // A written value reaches the running system only when the plan is
         // made active again; the active plan is the only one that needs it.
-        if (ActivePlan() == plan) PowerSetActiveScheme(IntPtr.Zero, ref plan);
+        // Activating a plan can take Windows' power mode with it, and the
+        // mode is half of a system mode here - so whatever was on is put back.
+        if (ActivePlan() == plan)
+        {
+            var overlay = PowerOverlayService.GetActiveOverlay();
+            PowerSetActiveScheme(IntPtr.Zero, ref plan);
+            if (PowerOverlayService.GetActiveOverlay() != overlay) PowerOverlayService.SetActiveOverlay(overlay);
+        }
         return true;
     }
 
