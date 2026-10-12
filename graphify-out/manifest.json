@@ -1,1117 +1,1117 @@
 {
   "Nextcalibur.sln": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.7521856,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5422633,
     "ast_hash": "12b0b535b674e6ab9c88fe9101f51bbe",
     "semantic_hash": ""
   },
   "build.ps1": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.752189,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5422668,
     "ast_hash": "603d190543aafefb453f371579a20d8e",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/App.xaml": {
-    "mtime": 1791793360.5818667,
-    "seen": 1791793372.752191,
+    "mtime": 1791793675.4830072,
+    "seen": 1791793688.542269,
     "ast_hash": "3b529a7bc5d95488c2e981c2eae6c0fe",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/App.xaml.cs": {
-    "mtime": 1791793360.581925,
-    "seen": 1791793372.7521925,
+    "mtime": 1791793675.4830697,
+    "seen": 1791793688.5422707,
     "ast_hash": "9a9255b0f0623bc46b1fb803635a1e38",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/AppIdentity.cs": {
-    "mtime": 1791793360.581925,
-    "seen": 1791793372.7521937,
+    "mtime": 1791793675.4830697,
+    "seen": 1791793688.542272,
     "ast_hash": "4712a9e3f6f7e912e34a739ed15725aa",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/AssemblyInfo.cs": {
-    "mtime": 1791793360.581925,
-    "seen": 1791793372.7521951,
+    "mtime": 1791793675.4830697,
+    "seen": 1791793688.5422733,
     "ast_hash": "22745d5a4aa345e87f1db62059eae3f1",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Controls/ColourWheel.cs": {
-    "mtime": 1791793360.5850492,
-    "seen": 1791793372.7521966,
+    "mtime": 1791793675.4861305,
+    "seen": 1791793688.5422752,
     "ast_hash": "9bdd27e55eee7ad0960ee02ec2592058",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Controls/DonutGauge.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.752205,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422838,
     "ast_hash": "f85c641f674e02d2707ee43c8df224a8",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Controls/FanGauge.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.7522318,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422857,
     "ast_hash": "96269f813e078bddc9ddba38bae7b193",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Controls/SegmentedBar.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.7522354,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422869,
     "ast_hash": "13b0dbcf52a91bf64479f6d7965ee67a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Controls/ValueConverters.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.752237,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.542288,
     "ast_hash": "b1c66bd4aaf315ba39805df032f732f1",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Dialogs.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.752239,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422897,
     "ast_hash": "bbe3f26b3c2182aa9f8785d57347a5fa",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/DriveRow.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.7522402,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422907,
     "ast_hash": "e1993a7b341b761e366a5492eabd9382",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.Audit.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.7522411,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422914,
     "ast_hash": "f8450c56e3e15396535a16e323e2fbca",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.Cooling.cs": {
-    "mtime": 1791793360.5857844,
-    "seen": 1791793372.752242,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422926,
     "ast_hash": "20c5804ca57e48b0952507b45c718803",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.FnKeys.cs": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.7522433,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422933,
     "ast_hash": "6adfe2ceb7155a8af76e29eaab3c6500",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.Integrity.cs": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.752244,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422943,
     "ast_hash": "145a36d37606349721021cb1a05ec98e",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.ProgramRules.cs": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.752245,
-    "ast_hash": "3edec156da927f6b871f1bb8ee8a5ad3",
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422952,
+    "ast_hash": "06a398d874843fba9d14abe2d1901990",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.Settings.cs": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.7522457,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422962,
     "ast_hash": "acade583525ceb05b7e8ded4751bdfc8",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.Tour.cs": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.7522469,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.5422971,
     "ast_hash": "2fedf114ca6a3ec2a27686cf33eee059",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.xaml": {
-    "mtime": 1791793360.5860493,
-    "seen": 1791793372.7522478,
+    "mtime": 1791793675.487158,
+    "seen": 1791793688.542298,
     "ast_hash": "d015402bb7ef1f8ea7b2c27988e6de5b",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/MainWindow.xaml.cs": {
-    "mtime": 1791793360.5870492,
-    "seen": 1791793372.7522488,
-    "ast_hash": "2d3759ee1fac296bbdc890ee8edd71eb",
+    "mtime": 1791793675.4881306,
+    "seen": 1791793688.5422988,
+    "ast_hash": "ceca13bf609f403b8c800feb863b4d76",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Nextcalibur.App.csproj": {
-    "mtime": 1791793360.5870492,
-    "seen": 1791793372.7522502,
+    "mtime": 1791793675.4881306,
+    "seen": 1791793688.5423005,
     "ast_hash": "9b0a4328a83564ce022dd6c7a3365d44",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Strings.cs": {
-    "mtime": 1791793360.5870492,
-    "seen": 1791793372.7522511,
+    "mtime": 1791793675.4881306,
+    "seen": 1791793688.5423012,
     "ast_hash": "f836fb13700fd2fcd21c706c8de02080",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Controls.xaml": {
-    "mtime": 1791793360.5870492,
-    "seen": 1791793372.7522519,
+    "mtime": 1791793675.4881306,
+    "seen": 1791793688.5423021,
     "ast_hash": "6b4ec02a072104f06f6197f9fbbf9280",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Icons.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522528,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.542303,
     "ast_hash": "5ba62b1187c096caae05d00b55b5ee99",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Palette.Dark.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522538,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.542304,
     "ast_hash": "75b0ee3b508c966182ffc19cc054b90c",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Palette.Light.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522547,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423048,
     "ast_hash": "10ce2cf687a1ccd98c1dc02f14d08206",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Palette.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522554,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423057,
     "ast_hash": "55411f3abf74bd3920e1562bfbda4de1",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Strings.en.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522564,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423067,
     "ast_hash": "a73728165035efad5c3e6ebd856dc941",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Strings.tr.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522576,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423076,
     "ast_hash": "77fdef0ed9ddd15cbac8d1a82a0c4c45",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Themes/Typography.xaml": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522583,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423083,
     "ast_hash": "c0a666aebbfb7b79ac91780bb4345f1c",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Toasts.cs": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522593,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423093,
     "ast_hash": "690537fe9988fee93b24660dfa4e9095",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/TrayPresence.cs": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522604,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423107,
     "ast_hash": "540afbc5ad4a85670538e8f2a162bd99",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Unelevated.cs": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.7522612,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423117,
     "ast_hash": "bf9070fb4fd4ee7a563d44dc496c881f",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/UpdateService.cs": {
-    "mtime": 1791793360.5880687,
-    "seen": 1791793372.752262,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.5423172,
     "ast_hash": "3a2f9827188e5e3bccfbc7c079ff9408",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Cli/Nextcalibur.Cli.csproj": {
-    "mtime": 1791793360.5890493,
-    "seen": 1791793372.752263,
+    "mtime": 1791793675.4894524,
+    "seen": 1791793688.542318,
     "ast_hash": "6f2ce5e99437e44eca3d94868cca2136",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Cli/Program.cs": {
-    "mtime": 1791793360.5893233,
-    "seen": 1791793372.752264,
+    "mtime": 1791793675.490655,
+    "seen": 1791793688.542319,
     "ast_hash": "5a415799f0feea9d728dd9a7e565fe82",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/AssemblyInfo.cs": {
-    "mtime": 1791793360.5893233,
-    "seen": 1791793372.752265,
+    "mtime": 1791793675.490655,
+    "seen": 1791793688.54232,
     "ast_hash": "9bdfe9f059d6ca5de8ce67260c0ec89a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/AppSettings.cs": {
-    "mtime": 1791793360.5895112,
-    "seen": 1791793372.7522657,
+    "mtime": 1791793675.49084,
+    "seen": 1791793688.542321,
     "ast_hash": "19a054fe92edda9b9f2eedc2f5650e82",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/Elevation.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522666,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.542322,
     "ast_hash": "215501cdcdf1ed5da9048d4710e5b92e",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/Footprint.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522678,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.5423229,
     "ast_hash": "99a8f05614e14b697859d35e24235807",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/InstallFolderGuard.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522688,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.542324,
     "ast_hash": "b12ae61f3666e53f0519a4614494e479",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/LedState.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522717,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.542327,
     "ast_hash": "faf415cdadbba24d128a109ab32f2a60",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/Log.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522724,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.5423281,
     "ast_hash": "15d42811c4dc5598961d68624598d2b0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Configuration/ThemeService.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522733,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.542329,
     "ast_hash": "ee8d85fed74b6b4b8977697aa421fa08",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Dependencies/Conditional.cs": {
-    "mtime": 1791793360.5896382,
-    "seen": 1791793372.7522743,
+    "mtime": 1791793675.4910307,
+    "seen": 1791793688.54233,
     "ast_hash": "65514670e2ab86010c64cf38832485aa",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Dependencies/Dependency.cs": {
-    "mtime": 1791793360.5901575,
-    "seen": 1791793372.752275,
+    "mtime": 1791793675.4915483,
+    "seen": 1791793688.5423312,
     "ast_hash": "89cc8463a8efe0e9a42e8861fb3b3469",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Dependencies/DependencyManager.cs": {
-    "mtime": 1791793360.5901575,
-    "seen": 1791793372.752276,
+    "mtime": 1791793675.4915483,
+    "seen": 1791793688.542332,
     "ast_hash": "ec4c4806cb9f2485974893db2b60d7a0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Dependencies/DotNetRuntimeDependency.cs": {
-    "mtime": 1791793360.5901575,
-    "seen": 1791793372.7522767,
+    "mtime": 1791793675.4915483,
+    "seen": 1791793688.542333,
     "ast_hash": "6da3e4e0b1de6d0dbda24f6623762b8f",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Dependencies/PawnIoDependency.cs": {
-    "mtime": 1791793360.5901575,
-    "seen": 1791793372.7522779,
+    "mtime": 1791793675.4915483,
+    "seen": 1791793688.5423336,
     "ast_hash": "84285f90f99f0288ab11141cd2f7b449",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/BacklightKeyWatcher.cs": {
-    "mtime": 1791793360.5901575,
-    "seen": 1791793372.7522786,
+    "mtime": 1791793675.4915483,
+    "seen": 1791793688.5423348,
     "ast_hash": "142969b0a65a3af818ab6de8f4bf50c5",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/CardSwitchTasks.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522795,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423355,
     "ast_hash": "11f56dc86eb527ded46b581a8749d16a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/ClockReader.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522805,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423365,
     "ast_hash": "f32a29588234d0644eb060e9efce72c0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/CoreLoad.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522857,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423374,
     "ast_hash": "9390da8743455bdb49dafa6896670755",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/CpuPowerReader.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522867,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423386,
     "ast_hash": "cb9475baae527c4a71d904e802a315b4",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/DevicePowerState.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522874,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423393,
     "ast_hash": "d60464d50ef470af29a24cba80fe5a64",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/EcMailbox.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522883,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.54234,
     "ast_hash": "3c19d48d9b344eb06e56f8853c9929c0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/EssentialDrivers.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.7522893,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423412,
     "ast_hash": "9eac0865e307256cd333838cec95c050",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/FanTurbo.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.75229,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.542342,
     "ast_hash": "85afba6d9f98e136afc2f41dc21f084f",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/GpuModeService.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.752291,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.542343,
     "ast_hash": "38d9d8518119d9f7a58681a503cf5a55",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/HardwareSupport.cs": {
-    "mtime": 1791793360.5905507,
-    "seen": 1791793372.752292,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423436,
     "ast_hash": "82060589f0b6b10eaf767b0f1a511abf",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/LedController.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522926,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423448,
     "ast_hash": "e9b9cbd9b9890fe51907099b58c8942c",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/MachineScan.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522933,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423455,
     "ast_hash": "24678c6f2e6d9a3c656f3f225ed87e29",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/MachineWideGate.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522943,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423465,
     "ast_hash": "399b7ca14671c3fd59c10df3cd156305",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/MailboxAccess.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522955,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423474,
     "ast_hash": "92bb20d621315f380c4a93463d58eaf3",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/MemoryTrimmer.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522962,
+    "mtime": 1791793675.4918978,
+    "seen": 1791793688.5423484,
     "ast_hash": "eea9ad6e7ebb8a392482ec4338e812a9",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/NduFix.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522972,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423493,
     "ast_hash": "753e0b3c108510e9ab76cfcde7a68246",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/ProcessPresence.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7522984,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.54235,
     "ast_hash": "f82b6fd8c252c1611b7c40e4f0a0eec4",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/RunawayWatch.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.752299,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.542351,
     "ast_hash": "1c7f429940c4da4a0271842054e9a45a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/SystemInfo.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423522,
     "ast_hash": "d660ba79cc731445117d61b64c9e6b4a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/ThermalProfile.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523007,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423532,
     "ast_hash": "7342d6ad2c8d9d871876dd9b5629dea5",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/ThermalReader.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.752302,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423539,
     "ast_hash": "4023feaa1a02b6f4f5df63a1d7fbaab3",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/TopProcesses.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523026,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.542355,
     "ast_hash": "ae4f919ec9311feb5a50659795f100e1",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/UserPresence.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523036,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423558,
     "ast_hash": "fa495a9d174858c486ed2ab1b26866f3",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/VendorSoftware.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523046,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423565,
     "ast_hash": "60c7ddc60e1a04c8cb4d271b0db2ea93",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Hardware/WindowsFaults.cs": {
-    "mtime": 1791793360.5910492,
-    "seen": 1791793372.7523055,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423574,
     "ast_hash": "96db070536647663d4035addd4fe5097",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Input/FnShortcuts.cs": {
-    "mtime": 1791793360.5920494,
-    "seen": 1791793372.7523065,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423582,
     "ast_hash": "22b6ccdf97006c05b0be062d1279600a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Nextcalibur.Core.csproj": {
-    "mtime": 1791793360.5920494,
-    "seen": 1791793372.7523077,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423596,
     "ast_hash": "e60bb51cd5e4e249dee9dbca775d39be",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/BatteryModePolicy.cs": {
-    "mtime": 1791793360.5920494,
-    "seen": 1791793372.7523084,
+    "mtime": 1791793675.4921305,
+    "seen": 1791793688.5423605,
     "ast_hash": "7d242ab65fb8c4046fc8640d448a58c8",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/CoolingPolicy.cs": {
-    "mtime": 1791793360.592425,
-    "seen": 1791793372.7523096,
+    "mtime": 1791793675.493775,
+    "seen": 1791793688.5423613,
     "ast_hash": "4fbdc8d288b09ff705431d3925752d9f",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/PlanTuning.cs": {
-    "mtime": 1791793360.592425,
-    "seen": 1791793372.7523105,
+    "mtime": 1791793675.493775,
+    "seen": 1791793688.5423625,
     "ast_hash": "a269629e65e2df0360dfb011cd8d0f6a",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/PowerOverlay.cs": {
-    "mtime": 1791793360.592425,
-    "seen": 1791793372.7523112,
+    "mtime": 1791793675.493775,
+    "seen": 1791793688.5423634,
     "ast_hash": "2b7de040215ad4eb1d1b9faa849637d0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/ProgramRules.cs": {
-    "mtime": 1791793360.592425,
-    "seen": 1791793372.7523124,
+    "mtime": 1791793675.493775,
+    "seen": 1791793688.5423644,
     "ast_hash": "848bffe95bee3dd2ee1ef6fd6ad54c31",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Power/SystemModeService.cs": {
-    "mtime": 1791793360.592425,
-    "seen": 1791793372.7523131,
+    "mtime": 1791793675.493775,
+    "seen": 1791793688.542365,
     "ast_hash": "fcfe2517a9f258a01c03b873e2550f92",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/AuditLog.cs": {
-    "mtime": 1791793360.592961,
-    "seen": 1791793372.752314,
+    "mtime": 1791793675.494324,
+    "seen": 1791793688.542366,
     "ast_hash": "4a22160f7f3ee97b14bbdaefbab2e0fc",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/Authenticode.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.752316,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.542368,
     "ast_hash": "58f6762f851ba59eb8fd1891d7c96c1d",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/Integrity.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.752317,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.5423691,
     "ast_hash": "7a932b3c437c87a17c9e5e02b728d6a4",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/ProfileFiles.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.752318,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.5423698,
     "ast_hash": "e324d0632351f427d94e00f71fd996e0",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/ProtectedStore.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.7523189,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.5423708,
     "ast_hash": "c5d44e63343cd3638d9060ed5c6afd86",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/RestorePoint.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.7523198,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.5423717,
     "ast_hash": "b241ab8cd8578a5fd03668330b585b74",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Security/SystemTools.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.7523208,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.542373,
     "ast_hash": "33b633b0fdf99b0826ca5ee21109d47e",
     "semantic_hash": ""
   },
   "src/Nextcalibur.Core/Words.cs": {
-    "mtime": 1791793360.5930953,
-    "seen": 1791793372.7523215,
+    "mtime": 1791793675.4944613,
+    "seen": 1791793688.5423737,
     "ast_hash": "18b4e845596624e55c73e2980aca9e7e",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/ElevationPolicyTests.cs": {
-    "mtime": 1791793360.5936165,
-    "seen": 1791793372.7523227,
+    "mtime": 1791793675.4949722,
+    "seen": 1791793688.5423746,
     "ast_hash": "b7247af1642e5d0f0534476d4919498f",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/HostileAnswerTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523236,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423753,
     "ast_hash": "586c396548aaab00021a81eb93cca7d5",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/HostileFilesTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523243,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423763,
     "ast_hash": "8b86d79e4ece63d7fafed894580b0813",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/LogInjectionTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523253,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423772,
     "ast_hash": "0c6bfe62e7f0dfb5d25c898acb3e3c27",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/NetworkCostTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523263,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423782,
     "ast_hash": "fc80790b096b0b006adcbcbc1ddd5064",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/PackageTemperatureTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523272,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.542379,
     "ast_hash": "801a223ae886bbdc8cb2d52b926c862b",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/RuntimeDependencyTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523282,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.54238,
     "ast_hash": "89922d8dea296f2d4c0e02ccaf5f6ff0",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523289,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423808,
     "ast_hash": "0f43c937f6f799d63704251917b3ccd5",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Attacks/SystemFileTrustTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523298,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423815,
     "ast_hash": "68990afa98c3f0a690291e780b860be1",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/AuditLogTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523308,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423825,
     "ast_hash": "c13eb5276c04c0d449f29740cf830ff0",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/AuthenticodeTests.cs": {
-    "mtime": 1791793360.5937223,
-    "seen": 1791793372.7523315,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423837,
     "ast_hash": "93831ec80491fb5a161c686fab453c1a",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/BacklightKeyTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523324,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423844,
     "ast_hash": "215af4469fb26de6de802b3898000fa8",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/BatteryModePolicyTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523334,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423853,
     "ast_hash": "63e9d356a2863628692e803adc1ea644",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/CoolingPolicyTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752334,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423863,
     "ast_hash": "5bd3ebad61695dc994f693a983e03215",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/FnShortcutsTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752335,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.542387,
     "ast_hash": "5f09aea12ba5dbfc70e428f4b9462525",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/GpuModeTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523358,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.542388,
     "ast_hash": "0eb4e0f1968feac6640065b59854a03e",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/HostileSettingsTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752337,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423887,
     "ast_hash": "52b87502e262609b1c86e0d40ec1bc1e",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/IntegrityTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752338,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423899,
     "ast_hash": "0a722c5e642437b3ebe1a21ad4bfdefb",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/LedStateTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752339,
+    "mtime": 1791793675.4950788,
+    "seen": 1791793688.5423908,
     "ast_hash": "35a6c9b7350011991b86abe04ab2918c",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/MachineScanTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523396,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423918,
     "ast_hash": "fd1088fe12aa3d4e5fe7cf8c6fd511c5",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/Nextcalibur.Core.Tests.csproj": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523406,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423925,
     "ast_hash": "74537f25571dc01fc607ede7bbcff8d2",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/PawnIoModuleTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523415,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423937,
     "ast_hash": "3dcab8cf6b3dd4f5098f71108408f68c",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/PolicyTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523422,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423944,
     "ast_hash": "0a8990838a65fb100ca77ad307b2cb47",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/ProcessPresenceTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523432,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.542395,
     "ast_hash": "61f075996127488cc4ef34d3a3a20613",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/ProgramRulesTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523441,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.542396,
     "ast_hash": "0d4ec8eed448f8339a825bed49c0230c",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/ProtectedStoreElevatedTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752345,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423973,
     "ast_hash": "bbdc5262a0f7778654810e3ba68b1a77",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/ProtectedStoreTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523458,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5423982,
     "ast_hash": "2dd610a984d1f21294b3e09129ca48b2",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/RunawayWatchTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.752347,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.542399,
     "ast_hash": "1d1e32060d01f19ae338f5a7e52fef9a",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/SettingsTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523477,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424,
     "ast_hash": "bc894907b91e08317e96a3e8d412f433",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/SmiCommandTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523487,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424008,
     "ast_hash": "89777614c6ad749cf8ff7cc95e550a22",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/StringsDictionaryTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523494,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424018,
     "ast_hash": "01052f2776f603ccb2b99b4442f09d6b",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/SystemInfoTests.cs": {
-    "mtime": 1791793360.5940492,
-    "seen": 1791793372.7523506,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424025,
     "ast_hash": "c6182d821fe3d2e966861883170c1e34",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/TaskFolderTests.cs": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.7523513,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424037,
     "ast_hash": "8b79feba7b37308a0b679b7c5b0e41c4",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/ThermalProfileTests.cs": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.752352,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424044,
     "ast_hash": "a1bcd8f730882e610b0da817b1bab9a7",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/TopProcessesTests.cs": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.752353,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424054,
     "ast_hash": "2fddfe6b15ac0fc9b6e1fc594e92b419",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/WindowsFaultsTests.cs": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.7523541,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.542406,
     "ast_hash": "a7ab67a7a9622a7d9b3da802241e2502",
     "semantic_hash": ""
   },
   "tests/Nextcalibur.Core.Tests/WordsInCodeTests.cs": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.7523549,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.5424073,
     "ast_hash": "fc64e37b75e27e8009d2a4a14d9232f5",
     "semantic_hash": ""
   },
   "tools/Arm-GpuRecovery.ps1": {
-    "mtime": 1791793360.5950491,
-    "seen": 1791793372.7523556,
+    "mtime": 1791793675.4951305,
+    "seen": 1791793688.542408,
     "ast_hash": "343a5f9b37b6875a871839abb3956c03",
     "semantic_hash": ""
   },
   "tools/Check-Runtime.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523565,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542409,
     "ast_hash": "603b99e1fe694340e77bc5c73db72bcc",
     "semantic_hash": ""
   },
   "tools/Count-HandleTypes.cs": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523575,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424097,
     "ast_hash": "374024c5323b869079ca1832ddd7bf0a",
     "semantic_hash": ""
   },
   "tools/Dump-UefiVars.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523584,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424109,
     "ast_hash": "ddec8712586950d115756af52201166c",
     "semantic_hash": ""
   },
   "tools/Grant-MailboxAccess.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523594,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424116,
     "ast_hash": "3549b2ad87625c964c711a22441ea48e",
     "semantic_hash": ""
   },
   "tools/Log-Graphics.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.75236,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424125,
     "ast_hash": "022c430319aca1dff4a0ab029c3d2fb3",
     "semantic_hash": ""
   },
   "tools/Sandbox-Autopsy.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523613,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424132,
     "ast_hash": "7ef55f5a64a032f78d4e0983a2760367",
     "semantic_hash": ""
   },
   "tools/Sandbox-Check.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.752362,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424144,
     "ast_hash": "64811aa82e140115780c1b6ea41b8828",
     "semantic_hash": ""
   },
   "tools/Snapshot-Graphics.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.752363,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424154,
     "ast_hash": "b228f739acc5f6710464bdf5b9ccdc67",
     "semantic_hash": ""
   },
   "tools/Test-Led.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.752364,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542416,
     "ast_hash": "f7682845a425fa62eefd8a57af89b0e1",
     "semantic_hash": ""
   },
   "tools/Test-Ui.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523649,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542417,
     "ast_hash": "a46b2253e56e5023c85ed91b8fc62818",
     "semantic_hash": ""
   },
   "tools/Trace-ModeSwitch.ps1": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7523658,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542418,
     "ast_hash": "85183617e7e77eb844804cd79331983e",
     "semantic_hash": ""
   },
   "tools/Watch-Graphics.ps1": {
-    "mtime": 1791793360.5960493,
-    "seen": 1791793372.7523665,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542419,
     "ast_hash": "65cc1a92fbce42fa6ea03e86614e5367",
     "semantic_hash": ""
   },
   "tools/Write-IntegrityManifest.ps1": {
-    "mtime": 1791793360.5960493,
-    "seen": 1791793372.7523677,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.54242,
     "ast_hash": "d19ae86795d99f1186a1a39060f2e97e",
     "semantic_hash": ""
   },
   "tools/analyse-autopsy.py": {
-    "mtime": 1791793360.5960493,
-    "seen": 1791793372.7523687,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424206,
     "ast_hash": "4ab9af1704e41d5d8d4b6726d6b413b4",
     "semantic_hash": ""
   },
   "tools/build_icon.py": {
-    "mtime": 1791793360.5960493,
-    "seen": 1791793372.7523696,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424218,
     "ast_hash": "e2e8f3c2ae4767c1db5bb7fd8e3bf116",
     "semantic_hash": ""
   },
   ".github/dependabot.yml": {
-    "mtime": 1791793360.579049,
-    "seen": 1791793372.7523704,
+    "mtime": 1791793675.4791305,
+    "seen": 1791793688.5424225,
     "ast_hash": "b8010231831de300ccd569b24cf119b0",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1791793360.5795913,
-    "seen": 1791793372.7523735,
+    "mtime": 1791793675.4806573,
+    "seen": 1791793688.5424235,
     "ast_hash": "da619a999f76535ee44d5e6df4a5e4fe",
     "semantic_hash": ""
   },
   ".github/workflows/codeql.yml": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.7523742,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5424242,
     "ast_hash": "0ba37b0fd9038baf0d699becac1309b7",
     "semantic_hash": ""
   },
   ".github/workflows/dependabot-merge.yml": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.7523754,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5424252,
     "ast_hash": "7dac284b4a7cc57439a7936063d86754",
     "semantic_hash": ""
   },
   ".github/workflows/graphify.yml": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.752376,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.542426,
     "ast_hash": "8a5a32e89c965ed4c47f030149d99719",
     "semantic_hash": ""
   },
   ".github/workflows/release.yml": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.752377,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5424268,
     "ast_hash": "e07fba404f0e391590cfe5b8223dca5c",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791793360.5796595,
-    "seen": 1791793372.7523777,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5424275,
     "ast_hash": "23760477d673cc7b78e550cd7c07275c",
     "semantic_hash": ""
   },
   "docs/CLEAN-INSTALL.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.752379,
+    "mtime": 1791793675.4807239,
+    "seen": 1791793688.5424287,
     "ast_hash": "5d2987de88b09886f2c1bf61bdf1bc4b",
     "semantic_hash": ""
   },
   "docs/FAQ.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523797,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.5424294,
     "ast_hash": "a2268df08c0ef0470a7ea047bda683f3",
     "semantic_hash": ""
   },
   "docs/NOTICE.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523806,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.5424304,
     "ast_hash": "f2b7d3ec1187e6b18abe2645bf52c638",
     "semantic_hash": ""
   },
   "docs/PRIVACY.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523813,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.542431,
     "ast_hash": "a7ddf95e090c745af817efd989b2a0dc",
     "semantic_hash": ""
   },
   "docs/PROTOCOL.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523825,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.5424323,
     "ast_hash": "7b666d03f37037c11ba28ebfc9d01ce7",
     "semantic_hash": ""
   },
   "docs/RELEASING.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523835,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.5424333,
     "ast_hash": "527edadbf3287bca359e28c15dbaed3c",
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523842,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.542434,
     "ast_hash": "27871c4448ae8987cebb1ffdfaacdcce",
     "semantic_hash": ""
   },
   "docs/releases/0.5.0.md": {
-    "mtime": 1791793360.5800493,
-    "seen": 1791793372.7523854,
+    "mtime": 1791793675.4813302,
+    "seen": 1791793688.542435,
     "ast_hash": "e5181015bdae12e4f18bfbeb64989dc9",
     "semantic_hash": ""
   },
   "docs/releases/0.5.1.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.752386,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.542436,
     "ast_hash": "f2f7b22416365848ebdc8799d1b7bc97",
     "semantic_hash": ""
   },
   "docs/releases/0.5.10.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.7523868,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424366,
     "ast_hash": "3a2564a5e0ed86c6949d873029d1a3ba",
     "semantic_hash": ""
   },
   "docs/releases/0.5.11.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.7523878,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424378,
     "ast_hash": "32292d249d74d5e842fe5d787c2357a6",
     "semantic_hash": ""
   },
   "docs/releases/0.5.12.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.752389,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424387,
     "ast_hash": "91e50c841f6527e0402eef3eba222df9",
     "semantic_hash": ""
   },
   "docs/releases/0.5.2.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.75239,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424397,
     "ast_hash": "f3d267558245032d5e1ca55ce384471a",
     "semantic_hash": ""
   },
   "docs/releases/0.5.3.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.7523906,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424407,
     "ast_hash": "f64dbf2756e8fb1133da48a64645bdf9",
     "semantic_hash": ""
   },
   "docs/releases/0.5.4.md": {
-    "mtime": 1791793360.580883,
-    "seen": 1791793372.7523913,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424418,
     "ast_hash": "0e962800a8420ab3accaaa1252f4b102",
     "semantic_hash": ""
   },
   "docs/releases/0.5.5.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523925,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424426,
     "ast_hash": "5ef172cc31c6d69b94a724fa8a316300",
     "semantic_hash": ""
   },
   "docs/releases/0.5.6.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523932,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424435,
     "ast_hash": "b2d54a4a667e3c6b484c58ae19583759",
     "semantic_hash": ""
   },
   "docs/releases/0.5.7.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523942,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424445,
     "ast_hash": "8c93b54a0e04baa51377243f920d37cc",
     "semantic_hash": ""
   },
   "docs/releases/0.5.8.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523966,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424466,
     "ast_hash": "c383292b299d760996e6b7defce6e881",
     "semantic_hash": ""
   },
   "docs/releases/0.5.9.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523975,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424476,
     "ast_hash": "f7e7d80d65952ee324c38f07f8d0056b",
     "semantic_hash": ""
   },
   "docs/releases/0.6.0.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523983,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424483,
     "ast_hash": "05bdbc08cc6f63ca82b3fe9f7c925b08",
     "semantic_hash": ""
   },
   "docs/releases/0.6.1.md": {
-    "mtime": 1791793360.5810492,
-    "seen": 1791793372.7523992,
+    "mtime": 1791793675.4819899,
+    "seen": 1791793688.5424495,
     "ast_hash": "a3b409ebec20a76f356c1ce2cf7421a3",
     "semantic_hash": ""
   },
   "installer/notice-en.txt": {
-    "mtime": 1791793360.5817554,
-    "seen": 1791793372.7524002,
+    "mtime": 1791793675.4828477,
+    "seen": 1791793688.5424504,
     "ast_hash": "1d83039496092afc35e6c1a5830c41fd",
     "semantic_hash": ""
   },
   "installer/notice-tr.txt": {
-    "mtime": 1791793360.5817554,
-    "seen": 1791793372.7524009,
+    "mtime": 1791793675.4828477,
+    "seen": 1791793688.5424511,
     "ast_hash": "31b83e723ef656c2f47eb7870f9f6769",
     "semantic_hash": ""
   },
   "tools/README.md": {
-    "mtime": 1791793360.595537,
-    "seen": 1791793372.7524018,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.5424523,
     "ast_hash": "123736b25bc37c16a406ecc7d6526703",
     "semantic_hash": ""
   },
   "tools/trace/quiet-discrete.txt": {
-    "mtime": 1791793360.5960493,
-    "seen": 1791793372.752403,
+    "mtime": 1791793675.496841,
+    "seen": 1791793688.542453,
     "ast_hash": "110c6e6d0f625895b17c9a2c19b7ee02",
     "semantic_hash": ""
   },
   "tools/trace/quiet-hybrid.txt": {
-    "mtime": 1791793360.5966012,
-    "seen": 1791793372.752404,
+    "mtime": 1791793675.4978712,
+    "seen": 1791793688.542454,
     "ast_hash": "d168f930912b173da16038526efedb2c",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/keyboard_layout.svg": {
-    "mtime": 1791793360.5825481,
-    "seen": 1791793372.752405,
+    "mtime": 1791793675.483644,
+    "seen": 1791793688.542455,
     "ast_hash": "a3e209e500ad0ef9b80f5dfe750fe5ea",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/logo-48.png": {
-    "mtime": 1791793360.5825481,
-    "seen": 1791793372.7524056,
+    "mtime": 1791793675.483644,
+    "seen": 1791793688.542456,
     "ast_hash": "ffa2e09c06bb69d6bdf28e65f6762493",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/logo-96.png": {
-    "mtime": 1791793360.5825481,
-    "seen": 1791793372.7524068,
+    "mtime": 1791793675.483644,
+    "seen": 1791793688.5424569,
     "ast_hash": "9149a49cce208112a91695044d7556d5",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/logo-text-300.png": {
-    "mtime": 1791793360.5825481,
-    "seen": 1791793372.7524076,
+    "mtime": 1791793675.483644,
+    "seen": 1791793688.5424576,
     "ast_hash": "f89aa39c36f0c12dded4e367ceffa3b7",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/logo-text.png": {
-    "mtime": 1791793360.5840492,
-    "seen": 1791793372.7524085,
+    "mtime": 1791793675.4851305,
+    "seen": 1791793688.5424585,
     "ast_hash": "bcd019484b94fc2391ee5ff21d05fb30",
     "semantic_hash": ""
   },
   "src/Nextcalibur.App/Assets/logo.png": {
-    "mtime": 1791793360.5850492,
-    "seen": 1791793372.7524097,
+    "mtime": 1791793675.4861305,
+    "seen": 1791793688.5424597,
     "ast_hash": "713ce5a43c5325b2d16b25511e8b20c3",
     "semantic_hash": ""
   }
