@@ -367,6 +367,9 @@ public partial class MainWindow : Window
         // need it - the light, the turbo - can be had now.
         ApplyFnShortcuts();
 
+        // The mode is known now; a program with a rule may already be running.
+        StartProgramRules();
+
         _timer.Tick += (_, _) => Sample();
         Sample();
         RefreshClocks();
@@ -793,6 +796,7 @@ public partial class MainWindow : Window
             _backlightKey?.Dispose();
             if (_cooling.Engaged) StopCooling("exit");
             StopFnShortcuts();
+            StopProgramRuleWatch();
             _mailbox?.Dispose();
             _cpuClock.Dispose();
             _gpuClock.Dispose();
@@ -1112,6 +1116,7 @@ public partial class MainWindow : Window
         try
         {
             Log.Info("mode", $"Chosen: {mode}");
+            NoteModeChosenByHand();
             ApplyMode(mode);
             _currentMode = mode;
             _battery.UserChose(mode, _onBattery);
@@ -1192,6 +1197,10 @@ public partial class MainWindow : Window
 
                 LoadSystemMode();
                 RefreshOverlay();
+
+                // On battery a rule asking for more than Office stands down, and
+                // back on the charger it applies again.
+                EvaluateProgramRules();
             }
             catch (Exception)
             {

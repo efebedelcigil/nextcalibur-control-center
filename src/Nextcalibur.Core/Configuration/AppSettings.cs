@@ -41,6 +41,12 @@ public sealed class AppSettings
     /// </summary>
     public bool FnShortcutsEnabled { get; set; }
 
+    /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
+    public bool ProgramRulesEnabled { get; set; }
+
+    /// <summary>The rules, in the order they were added.</summary>
+    public List<Power.ProgramRule> ProgramRules { get; set; } = new();
+
     /// <summary>One entry per action; see <see cref="Input.FnShortcuts"/>.</summary>
     public List<Input.FnShortcut> FnShortcuts { get; set; } = Input.FnShortcuts.Defaults();
 
@@ -296,6 +302,18 @@ public sealed class AppSettings
             shortcuts.Add(found);
         }
         settings.FnShortcuts = shortcuts;
+
+        // Program rules end up in a WMI query by name: anything that is not a
+        // plain process name is dropped, a mode that is not one of the three
+        // is Office, and a name is kept once.
+        var rules = new List<Power.ProgramRule>();
+        foreach (var rule in settings.ProgramRules ?? new())
+        {
+            if (rule is null || Power.ProgramRules.Normalise(rule.Process) is not { } name) continue;
+            if (rules.Any(r => string.Equals(r.Process, name, StringComparison.OrdinalIgnoreCase))) continue;
+            rules.Add(new Power.ProgramRule { Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office });
+        }
+        settings.ProgramRules = rules;
 
         if (settings.CpuWarningTemperatureC <= 0)
         {

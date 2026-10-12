@@ -77,6 +77,7 @@ so a server that answers "not modified" sends no body.
 | Overheat warning | a threshold per chip, typeable; names the programs using the chip; from Gaming or Performance, a button that switches to Office |
 | Cool down before it gets hot | the temperature followed, not just compared: heading for the line, a notification says to press Fn+1 for the fan turbo before it gets there - the turbo is the controller's own and only its keyboard switches it (see [docs/PROTOCOL.md](docs/PROTOCOL.md)); *Emergency Office*, off unless chosen, also holds the processor to 70% |
 | Programs heating the machine for nothing | a program keeping a core or the graphics card busy, flat, for fifteen minutes in the background is named, with Task Manager a click away; nothing is ended |
+| A mode for a program | while a program on your list runs - MATLAB, an installer, a game - its mode is on, and yours comes back when it closes; told by Windows when programs start and stop, nothing polled; off until switched on |
 | The Fn keys from an external keyboard | the keyboard light and the system mode as shortcuts, off until switched on, any keys; refused when Windows, another program or a keyboard layout already uses them, and moved to free keys if that changes later |
 | Only on the laptop it was made for | the machine is scanned at setup and every start and the verdict kept; on any other laptop everything that is Casper's own stays off and Windows keeps its settings |
 | A record of every risky change, and a restore point first | graphics mode, drivers, repairs, WinUtil: asked with "create a restore point first" ticked; the question, the answer, the restore point's number and what was done kept with their times, in a file only administrators can write and in Windows' event log |
@@ -88,7 +89,7 @@ so a server that answers "not modified" sends no body.
 | Nothing outside it changes it | settings where only administrators can write, recorded and put back if changed from outside; the application checks its own files, its folder's permissions and the .NET runtime under it, and stops writing to the firmware if any of that fails; NVIDIA's and PawnIO's files verified before use - see [docs/SECURITY.md](docs/SECURITY.md) |
 | Fan curves | **deliberately not implemented** - see the FAQ |
 
-The guided tour is the manual: seventy steps, one control at a time.
+The guided tour is the manual: seventy-one steps, one control at a time.
 
 ## Why it runs as administrator
 

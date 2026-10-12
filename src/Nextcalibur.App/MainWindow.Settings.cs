@@ -167,6 +167,7 @@ public partial class MainWindow
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
         WireFnShortcutsPage();
+        WireProgramRulesPage();
         _settingsPageWired = true;
         LoadSettingsPage();
     }
@@ -326,7 +327,8 @@ public partial class MainWindow
     /// </summary>
     private void LockCasperOnlySettings()
     {
-        foreach (var name in new[] { "SettingOfficeOnBattery", "SettingAutoFanTurbo", "SettingAutoCooling", "SettingFnShortcuts", "FnSelectAll", "FnShortcutRows" })
+        foreach (var name in new[] { "SettingOfficeOnBattery", "SettingAutoFanTurbo", "SettingAutoCooling", "SettingFnShortcuts", "FnSelectAll", "FnShortcutRows",
+                                     "SettingProgramRules", "ProgramRuleRows", "ProgramRuleAddRow" })
             if (FindName(name) is UIElement element) element.IsEnabled = false;
     }
 
