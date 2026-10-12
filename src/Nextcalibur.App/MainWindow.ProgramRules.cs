@@ -40,13 +40,26 @@ public partial class MainWindow
             return;
         }
 
-        var filter = string.Join(" OR ", names.Select(n => $"ProcessName = '{n}.exe'"));
+        // The trace events carry the kernel's image name, which is cut at 15
+        // characters ("AddOnInstaller.exe" arrives as "AddOnInstaller."), so
+        // both spellings are asked for; the name itself is checked again by
+        // EvaluateProgramRules, against the full process name.
+        var spellings = names.SelectMany(n => new[] { n + ".exe", (n + ".exe")[..Math.Min(15, n.Length + 4)] })
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+        var filter = string.Join(" OR ", spellings.Select(n => $"ProcessName = '{n}'"));
         try
         {
             _ruleStarts = new ManagementEventWatcher(new WqlEventQuery($"SELECT ProcessName FROM Win32_ProcessStartTrace WHERE {filter}"));
             _ruleStops = new ManagementEventWatcher(new WqlEventQuery($"SELECT ProcessName FROM Win32_ProcessStopTrace WHERE {filter}"));
             _ruleStarts.EventArrived += (_, _) => Dispatcher.BeginInvoke(EvaluateProgramRules);
-            _ruleStops.EventArrived += (_, _) => Dispatcher.BeginInvoke(EvaluateProgramRules);
+            // A process that has just stopped can still be listed for a moment:
+            // looked at again a little later, or the rule would never end.
+            _ruleStops.EventArrived += (_, _) => Dispatcher.BeginInvoke(async () =>
+            {
+                EvaluateProgramRules();
+                await Task.Delay(1500);
+                EvaluateProgramRules();
+            });
             _ruleStarts.Start();
             _ruleStops.Start();
             Log.Info("rules", $"Watching for {string.Join(", ", names)}");
@@ -101,12 +114,12 @@ public partial class MainWindow
 
         if (winner is not null)
         {
-            if (_activeRule is null)
-            {
-                _ruleReturnMode = _currentMode;
-                _ruleOverridden = false;
-            }
+            if (_activeRule is null) _ruleReturnMode = _currentMode;
             var changed = !ReferenceEquals(_activeRule, winner);
+
+            // A choice by hand stood against the rule then in force; another
+            // program's rule is a new rule.
+            if (changed) _ruleOverridden = false;
             _activeRule = winner;
             if (changed && !_ruleOverridden && _currentMode != winner.Mode && ApplyRuleMode(winner.Mode))
                 _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Started", winner.Process, winner.Mode));
@@ -143,12 +156,30 @@ public partial class MainWindow
         }
     }
 
-    /// <summary>Called from the mode buttons: a choice by hand while a rule is in force wins until the rule ends.</summary>
-    private void NoteModeChosenByHand()
+    /// <summary>
+    /// Called from the mode buttons: a choice by hand while a rule is in
+    /// force wins over that rule, and is the mode to go back to when the
+    /// rules end.
+    /// </summary>
+    private void NoteModeChosenByHand(SystemMode chosen)
     {
         if (_applyingRule || _activeRule is null) return;
         _ruleOverridden = true;
-        Log.Info("rules", $"Mode chosen by hand while {_activeRule.Process} runs; the rule steps aside");
+        _ruleReturnMode = chosen;
+        Log.Info("rules", $"{chosen} chosen by hand while {_activeRule.Process} runs; the rule steps aside");
+    }
+
+    private DateTime _rulesLookedAt = DateTime.MinValue;
+
+    /// <summary>
+    /// Once a minute from the slow timer while a rule is in force: the safety
+    /// net under the stop event, should Windows' event not come.
+    /// </summary>
+    private void ProgramRulesTick()
+    {
+        if (_activeRule is null || DateTime.UtcNow - _rulesLookedAt < TimeSpan.FromMinutes(1)) return;
+        _rulesLookedAt = DateTime.UtcNow;
+        EvaluateProgramRules();
     }
 
     // --------------------------------------------------------- settings page
@@ -196,7 +227,12 @@ public partial class MainWindow
         if (_activeRule is null) return;
         var ended = _activeRule;
         _activeRule = null;
-        if (!_ruleOverridden && _ruleReturnMode is { } back && _currentMode != back && ApplyRuleMode(back))
+
+        // On battery with Office on battery on, the battery's rule has the
+        // mode: going back to Gaming or Performance there would undo it.
+        var batteryKeepsOffice = _onBattery && _settings.QuietOnBattery;
+        if (!_ruleOverridden && _ruleReturnMode is { } back && _currentMode != back
+            && !(batteryKeepsOffice && back != SystemMode.Office) && ApplyRuleMode(back))
             _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Ended", ended.Process, back));
         _ruleReturnMode = null;
         _ruleOverridden = false;

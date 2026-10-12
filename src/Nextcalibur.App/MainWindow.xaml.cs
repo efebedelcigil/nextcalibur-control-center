@@ -1116,7 +1116,7 @@ public partial class MainWindow : Window
         try
         {
             Log.Info("mode", $"Chosen: {mode}");
-            NoteModeChosenByHand();
+            NoteModeChosenByHand(mode);
             ApplyMode(mode);
             _currentMode = mode;
             _battery.UserChose(mode, _onBattery);
@@ -2953,6 +2953,7 @@ public partial class MainWindow : Window
                 // hidden — it is the reason the application stays resident at all.
                 RunawayTick();
                 RetryTakenShortcuts();
+                ProgramRulesTick();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 
