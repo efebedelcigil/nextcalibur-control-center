@@ -70,7 +70,7 @@ so a server that answers "not modified" sends no body.
 | Windows power modes as cards, within the chosen mode | |
 | Office on battery, your mode back on the charger, and after a restart | |
 | Repair of the power-mode fault the vendor's software leaves | a Windows power mode that holds the CPU at full speed while idle - found, fixed once, guarded |
-| Sleep and screen, per mode | display-off and sleep timeouts for each mode, plugged in and on battery, and the screen saver; a timeout changed in Windows' Settings shows here and goes to the other modes too; nothing changed unless chosen |
+| Sleep and screen, per mode | display-off and sleep timeouts for every mode in one table, plugged in and on battery, and the screen saver; each row is that mode's power plan, so it is the Control Panel's plan settings and a change in either shows in the other; nothing changed unless chosen |
 | Each mode's power plan tuned | Office quiet - boost only when it pays, an energy preference toward efficiency, work on the efficient cores first, slowing before the fans, both core types held to 70%; Gaming without the vendor's 99% floor; Performance eager; a display that never turned off gets ten minutes; every original kept and offered back at uninstall |
 | Temperatures, fan speeds, clocks, CPU package power | CPU power through PawnIO, when installed |
 | The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |

@@ -20,14 +20,12 @@ public readonly record struct Timeouts(PlanTuning.AcDc Display, PlanTuning.AcDc 
 /// The display and sleep timeouts of each mode's plan.
 ///
 /// The owner's request of 14 October 2026: set them per mode, plugged in and
-/// on battery, without overwriting anything - and a value changed by hand in
-/// Windows shows here and is given to the other modes too. Windows' Settings
-/// changes only the active plan, so without that, a timeout chosen there
-/// would come and go with the mode.
+/// on battery, in step with Windows - each mode is its own plan, so the page
+/// and the Control Panel's plan settings are the same values, and a change
+/// in either shows in the other; each mode keeps its own.
 ///
 /// Nothing here writes on its own: a value is written when it is chosen on
-/// the Settings page, or when it was chosen in Windows and is carried to the
-/// other modes - only the value that changed, each mode keeping the rest.
+/// the Settings page, and only that value.
 /// </summary>
 public static class IdleTimeouts
 {
@@ -46,33 +44,7 @@ public static class IdleTimeouts
     public static bool Write(Guid plan, IdleSetting setting, PlanTuning.AcDc value) =>
         value.Ac >= 0 && value.Dc >= 0 && PlanTuning.Write(plan, SettingOf(setting), value);
 
-    /// <summary>
-    /// A plan whose timeouts are not what was last seen: changed outside -
-    /// Windows' Settings, the Control Panel, powercfg. The active plan is
-    /// looked at first, since that is the one Windows' Settings changes.
-    /// </summary>
-    public static Guid? ChangedOutside(IReadOnlyDictionary<Guid, Timeouts> known, IReadOnlyDictionary<Guid, Timeouts> now, Guid active)
-    {
-        foreach (var plan in now.Keys.OrderBy(p => p == active ? 0 : 1))
-        {
-            if (known.TryGetValue(plan, out var before) && before != now[plan]) return plan;
-        }
-        return null;
-    }
-
-    /// <summary>What changed between two readings of a plan: each setting with its new value, plugged in and on battery each kept apart.</summary>
-    public static IReadOnlyList<(IdleSetting Setting, bool PluggedIn, int Seconds)> Differences(Timeouts before, Timeouts now)
-    {
-        var found = new List<(IdleSetting, bool, int)>();
-        foreach (var setting in new[] { IdleSetting.DisplayOff, IdleSetting.Sleep })
-        {
-            if (before[setting].Ac != now[setting].Ac) found.Add((setting, true, now[setting].Ac));
-            if (before[setting].Dc != now[setting].Dc) found.Add((setting, false, now[setting].Dc));
-        }
-        return found;
-    }
-
-    /// <summary>Another mode's value with only the changed half carried over.</summary>
+    /// <summary>A plan's value with one half - plugged in or on battery - replaced.</summary>
     public static PlanTuning.AcDc Carry(PlanTuning.AcDc theirs, bool pluggedIn, int seconds) =>
         pluggedIn ? theirs with { Ac = seconds } : theirs with { Dc = seconds };
 

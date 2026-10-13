@@ -123,7 +123,7 @@ public partial class MainWindow
         new TourStep("SettingOverheatWarning", TourPage.Settings, "SettingOverheatWarning", "Settings"),
         new TourStep("SettingAutoFanTurbo", TourPage.Settings, "SettingAutoFanTurbo", "Settings"),
         new TourStep("SettingAutoCooling", TourPage.Settings, "SettingAutoCooling", "Settings"),
-        new TourStep("IdleMode", TourPage.Settings, "IdleMode", "Settings"),
+        new TourStep("IdleRows", TourPage.Settings, "IdleRows", "Settings"),
         new TourStep("SettingProgramRules", TourPage.Settings, "SettingProgramRules", "Settings"),
         new TourStep("SettingAskGameMode", TourPage.Settings, "SettingAskGameMode", "Settings"),
         new TourStep("SettingFnShortcuts", TourPage.Settings, "SettingFnShortcuts", "Settings"),

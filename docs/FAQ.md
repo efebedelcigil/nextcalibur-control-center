@@ -42,7 +42,14 @@ Three kinds of thing, all of them in the open:
   reused when present), the active plan and power mode when you choose a
   mode, and a one-time repair of a fault the vendor's software leaves behind
   (a Windows power mode that holds the processor at full speed while the
-  laptop is idle). The repair is explained on screen when it happens.
+  laptop is idle). The repair is explained on screen when it happens. Each
+  mode's plan also gets its own processor settings - boost, energy
+  preference, which cores work first, cooling policy, a floor that lets the
+  processor rest - and a display timeout of "never" becomes ten minutes,
+  once. Every original is kept under `HKLM\SOFTWARE\Nextcalibur\PlanMarkers`
+  and offered back at uninstall. The display and sleep timeouts you choose
+  on the Settings page are written to the same plans the Control Panel
+  shows.
 - *Firmware*: the thermal profile that goes with each mode - the same write
   the vendor makes - and, only when you ask for it and confirm, the graphics
   mode.
@@ -189,7 +196,8 @@ problem.
 **What does uninstalling leave behind?**
 Nothing of its own: files, shortcuts, settings, logs, both scheduled tasks
 and the folder protection are removed without asking. It asks about what
-you might want to keep: the power plans it created; the power-overlay
+you might want to keep: the power plans it created; the power-plan
+settings it changed (the floor repair and the mode profile); the power-overlay
 repair - undoing it puts the vendor's fault back, so the default is to keep
 it; and each thing it installed for its own use (the PawnIO driver), one
 question each, default keep, since other programs may read through the same

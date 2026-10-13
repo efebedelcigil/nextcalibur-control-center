@@ -8,53 +8,45 @@ using ComboBoxItem = System.Windows.Controls.ComboBoxItem;
 namespace Nextcalibur.App;
 
 /// <summary>
-/// Settings > Sleep and screen: each mode's display and sleep timeouts,
-/// plugged in and on battery, and the screen saver; a value changed in
-/// Windows shows here and is carried to the other modes (see
-/// <see cref="IdleTimeouts"/>).
+/// Settings > Sleep and screen: every mode's display and sleep timeouts,
+/// plugged in and on battery, side by side, and the screen saver. Each row
+/// is that mode's power plan - the same values the Control Panel's "Change
+/// plan settings" shows - so a change here is a change there, and one made
+/// there shows here (see <see cref="IdleTimeouts"/>).
 /// </summary>
 public partial class MainWindow
 {
-    /// <summary>The plans the page offers: each mode's, or the active plan where there are no modes' plans.</summary>
+    /// <summary>The plans the page shows: each mode's, or the active plan where there are no modes' plans.</summary>
     private List<(SystemMode? Mode, Guid Plan)> _idlePlans = [];
 
-    /// <summary>Each plan's timeouts as last seen or written here; a difference is a change from outside.</summary>
+    /// <summary>Each plan's timeouts as last shown; a difference means the page is out of date.</summary>
     private readonly Dictionary<Guid, Timeouts> _idleKnown = [];
 
     private int _screenSaverKnown = -1;
-    private ComboBox? _idleMode, _idleDisplayAc, _idleDisplayDc, _idleSleepAc, _idleSleepDc, _idleScreenSaver;
+    private StackPanel? _idleRows;
+    private ComboBox? _idleScreenSaver;
     private bool _idleUiLoading;
+
+    private static readonly (IdleSetting Setting, bool PluggedIn)[] IdleColumns =
+    [
+        (IdleSetting.DisplayOff, true), (IdleSetting.DisplayOff, false),
+        (IdleSetting.Sleep, true), (IdleSetting.Sleep, false),
+    ];
 
     private void WireIdlePage()
     {
-        _idleMode = FindName("IdleMode") as ComboBox;
-        _idleDisplayAc = FindName("IdleDisplayAc") as ComboBox;
-        _idleDisplayDc = FindName("IdleDisplayDc") as ComboBox;
-        _idleSleepAc = FindName("IdleSleepAc") as ComboBox;
-        _idleSleepDc = FindName("IdleSleepDc") as ComboBox;
+        _idleRows = FindName("IdleRows") as StackPanel;
         _idleScreenSaver = FindName("IdleScreenSaver") as ComboBox;
-        if (_idleMode is null || _idleDisplayAc is null || _idleDisplayDc is null
-            || _idleSleepAc is null || _idleSleepDc is null || _idleScreenSaver is null) return;
+        if (_idleRows is null || _idleScreenSaver is null) return;
 
-        _idleMode.SelectionChanged += (_, _) => { if (!_idleUiLoading) RefreshIdleRows(); };
-        _idleDisplayAc.SelectionChanged += (_, _) => IdleChosen(IdleSetting.DisplayOff, pluggedIn: true, _idleDisplayAc);
-        _idleDisplayDc.SelectionChanged += (_, _) => IdleChosen(IdleSetting.DisplayOff, pluggedIn: false, _idleDisplayDc);
-        _idleSleepAc.SelectionChanged += (_, _) => IdleChosen(IdleSetting.Sleep, pluggedIn: true, _idleSleepAc);
-        _idleSleepDc.SelectionChanged += (_, _) => IdleChosen(IdleSetting.Sleep, pluggedIn: false, _idleSleepDc);
         _idleScreenSaver.SelectionChanged += (_, _) => ScreenSaverChosen();
-
         RememberIdleTimeouts();
     }
 
-    /// <summary>
-    /// Takes the plans' timeouts as they are now as the ones known. After
-    /// anything of ours writes them - the start's display repair - or the
-    /// next tick takes our own write for a change made in Windows and
-    /// carries it to every mode.
-    /// </summary>
+    /// <summary>Reads every plan's timeouts afresh and redraws the table.</summary>
     private void RememberIdleTimeouts()
     {
-        if (_idleMode is null) return;
+        if (_idleRows is null) return;
         ResolveIdlePlans(force: true);
         _idleKnown.Clear();
         foreach (var (_, plan) in _idlePlans)
@@ -79,71 +71,45 @@ public partial class MainWindow
         _idlePlans = plans;
     }
 
-    /// <summary>From the slow timer: a change made in Windows shows here and goes to the other modes.</summary>
+    /// <summary>From the slow timer: a change made in Windows - the Control Panel, Settings, powercfg - shows here.</summary>
     private void IdleTimeoutsTick()
     {
-        if (_idleMode is null) return;
+        if (_idleRows is null) return;
+        var before = _idlePlans;
         ResolveIdlePlans();
 
-        var now = new Dictionary<Guid, Timeouts>();
+        var changed = !ReferenceEquals(before, _idlePlans) && !before.SequenceEqual(_idlePlans);
         foreach (var (_, plan) in _idlePlans)
-            if (IdleTimeouts.Read(plan) is { } t) now[plan] = t;
-
-        var refresh = false;
-        if (IdleTimeouts.ChangedOutside(_idleKnown, now, PlanTuning.ActivePlan()) is { } changed)
         {
-            var differences = IdleTimeouts.Differences(_idleKnown[changed], now[changed]);
-            foreach (var (setting, pluggedIn, seconds) in differences)
+            if (IdleTimeouts.Read(plan) is not { } now) continue;
+            if (!_idleKnown.TryGetValue(plan, out var known) || known != now)
             {
-                Log.Info("idle", $"{setting} {(pluggedIn ? "plugged in" : "on battery")} changed in Windows to {seconds} s; given to the other modes");
-                foreach (var (_, other) in _idlePlans)
-                {
-                    if (other == changed || !now.TryGetValue(other, out var theirs)) continue;
-                    var value = IdleTimeouts.Carry(theirs[setting], pluggedIn, seconds);
-                    if (value != theirs[setting] && IdleTimeouts.Write(other, setting, value)) now[other] = theirs.With(setting, value);
-                }
+                if (_idleKnown.ContainsKey(plan)) Log.Info("idle", $"Timeouts of {plan:D} changed in Windows");
+                _idleKnown[plan] = now;
+                changed = true;
             }
-            refresh = true;
         }
 
-        // Plans seen for the first time are only remembered.
-        foreach (var (plan, t) in now) _idleKnown[plan] = t;
-
-        if (ScreenSaver.Current() != _screenSaverKnown) refresh = true;
-        if (refresh) RefreshIdleRows();
+        if (ScreenSaver.Current() != _screenSaverKnown) changed = true;
+        if (changed) RefreshIdleRows();
     }
 
     private void RefreshIdleRows()
     {
-        if (_idleMode is null || _idleDisplayAc is null || _idleDisplayDc is null
-            || _idleSleepAc is null || _idleSleepDc is null || _idleScreenSaver is null) return;
+        if (_idleRows is null || _idleScreenSaver is null) return;
+
+        // A list open under the pointer is not pulled away while it is used.
+        if (_idleRows.Children.OfType<Grid>().SelectMany(g => g.Children.OfType<ComboBox>()).Any(c => c.IsDropDownOpen)) return;
+
         _idleUiLoading = true;
         try
         {
-            // The mode list, keeping the choice; the mode in use when there is none yet.
-            var selected = (_idleMode.SelectedItem as ComboBoxItem)?.Tag as Guid?;
-            _idleMode.Items.Clear();
+            _idleRows.Children.Clear();
+            _idleRows.Children.Add(IdleRow(null, Strings.Get("S.Idle.Mode"), null));
             foreach (var (mode, plan) in _idlePlans)
             {
-                var item = new ComboBoxItem
-                {
-                    Content = mode is { } m ? m.ToString() : Strings.Get("S.Idle.ActivePlan"),
-                    Tag = plan,
-                };
-                _idleMode.Items.Add(item);
-                if (plan == selected || (selected is null && mode == _currentMode)) _idleMode.SelectedItem = item;
-            }
-            if (_idleMode.SelectedItem is null && _idleMode.Items.Count > 0) _idleMode.SelectedIndex = 0;
-
-            var shown = (_idleMode.SelectedItem as ComboBoxItem)?.Tag as Guid?;
-            var timeouts = shown is { } p && _idleKnown.TryGetValue(p, out var t) ? t : (Timeouts?)null;
-            foreach (var box in new[] { _idleDisplayAc, _idleDisplayDc, _idleSleepAc, _idleSleepDc }) box.IsEnabled = timeouts is not null;
-            if (timeouts is { } v)
-            {
-                FillIdleChoices(_idleDisplayAc, v.Display.Ac, "S.Idle.Never");
-                FillIdleChoices(_idleDisplayDc, v.Display.Dc, "S.Idle.Never");
-                FillIdleChoices(_idleSleepAc, v.Sleep.Ac, "S.Idle.Never");
-                FillIdleChoices(_idleSleepDc, v.Sleep.Dc, "S.Idle.Never");
+                var label = mode is { } m ? m.ToString() : Strings.Get("S.Idle.ActivePlan");
+                _idleRows.Children.Add(IdleRow(plan, label, _idleKnown.TryGetValue(plan, out var t) ? t : null));
             }
 
             _screenSaverKnown = ScreenSaver.Current();
@@ -153,6 +119,46 @@ public partial class MainWindow
         {
             _idleUiLoading = false;
         }
+    }
+
+    /// <summary>One row of the table: a mode and its four timeouts, or - with no plan - the column headings.</summary>
+    private Grid IdleRow(Guid? plan, string label, Timeouts? timeouts)
+    {
+        var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 90 });
+        foreach (var _ in IdleColumns) row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(112) });
+
+        var name = new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+        if (plan is null) name.Style = (Style)FindResource("StatusTextStyle");
+        else
+        {
+            name.FontSize = 12;
+            name.FontWeight = FontWeights.SemiBold;
+            name.Foreground = (System.Windows.Media.Brush)FindResource("Ink");
+        }
+        row.Children.Add(name);
+
+        for (var i = 0; i < IdleColumns.Length; i++)
+        {
+            var (setting, pluggedIn) = IdleColumns[i];
+            FrameworkElement cell;
+            if (plan is not { } p)
+            {
+                var key = (setting == IdleSetting.DisplayOff ? "S.Idle.Display" : "S.Idle.Sleep") + (pluggedIn ? "Ac" : "Dc");
+                cell = new TextBlock { Text = Strings.Get(key), Style = (Style)FindResource("StatusTextStyle"), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Bottom };
+            }
+            else
+            {
+                var box = new ComboBox { Height = 28, IsEnabled = timeouts is not null };
+                if (timeouts is { } t) FillIdleChoices(box, pluggedIn ? t[setting].Ac : t[setting].Dc, "S.Idle.Never");
+                box.SelectionChanged += (_, _) => IdleChosen(p, setting, pluggedIn, box);
+                cell = box;
+            }
+            cell.Margin = new Thickness(8, 0, 0, 0);
+            Grid.SetColumn(cell, i + 1);
+            row.Children.Add(cell);
+        }
+        return row;
     }
 
     private static void FillIdleChoices(ComboBox box, int current, string zeroKey)
@@ -174,22 +180,23 @@ public partial class MainWindow
         return Strings.Get("S.Idle.Seconds", seconds);
     }
 
-    private void IdleChosen(IdleSetting setting, bool pluggedIn, ComboBox box)
+    private void IdleChosen(Guid plan, IdleSetting setting, bool pluggedIn, ComboBox box)
     {
         if (_idleUiLoading || box.SelectedItem is not ComboBoxItem { Tag: int seconds }) return;
-        if ((_idleMode?.SelectedItem as ComboBoxItem)?.Tag is not Guid plan || !_idleKnown.TryGetValue(plan, out var known)) return;
+        if (!_idleKnown.TryGetValue(plan, out var known)) return;
 
         var value = IdleTimeouts.Carry(known[setting], pluggedIn, seconds);
         if (value == known[setting]) return;
         if (IdleTimeouts.Write(plan, setting, value))
         {
             _idleKnown[plan] = known.With(setting, value);
-            Log.Info("idle", $"{setting} {(pluggedIn ? "plugged in" : "on battery")} set to {seconds} s for {(_idleMode!.SelectedItem as ComboBoxItem)?.Content}");
+            var mode = _idlePlans.FirstOrDefault(x => x.Plan == plan).Mode;
+            Log.Info("idle", $"{setting} {(pluggedIn ? "plugged in" : "on battery")} set to {seconds} s for {mode?.ToString() ?? "the active plan"}");
         }
         else
         {
             Log.Warn("idle", $"Could not set {setting} for {plan:D}");
-            RefreshIdleRows();
+            Dispatcher.BeginInvoke(RememberIdleTimeouts);
         }
     }
 
@@ -198,6 +205,6 @@ public partial class MainWindow
         if (_idleUiLoading || _idleScreenSaver?.SelectedItem is not ComboBoxItem { Tag: int seconds }) return;
         if (ScreenSaver.Set(seconds)) Log.Info("idle", $"Screen saver: {(seconds == 0 ? "off" : $"{seconds} s")}");
         else Log.Warn("idle", "Could not set the screen saver");
-        RefreshIdleRows();
+        _screenSaverKnown = ScreenSaver.Current();
     }
 }

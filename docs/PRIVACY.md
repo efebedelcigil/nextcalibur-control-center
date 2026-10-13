@@ -41,7 +41,8 @@ event named in its row.
 
 - **Settings** - `%ProgramData%\Nextcalibur\<your account's SID>\settings.json`
   and `led.json`: your preferences (mode, thresholds, lighting, the switches
-  on the Settings page). Only administrators can change them - you can read
+  on the Settings page, the program rules, and the names of programs you
+  answered "stay as it is" about after a game). Only administrators can change them - you can read
   them - and each has a record of its hash and a last-good copy beside it,
   so a change made from outside the application is noticed and undone.
   Versions up to 0.5.8 kept them in `%AppData%\Nextcalibur`; they are moved
@@ -63,6 +64,10 @@ event named in its row.
   this laptop answers like a Casper Excalibur, the BIOS's maker and
   version, the board's name, and when the verdict last changed - read at
   setup and every start, kept to compare one scan with the next.
+- **Power plan originals** - `HKLM\SOFTWARE\Nextcalibur\PlanMarkers`: the
+  value each power plan setting had before Nextcalibur changed it (the
+  floor repair, the mode profile, a display timeout of never), so uninstall
+  can put it back. Numbers and plan identifiers only.
 - **Scheduled tasks** and, on a laptop the firmware interface exists on,
   the changes to Windows' power settings described in the README.
 
