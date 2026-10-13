@@ -200,6 +200,14 @@ public partial class MainWindow
         foreach (var mode in Enum.GetValues<SystemMode>()) _rulesMode.Items.Add(mode);
         _rulesMode.SelectedItem = SystemMode.Office;
 
+        if (FindName("SettingAskGameMode") is ToggleButton askGames)
+        {
+            askGames.IsChecked = _settings.AskModeForGames;
+            askGames.IsEnabled = _support.AllowsWrites;
+            askGames.Checked += (_, _) => { _settings.AskModeForGames = true; _settings.Save(); };
+            askGames.Unchecked += (_, _) => { _settings.AskModeForGames = false; _settings.Save(); };
+        }
+
         _rulesMaster.Checked += (_, _) => SetRulesMaster(true);
         _rulesMaster.Unchecked += (_, _) => SetRulesMaster(false);
         _rulesName.DropDownOpened += (_, _) => FillRunningPrograms();

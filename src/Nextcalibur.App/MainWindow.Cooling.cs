@@ -108,7 +108,7 @@ public partial class MainWindow
                  : Strings.Get("S.Cooling.Cap", PlanTuning.CoolCeiling);
         var rate = _cooling.DegreesPerMinute;
         Log.Info("cooling", $"Started at CPU {s.CpuTemperatureC} °C / GPU {s.GpuTemperatureC} °C, {rate:+0.0;-0.0} °C/min; capped={_coolingCapped} turbo suggested={_coolingSuggested}");
-        _tray?.ShowMessage(Strings.Get("S.Cooling.Title"),
+        NotifyOrKeepForAfterGame(Strings.Get("S.Cooling.Title"),
             Strings.Get("S.Cooling.Body", s.CpuTemperatureC, s.GpuTemperatureC, rate.ToString("+0.0;-0.0"), what));
     }
 
@@ -127,7 +127,7 @@ public partial class MainWindow
 
         // Cooled, with the turbo still on: it can go back the same way.
         if (why == "cooled down" && _coolingSuggested && _fanTurboOn)
-            _tray?.ShowMessage(Strings.Get("S.Cooling.CooledTitle"), Strings.Get("S.Cooling.TurboStillOn"));
+            NotifyOrKeepForAfterGame(Strings.Get("S.Cooling.CooledTitle"), Strings.Get("S.Cooling.TurboStillOn"));
         _coolingCapped = _coolingSuggested = false;
         _cooling.Engaged = false;
     }

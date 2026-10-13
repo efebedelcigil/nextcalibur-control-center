@@ -1858,6 +1858,24 @@
 
                                         <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
 
+                                        <!-- SettingAskGameMode -->
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.AskGameTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.AskGameDesc}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <ToggleButton x:Name="SettingAskGameMode" Grid.Column="1"
+                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+
                                         <StackPanel x:Name="ProgramRuleRows" />
                                         <Grid x:Name="ProgramRuleAddRow" Margin="0,6,0,3">
                                             <Grid.ColumnDefinitions>

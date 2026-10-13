@@ -342,6 +342,16 @@
     <sys:String x:Key="S.Idle.ActivePlan">Etkin güç planı</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleMode.Title">Uyku ve ekran</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleMode.Body">Ekranın kapanacağı ve bilgisayarın uykuya geçeceği süreler, her mod için ayrı, prizde ve pilde. Buradan modu seçip süreleri değiştirin. Windows Ayarları'nda değiştirdiğiniz bir süre burada da görünür ve öbür modlara uygulanır; siz seçmedikçe hiçbir şey değişmez.</sys:String>
+    <sys:String x:Key="S.Settings.AskGameTitle">Bir oyun Office'te oynandıysa sor</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">Ekranı kaplayan bir program - büyük olasılıkla bir oyun - Office'te birkaç dakika açık kaldıysa, kapandıktan sonra bu pencerede sorulur: bundan sonra o açılınca Gaming'e (ya da Performance'a) geçilsin mi? Yanıt bu listeye bir kural olarak eklenir; "Hayır" denen bir program bir daha sorulmaz. Tarayıcılar ve video oynatıcılar hiç sorulmaz. Oyun sürerken hiçbir şey gösterilmez.</sys:String>
+    <sys:String x:Key="S.Game.AskTitle">{0} Office'te açıktı</sys:String>
+    <sys:String x:Key="S.Game.AskBody">{0} az önce ekranı kaplıyordu ve Office modundaydınız. Bundan sonra {0} açılınca Gaming moduna geçilsin mi? Kapandığında önceki modunuz geri gelir.
+
+"Hayır" derseniz bu program için bir daha sorulmaz. Kuralı istediğiniz zaman Ayarlar &gt; Program kuralları'ndan değiştirebilir ya da silebilirsiniz.</sys:String>
+    <sys:String x:Key="S.Game.AskPerformance">Gaming yerine Performance</sys:String>
+    <sys:String x:Key="S.Game.SummaryTitle">{0} açıkken</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">Oyun Office'te oynandıysa</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">Oyunları tek tek eklemeniz gerekmez. Ekranı kaplayan bir program Office'te birkaç dakika açık kaldıysa, kapandıktan sonra burada sorulur ve yanıtınız bir kural olur. Oyun sürerken hiçbir uyarı bildirim olarak gelmez: o sırada olan ısınmalar ve öneriler oyun kapanınca bu pencerede bir özet olarak gösterilir.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program kuralları</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">Bir program için mod</sys:String>
     <sys:String x:Key="S.Settings.RulesDesc">Bu listedeki bir program çalışırken onun modu açık olur; kapanınca önceki modunuz geri gelir. Makineyi ısıtan bir program için - MATLAB, bir kurulum - Office; bir oyun için Performance. Bu arada elle seçtiğiniz mod geçerli olur. Pildeyken pilde Office açıksa yalnızca Office kuralları uygulanır.</sys:String>

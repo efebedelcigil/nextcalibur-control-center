@@ -125,6 +125,7 @@ public partial class MainWindow
         new TourStep("SettingAutoCooling", TourPage.Settings, "SettingAutoCooling", "Settings"),
         new TourStep("IdleMode", TourPage.Settings, "IdleMode", "Settings"),
         new TourStep("SettingProgramRules", TourPage.Settings, "SettingProgramRules", "Settings"),
+        new TourStep("SettingAskGameMode", TourPage.Settings, "SettingAskGameMode", "Settings"),
         new TourStep("SettingFnShortcuts", TourPage.Settings, "SettingFnShortcuts", "Settings"),
         new TourStep("SettingInterval2", TourPage.Settings, "SettingInterval2", "Settings"),
         new TourStep("SettingUpdatesAutomatic", TourPage.Settings, "SettingUpdatesAutomatic", "Settings"),

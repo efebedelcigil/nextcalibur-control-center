@@ -143,15 +143,21 @@ public static class UserPresence
     /// Returns true if the foreground application is running fullscreen or borderless fullscreen
     /// covering an entire display monitor (such as a game, video player, or presentation).
     /// </summary>
-    public static bool IsForegroundFullScreenOrBorderless()
+    public static bool IsForegroundFullScreenOrBorderless() => ForegroundFullScreenProcessId() is not null;
+
+    /// <summary>
+    /// The process whose window covers its whole monitor in front - a game,
+    /// full screen or borderless, a video, a presentation - or null.
+    /// </summary>
+    public static uint? ForegroundFullScreenProcessId()
     {
         try
         {
             var hwnd = GetForegroundWindow();
-            if (hwnd == IntPtr.Zero || hwnd == GetDesktopWindow() || hwnd == GetShellWindow()) return false;
+            if (hwnd == IntPtr.Zero || hwnd == GetDesktopWindow() || hwnd == GetShellWindow()) return null;
 
-            if (GetWindowThreadProcessId(hwnd, out var pid) != 0 && pid == (uint)Environment.ProcessId)
-                return false;
+            if (GetWindowThreadProcessId(hwnd, out var pid) == 0 || pid == (uint)Environment.ProcessId)
+                return null;
 
             var sb = new System.Text.StringBuilder(256);
             if (GetClassName(hwnd, sb, sb.Capacity) > 0)
@@ -159,7 +165,7 @@ public static class UserPresence
                 var cls = sb.ToString();
                 if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd" or "Windows.UI.Core.CoreWindow")
                 {
-                    return false;
+                    return null;
                 }
             }
 
@@ -169,24 +175,26 @@ public static class UserPresence
             // down update checks and every Windows fix for as long as it
             // stayed open. Borderless games size themselves to the monitor
             // without being maximised.
-            if (IsZoomed(hwnd)) return false;
+            if (IsZoomed(hwnd)) return null;
 
-            if (!GetWindowRect(hwnd, out var rect)) return false;
+            if (!GetWindowRect(hwnd, out var rect)) return null;
 
             var hMon = MonitorFromWindow(hwnd, MonitorDefaultToNearest);
-            if (hMon == IntPtr.Zero) return false;
+            if (hMon == IntPtr.Zero) return null;
 
             var mi = new MonitorInfo { CbSize = Marshal.SizeOf<MonitorInfo>() };
-            if (!GetMonitorInfo(hMon, ref mi)) return false;
+            if (!GetMonitorInfo(hMon, ref mi)) return null;
 
             return rect.Left <= mi.RcMonitor.Left
                 && rect.Top <= mi.RcMonitor.Top
                 && rect.Right >= mi.RcMonitor.Right
-                && rect.Bottom >= mi.RcMonitor.Bottom;
+                && rect.Bottom >= mi.RcMonitor.Bottom
+                ? pid
+                : null;
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
-            return false;
+            return null;
         }
     }
 

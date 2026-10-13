@@ -47,6 +47,12 @@ public sealed class AppSettings
     /// <summary>The rules, in the order they were added.</summary>
     public List<Power.ProgramRule> ProgramRules { get; set; } = new();
 
+    /// <summary>After a program held the screen in Office, ask whether it should have a mode; see <see cref="Power.GameSessions"/>.</summary>
+    public bool AskModeForGames { get; set; } = true;
+
+    /// <summary>Programs asked about and answered "stay as it is": not asked again.</summary>
+    public List<string> GamesAnswered { get; set; } = new();
+
     /// <summary>One entry per action; see <see cref="Input.FnShortcuts"/>.</summary>
     public List<Input.FnShortcut> FnShortcuts { get; set; } = Input.FnShortcuts.Defaults();
 
@@ -314,6 +320,9 @@ public sealed class AppSettings
             rules.Add(new Power.ProgramRule { Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office });
         }
         settings.ProgramRules = rules;
+        settings.GamesAnswered = (settings.GamesAnswered ?? new())
+            .Select(Power.ProgramRules.Normalise).OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase).Take(500).ToList();
 
         if (settings.CpuWarningTemperatureC <= 0)
         {

@@ -344,6 +344,16 @@
     <sys:String x:Key="S.Idle.ActivePlan">Active power plan</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleMode.Title">Sleep and screen</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleMode.Body">When the display turns off and the computer sleeps, for each mode, plugged in and on battery. Choose the mode here and change the timeouts. A timeout changed in Windows' Settings shows here too and is given to the other modes; nothing changes unless you choose it.</sys:String>
+    <sys:String x:Key="S.Settings.AskGameTitle">Ask when a game was played in Office</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">When a program that covers the screen - a game, most likely - stayed open in Office for a few minutes, this window asks after it has closed: should it switch to Gaming (or Performance) from now on? The answer is added to this list as a rule; a program answered "No" is not asked about again. Browsers and video players are never asked about. Nothing is shown while the game runs.</sys:String>
+    <sys:String x:Key="S.Game.AskTitle">{0} was open in Office</sys:String>
+    <sys:String x:Key="S.Game.AskBody">{0} was just covering the screen, and you were in Office. Switch to Gaming whenever {0} opens from now on? Your mode comes back when it closes.
+
+Answer "No" and this program is not asked about again. The rule can be changed or removed at any time in Settings &gt; Program rules.</sys:String>
+    <sys:String x:Key="S.Game.AskPerformance">Performance instead of Gaming</sys:String>
+    <sys:String x:Key="S.Game.SummaryTitle">While {0} was open</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">When a game was played in Office</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">No need to add games one by one. When a program that covers the screen stayed open in Office for a few minutes, you are asked here after it closes, and the answer becomes a rule. Nothing comes as a notification during a game: heat and suggestions from that time are shown as a summary in this window once it has closed.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program rules</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">A mode for a program</sys:String>
     <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine - MATLAB, an installer - Office; for a game, Performance. A mode you pick by hand meanwhile wins. On battery with Office on battery on, only Office rules apply.</sys:String>

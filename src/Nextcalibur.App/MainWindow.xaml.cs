@@ -2951,6 +2951,7 @@ public partial class MainWindow : Window
 
                 // The overheat warning is the one thing worth a firmware read while
                 // hidden — it is the reason the application stays resident at all.
+                GameTick();
                 RunawayTick();
                 RetryTakenShortcuts();
                 ProgramRulesTick();
@@ -3043,7 +3044,9 @@ public partial class MainWindow : Window
                         : null;
                 if (_settings.WarnsAboutHeat && hot is not null)
                 {
-                    var busy = Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed();
+                    // A game in front counts too, borderless ones Windows does
+                    // not hold notifications for: its heat is said after it.
+                    var busy = Nextcalibur.Core.Hardware.UserPresence.WouldRatherNotBeDisturbed() || GameInFront;
                     var away = Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching();
                     if (busy || away)
                     {
@@ -3106,6 +3109,9 @@ public partial class MainWindow : Window
     private void TryShowDeferredOverheat()
     {
         if (!_settings.WarnsAboutHeat || _deferredOverheat is null) return;
+
+        // Heat from a game is said in the window once it has closed.
+        if (_game is not null || _gameEndPending is not null) return;
 
         var overheat = _deferredOverheat;
         _deferredOverheat = null;
