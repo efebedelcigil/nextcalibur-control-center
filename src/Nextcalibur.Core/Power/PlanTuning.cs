@@ -15,14 +15,10 @@ namespace Nextcalibur.Core.Power;
 ///   not to bite, the processor's own management settling it at 1-1.8 GHz,
 ///   but one change of that management away from 4 GHz at idle). Set to 5%,
 ///   the original kept beside it so uninstall can put it back.
-/// - <b>Our Office plan's ceiling.</b> Our plans are copies of Balanced; the
-///   vendor's Office plan caps the processor at 70%, ours did not, so Office
-///   on a machine without the vendor's plans was Balanced by another name.
-/// - <b>The vendor's Office plan's performance cores.</b> Its 70% ceiling is
-///   set for the first processor class only; on a hybrid processor the
-///   performance cores kept 100% and boosted to full clock in Office (seen
-///   at 3.8 GHz and 94 °C on 14 October 2026). Brought down to the same
-///   ceiling, the original kept so uninstall can put it back.
+/// - <b>The mode profile.</b> Each mode's plan - the vendor's or ours - is
+///   given <see cref="ModeProfile"/>'s processor settings: the floor, both
+///   processor classes' ceilings, boost, energy preference, scheduling and
+///   cooling policy. Each original is kept so uninstall can put it back.
 /// - <b>Cooling.</b> While the processor stays over its warning line the
 ///   active plan's ceiling is lowered to the Office plan's 70%, and put back
 ///   when it has cooled. The value it replaced is kept under
@@ -62,14 +58,13 @@ public static class PlanTuning
     private const string SchemesKey = @"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes";
     private const string FloorMarker = "NextcaliburOriginalMinState";
     private const string CoolingMarker = "NextcaliburCoolingFrom";
-    private const string OfficeCoresMarker = "NextcaliburOriginalMaxState1";
+    private const string ProfileMarkerPrefix = "NextcaliburProfile:";
 
-    /// <summary>The repairs uninstall may put back or keep: each setting with the marker of its original.</summary>
-    private static readonly (Guid Setting, string Marker)[] Repairs =
-    [
-        (MinState, FloorMarker),
-        (MaxState1, OfficeCoresMarker),
-    ];
+    private static string ProfileMarker(Guid setting) => ProfileMarkerPrefix + setting.ToString("D");
+
+    /// <summary>The changes uninstall may put back or keep: each setting with the marker of its original.</summary>
+    private static IEnumerable<(Guid Setting, string Marker)> Repairs =>
+        ModeProfile.Settings.Select(s => (s, ProfileMarker(s))).Prepend((MinState, FloorMarker));
 
     /// <summary>A plan's value for one setting, plugged in and on battery.</summary>
     public readonly record struct AcDc(int Ac, int Dc);
@@ -151,7 +146,8 @@ public static class PlanTuning
         foreach (var (setting, marker) in Repairs)
         foreach (var (plan, original) in MarkedPlans(marker))
         {
-            if (Write(plan, setting, original)) Unmark(plan, marker);
+            // A plan of ours is removed before this runs: nothing to put back.
+            if (Read(plan, setting) is null || Write(plan, setting, original)) Unmark(plan, marker);
         }
     }
 
@@ -162,33 +158,28 @@ public static class PlanTuning
             foreach (var (plan, _) in MarkedPlans(marker)) Unmark(plan, marker);
     }
 
-    // ------------------------------------------------------- Office's ceiling
-
-    /// <summary>Gives a plan of ours the Office ceiling, when it still has Balanced's.</summary>
-    public static bool CapOfficePlan(Guid plan)
-    {
-        var any = false;
-        foreach (var (setting, _) in Ceilings)
-        {
-            if (Read(plan, setting) is not { } max || (max.Ac <= CoolCeiling && max.Dc <= CoolCeiling)) continue;
-            any |= Write(plan, setting, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)));
-        }
-        return any;
-    }
+    // ------------------------------------------------------- the mode profile
 
     /// <summary>
-    /// Brings the vendor's Office plan's performance cores down to the
-    /// ceiling its first class already has, keeping the original. Nothing
-    /// when the plan is not capped at all, or both classes already agree.
+    /// Gives a mode's plan the <see cref="ModeProfile"/> settings that differ,
+    /// keeping each original the first time it is changed so uninstall can
+    /// put it back. Returns the settings changed; the profile is asserted at
+    /// every start, so a plan reset by Windows or the vendor gets it again.
     /// </summary>
-    public static bool AlignOfficeCores(Guid plan)
+    public static IReadOnlyList<Guid> ApplyProfile(SystemMode mode, Guid plan)
     {
-        if (Read(plan, MaxState) is not { } first || first.Ac > CoolCeiling || first.Dc > CoolCeiling) return false;
-        if (Read(plan, MaxState1) is not { } second || (second.Ac <= first.Ac && second.Dc <= first.Dc)) return false;
-        if (!Mark(plan, OfficeCoresMarker, second)) return false;
-        if (Write(plan, MaxState1, new AcDc(Math.Min(second.Ac, first.Ac), Math.Min(second.Dc, first.Dc)))) return true;
-        Unmark(plan, OfficeCoresMarker);
-        return false;
+        var changed = new List<Guid>();
+        var kept = MarkedPlans(ProfileMarkerPrefix, prefix: true).Select(m => (m.Marker, m.Plan)).ToHashSet();
+        foreach (var (setting, target) in ModeProfile.For(mode))
+        {
+            if (Read(plan, setting) is not { } current || current == target) continue;
+            var marker = ProfileMarker(setting);
+
+            // The original first: a change that cannot be undone is not made.
+            if (!kept.Contains((marker, plan)) && !Mark(plan, marker, current)) continue;
+            if (Write(plan, setting, target)) changed.Add(setting);
+        }
+        return changed;
     }
 
     // ---------------------------------------------------------------- cooling
@@ -271,9 +262,12 @@ public static class PlanTuning
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
     }
 
-    private static List<(Guid Plan, AcDc Original)> MarkedPlans(string name)
+    private static List<(Guid Plan, AcDc Original)> MarkedPlans(string name) =>
+        MarkedPlans(name, prefix: false).Select(m => (m.Plan, m.Original)).ToList();
+
+    private static List<(string Marker, Guid Plan, AcDc Original)> MarkedPlans(string name, bool prefix)
     {
-        var found = new List<(Guid, AcDc)>();
+        var found = new List<(string, Guid, AcDc)>();
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(MarkersKey);
@@ -281,8 +275,9 @@ public static class PlanTuning
             foreach (var value in key.GetValueNames())
             {
                 var parts = value.Split('|');
-                if (parts.Length != 2 || parts[0] != name || !Guid.TryParse(parts[1], out var plan)) continue;
-                if (key.GetValue(value) is string text && ParseMarker(text) is { } original) found.Add((plan, original));
+                if (parts.Length != 2 || !Guid.TryParse(parts[1], out var plan)) continue;
+                if (prefix ? !parts[0].StartsWith(name, StringComparison.Ordinal) : parts[0] != name) continue;
+                if (key.GetValue(value) is string text && ParseMarker(text) is { } original) found.Add((parts[0], plan, original));
             }
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }

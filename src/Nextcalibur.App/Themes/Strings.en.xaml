@@ -416,7 +416,7 @@
     <sys:String x:Key="S.Core.Trace.FolderGuard">The install folder's protection against the account</sys:String>
     <sys:String x:Key="S.Core.Trace.PowerPlans">The power plans it created</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">The Windows power-mode repair</sys:String>
-    <sys:String x:Key="S.Core.Trace.Floor">The power plans' minimum processor state repair</sys:String>
+    <sys:String x:Key="S.Core.Trace.Floor">The power plans' processor settings (floor repair and mode profile)</sys:String>
     <sys:String x:Key="S.Core.Restore.Disabled">System Protection is off for the system drive, so Windows makes no restore points.</sys:String>
     <sys:String x:Key="S.Core.Restore.Refused">Windows refused (status {0}).</sys:String>
     <sys:String x:Key="S.Core.Restore.Missing">System Restore is not available on this Windows.</sys:String>

@@ -265,7 +265,7 @@ public static class Footprint
                 // Undoing it silently would leave somebody worse off than
                 // before they ever installed us.
                 KeepingIsReasonable: true),
-            new(Words.Get("S.Core.Trace.Floor", "The power plans' minimum processor state repair"),
+            new(Words.Get("S.Core.Trace.Floor", "The power plans' processor settings (floor repair and mode profile)"),
                 PlanTuning.FloorRepaired(),
                 NeedsElevation: true,
                 // The same kind of repair as the overlay guard, in a plan.

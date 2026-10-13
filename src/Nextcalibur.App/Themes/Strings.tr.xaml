@@ -414,7 +414,7 @@
     <sys:String x:Key="S.Core.Trace.FolderGuard">Kurulum klasörünün hesaba karşı koruması</sys:String>
     <sys:String x:Key="S.Core.Trace.PowerPlans">Oluşturduğu güç planları</sys:String>
     <sys:String x:Key="S.Core.Trace.Repair">Windows güç modu onarımı</sys:String>
-    <sys:String x:Key="S.Core.Trace.Floor">Güç planlarının en düşük işlemci durumu onarımı</sys:String>
+    <sys:String x:Key="S.Core.Trace.Floor">Güç planlarının işlemci ayarları (taban onarımı ve mod profili)</sys:String>
     <sys:String x:Key="S.Core.Restore.Disabled">Sistem diski için Sistem Koruması kapalı, bu yüzden Windows geri yükleme noktası oluşturmuyor.</sys:String>
     <sys:String x:Key="S.Core.Restore.Refused">Windows reddetti (durum {0}).</sys:String>
     <sys:String x:Key="S.Core.Restore.Missing">Sistem Geri Yükleme bu Windows'ta yok.</sys:String>

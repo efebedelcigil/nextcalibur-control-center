@@ -116,7 +116,8 @@ public sealed class SystemModeService
     /// <summary>The plan a mode selects, and whether it is one of ours.</summary>
     public static (Guid Plan, bool Ours)? PlanFor(SystemMode mode)
     {
-        if (ResolvePlan(mode) is not { } plan) return null;
+        // Balanced stands in for a mode with no plan; it is not that mode's to tune.
+        if (!HasPlanFor(mode) || ResolvePlan(mode) is not { } plan) return null;
         return (plan, EnumeratePlans().TryGetValue(OwnPlanName(mode), out var own) && own == plan);
     }
 

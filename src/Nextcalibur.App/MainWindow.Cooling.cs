@@ -40,15 +40,14 @@ public partial class MainWindow
                 Audit("plan-floor-repair", "done-automatically", ("plan", name), ("to", PlanTuning.SafeFloor));
             }
 
-            if (SystemModeService.PlanFor(SystemMode.Office) is { } office)
+            foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
             {
-                if (office.Ours && PlanTuning.CapOfficePlan(office.Plan))
-                    Log.Info("power", $"Nextcalibur Office capped at {PlanTuning.CoolCeiling}%");
-                else if (!office.Ours && PlanTuning.AlignOfficeCores(office.Plan))
-                {
-                    Log.Info("power", "The Office plan's performance cores were brought down to its ceiling");
-                    Audit("plan-office-cores", "done-automatically", ("to", PlanTuning.CoolCeiling));
-                }
+                if (SystemModeService.PlanFor(mode) is not { } plan) continue;
+                var changed = PlanTuning.ApplyProfile(mode, plan.Plan);
+                if (changed.Count == 0) continue;
+                Log.Info("power", $"{mode} plan given the mode profile: {changed.Count} setting(s)");
+                Audit("plan-profile", "done-automatically", ("mode", mode.ToString()),
+                    ("settings", string.Join(",", changed.Select(g => g.ToString("D")))));
             }
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
