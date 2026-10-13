@@ -65,7 +65,15 @@ public partial class MainWindow
                 && !UserPresence.NobodyIsWatching())
             {
                 _gameEndPending = null;
-                SayAfterGame(end);
+
+                // Outside the timer's tick: the questions wait for an answer,
+                // and the heat watch must not wait with them.
+                Dispatcher.BeginInvoke(async () =>
+                {
+                    ShowForAfterGame();
+                    await Task.Delay(500);
+                    SayAfterGame(end);
+                });
             }
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
@@ -119,7 +127,8 @@ public partial class MainWindow
             : new GameEnd(g.Name, ask, notes);
     }
 
-    private void SayAfterGame(GameEnd end)
+    /// <summary>The window up, so the questions are its own dialogues rather than Windows' boxes.</summary>
+    private void ShowForAfterGame()
     {
         if (!IsVisible || WindowState == WindowState.Minimized)
         {
@@ -127,7 +136,11 @@ public partial class MainWindow
             WindowState = WindowState.Normal;
         }
         Activate();
+    }
 
+    private void SayAfterGame(GameEnd end)
+    {
+        if (_exiting || _sessionEnding) return;
         if (end.Notes.Count > 0)
             Dialogs.Tell(Strings.Get("S.Game.SummaryTitle", end.Name),
                 string.Join(Environment.NewLine + Environment.NewLine, end.Notes));

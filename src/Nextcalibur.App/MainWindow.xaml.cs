@@ -337,6 +337,7 @@ public partial class MainWindow : Window
         {
             SystemModeService.EnsurePlansExist();
             TunePlansAtStart();
+            RememberIdleTimeouts();
         }
         StartFnShortcuts();
 

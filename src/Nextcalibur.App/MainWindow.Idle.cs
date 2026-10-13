@@ -43,14 +43,33 @@ public partial class MainWindow
         _idleSleepDc.SelectionChanged += (_, _) => IdleChosen(IdleSetting.Sleep, pluggedIn: false, _idleSleepDc);
         _idleScreenSaver.SelectionChanged += (_, _) => ScreenSaverChosen();
 
-        ResolveIdlePlans();
+        RememberIdleTimeouts();
+    }
+
+    /// <summary>
+    /// Takes the plans' timeouts as they are now as the ones known. After
+    /// anything of ours writes them - the start's display repair - or the
+    /// next tick takes our own write for a change made in Windows and
+    /// carries it to every mode.
+    /// </summary>
+    private void RememberIdleTimeouts()
+    {
+        if (_idleMode is null) return;
+        ResolveIdlePlans(force: true);
+        _idleKnown.Clear();
         foreach (var (_, plan) in _idlePlans)
             if (IdleTimeouts.Read(plan) is { } t) _idleKnown[plan] = t;
         RefreshIdleRows();
     }
 
-    private void ResolveIdlePlans()
+    private DateTime _idlePlansResolvedAt = DateTime.MinValue;
+
+    /// <summary>Which plans are the modes': looked up once a minute, a scan of every plan each time.</summary>
+    private void ResolveIdlePlans(bool force = false)
     {
+        if (!force && DateTime.UtcNow - _idlePlansResolvedAt < TimeSpan.FromMinutes(1)) return;
+        _idlePlansResolvedAt = DateTime.UtcNow;
+
         var plans = new List<(SystemMode?, Guid)>();
         foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
             if (SystemModeService.PlanFor(mode) is { } p && plans.All(x => x.Item2 != p.Plan)) plans.Add((mode, p.Plan));
