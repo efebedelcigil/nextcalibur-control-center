@@ -29,6 +29,21 @@ public static class PlanTuning
     public static readonly Guid MinState = new("893dee8e-2bef-41e0-89c6-b55d0929964c");
     public static readonly Guid MaxState = new("bc5038f7-23e0-4960-96da-33abaf5935ec");
 
+    /// <summary>
+    /// The ceiling of the second processor class: on a hybrid processor the
+    /// performance cores. <see cref="MaxState"/> alone holds only the
+    /// efficient cores, and the performance cores went on boosting to full
+    /// clock in Office (seen at 3.8 GHz and 94 °C on 14 October 2026).
+    /// </summary>
+    public static readonly Guid MaxState1 = new("bc5038f7-23e0-4960-96da-33abaf5935ed");
+
+    /// <summary>Every ceiling a cap has to lower, each with the marker its original is kept under.</summary>
+    private static readonly (Guid Setting, string Marker)[] Ceilings =
+    [
+        (MaxState, CoolingMarker),
+        (MaxState1, CoolingMarker + "1"),
+    ];
+
     /// <summary>A floor at or above this pins the processor.</summary>
     public const int PinnedFloor = 90;
 
@@ -136,14 +151,19 @@ public static class PlanTuning
     /// <summary>Gives a plan of ours the Office ceiling, when it still has Balanced's.</summary>
     public static bool CapOfficePlan(Guid plan)
     {
-        if (Read(plan, MaxState) is not { } max || (max.Ac <= CoolCeiling && max.Dc <= CoolCeiling)) return false;
-        return Write(plan, MaxState, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)));
+        var any = false;
+        foreach (var (setting, _) in Ceilings)
+        {
+            if (Read(plan, setting) is not { } max || (max.Ac <= CoolCeiling && max.Dc <= CoolCeiling)) continue;
+            any |= Write(plan, setting, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)));
+        }
+        return any;
     }
 
     // ---------------------------------------------------------------- cooling
 
     /// <summary>Whether cooling has lowered a plan's ceiling and not yet put it back.</summary>
-    public static bool Cooling => MarkedPlans(CoolingMarker).Count > 0;
+    public static bool Cooling => Ceilings.Any(c => MarkedPlans(c.Marker).Count > 0);
 
     /// <summary>
     /// Lowers the active plan's ceiling to <see cref="CoolCeiling"/>. False
@@ -154,22 +174,29 @@ public static class PlanTuning
     {
         if (Cooling) return true;
         var plan = ActivePlan();
-        if (plan == Guid.Empty || Read(plan, MaxState) is not { } max) return false;
-        if (max.Ac <= CoolCeiling && max.Dc <= CoolCeiling) return false;
+        if (plan == Guid.Empty) return false;
 
-        if (!Mark(plan, CoolingMarker, max)) return false;
-        if (Write(plan, MaxState, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)))) return true;
-        Unmark(plan, CoolingMarker);
-        return false;
+        var any = false;
+        foreach (var (setting, marker) in Ceilings)
+        {
+            if (Read(plan, setting) is not { } max || (max.Ac <= CoolCeiling && max.Dc <= CoolCeiling)) continue;
+            if (!Mark(plan, marker, max)) continue;
+            if (Write(plan, setting, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)))) any = true;
+            else Unmark(plan, marker);
+        }
+        return any;
     }
 
     /// <summary>Puts back every ceiling cooling lowered. Safe to call at any time; at start it undoes a run that ended mid-cooling.</summary>
     public static bool StopCooling()
     {
         var any = false;
-        foreach (var (plan, original) in MarkedPlans(CoolingMarker))
+        foreach (var (setting, marker) in Ceilings)
         {
-            if (Write(plan, MaxState, original)) { Unmark(plan, CoolingMarker); any = true; }
+            foreach (var (plan, original) in MarkedPlans(marker))
+            {
+                if (Write(plan, setting, original)) { Unmark(plan, marker); any = true; }
+            }
         }
         return any;
     }
