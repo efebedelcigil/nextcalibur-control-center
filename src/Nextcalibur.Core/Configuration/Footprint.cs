@@ -448,6 +448,7 @@ public static class Footprint
             else PlanTuning.ForgetFloors();
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException) { }
+        PlanTuning.RemoveMarkersKeyIfEmpty();
 
         if (removeRepair)
         {

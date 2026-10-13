@@ -40,9 +40,16 @@ public partial class MainWindow
                 Audit("plan-floor-repair", "done-automatically", ("plan", name), ("to", PlanTuning.SafeFloor));
             }
 
-            if (SystemModeService.EnumeratePlans().TryGetValue("Nextcalibur Office", out var office)
-                && PlanTuning.CapOfficePlan(office))
-                Log.Info("power", $"Nextcalibur Office capped at {PlanTuning.CoolCeiling}%");
+            if (SystemModeService.PlanFor(SystemMode.Office) is { } office)
+            {
+                if (office.Ours && PlanTuning.CapOfficePlan(office.Plan))
+                    Log.Info("power", $"Nextcalibur Office capped at {PlanTuning.CoolCeiling}%");
+                else if (!office.Ours && PlanTuning.AlignOfficeCores(office.Plan))
+                {
+                    Log.Info("power", "The Office plan's performance cores were brought down to its ceiling");
+                    Audit("plan-office-cores", "done-automatically", ("to", PlanTuning.CoolCeiling));
+                }
+            }
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {

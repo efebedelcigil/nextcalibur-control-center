@@ -18,10 +18,16 @@ namespace Nextcalibur.Core.Power;
 /// - <b>Our Office plan's ceiling.</b> Our plans are copies of Balanced; the
 ///   vendor's Office plan caps the processor at 70%, ours did not, so Office
 ///   on a machine without the vendor's plans was Balanced by another name.
+/// - <b>The vendor's Office plan's performance cores.</b> Its 70% ceiling is
+///   set for the first processor class only; on a hybrid processor the
+///   performance cores kept 100% and boosted to full clock in Office (seen
+///   at 3.8 GHz and 94 °C on 14 October 2026). Brought down to the same
+///   ceiling, the original kept so uninstall can put it back.
 /// - <b>Cooling.</b> While the processor stays over its warning line the
 ///   active plan's ceiling is lowered to the Office plan's 70%, and put back
-///   when it has cooled. The value it replaced is written beside the plan,
-///   so a crash or a power cut in the middle is undone at the next start.
+///   when it has cooled. The value it replaced is kept under
+///   <see cref="MarkersKey"/>, so a crash or a power cut in the middle is
+///   undone at the next start.
 /// </summary>
 public static class PlanTuning
 {
@@ -56,6 +62,14 @@ public static class PlanTuning
     private const string SchemesKey = @"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes";
     private const string FloorMarker = "NextcaliburOriginalMinState";
     private const string CoolingMarker = "NextcaliburCoolingFrom";
+    private const string OfficeCoresMarker = "NextcaliburOriginalMaxState1";
+
+    /// <summary>The repairs uninstall may put back or keep: each setting with the marker of its original.</summary>
+    private static readonly (Guid Setting, string Marker)[] Repairs =
+    [
+        (MinState, FloorMarker),
+        (MaxState1, OfficeCoresMarker),
+    ];
 
     /// <summary>A plan's value for one setting, plugged in and on battery.</summary>
     public readonly record struct AcDc(int Ac, int Dc);
@@ -108,7 +122,7 @@ public static class PlanTuning
     }
 
     /// <summary>Whether some plan's floor was repaired by us and not put back.</summary>
-    public static bool FloorRepaired() => MarkedPlans(FloorMarker).Count > 0;
+    public static bool FloorRepaired() => Repairs.Any(r => MarkedPlans(r.Marker).Count > 0);
 
     /// <summary>Sets every pinning floor to <see cref="SafeFloor"/>, keeping the original. Returns the plans changed.</summary>
     public static IReadOnlyList<string> RepairPinnedFloors()
@@ -134,16 +148,18 @@ public static class PlanTuning
     /// <summary>Puts every repaired floor back as it was. For uninstall, when the repairs are not kept.</summary>
     public static void RestoreFloors()
     {
-        foreach (var (plan, original) in MarkedPlans(FloorMarker))
+        foreach (var (setting, marker) in Repairs)
+        foreach (var (plan, original) in MarkedPlans(marker))
         {
-            if (Write(plan, MinState, original)) Unmark(plan, FloorMarker);
+            if (Write(plan, setting, original)) Unmark(plan, marker);
         }
     }
 
     /// <summary>Forgets the originals and keeps the repair. For uninstall, when the repairs are kept.</summary>
     public static void ForgetFloors()
     {
-        foreach (var (plan, _) in MarkedPlans(FloorMarker)) Unmark(plan, FloorMarker);
+        foreach (var (_, marker) in Repairs)
+            foreach (var (plan, _) in MarkedPlans(marker)) Unmark(plan, marker);
     }
 
     // ------------------------------------------------------- Office's ceiling
@@ -158,6 +174,21 @@ public static class PlanTuning
             any |= Write(plan, setting, new AcDc(Math.Min(max.Ac, CoolCeiling), Math.Min(max.Dc, CoolCeiling)));
         }
         return any;
+    }
+
+    /// <summary>
+    /// Brings the vendor's Office plan's performance cores down to the
+    /// ceiling its first class already has, keeping the original. Nothing
+    /// when the plan is not capped at all, or both classes already agree.
+    /// </summary>
+    public static bool AlignOfficeCores(Guid plan)
+    {
+        if (Read(plan, MaxState) is not { } first || first.Ac > CoolCeiling || first.Dc > CoolCeiling) return false;
+        if (Read(plan, MaxState1) is not { } second || (second.Ac <= first.Ac && second.Dc <= first.Dc)) return false;
+        if (!Mark(plan, OfficeCoresMarker, second)) return false;
+        if (Write(plan, MaxState1, new AcDc(Math.Min(second.Ac, first.Ac), Math.Min(second.Dc, first.Dc)))) return true;
+        Unmark(plan, OfficeCoresMarker);
+        return false;
     }
 
     // ---------------------------------------------------------------- cooling
@@ -203,17 +234,29 @@ public static class PlanTuning
 
     // ---------------------------------------------------------------- markers
 
+    // Beside the plan was the first idea, but Windows gives administrators
+    // only read access to the plans' keys (full control is SYSTEM's): every
+    // mark failed, and with it every repair and every cooling cap, silently
+    // (found 14 October 2026, a Gaming floor still at 99%). The marks live
+    // under a key of our own, which the uninstall removes once they are
+    // put back.
+
+    /// <summary>Where the originals are kept: one value per plan and marker, "marker|plan".</summary>
+    public const string MarkersKey = @"SOFTWARE\Nextcalibur\PlanMarkers";
+
+    private static string MarkName(Guid plan, string name) => $"{name}|{plan:D}";
+
     private static bool Mark(Guid plan, string name, AcDc value)
     {
         try
         {
-            using var key = Registry.LocalMachine.OpenSubKey($@"{SchemesKey}\{plan:D}", writable: true);
-            if (key is null) return false;
-            key.SetValue(name, $"{value.Ac},{value.Dc}", RegistryValueKind.String);
+            using var key = Registry.LocalMachine.CreateSubKey(MarkersKey, writable: true);
+            key.SetValue(MarkName(plan, name), $"{value.Ac},{value.Dc}", RegistryValueKind.String);
             return true;
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException)
         {
+            Configuration.Log.Warn("power", $"Could not keep the original of {plan:D} ({name}): {ex.Message}");
             return false;
         }
     }
@@ -222,8 +265,8 @@ public static class PlanTuning
     {
         try
         {
-            using var key = Registry.LocalMachine.OpenSubKey($@"{SchemesKey}\{plan:D}", writable: true);
-            key?.DeleteValue(name, throwOnMissingValue: false);
+            using var key = Registry.LocalMachine.OpenSubKey(MarkersKey, writable: true);
+            key?.DeleteValue(MarkName(plan, name), throwOnMissingValue: false);
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
     }
@@ -231,15 +274,39 @@ public static class PlanTuning
     private static List<(Guid Plan, AcDc Original)> MarkedPlans(string name)
     {
         var found = new List<(Guid, AcDc)>();
-        using var root = Registry.LocalMachine.OpenSubKey(SchemesKey);
-        if (root is null) return found;
-        foreach (var sub in root.GetSubKeyNames())
+        try
         {
-            if (!Guid.TryParse(sub, out var plan)) continue;
-            using var key = root.OpenSubKey(sub);
-            if (key?.GetValue(name) is string text && ParseMarker(text) is { } value) found.Add((plan, value));
+            using var key = Registry.LocalMachine.OpenSubKey(MarkersKey);
+            if (key is null) return found;
+            foreach (var value in key.GetValueNames())
+            {
+                var parts = value.Split('|');
+                if (parts.Length != 2 || parts[0] != name || !Guid.TryParse(parts[1], out var plan)) continue;
+                if (key.GetValue(value) is string text && ParseMarker(text) is { } original) found.Add((plan, original));
+            }
         }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
         return found;
+    }
+
+    /// <summary>Removes the markers' key once nothing is left in it. For uninstall, after the plans are put back.</summary>
+    public static void RemoveMarkersKeyIfEmpty()
+    {
+        try
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(MarkersKey))
+            {
+                if (key is null || key.ValueCount > 0) return;
+            }
+            Registry.LocalMachine.DeleteSubKeyTree(MarkersKey, throwOnMissingSubKey: false);
+            using var parent = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Nextcalibur");
+            if (parent is { SubKeyCount: 0, ValueCount: 0 })
+            {
+                parent.Dispose();
+                Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Nextcalibur", throwOnMissingSubKey: false);
+            }
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
     }
 
     /// <summary>"99,99" back into a value; null for anything that is not two percentages.</summary>

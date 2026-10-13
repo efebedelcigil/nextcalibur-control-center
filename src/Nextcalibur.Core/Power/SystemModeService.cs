@@ -113,6 +113,13 @@ public sealed class SystemModeService
             || PreferredPlanNames[mode].Any(n => n != "Balanced" && plans.ContainsKey(n));
     }
 
+    /// <summary>The plan a mode selects, and whether it is one of ours.</summary>
+    public static (Guid Plan, bool Ours)? PlanFor(SystemMode mode)
+    {
+        if (ResolvePlan(mode) is not { } plan) return null;
+        return (plan, EnumeratePlans().TryGetValue(OwnPlanName(mode), out var own) && own == plan);
+    }
+
     private static Guid? ResolvePlan(SystemMode mode)
     {
         var plans = EnumeratePlans();
