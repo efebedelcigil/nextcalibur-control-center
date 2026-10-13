@@ -43,8 +43,9 @@ public static class PlanTuning
     /// <summary>What a "never" display timeout is set to: ten minutes.</summary>
     public const int DisplayOffSeconds = 600;
 
-    /// <summary>The group a setting lives in: the processor's, but for the display timeout.</summary>
-    private static Guid SubgroupOf(Guid setting) => setting == VideoIdle ? SubVideo : SubProcessor;
+    /// <summary>The group a setting lives in: the processor's, but for the display and sleep timeouts.</summary>
+    private static Guid SubgroupOf(Guid setting) =>
+        setting == VideoIdle ? SubVideo : setting == IdleTimeouts.StandbyIdle ? IdleTimeouts.SubSleep : SubProcessor;
     public static readonly Guid MaxState = new("bc5038f7-23e0-4960-96da-33abaf5935ec");
 
     /// <summary>

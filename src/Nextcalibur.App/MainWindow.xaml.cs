@@ -2954,6 +2954,7 @@ public partial class MainWindow : Window
                 RunawayTick();
                 RetryTakenShortcuts();
                 ProgramRulesTick();
+                IdleTimeoutsTick();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

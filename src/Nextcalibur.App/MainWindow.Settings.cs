@@ -168,6 +168,7 @@ public partial class MainWindow
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
         WireFnShortcutsPage();
         WireProgramRulesPage();
+        WireIdlePage();
         _settingsPageWired = true;
         LoadSettingsPage();
     }
