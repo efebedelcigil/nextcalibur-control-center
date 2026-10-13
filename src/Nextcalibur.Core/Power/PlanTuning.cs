@@ -19,6 +19,12 @@ namespace Nextcalibur.Core.Power;
 ///   given <see cref="ModeProfile"/>'s processor settings: the floor, both
 ///   processor classes' ceilings, boost, energy preference, scheduling and
 ///   cooling policy. Each original is kept so uninstall can put it back.
+/// - <b>The display that never sleeps.</b> The vendor's Gaming plan turns
+///   the display off "never" when plugged in (found 14 October 2026): an
+///   external monitor switched off at its button stays lit as far as Windows
+///   knows, and the graphics card keeps sending it frames. Set once to
+///   <see cref="DisplayOffSeconds"/>; a "never" chosen later in Windows'
+///   Settings is the owner's and is left alone.
 /// - <b>Cooling.</b> While the processor stays over its warning line the
 ///   active plan's ceiling is lowered to the Office plan's 70%, and put back
 ///   when it has cooled. The value it replaced is kept under
@@ -29,6 +35,16 @@ public static class PlanTuning
 {
     public static readonly Guid SubProcessor = new("54533251-82be-4824-96c1-47b60b740d00");
     public static readonly Guid MinState = new("893dee8e-2bef-41e0-89c6-b55d0929964c");
+
+    /// <summary>The display group, and its "turn off the display after" (VIDEOIDLE, seconds).</summary>
+    public static readonly Guid SubVideo = new("7516b95f-f776-4464-8c53-06167f40cc99");
+    public static readonly Guid VideoIdle = new("3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e");
+
+    /// <summary>What a "never" display timeout is set to: ten minutes.</summary>
+    public const int DisplayOffSeconds = 600;
+
+    /// <summary>The group a setting lives in: the processor's, but for the display timeout.</summary>
+    private static Guid SubgroupOf(Guid setting) => setting == VideoIdle ? SubVideo : SubProcessor;
     public static readonly Guid MaxState = new("bc5038f7-23e0-4960-96da-33abaf5935ec");
 
     /// <summary>
@@ -59,19 +75,20 @@ public static class PlanTuning
     private const string FloorMarker = "NextcaliburOriginalMinState";
     private const string CoolingMarker = "NextcaliburCoolingFrom";
     private const string ProfileMarkerPrefix = "NextcaliburProfile:";
+    private const string DisplayMarker = "NextcaliburOriginalVideoIdle";
 
     private static string ProfileMarker(Guid setting) => ProfileMarkerPrefix + setting.ToString("D");
 
     /// <summary>The changes uninstall may put back or keep: each setting with the marker of its original.</summary>
     private static IEnumerable<(Guid Setting, string Marker)> Repairs =>
-        ModeProfile.Settings.Select(s => (s, ProfileMarker(s))).Prepend((MinState, FloorMarker));
+        ModeProfile.Settings.Select(s => (s, ProfileMarker(s))).Prepend((MinState, FloorMarker)).Append((VideoIdle, DisplayMarker));
 
     /// <summary>A plan's value for one setting, plugged in and on battery.</summary>
     public readonly record struct AcDc(int Ac, int Dc);
 
     public static AcDc? Read(Guid plan, Guid setting)
     {
-        var sub = SubProcessor;
+        var sub = SubgroupOf(setting);
         if (PowerReadACValueIndex(IntPtr.Zero, ref plan, ref sub, ref setting, out var ac) != 0) return null;
         if (PowerReadDCValueIndex(IntPtr.Zero, ref plan, ref sub, ref setting, out var dc) != 0) return null;
         return new AcDc((int)ac, (int)dc);
@@ -79,7 +96,7 @@ public static class PlanTuning
 
     public static bool Write(Guid plan, Guid setting, AcDc value)
     {
-        var sub = SubProcessor;
+        var sub = SubgroupOf(setting);
         if (PowerWriteACValueIndex(IntPtr.Zero, ref plan, ref sub, ref setting, (uint)value.Ac) != 0) return false;
         if (PowerWriteDCValueIndex(IntPtr.Zero, ref plan, ref sub, ref setting, (uint)value.Dc) != 0) return false;
 
@@ -180,6 +197,21 @@ public static class PlanTuning
             if (Write(plan, setting, target)) changed.Add(setting);
         }
         return changed;
+    }
+
+    /// <summary>
+    /// Gives a plan whose display never turns off when plugged in a timeout
+    /// of <see cref="DisplayOffSeconds"/>, once: with the original kept,
+    /// a later "never" is somebody's choice. True when it was changed.
+    /// </summary>
+    public static bool RepairNeverOffDisplay(Guid plan)
+    {
+        if (MarkedPlans(DisplayMarker).Any(m => m.Plan == plan)) return false;
+        if (Read(plan, VideoIdle) is not { Ac: 0 } current) return false;
+        if (!Mark(plan, DisplayMarker, current)) return false;
+        if (Write(plan, VideoIdle, current with { Ac = DisplayOffSeconds })) return true;
+        Unmark(plan, DisplayMarker);
+        return false;
     }
 
     // ---------------------------------------------------------------- cooling
@@ -304,13 +336,15 @@ public static class PlanTuning
         catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException) { }
     }
 
-    /// <summary>"99,99" back into a value; null for anything that is not two percentages.</summary>
+    /// <summary>"99,99" back into a value; null for anything that is not two values from 0 to a day's seconds.</summary>
+    private const int MaxMarkerValue = 86_400;
+
     public static AcDc? ParseMarker(string text)
     {
         var parts = text.Split(',');
         return parts.Length == 2
-               && int.TryParse(parts[0], out var ac) && ac is >= 0 and <= 100
-               && int.TryParse(parts[1], out var dc) && dc is >= 0 and <= 100
+               && int.TryParse(parts[0], out var ac) && ac is >= 0 and <= MaxMarkerValue
+               && int.TryParse(parts[1], out var dc) && dc is >= 0 and <= MaxMarkerValue
             ? new AcDc(ac, dc)
             : null;
     }

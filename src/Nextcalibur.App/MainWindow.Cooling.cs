@@ -43,6 +43,11 @@ public partial class MainWindow
             foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
             {
                 if (SystemModeService.PlanFor(mode) is not { } plan) continue;
+                if (PlanTuning.RepairNeverOffDisplay(plan.Plan))
+                {
+                    Log.Info("power", $"{mode} plan's display timeout was never; set to {PlanTuning.DisplayOffSeconds / 60} minutes");
+                    Audit("plan-display-timeout", "done-automatically", ("mode", mode.ToString()), ("to", PlanTuning.DisplayOffSeconds));
+                }
                 var changed = PlanTuning.ApplyProfile(mode, plan.Plan);
                 if (changed.Count == 0) continue;
                 Log.Info("power", $"{mode} plan given the mode profile: {changed.Count} setting(s)");

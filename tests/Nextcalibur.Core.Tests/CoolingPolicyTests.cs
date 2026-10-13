@@ -82,13 +82,14 @@ public class CoolingPolicyTests
     [Theory]
     [InlineData("99,99", 99, 99)]
     [InlineData("70,100", 70, 100)]
+    [InlineData("0,180", 0, 180)]
     public void Markers_read_back(string text, int ac, int dc) =>
         Assert.Equal(new PlanTuning.AcDc(ac, dc), PlanTuning.ParseMarker(text));
 
     [Theory]
     [InlineData("")]
     [InlineData("99")]
-    [InlineData("101,5")]
+    [InlineData("86401,5")]
     [InlineData("-1,5")]
     [InlineData("a,b")]
     public void Odd_markers_are_refused(string text) => Assert.Null(PlanTuning.ParseMarker(text));
