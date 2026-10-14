@@ -63,7 +63,7 @@ public partial class MainWindow
         _idlePlansResolvedAt = DateTime.UtcNow;
 
         var plans = new List<(SystemMode?, Guid)>();
-        foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
+        foreach (var mode in SystemModes.InOrder)
             if (SystemModeService.PlanFor(mode) is { } p && plans.All(x => x.Item2 != p.Plan)) plans.Add((mode, p.Plan));
 
         // On a machine without the modes' plans, Windows' active plan is all there is.
@@ -108,7 +108,7 @@ public partial class MainWindow
             _idleRows.Children.Add(IdleRow(null, Strings.Get("S.Idle.Mode"), null));
             foreach (var (mode, plan) in _idlePlans)
             {
-                var label = mode is { } m ? m.ToString() : Strings.Get("S.Idle.ActivePlan");
+                var label = mode is { } m ? ModeName(m) : Strings.Get("S.Idle.ActivePlan");
                 _idleRows.Children.Add(IdleRow(plan, label, _idleKnown.TryGetValue(plan, out var t) ? t : null));
             }
 

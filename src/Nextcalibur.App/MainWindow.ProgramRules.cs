@@ -110,7 +110,7 @@ public partial class MainWindow
             }
         }
 
-        var winner = ProgramRules.Winning(_settings.ProgramRules, running, _onBattery && _settings.QuietOnBattery);
+        var winner = ProgramRules.Winning(_settings.ProgramRules, running, _onBattery ? _settings.ModeOnBattery : null);
 
         if (winner is not null)
         {
@@ -122,7 +122,7 @@ public partial class MainWindow
             if (changed) _ruleOverridden = false;
             _activeRule = winner;
             if (changed && !_ruleOverridden && _currentMode != winner.Mode && ApplyRuleMode(winner.Mode))
-                _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Started", winner.Process, winner.Mode));
+                _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Started", winner.Process, ModeName(winner.Mode)));
             if (changed) RefreshProgramRuleRows();
             return;
         }
@@ -197,8 +197,8 @@ public partial class MainWindow
         _rulesMode = FindName("ProgramRuleMode") as ComboBox;
         if (_rulesMaster is null || _rulesRows is null || _rulesName is null || _rulesMode is null) return;
 
-        foreach (var mode in Enum.GetValues<SystemMode>()) _rulesMode.Items.Add(mode);
-        _rulesMode.SelectedItem = SystemMode.Office;
+        foreach (var mode in SystemModes.InOrder) _rulesMode.Items.Add(new ModeChoice(mode));
+        _rulesMode.SelectedIndex = 0;
 
         if (FindName("SettingAskGameMode") is ToggleButton askGames)
         {
@@ -238,10 +238,10 @@ public partial class MainWindow
 
         // On battery with Office on battery on, the battery's rule has the
         // mode: going back to Gaming or Performance there would undo it.
-        var batteryKeepsOffice = _onBattery && _settings.QuietOnBattery;
+        var ceiling = _onBattery ? _settings.ModeOnBattery : null;
         if (!_ruleOverridden && _ruleReturnMode is { } back && _currentMode != back
-            && !(batteryKeepsOffice && back != SystemMode.Office) && ApplyRuleMode(back))
-            _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Ended", ended.Process, back));
+            && !(ceiling is { } c && !SystemModes.AtMost(back, c)) && ApplyRuleMode(back))
+            _tray?.ShowMessage(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.Ended", ended.Process, ModeName(back)));
         _ruleReturnMode = null;
         _ruleOverridden = false;
         RefreshProgramRuleRows();
@@ -271,7 +271,7 @@ public partial class MainWindow
 
     private void AddProgramRule()
     {
-        if (_rulesName is null || _rulesMode?.SelectedItem is not SystemMode mode) return;
+        if (_rulesName is null || _rulesMode?.SelectedItem is not ModeChoice { Mode: var mode }) return;
         if (ProgramRules.Normalise(_rulesName.Text) is not { } name)
         {
             Dialogs.Tell(Strings.Get("S.Rules.Title"), Strings.Get("S.Rules.BadName"));
@@ -325,11 +325,11 @@ public partial class MainWindow
                 row.Children.Add(text);
 
                 var mode = new ComboBox { MinWidth = 120, Margin = new Thickness(8, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
-                foreach (var m in Enum.GetValues<SystemMode>()) mode.Items.Add(m);
-                mode.SelectedItem = rule.Mode;
+                foreach (var m in SystemModes.InOrder) mode.Items.Add(new ModeChoice(m));
+                mode.SelectedIndex = SystemModes.Rank(rule.Mode);
                 mode.SelectionChanged += (_, _) =>
                 {
-                    if (_rulesUiLoading || mode.SelectedItem is not SystemMode chosen) return;
+                    if (_rulesUiLoading || mode.SelectedItem is not ModeChoice { Mode: var chosen }) return;
                     current.Mode = chosen;
                     _settings.Save();
                     // In force now: the new mode at once; the mode to go back to stays.

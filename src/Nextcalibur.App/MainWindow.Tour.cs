@@ -80,6 +80,7 @@ public partial class MainWindow
         new TourStep("VersionText", TourPage.Any, "VersionText", "Rail"),
         // ---- System
         new TourStep("ModeOffice", TourPage.System, "ModeOffice", "System"),
+        new TourStep("ModeBalanced", TourPage.System, "ModeBalanced", "System"),
         new TourStep("ModeGaming", TourPage.System, "ModeGaming", "System"),
         new TourStep("ModePerformance", TourPage.System, "ModePerformance", "System"),
         new TourStep("SystemModeNote", TourPage.System, "SystemModeNote", "System"),
@@ -120,7 +121,7 @@ public partial class MainWindow
         new TourStep("SettingPrivacyButton", TourPage.Settings, "SettingPrivacyButton", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "SettingStartWithWindows", "Settings"),
         new TourStep("SettingStartHow", TourPage.Settings, "SettingStartHow", "Settings"),
-        new TourStep("SettingOfficeOnBattery", TourPage.Settings, "SettingOfficeOnBattery", "Settings"),
+        new TourStep("SettingBatteryMode", TourPage.Settings, "SettingBatteryMode", "Settings"),
         new TourStep("SettingOverheatWarning", TourPage.Settings, "SettingOverheatWarning", "Settings"),
         new TourStep("SettingAutoFanTurbo", TourPage.Settings, "SettingAutoFanTurbo", "Settings"),
         new TourStep("SettingAutoCooling", TourPage.Settings, "SettingAutoCooling", "Settings"),

@@ -44,7 +44,7 @@ public partial class MainWindow
             var baseline = ModeProfile.ReadBaseline();
             Log.Info("power", $"Mode profile from Windows' own plans: balanced EPP {baseline.Balanced[ModeProfile.EnergyPreference]}, " +
                               $"power saver EPP {baseline.PowerSaver[ModeProfile.EnergyPreference]}, hybrid {baseline.Hybrid}");
-            foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
+            foreach (var mode in SystemModes.InOrder)
             {
                 if (SystemModeService.PlanFor(mode) is not { } plan) continue;
                 if (PlanTuning.RepairNeverOffDisplay(plan.Plan))

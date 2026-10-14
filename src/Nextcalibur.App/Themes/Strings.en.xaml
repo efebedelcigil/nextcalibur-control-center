@@ -23,7 +23,7 @@
     <!-- Tray menu -->
     <sys:String x:Key="S.Tray.Open">Open Nextcalibur</sys:String>
     <sys:String x:Key="S.Tray.StartWithWindows">Start with Windows</sys:String>
-    <sys:String x:Key="S.Tray.OfficeOnBattery">Office mode on battery</sys:String>
+    <sys:String x:Key="S.Tray.OnBattery">Mode on battery</sys:String>
     <sys:String x:Key="S.Tray.OverheatWarning">Warn when the CPU or GPU runs hot</sys:String>
     <sys:String x:Key="S.Tray.ReadEvery">Read the sensors every</sys:String>
     <sys:String x:Key="S.Tray.Interval.1">Second</sys:String>
@@ -80,7 +80,13 @@
     <sys:String x:Key="S.Nav.Settings">Settings</sys:String>
 
     <!-- System page -->
-    <sys:String x:Key="S.System.Office">Office</sys:String>
+    <sys:String x:Key="S.System.OfficeDesc">The coolest and quietest: light work and battery. Slower under heavy work.</sys:String>
+    <sys:String x:Key="S.System.BalancedDesc">Everyday use: Windows' balanced settings with the quiet fans.</sys:String>
+    <sys:String x:Key="S.System.GamingDesc">For games: quick under load, reasonable at idle; the fans speed up sooner.</sys:String>
+    <sys:String x:Key="S.System.PerformanceDesc">The highest speed: the most eager processor, the fans at their top. The hottest and loudest.</sys:String>
+    <sys:String x:Key="S.System.Balanced">Balanced (Office)</sys:String>
+    <sys:String x:Key="S.Lighting.ProfBalanced">Balanced (Office)</sys:String>
+    <sys:String x:Key="S.System.Office">Power Saver</sys:String>
     <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
     <sys:String x:Key="S.System.Performance">Performance</sys:String>
     <sys:String x:Key="S.System.HardwareMonitoring">Hardware Monitoring</sys:String>
@@ -115,7 +121,7 @@
     <sys:String x:Key="S.Lighting.ZoneA">Zone A</sys:String>
     <sys:String x:Key="S.Lighting.ZoneB">Zone B</sys:String>
     <sys:String x:Key="S.Lighting.ZoneC">Zone C</sys:String>
-    <sys:String x:Key="S.Lighting.ProfOffice">Office</sys:String>
+    <sys:String x:Key="S.Lighting.ProfOffice">Power Saver</sys:String>
     <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
     <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
     <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
@@ -157,8 +163,9 @@
     <sys:String x:Key="S.Settings.StartHowDesc">In the notification area, or with the window open.</sys:String>
     <sys:String x:Key="S.Settings.StartInTray">In the tray</sys:String>
     <sys:String x:Key="S.Settings.StartOnScreen">With the window</sys:String>
-    <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Office mode on battery</sys:String>
-    <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Drop to Office when the charger comes out; back to your mode when it returns.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeTitle">Mode on battery</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeOff">Leave it</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeDesc">When the charger comes out, no mode faster than this one stays on; when it goes back in, your mode returns. A mode already cooler is left alone.</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Language</sys:String>
     <sys:String x:Key="S.Settings.LanguageDesc">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
     <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
@@ -352,19 +359,19 @@
     <sys:String x:Key="S.Idle.ActivePlan">Active power plan</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Title">Sleep and screen</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Body">When the display turns off and the computer sleeps, one row for each mode, plugged in and on battery. Each row is that mode's power plan: the same place as the plan settings in the Control Panel. A change in one shows in the other; nothing changes unless you choose it.</sys:String>
-    <sys:String x:Key="S.Settings.AskGameTitle">Ask when a game was played in Office</sys:String>
-    <sys:String x:Key="S.Settings.AskGameDesc">When a program that covers the screen - a game, most likely - stayed open in Office for a few minutes, this window asks after it has closed: should it switch to Gaming (or Performance) from now on? The answer is added to this list as a rule; a program answered "No" is not asked about again. Browsers and video players are never asked about. Nothing is shown while the game runs.</sys:String>
-    <sys:String x:Key="S.Game.AskTitle">{0} was open in Office</sys:String>
-    <sys:String x:Key="S.Game.AskBody">{0} was just covering the screen, and you were in Office. Switch to Gaming whenever {0} opens from now on? Your mode comes back when it closes.
+    <sys:String x:Key="S.Settings.AskGameTitle">Ask when a game was played in a quiet mode</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">When a program that covers the screen - a game, most likely - stayed open in Power Saver or Balanced (Office) for a few minutes, this window asks after it has closed: should it switch to Gaming (or Performance) from now on? The answer is added to this list as a rule; a program answered "No" is not asked about again. Browsers and video players are never asked about. Nothing is shown while the game runs.</sys:String>
+    <sys:String x:Key="S.Game.AskTitle">{0} was open in {1}</sys:String>
+    <sys:String x:Key="S.Game.AskBody">{0} was just covering the screen, and you were in {1}. Switch to Gaming whenever {0} opens from now on? Your mode comes back when it closes.
 
 Answer "No" and this program is not asked about again. The rule can be changed or removed at any time in Settings &gt; Program rules.</sys:String>
     <sys:String x:Key="S.Game.AskPerformance">Performance instead of Gaming</sys:String>
     <sys:String x:Key="S.Game.SummaryTitle">While {0} was open</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">When a game was played in Office</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">No need to add games one by one. When a program that covers the screen stayed open in Office for a few minutes, you are asked here after it closes, and the answer becomes a rule. Nothing comes as a notification during a game: heat and suggestions from that time are shown as a summary in this window once it has closed.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">When a game was played in a quiet mode</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">No need to add games one by one. When a program that covers the screen stayed open in Power Saver or Balanced (Office) for a few minutes, you are asked here after it closes, and the answer becomes a rule. Nothing comes as a notification during a game: heat and suggestions from that time are shown as a summary in this window once it has closed.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program rules</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">A mode for a program</sys:String>
-    <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine - MATLAB, an installer - Office; for a game, Performance. A mode you pick by hand meanwhile wins. On battery with Office on battery on, only Office rules apply.</sys:String>
+    <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine - MATLAB, an installer - Power Saver; for a game, Gaming or Performance. A mode you pick by hand meanwhile wins. On battery, a rule asking for a faster mode than the battery's does not apply.</sys:String>
     <sys:String x:Key="S.Rules.Title">Program rule</sys:String>
     <sys:String x:Key="S.Rules.Started">{0} is running: {1} mode until it closes.</sys:String>
     <sys:String x:Key="S.Rules.Ended">{0} closed: back to {1} mode.</sys:String>
@@ -381,7 +388,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Fn.KeyboardBacklight">Keyboard light (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Full, off, half - the order Fn+Space uses.</sys:String>
     <sys:String x:Key="S.Fn.SystemMode">System mode</sys:String>
-    <sys:String x:Key="S.Fn.SystemModeDesc">Office, Gaming, Performance in turn.</sys:String>
+    <sys:String x:Key="S.Fn.SystemModeDesc">Power Saver, Balanced (Office), Gaming, Performance in turn.</sys:String>
     <sys:String x:Key="S.Fn.ModeTitle">System mode changed</sys:String>
     <sys:String x:Key="S.Fn.PressKeys">Press the keys... (Esc: cancel)</sys:String>
     <sys:String x:Key="S.Fn.Working">Registered with Windows and working.</sys:String>
@@ -400,7 +407,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Settings.FnChangeHint">Click a shortcut to give it keys of your own.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Title">Shortcuts for the Fn keys</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Body">For an external keyboard: the laptop keyboard's Fn+1, Fn+Space and the mode key, as shortcuts. Off until you switch them on; each can be switched on alone, or all at once, and given other keys. A shortcut another program, Windows or your keyboard layout already uses is refused and the reason shown.</sys:String>
-    <sys:String x:Key="S.Heat.SwitchOffice">Switch to Office</sys:String>
+    <sys:String x:Key="S.Heat.SwitchOffice">Switch to Power Saver</sys:String>
     <sys:String x:Key="S.Cooling.Title">Heading for the warning line</sys:String>
     <sys:String x:Key="S.Cooling.Body">CPU {0} °C, GPU {1} °C and rising {2} °C a minute: {3}</sys:String>
     <sys:String x:Key="S.Cooling.Cap">the processor is held to {0}%.</sys:String>
@@ -412,12 +419,12 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Runaway.Cpu">{0} has kept {1} processor cores busy for {2} minutes without a break, in the background. If it should not be working, close it.</sys:String>
     <sys:String x:Key="S.Runaway.Gpu">{0} has kept the graphics card busy for {1} minutes with nothing on screen needing it. If it should not be working, close it.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Open Task Manager</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingTitle">Emergency Office</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Office's 70% until it has cooled. Slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingTitle">Emergency Power Saver</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's 70% until it has cooled. Slower while it lasts.</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboTitle">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboDesc">When the temperature is heading for the warning line, a notification says to press Fn+1 - the fan turbo, which only the laptop's own keyboard can switch - before it gets there, and again once it has cooled.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Emergency Office</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, this also holds the processor to 70% - the Office plan's ceiling - and lets it go once things are well below the line for five minutes. The machine is slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Emergency Power Saver</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, this also holds the processor to 70% - the Power Saver plan's ceiling - and lets it go once things are well below the line for five minutes. The machine is slower while it lasts.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Body">The temperature is followed, not just compared: when it is on its way to the warning line, a notification says to press Fn+1 before it gets there - the fan turbo, which the laptop switches only from its own keyboard - and, once it has been well below for five minutes, that the turbo can go off. Off: nothing is followed or said. On by default.</sys:String>
     <sys:String x:Key="S.Heat.WhileAway">While you were away the {1} reached {0} °C</sys:String>
@@ -517,6 +524,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Core.Mode.UnsafeWhy">It switches Windows to the Best-performance power mode, which on this machine pins the processor at full speed even when nothing is running - the fault Nextcalibur exists to repair.</sys:String>
     <sys:String x:Key="S.Core.Mode.UnsafeWhat">Run the repair from the Power Mode panel first. It needs administrator rights once, and after that this mode is safe to use.</sys:String>
     <sys:String x:Key="S.Core.Mode.Office">Quiet and cool. The processor drops to low speeds when idle.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Balanced">Everyday use. Windows' balanced behaviour with the quiet fan profile.</sys:String>
     <sys:String x:Key="S.Core.Mode.Gaming">Balanced for games. The processor stays responsive under load.</sys:String>
     <sys:String x:Key="S.Core.Mode.Performance">Maximum speed. Expect more heat and louder fans.</sys:String>
 
@@ -638,12 +646,14 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.VersionText.Body">The version you are running. Mention it in any report.</sys:String>
 
     <!-- System -->
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Office mode</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">Quiet and cool: the power plan, Windows' power mode and the firmware's own profile are all set for light work. Nextcalibur switches to Office on its own when the charger is unplugged, if you let it (a tray setting), and returns to your mode when it is plugged back in.</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming mode</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">The everyday fast mode. The firmware runs its Gaming profile, Windows gets its Balanced or Better-performance mode, and the processor is allowed to idle down between bursts.</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance mode</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Everything on: the firmware's Performance profile and Windows' fastest modes. Louder and hotter; for when the fans are worth it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Power Saver</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">The coolest and quietest: the power plan, Windows' best power efficiency mode and the firmware's quiet profile are set for light work and battery; the processor is held to 70%. Slower under heavy work. With this as the mode on battery in Settings, it is switched to when the charger comes out.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeBalanced.Title">Balanced (Office)</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Everyday use: the balanced settings Windows chose for this machine and Casper's Office fan profile. This is the default mode; when a game opens, a program rule or the question after a game switches to Gaming.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">For games: between Balanced and High performance. The firmware runs its Gaming profile (the fans speed up sooner), Windows gets its Better-performance mode, and the processor can still rest between bursts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Everything on: the firmware's Performance profile, Windows' High performance plan and its fastest power mode. Louder and hotter; for when the fans are worth it.</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Title">What the mode means</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Body">A line under the cards explains what the chosen mode is doing right now. If Windows has been moved to a mode none of the cards match, it says so here instead of guessing.</sys:String>
     <sys:String x:Key="S.Tour.Step.SubtitleText.Title">The status line</sys:String>
@@ -661,11 +671,11 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- Power Mode -->
     <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Title">Best power efficiency</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows' battery-saving mode. Only offered while the system mode is Office - the cards outside your mode's range are greyed so a fast mode cannot be paired with a slow profile, or the reverse.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows' battery-saving mode. Offered in Power Saver and Balanced (Office) - the cards outside your mode's range are greyed so a fast mode cannot be paired with a slow profile, or the reverse.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Title">Balanced</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows' default. Available in Office and Gaming.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows' default. Available in Power Saver, Balanced (Office) and Gaming.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBetter.Title">Better performance</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Available in Gaming and Performance. Choosing a system mode always picks that mode's own default here; these cards let you lean one step either way.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Available in Balanced (Office), Gaming and Performance. Choosing a system mode always picks that mode's own default here; these cards let you lean one step either way.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBest.Title">Best performance</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBest.Body">Windows' fastest mode, for Performance only. Nextcalibur keeps a guard on it so that, when a laptop is idle, this mode can no longer hold the processor at full speed - the fault the original software left behind.</sys:String>
     <sys:String x:Key="S.Tour.Step.OverlayState.Title">Is Windows honouring the mode?</sys:String>
@@ -695,7 +705,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SelectAll.Title">All zones at once</sys:String>
     <sys:String x:Key="S.Tour.Step.SelectAll.Body">Tick it and the colour and effect you choose go to all three zones together.</sys:String>
     <sys:String x:Key="S.Tour.Step.ProfileRow.Title">Profiles</sys:String>
-    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Four saved sets of lighting - Office, Gaming, Performance and one of your own. Choosing a profile applies it; whatever you change afterwards is saved into it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Five saved sets of lighting - Power Saver, Balanced (Office), Gaming, Performance and one of your own. Choosing a profile applies it; whatever you change afterwards is saved into it.</sys:String>
     <sys:String x:Key="S.Tour.Step.EffectPanel.Title">Effects</sys:String>
     <sys:String x:Key="S.Tour.Step.EffectPanel.Body">Static, breathing, blink, heartbeat, colour cycle and wave. The last two make their own colours, so the wheel is greyed while they are chosen.</sys:String>
     <sys:String x:Key="S.Tour.Step.Wheel.Title">The colour wheel</sys:String>
@@ -718,8 +728,8 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Starts Nextcalibur at sign-in, elevated, without a prompt - through a scheduled task, which is the only way an elevated program can start with Windows.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartHow.Title">How it starts</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartHow.Body">When it starts with Windows: quietly in the notification area, or with the window open. Only chosen while Start with Windows is on; turning that off and on again keeps the choice.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Office mode on battery</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">When the charger comes out, drop to Office; when it goes back in, return to the mode you had. On by default, as the original software did it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryMode.Title">Mode on battery</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryMode.Body">When the charger comes out: Power Saver or Balanced (Office), or leave the mode alone. Your mode returns when it goes back in. Power Saver by default, as the original software does.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Overheat warning</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">The same switch as the one in the readings panel: a warning from the tray when either chip crosses its threshold. The thresholds themselves are beside the temperatures.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">How often to read the sensors</sys:String>
@@ -755,5 +765,5 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- The tray -->
     <sys:String x:Key="S.Tour.Step.TrayIcon.Title">The tray icon</sys:String>
-    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur lives in the notification area by the clock; its menu has just been opened there. Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. Office mode on battery is the automatic switch when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. That is the whole of it. Enjoy the machine.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur lives in the notification area by the clock; its menu has just been opened there. Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. Mode on battery chooses the mode switched to when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. That is the whole of it. Enjoy the machine.</sys:String>
 </ResourceDictionary>

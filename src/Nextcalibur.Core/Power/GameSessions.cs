@@ -50,7 +50,8 @@ public static class GameSessions
     public static bool ShouldAsk(string processName, TimeSpan held, SystemMode? mostlyIn,
         IEnumerable<ProgramRule> rules, IEnumerable<string> answered)
     {
-        if (held < Shortest || mostlyIn != SystemMode.Office) return false;
+        // In a quiet mode - Power Saver or Balanced - by accident, most likely.
+        if (held < Shortest || mostlyIn is not (SystemMode.Office or SystemMode.Balanced)) return false;
         if (ProgramRules.Normalise(processName) is not { } name || IsNotAGame(name)) return false;
         if (rules.Any(r => string.Equals(ProgramRules.Normalise(r.Process), name, StringComparison.OrdinalIgnoreCase))) return false;
         return !answered.Any(a => string.Equals(a, name, StringComparison.OrdinalIgnoreCase));

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Nextcalibur.Core.Configuration;
+using Nextcalibur.Core.Power;
 using Button = System.Windows.Controls.Button;
 
 namespace Nextcalibur.App;
@@ -24,7 +25,7 @@ public partial class MainWindow
     private ToggleButton? _settingFixTextInputHost, _settingFixCrossDevice, _settingFixWidgets,
         _settingWatchGpuAwake, _settingTrimDwmMemory, _settingTrimExplorerMemory, _settingDisableNdu;
     private StackPanel? _panelWindowsFaultsSubOptions;
-    private ToggleButton? _settingStartWithWindows, _settingOfficeOnBattery, _settingOverheatWarning,
+    private ToggleButton? _settingStartWithWindows, _settingOverheatWarning,
         _settingAutoCooling, _settingAutoFanTurbo;
     private RadioButton? _settingStartInTray, _settingStartOnScreen;
     private readonly List<(RadioButton Button, int Ms)> _settingIntervals = new();
@@ -44,7 +45,7 @@ public partial class MainWindow
         _settingStartWithWindows = FindName("SettingStartWithWindows") as ToggleButton;
         _settingStartInTray = FindName("SettingStartInTray") as RadioButton;
         _settingStartOnScreen = FindName("SettingStartOnScreen") as RadioButton;
-        _settingOfficeOnBattery = FindName("SettingOfficeOnBattery") as ToggleButton;
+        WireBatteryMode();
         _settingWindowsFaults = FindName("SettingWindowsFaults") as ToggleButton;
         _settingFixTextInputHost = FindName("SettingFixTextInputHost") as ToggleButton;
         _settingFixCrossDevice = FindName("SettingFixCrossDevice") as ToggleButton;
@@ -85,7 +86,7 @@ public partial class MainWindow
             _settingStartInTray.Checked += (_, _) => ChangeSetting(() => _settings.StartMinimised = true);
         if (_settingStartOnScreen is not null)
             _settingStartOnScreen.Checked += (_, _) => ChangeSetting(() => _settings.StartMinimised = false);
-        Wire(_settingOfficeOnBattery, on => _settings.QuietOnBattery = on);
+
         Wire(_settingWindowsFaults, on =>
         {
             _settings.CompensateWindowsFaults = on;
@@ -216,7 +217,7 @@ public partial class MainWindow
             }
             if (_settingStartInTray is not null) _settingStartInTray.IsChecked = _settings.StartMinimised;
             if (_settingStartOnScreen is not null) _settingStartOnScreen.IsChecked = !_settings.StartMinimised;
-            if (_settingOfficeOnBattery is not null) _settingOfficeOnBattery.IsChecked = _settings.QuietOnBattery;
+            LoadBatteryMode();
             if (_settingWindowsFaults is not null)
             {
                 _settingWindowsFaults.IsChecked = _settings.CompensateWindowsFaults;
@@ -282,6 +283,65 @@ public partial class MainWindow
         {
             Dialogs.Warn("Nextcalibur", Strings.Get("S.WinUtil.Failed") + " " + ex.Message);
         }
+    }
+
+    private System.Windows.Controls.ComboBox? _settingBatteryMode;
+    private bool _batteryModeLoading;
+
+    /// <summary>
+    /// The mode on battery: Power Saver, Balanced, or leave it alone (the
+    /// owner's choice of 14 October 2026, replacing the Office-on-battery
+    /// switch). Shared with the tray's submenu through the settings.
+    /// </summary>
+    private void WireBatteryMode()
+    {
+        _settingBatteryMode = FindName("SettingBatteryMode") as System.Windows.Controls.ComboBox;
+        if (_settingBatteryMode is null) return;
+        _settingBatteryMode.SelectionChanged += (_, _) =>
+        {
+            if (_batteryModeLoading || _settingBatteryMode.SelectedItem is not System.Windows.Controls.ComboBoxItem { Tag: var tag }) return;
+            SetBatteryMode(tag as SystemMode?);
+        };
+    }
+
+    private void LoadBatteryMode()
+    {
+        if (_settingBatteryMode is null) return;
+        _batteryModeLoading = true;
+        try
+        {
+            _settingBatteryMode.Items.Clear();
+            foreach (var (mode, label) in new (SystemMode?, string)[]
+                     {
+                         (SystemMode.Office, ModeName(SystemMode.Office)),
+                         (SystemMode.Balanced, ModeName(SystemMode.Balanced)),
+                         (null, Strings.Get("S.Settings.BatteryModeOff")),
+                     })
+            {
+                var item = new System.Windows.Controls.ComboBoxItem { Content = label, Tag = mode };
+                _settingBatteryMode.Items.Add(item);
+                if (mode == _settings.ModeOnBattery) _settingBatteryMode.SelectedItem = item;
+            }
+            _settingBatteryMode.IsEnabled = _support.AllowsWrites;
+        }
+        finally
+        {
+            _batteryModeLoading = false;
+        }
+    }
+
+    /// <summary>Records the battery's mode and applies it now if on battery.</summary>
+    internal void SetBatteryMode(SystemMode? mode)
+    {
+        _settings.BatteryMode = mode;
+        _settings.BatteryModeSet = true;
+        _settings.QuietOnBattery = mode is not null;
+        _settings.Save();
+        _battery.QuietMode = mode ?? BatteryModePolicy.DefaultQuietMode;
+        Log.Info("power", $"Mode on battery: {mode?.ToString() ?? "unchanged"}");
+        _tray?.SyncFromSettings();
+        LoadBatteryMode();
+        EvaluateProgramRules();
     }
 
     private async void OpenWinUtil()

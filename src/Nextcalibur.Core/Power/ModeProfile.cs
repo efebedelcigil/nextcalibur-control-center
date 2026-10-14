@@ -15,9 +15,13 @@ namespace Nextcalibur.Core.Power;
 /// built-in plans, read at every start - they exist, hidden or not, on every
 /// Windows - and only what the mode is for is added:
 ///
-/// - <b>Gaming</b> is Balanced, as Windows set it here, with a floor that
-///   never pins the processor. (0.6.2's eagerer energy preference held
-///   cores at 4.4 GHz at idle, 8-10 W, single readings of 96 °C.)
+/// - <b>Balanced</b> is Windows' Balanced, as Windows set it here, with a
+///   floor that never pins the processor.
+/// - <b>Gaming</b> sits between Balanced and High performance (the owner's
+///   rule, 14 October 2026): Balanced, with an energy preference plugged in
+///   no higher than the top of Intel's "performance" band - 64 of 255, 25%
+///   (intel_pstate's bands; Intel moved Alder Lake mobile's balanced
+///   point to 102) - and an aggressive boost.
 /// - <b>Performance</b> is High performance, but with Balanced's floor -
 ///   High performance holds the processor at 100% plugged in.
 /// - <b>Office</b> is Power saver, never less efficient than Balanced, with
@@ -42,6 +46,10 @@ public static class ModeProfile
 
     // Values, as Windows numbers them.
     private const int PreferPerformant = 2, PreferEfficient = 4;
+    private const int BoostAggressive = 2;
+
+    /// <summary>The top of Intel's "performance" energy-preference band, as Windows' percentage: 64 of 255.</summary>
+    public const int PerformanceBandTop = 25;
 
     private static PlanTuning.AcDc Both(int value) => new(value, value);
 
@@ -103,9 +111,17 @@ public static class ModeProfile
         var floor = Floor(b.Balanced[PlanTuning.MinState]);
         switch (mode)
         {
+            case SystemMode.Balanced:
+                var balanced = Settings.ToDictionary(s => s, s => b.Balanced[s]);
+                balanced[PlanTuning.MinState] = floor;
+                return balanced;
+
             case SystemMode.Gaming:
                 var gaming = Settings.ToDictionary(s => s, s => b.Balanced[s]);
                 gaming[PlanTuning.MinState] = floor;
+                gaming[EnergyPreference] = gaming[EnergyPreference] with { Ac = Math.Min(b.Balanced[EnergyPreference].Ac, PerformanceBandTop) };
+                gaming[EnergyPreference1] = gaming[EnergyPreference1] with { Ac = Math.Min(b.Balanced[EnergyPreference1].Ac, PerformanceBandTop) };
+                gaming[BoostMode] = gaming[BoostMode] with { Ac = Math.Max(b.Balanced[BoostMode].Ac, BoostAggressive) };
                 return gaming;
 
             case SystemMode.Performance:

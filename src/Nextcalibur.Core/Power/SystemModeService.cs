@@ -2,16 +2,43 @@ using Microsoft.Win32;
 
 namespace Nextcalibur.Core.Power;
 
-/// <summary>The three system modes offered on the System page.</summary>
+/// <summary>
+/// The four system modes offered on the System page. Shown as Power Saver,
+/// Balanced (Office), Gaming and Performance - in that order, see
+/// <see cref="SystemModes.InOrder"/>. The names here are what settings files
+/// carry, so Office keeps its name, and Balanced is added at the end: a file
+/// that stored a mode by number reads the same mode it wrote.
+/// </summary>
 public enum SystemMode
 {
     Office,
     Gaming,
     Performance,
+    Balanced,
+}
+
+/// <summary>The modes in the order they are offered everywhere: from the coolest to the fastest.</summary>
+public static class SystemModes
+{
+    public static IReadOnlyList<SystemMode> InOrder { get; } =
+        [SystemMode.Office, SystemMode.Balanced, SystemMode.Gaming, SystemMode.Performance];
+
+    /// <summary>Where a mode stands from the coolest (0) to the fastest.</summary>
+    public static int Rank(SystemMode mode) => InOrder.ToList().IndexOf(mode);
+
+    /// <summary>Whether a mode is no faster than a ceiling: the battery's rule lets these be.</summary>
+    public static bool AtMost(SystemMode mode, SystemMode ceiling) => Rank(mode) <= Rank(ceiling);
+
+    /// <summary>The next mode in <see cref="InOrder"/>, round to the first after the last.</summary>
+    public static SystemMode Next(SystemMode mode)
+    {
+        var i = InOrder.ToList().IndexOf(mode);
+        return InOrder[(i + 1) % InOrder.Count];
+    }
 }
 
 /// <summary>
-/// Switches the machine between the three system modes.
+/// Switches the machine between the system modes.
 ///
 /// A mode is a pairing of a Windows power plan and a power-mode overlay. Both
 /// halves matter: the overlay overrides the plan, so setting only the plan is
@@ -30,13 +57,23 @@ public sealed class SystemModeService
     private static readonly Dictionary<SystemMode, string[]> PreferredPlanNames = new()
     {
         [SystemMode.Office] = ["Office", "Balanced"],
+        // Balanced has no vendor plan, and Windows' own Balanced is not made
+        // its plan: the mode profile reads Windows' Balanced as what Windows
+        // chose for this machine, and tuning it would change what is read.
+        [SystemMode.Balanced] = ["Balanced"],
         [SystemMode.Gaming] = ["Gaming", "Balanced"],
         [SystemMode.Performance] = ["High performance", "Balanced"],
     };
 
+    /// <summary>
+    /// Each mode's Windows power mode, a step apart (the owner's choice, 14
+    /// October 2026): Power Saver at best power efficiency, Balanced at
+    /// Windows' balanced, Gaming at better performance, Performance at best.
+    /// </summary>
     private static readonly Dictionary<SystemMode, Guid> Overlays = new()
     {
-        [SystemMode.Office] = PowerOverlays.None,
+        [SystemMode.Office] = PowerOverlays.BetterBattery,
+        [SystemMode.Balanced] = PowerOverlays.None,
         [SystemMode.Gaming] = PowerOverlays.HighPerformance,
         [SystemMode.Performance] = PowerOverlays.MaxPerformance,
     };
@@ -52,6 +89,7 @@ public sealed class SystemModeService
     private static readonly Dictionary<SystemMode, Guid[]> AllowedOverlays = new()
     {
         [SystemMode.Office] = [PowerOverlays.BetterBattery, PowerOverlays.None],
+        [SystemMode.Balanced] = [PowerOverlays.BetterBattery, PowerOverlays.None, PowerOverlays.HighPerformance],
         [SystemMode.Gaming] = [PowerOverlays.None, PowerOverlays.HighPerformance],
         [SystemMode.Performance] = [PowerOverlays.HighPerformance, PowerOverlays.MaxPerformance],
     };
@@ -162,7 +200,7 @@ public sealed class SystemModeService
         var created = new List<string>();
         var plans = EnumeratePlans();
 
-        foreach (var mode in Enum.GetValues<SystemMode>())
+        foreach (var mode in SystemModes.InOrder)
         {
             if (plans.ContainsKey(OwnPlanName(mode))) continue;
 
@@ -240,7 +278,10 @@ public sealed class SystemModeService
         var activePlan = GetActivePlan();
         var activeOverlay = PowerOverlayService.GetActiveOverlay();
 
-        foreach (var mode in Enum.GetValues<SystemMode>())
+        // A plan shared by two modes - Windows' Balanced, when the modes' own
+        // are gone - is told apart by the overlay; the modes are looked at in
+        // their order, so the cooler reading wins a tie.
+        foreach (var mode in SystemModes.InOrder)
         {
             if (!AllowedOverlays[mode].Contains(activeOverlay)) continue;
             if (ResolvePlan(mode) is { } plan && plan == activePlan) return mode;
@@ -301,6 +342,7 @@ public sealed class SystemModeService
         return mode switch
         {
             SystemMode.Office => Words.Get("S.Core.Mode.Office", "Quiet and cool. The processor drops to low speeds when idle."),
+            SystemMode.Balanced => Words.Get("S.Core.Mode.Balanced", "Everyday use. Windows' balanced behaviour with the quiet fan profile."),
             SystemMode.Gaming => Words.Get("S.Core.Mode.Gaming", "Balanced for games. The processor stays responsive under load."),
             _ => Words.Get("S.Core.Mode.Performance", "Maximum speed. Expect more heat and louder fans."),
         };

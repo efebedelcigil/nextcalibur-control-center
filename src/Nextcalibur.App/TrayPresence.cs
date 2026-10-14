@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows;
 using Nextcalibur.Core.Configuration;
+using Nextcalibur.Core.Power;
 using Forms = System.Windows.Forms;
 
 namespace Nextcalibur.App;
@@ -100,7 +101,7 @@ public sealed class TrayPresence : IDisposable
     /// </summary>
     public event EventHandler? SettingsChanged;
 
-    private Forms.ToolStripMenuItem? _quietItem;
+    private readonly List<(Forms.ToolStripMenuItem Item, SystemMode? Mode)> _batteryItems = new();
     private readonly List<(Forms.ToolStripMenuItem Item, int Ms)> _intervalItems = new();
 
     /// <summary>Re-ticks every item from the settings, for when the window changed one.</summary>
@@ -108,7 +109,7 @@ public sealed class TrayPresence : IDisposable
     {
         if (_disposed) return;
         Quietly(_startupItem, OnStartupToggled, StartupRegistration.IsEnabled);
-        if (_quietItem is not null) Quietly(_quietItem, OnQuietToggled, _settings.QuietOnBattery);
+        foreach (var (item, mode) in _batteryItems) item.Checked = mode == _settings.ModeOnBattery;
         foreach (var (item, ms) in _intervalItems) item.Checked = _settings.PollIntervalMs == ms;
         SyncOverheatMenu();
     }
@@ -135,22 +136,33 @@ public sealed class TrayPresence : IDisposable
     // warning threshold at the next slow tick, and the sampling interval when
     // that tick next reconsiders it — a few seconds at worst.
 
+    /// <summary>The mode on battery - Power Saver, Balanced, or leave it - as the Settings page has it.</summary>
     private Forms.ToolStripMenuItem QuietOnBatteryItem()
     {
-        _quietItem = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.OfficeOnBattery"))
+        var menu = new Forms.ToolStripMenuItem(Strings.Get("S.Tray.OnBattery"));
+        _batteryItems.Clear();
+        foreach (var (mode, label) in new (SystemMode?, string)[]
+                 {
+                     (SystemMode.Office, MainWindow.ModeName(SystemMode.Office)),
+                     (SystemMode.Balanced, MainWindow.ModeName(SystemMode.Balanced)),
+                     (null, Strings.Get("S.Settings.BatteryModeOff")),
+                 })
         {
-            CheckOnClick = true,
-            Checked = _settings.QuietOnBattery,
-        };
-        _quietItem.CheckedChanged += OnQuietToggled;
-        return _quietItem;
-    }
-
-    private void OnQuietToggled(object? sender, EventArgs e)
-    {
-        _settings.QuietOnBattery = _quietItem!.Checked;
-        _settings.Save();
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
+            var item = new Forms.ToolStripMenuItem(label) { Checked = mode == _settings.ModeOnBattery };
+            var chosen = mode;
+            item.Click += (_, _) =>
+            {
+                _settings.BatteryMode = chosen;
+                _settings.BatteryModeSet = true;
+                _settings.QuietOnBattery = chosen is not null;
+                _settings.Save();
+                SyncFromSettings();
+                SettingsChanged?.Invoke(this, EventArgs.Empty);
+            };
+            _batteryItems.Add((item, mode));
+            menu.DropDownItems.Add(item);
+        }
+        return menu;
     }
 
     private Forms.ToolStripMenuItem? _overheatItem;

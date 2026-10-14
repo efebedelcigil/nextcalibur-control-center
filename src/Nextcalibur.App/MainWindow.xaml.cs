@@ -1011,10 +1011,22 @@ public partial class MainWindow : Window
     /// </summary>
     private void RestoreModeAtStartup()
     {
-        if (_settings.LastSystemMode is not { } last || !_support.AllowsWrites) return;
+        if (!_support.AllowsWrites) return;
 
-        var target = _onBattery && _settings.QuietOnBattery
-            ? _battery.OnUnplugged(last) ?? BatteryModePolicy.QuietMode
+        // Nothing chosen yet - a fresh install, or a settings file from before
+        // there was a choice: Balanced, the everyday mode (the owner's choice,
+        // 14 October 2026). Remembered, so it is a choice from now on.
+        if (_settings.LastSystemMode is not { } last)
+        {
+            last = SystemMode.Balanced;
+            _settings.LastSystemMode = last;
+            _settings.Save();
+            Log.Info("mode", "No mode chosen yet; Balanced, the default");
+        }
+
+        _battery.QuietMode = _settings.ModeOnBattery ?? BatteryModePolicy.DefaultQuietMode;
+        var target = _onBattery && _settings.ModeOnBattery is not null
+            ? _battery.OnUnplugged(last) ?? last
             : last;
         if (_currentMode == target)
         {
@@ -1051,7 +1063,8 @@ public partial class MainWindow : Window
         if (_mailbox is null || !_support.AllowsWrites) return;
         try
         {
-            if (ThermalProfile.Read(_mailbox) == mode) return;
+            // Balanced runs on Office's profile, which reads back as Office.
+            if (ThermalProfile.Read(_mailbox) is { } now && ThermalProfile.ValueFor(now) == ThermalProfile.ValueFor(mode)) return;
             ThermalProfile.Write(_mailbox, mode);
             Log.Info("mode", $"Firmware profile put back to {mode} at start");
         }
@@ -1093,9 +1106,20 @@ public partial class MainWindow : Window
         var source = Strings.Get(_onBattery ? "S.Status.OnBattery" : "S.Status.OnAc");
         _lastModeShown = current;
         _modeStatus = current is { } mode
-            ? Strings.Get("S.Status.Mode", mode, source)
+            ? Strings.Get("S.Status.Mode", ModeName(mode), source)
             : Strings.Get("S.Status.NoMode", SystemModeService.DescribeCurrent(), source);
+        if (SystemModeDescription is not null)
+            SystemModeDescription.Text = current is { } m ? Strings.Get($"S.System.{m}Desc") : string.Empty;
         ShowSubtitle();
+    }
+
+    /// <summary>A mode as the person sees it: Power Saver, Balanced (Office), Gaming, Performance - in the language in use.</summary>
+    internal static string ModeName(SystemMode mode) => Strings.Get($"S.System.{mode}");
+
+    /// <summary>A mode in a list: shown by its name, holding the mode.</summary>
+    internal sealed record ModeChoice(SystemMode Mode)
+    {
+        public override string ToString() => ModeName(Mode);
     }
 
     private void ShowSubtitle() =>
@@ -1127,6 +1151,7 @@ public partial class MainWindow : Window
 
     private RadioButton ModeButtonFor(SystemMode mode) => mode switch
     {
+        SystemMode.Balanced => ModeBalanced,
         SystemMode.Gaming => ModeGaming,
         SystemMode.Performance => ModePerformance,
         _ => ModeOffice,
@@ -1210,7 +1235,8 @@ public partial class MainWindow : Window
         {
             try
             {
-                if (!_settings.QuietOnBattery || !_support.AllowsWrites)
+                _battery.QuietMode = _settings.ModeOnBattery ?? BatteryModePolicy.DefaultQuietMode;
+                if (_settings.ModeOnBattery is null || !_support.AllowsWrites)
                 {
                     RefreshModeStatus(_currentMode);
                     return;
@@ -1223,8 +1249,8 @@ public partial class MainWindow : Window
                 LoadSystemMode();
                 RefreshOverlay();
 
-                // On battery a rule asking for more than Office stands down, and
-                // back on the charger it applies again.
+                // On battery a rule asking for a faster mode than the battery's
+                // stands down, and back on the charger it applies again.
                 EvaluateProgramRules();
             }
             catch (Exception)
@@ -2354,7 +2380,7 @@ public partial class MainWindow : Window
             button.IsEnabled = allowed;
             text.Text = allowed
                 ? option.Description
-                : Strings.Get("S.Power.NotInMode", mode!);
+                : Strings.Get("S.Power.NotInMode", ModeName(mode!.Value));
             if (option.Overlay == active) button.IsChecked = true;
         }
 
@@ -3290,6 +3316,7 @@ public partial class MainWindow : Window
     private RadioButton ProfileFor(string name) => name switch
     {
         LedState.Office => ProfOffice,
+        LedState.Balanced => ProfBalanced,
         LedState.Gaming => ProfGaming,
         LedState.Performance => ProfPerformance,
         _ => ProfUser,

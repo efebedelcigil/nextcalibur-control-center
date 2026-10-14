@@ -6,7 +6,8 @@ namespace Nextcalibur.Core.Power;
 /// Decides what to do with the system mode when the charger comes out and
 /// goes back in. The vendor's behaviour, measured 11 September 2026: drop to
 /// Office on battery, and put back whatever was selected when the charger
-/// returns.
+/// returns. Since 0.7 the battery's mode is the person's choice - Power
+/// Saver or Balanced - and a mode already as cool as that one is left alone.
 ///
 /// Two rules, both learned from watching it: remember the mode the <i>person</i>
 /// chose, never the one we switched to; and if they changed mode by hand while
@@ -15,8 +16,11 @@ namespace Nextcalibur.Core.Power;
 /// </summary>
 public sealed class BatteryModePolicy
 {
-    /// <summary>The mode this laptop runs on battery.</summary>
-    public const SystemMode QuietMode = SystemMode.Office;
+    /// <summary>The mode this laptop runs on battery unless told otherwise.</summary>
+    public const SystemMode DefaultQuietMode = SystemMode.Office;
+
+    /// <summary>The mode this laptop runs on battery: no mode faster than this.</summary>
+    public SystemMode QuietMode { get; set; } = DefaultQuietMode;
 
     /// <summary>The mode to put back when the charger returns, if any.</summary>
     public SystemMode? Remembered { get; private set; }
@@ -36,7 +40,7 @@ public sealed class BatteryModePolicy
         // Windows raises the same notification for a battery-level change as
         // for the charger coming out, so this can arrive again while already
         // quiet. Keep what was remembered the first time.
-        if (current == QuietMode) return null;
+        if (SystemModes.AtMost(current.Value, QuietMode)) return null;
 
         Remembered = current;
         return QuietMode;

@@ -25,7 +25,7 @@ public partial class MainWindow
     }
 
     /// <summary>What is said once the program has closed and the screen is free.</summary>
-    private sealed record GameEnd(string Name, bool Ask, IReadOnlyList<string> Notes);
+    private sealed record GameEnd(string Name, bool Ask, IReadOnlyList<string> Notes, SystemMode? PlayedIn);
 
     private GameSession? _game;
     private GameEnd? _gameEndPending;
@@ -123,8 +123,8 @@ public partial class MainWindow
 
         // Said once the screen is free: the next tick, or after the next game.
         _gameEndPending = _gameEndPending is { } earlier
-            ? new GameEnd(g.Name, ask, [.. earlier.Notes, .. notes])
-            : new GameEnd(g.Name, ask, notes);
+            ? new GameEnd(g.Name, ask, [.. earlier.Notes, .. notes], mostly)
+            : new GameEnd(g.Name, ask, notes, mostly);
     }
 
     /// <summary>The window up, so the questions are its own dialogues rather than Windows' boxes.</summary>
@@ -145,13 +145,13 @@ public partial class MainWindow
             Dialogs.Tell(Strings.Get("S.Game.SummaryTitle", end.Name),
                 string.Join(Environment.NewLine + Environment.NewLine, end.Notes));
 
-        if (end.Ask) AskModeForGame(end.Name);
+        if (end.Ask) AskModeForGame(end.Name, end.PlayedIn ?? SystemMode.Office);
     }
 
-    private void AskModeForGame(string program)
+    private void AskModeForGame(string program, SystemMode playedIn)
     {
         if (ProgramRules.Normalise(program) is not { } name) return;
-        var yes = Dialogs.AskWithCheck(Strings.Get("S.Game.AskTitle", name), Strings.Get("S.Game.AskBody", name),
+        var yes = Dialogs.AskWithCheck(Strings.Get("S.Game.AskTitle", name, ModeName(playedIn)), Strings.Get("S.Game.AskBody", name, ModeName(playedIn)),
             Strings.Get("S.Game.AskPerformance"), false, out var performance, defaultNo: true);
 
         if (!yes)

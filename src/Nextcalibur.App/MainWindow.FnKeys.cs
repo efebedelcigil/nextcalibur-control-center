@@ -256,16 +256,11 @@ public partial class MainWindow
                     break;
 
                 case FnAction.SystemMode:
-                    var next = _currentMode switch
-                    {
-                        SystemMode.Office => SystemMode.Gaming,
-                        SystemMode.Gaming => SystemMode.Performance,
-                        _ => SystemMode.Office,
-                    };
+                    var next = _currentMode is { } now ? SystemModes.Next(now) : SystemMode.Balanced;
                     if (next == SystemMode.Performance && !PowerOverlayService.PerformanceModeIsSafe(new PowerOverlayService().Diagnose()))
                         next = SystemMode.Office;
                     ModeButtonFor(next).IsChecked = true;
-                    _tray?.ShowMessage(Strings.Get("S.Fn.ModeTitle"), Strings.Get("S.Status.Mode", next, Strings.Get(_onBattery ? "S.Status.OnBattery" : "S.Status.OnAc")));
+                    _tray?.ShowMessage(Strings.Get("S.Fn.ModeTitle"), Strings.Get("S.Status.Mode", ModeName(next), Strings.Get(_onBattery ? "S.Status.OnBattery" : "S.Status.OnAc")));
                     break;
             }
         }

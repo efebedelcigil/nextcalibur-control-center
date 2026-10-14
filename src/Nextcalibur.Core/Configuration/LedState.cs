@@ -44,11 +44,12 @@ public sealed class LedProfile
 public sealed class LedState
 {
     public const string Office = "Office";
+    public const string Balanced = "Balanced";
     public const string Gaming = "Gaming";
     public const string Performance = "Performance";
     public const string UserDefine = "UserDefine";
 
-    public static readonly string[] ProfileNames = [Office, Gaming, Performance, UserDefine];
+    public static readonly string[] ProfileNames = [Office, Balanced, Gaming, Performance, UserDefine];
 
     /// <summary>Whether the lighting is switched on at all.</summary>
     public bool Enabled { get; set; } = true;
@@ -66,6 +67,7 @@ public sealed class LedState
     public Dictionary<string, LedProfile> Profiles { get; set; } = new()
     {
         [Office] = new LedProfile { Effect = LedEffect.Static, BrightnessPercent = 60 },
+        [Balanced] = new LedProfile { Effect = LedEffect.Static, BrightnessPercent = 80 },
         [Gaming] = new LedProfile
         {
             Effect = LedEffect.ColourCycle,

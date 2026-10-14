@@ -8,8 +8,8 @@ public class ModeProfileTests
 {
     public static TheoryData<SystemMode, bool> Modes => new()
     {
-        { SystemMode.Office, true }, { SystemMode.Gaming, true }, { SystemMode.Performance, true },
-        { SystemMode.Office, false }, { SystemMode.Gaming, false }, { SystemMode.Performance, false },
+        { SystemMode.Office, true }, { SystemMode.Balanced, true }, { SystemMode.Gaming, true }, { SystemMode.Performance, true },
+        { SystemMode.Office, false }, { SystemMode.Balanced, false }, { SystemMode.Gaming, false }, { SystemMode.Performance, false },
     };
 
     [Theory]
@@ -36,16 +36,31 @@ public class ModeProfileTests
     }
 
     [Fact]
-    public void Gaming_is_what_Windows_chose_for_Balanced_here()
+    public void Balanced_is_what_Windows_chose_for_Balanced_here()
     {
-        // A machine whose Balanced differs from the defaults: Gaming follows it.
+        // A machine whose Balanced differs from the defaults: the mode follows it.
         var b = ModeProfile.Defaults(true);
         var balanced = b.Balanced.ToDictionary(x => x.Key, x => x.Value);
         balanced[ModeProfile.EnergyPreference] = new AcDc(38, 55);
         balanced[ModeProfile.BoostMode] = new AcDc(1, 1);
-        var gaming = ModeProfile.For(SystemMode.Gaming, b with { Balanced = balanced });
-        Assert.Equal(new AcDc(38, 55), gaming[ModeProfile.EnergyPreference]);
-        Assert.Equal(new AcDc(1, 1), gaming[ModeProfile.BoostMode]);
+        var mode = ModeProfile.For(SystemMode.Balanced, b with { Balanced = balanced });
+        Assert.Equal(new AcDc(38, 55), mode[ModeProfile.EnergyPreference]);
+        Assert.Equal(new AcDc(1, 1), mode[ModeProfile.BoostMode]);
+    }
+
+    [Fact]
+    public void Gaming_sits_between_Balanced_and_High_performance()
+    {
+        var b = ModeProfile.Defaults(true);
+        var gaming = ModeProfile.For(SystemMode.Gaming, b);
+        // Plugged in: no higher than the top of Intel's performance band; on battery: Balanced's.
+        Assert.Equal(ModeProfile.PerformanceBandTop, gaming[ModeProfile.EnergyPreference].Ac);
+        Assert.Equal(b.Balanced[ModeProfile.EnergyPreference].Dc, gaming[ModeProfile.EnergyPreference].Dc);
+        Assert.True(gaming[ModeProfile.BoostMode].Ac >= 2);
+        // A Balanced already eager stays where it is.
+        var balanced = b.Balanced.ToDictionary(x => x.Key, x => x.Value);
+        balanced[ModeProfile.EnergyPreference] = new AcDc(10, 50);
+        Assert.Equal(10, ModeProfile.For(SystemMode.Gaming, b with { Balanced = balanced })[ModeProfile.EnergyPreference].Ac);
     }
 
     [Fact]
@@ -81,7 +96,8 @@ public class ModeProfileTests
     public void The_modes_lean_from_efficiency_to_performance()
     {
         int Epp(SystemMode m) => ModeProfile.For(m, ModeProfile.Defaults(true))[ModeProfile.EnergyPreference].Ac;
-        Assert.True(Epp(SystemMode.Office) > Epp(SystemMode.Gaming));
+        Assert.True(Epp(SystemMode.Office) > Epp(SystemMode.Balanced));
+        Assert.True(Epp(SystemMode.Balanced) > Epp(SystemMode.Gaming));
         Assert.True(Epp(SystemMode.Gaming) > Epp(SystemMode.Performance));
     }
 

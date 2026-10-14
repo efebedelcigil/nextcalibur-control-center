@@ -21,7 +21,7 @@
     <!-- Tepsi menüsü -->
     <sys:String x:Key="S.Tray.Open">Nextcalibur'u aç</sys:String>
     <sys:String x:Key="S.Tray.StartWithWindows">Windows ile başlat</sys:String>
-    <sys:String x:Key="S.Tray.OfficeOnBattery">Pilde Office modu</sys:String>
+    <sys:String x:Key="S.Tray.OnBattery">Pildeki mod</sys:String>
     <sys:String x:Key="S.Tray.OverheatWarning">CPU veya GPU ısınınca uyar</sys:String>
     <sys:String x:Key="S.Tray.ReadEvery">Sensörleri okuma sıklığı</sys:String>
     <sys:String x:Key="S.Tray.Interval.1">Saniyede bir</sys:String>
@@ -78,9 +78,15 @@
     <sys:String x:Key="S.Nav.Settings">Ayarlar</sys:String>
 
     <!-- Sistem sayfası -->
-    <sys:String x:Key="S.System.Office">Office</sys:String>
-    <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
-    <sys:String x:Key="S.System.Performance">Performance</sys:String>
+    <sys:String x:Key="S.System.OfficeDesc">En serin ve en sessiz: hafif iş ve pil için. Ağır işte yavaşlar.</sys:String>
+    <sys:String x:Key="S.System.BalancedDesc">Günlük kullanım: Windows'un dengeli ayarları, sessiz fanlar.</sys:String>
+    <sys:String x:Key="S.System.GamingDesc">Oyunlar için: yük altında hızlı, boşta makul; fanlar daha erken hızlanır.</sys:String>
+    <sys:String x:Key="S.System.PerformanceDesc">En yüksek hız: işlemci en istekli, fanlar en yüksek devirde. En sıcak ve en gürültülü.</sys:String>
+    <sys:String x:Key="S.System.Balanced">Dengeli (Ofis)</sys:String>
+    <sys:String x:Key="S.Lighting.ProfBalanced">Dengeli (Ofis)</sys:String>
+    <sys:String x:Key="S.System.Office">Güç Tasarrufu</sys:String>
+    <sys:String x:Key="S.System.Gaming">Oyun</sys:String>
+    <sys:String x:Key="S.System.Performance">Performans</sys:String>
     <sys:String x:Key="S.System.HardwareMonitoring">Donanım İzleme</sys:String>
     <sys:String x:Key="S.System.SubtitlePlaceholder">Gerçek zamanlı sıcaklık ve soğutma verileri</sys:String>
     <sys:String x:Key="S.System.CpuFan">CPU FANI</sys:String>
@@ -92,7 +98,7 @@
     <sys:String x:Key="S.Power.Title">Güç Modu</sys:String>
     <sys:String x:Key="S.Power.Efficiency">Power Saver</sys:String>
     <sys:String x:Key="S.Power.Balanced">Balanced</sys:String>
-    <sys:String x:Key="S.Power.Better">Performance</sys:String>
+    <sys:String x:Key="S.Power.Better">Performans</sys:String>
     <sys:String x:Key="S.Power.Best">Ultimate</sys:String>
     <sys:String x:Key="S.Power.CurrentMode">ETKİN MOD</sys:String>
     <sys:String x:Key="S.Power.Checking">Denetleniyor...</sys:String>
@@ -113,9 +119,9 @@
     <sys:String x:Key="S.Lighting.ZoneA">Bölge A</sys:String>
     <sys:String x:Key="S.Lighting.ZoneB">Bölge B</sys:String>
     <sys:String x:Key="S.Lighting.ZoneC">Bölge C</sys:String>
-    <sys:String x:Key="S.Lighting.ProfOffice">Office</sys:String>
-    <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
-    <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
+    <sys:String x:Key="S.Lighting.ProfOffice">Güç Tasarrufu</sys:String>
+    <sys:String x:Key="S.Lighting.ProfGaming">Oyun</sys:String>
+    <sys:String x:Key="S.Lighting.ProfPerformance">Performans</sys:String>
     <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
     <sys:String x:Key="S.Lighting.LedPower">Aydınlatma açık/kapalı</sys:String>
     <sys:String x:Key="S.Lighting.SelectAll">Tümünü seç</sys:String>
@@ -155,8 +161,9 @@
     <sys:String x:Key="S.Settings.StartHowDesc">Bildirim alanında ya da pencere açık olarak.</sys:String>
     <sys:String x:Key="S.Settings.StartInTray">Tepside</sys:String>
     <sys:String x:Key="S.Settings.StartOnScreen">Pencereyle</sys:String>
-    <sys:String x:Key="S.Settings.OfficeOnBatteryTitle">Pilde Office modu</sys:String>
-    <sys:String x:Key="S.Settings.OfficeOnBatteryDesc">Şarj kablosu çıktığında Office moduna geç; takıldığında önceki moda dön.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeTitle">Pildeki mod</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeDesc">Şarj kablosu çıkınca bu moddan daha hızlı bir modda kalınmaz; takılınca önceki modunuza dönülür. Zaten daha serin bir moddaysanız dokunulmaz.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeOff">Değiştirme</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Dil</sys:String>
     <sys:String x:Key="S.Settings.LanguageDesc">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
     <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
@@ -350,19 +357,19 @@
     <sys:String x:Key="S.Idle.ActivePlan">Etkin güç planı</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Title">Uyku ve ekran</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Body">Ekranın kapanacağı ve bilgisayarın uykuya geçeceği süreler, her mod için ayrı bir satırda, prizde ve pilde. Her satır o modun güç planıdır: Denetim Masası'ndaki plan ayarlarıyla aynı yer. Birinde değiştirdiğiniz öbüründe görünür; siz seçmedikçe hiçbir şey değişmez.</sys:String>
-    <sys:String x:Key="S.Settings.AskGameTitle">Bir oyun Office'te oynandıysa sor</sys:String>
-    <sys:String x:Key="S.Settings.AskGameDesc">Ekranı kaplayan bir program - büyük olasılıkla bir oyun - Office'te birkaç dakika açık kaldıysa, kapandıktan sonra bu pencerede sorulur: bundan sonra o açılınca Gaming'e (ya da Performance'a) geçilsin mi? Yanıt bu listeye bir kural olarak eklenir; "Hayır" denen bir program bir daha sorulmaz. Tarayıcılar ve video oynatıcılar hiç sorulmaz. Oyun sürerken hiçbir şey gösterilmez.</sys:String>
-    <sys:String x:Key="S.Game.AskTitle">{0} Office'te açıktı</sys:String>
-    <sys:String x:Key="S.Game.AskBody">{0} az önce ekranı kaplıyordu ve Office modundaydınız. Bundan sonra {0} açılınca Gaming moduna geçilsin mi? Kapandığında önceki modunuz geri gelir.
+    <sys:String x:Key="S.Settings.AskGameTitle">Bir oyun sessiz bir modda oynandıysa sor</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">Ekranı kaplayan bir program - büyük olasılıkla bir oyun - Güç Tasarrufu ya da Dengeli (Ofis) modunda birkaç dakika açık kaldıysa, kapandıktan sonra bu pencerede sorulur: bundan sonra o açılınca Oyun'a (ya da Performans'a) geçilsin mi? Yanıt bu listeye bir kural olarak eklenir; "Hayır" denen bir program bir daha sorulmaz. Tarayıcılar ve video oynatıcılar hiç sorulmaz. Oyun sürerken hiçbir şey gösterilmez.</sys:String>
+    <sys:String x:Key="S.Game.AskTitle">{0} {1} modunda açıktı</sys:String>
+    <sys:String x:Key="S.Game.AskBody">{0} az önce ekranı kaplıyordu ve {1} modundaydınız. Bundan sonra {0} açılınca Oyun moduna geçilsin mi? Kapandığında önceki modunuz geri gelir.
 
 "Hayır" derseniz bu program için bir daha sorulmaz. Kuralı istediğiniz zaman Ayarlar &gt; Program kuralları'ndan değiştirebilir ya da silebilirsiniz.</sys:String>
-    <sys:String x:Key="S.Game.AskPerformance">Gaming yerine Performance</sys:String>
+    <sys:String x:Key="S.Game.AskPerformance">Oyun yerine Performans</sys:String>
     <sys:String x:Key="S.Game.SummaryTitle">{0} açıkken</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">Oyun Office'te oynandıysa</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">Oyunları tek tek eklemeniz gerekmez. Ekranı kaplayan bir program Office'te birkaç dakika açık kaldıysa, kapandıktan sonra burada sorulur ve yanıtınız bir kural olur. Oyun sürerken hiçbir uyarı bildirim olarak gelmez: o sırada olan ısınmalar ve öneriler oyun kapanınca bu pencerede bir özet olarak gösterilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Title">Oyun sessiz bir modda oynandıysa</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">Oyunları tek tek eklemeniz gerekmez. Ekranı kaplayan bir program Güç Tasarrufu ya da Dengeli (Ofis) modunda birkaç dakika açık kaldıysa, kapandıktan sonra burada sorulur ve yanıtınız bir kural olur. Oyun sürerken hiçbir uyarı bildirim olarak gelmez: o sırada olan ısınmalar ve öneriler oyun kapanınca bu pencerede bir özet olarak gösterilir.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program kuralları</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">Bir program için mod</sys:String>
-    <sys:String x:Key="S.Settings.RulesDesc">Bu listedeki bir program çalışırken onun modu açık olur; kapanınca önceki modunuz geri gelir. Makineyi ısıtan bir program için - MATLAB, bir kurulum - Office; bir oyun için Performance. Bu arada elle seçtiğiniz mod geçerli olur. Pildeyken pilde Office açıksa yalnızca Office kuralları uygulanır.</sys:String>
+    <sys:String x:Key="S.Settings.RulesDesc">Bu listedeki bir program çalışırken onun modu açık olur; kapanınca önceki modunuz geri gelir. Makineyi ısıtan bir program için - MATLAB, bir kurulum - Güç Tasarrufu; bir oyun için Oyun ya da Performans. Bu arada elle seçtiğiniz mod geçerli olur. Pildeyken, pildeki moddan daha hızlı bir mod isteyen kurallar uygulanmaz.</sys:String>
     <sys:String x:Key="S.Rules.Title">Program kuralı</sys:String>
     <sys:String x:Key="S.Rules.Started">{0} çalışıyor: kapanana kadar {1} modu.</sys:String>
     <sys:String x:Key="S.Rules.Ended">{0} kapandı: {1} moduna dönüldü.</sys:String>
@@ -379,7 +386,7 @@
     <sys:String x:Key="S.Fn.KeyboardBacklight">Klavye ışığı (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Tam, kapalı, yarım - Fn+Space'in sırası.</sys:String>
     <sys:String x:Key="S.Fn.SystemMode">Sistem modu</sys:String>
-    <sys:String x:Key="S.Fn.SystemModeDesc">Sırayla Office, Gaming, Performance.</sys:String>
+    <sys:String x:Key="S.Fn.SystemModeDesc">Sırayla Güç Tasarrufu, Dengeli (Ofis), Oyun, Performans.</sys:String>
     <sys:String x:Key="S.Fn.ModeTitle">Sistem modu değişti</sys:String>
     <sys:String x:Key="S.Fn.PressKeys">Tuşlara basın... (Esc: vazgeç)</sys:String>
     <sys:String x:Key="S.Fn.Working">Windows'a kaydedildi ve çalışıyor.</sys:String>
@@ -398,7 +405,7 @@
     <sys:String x:Key="S.Settings.FnChangeHint">Kendi tuşlarınızı atamak için bir kısayola tıklayın.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Title">Fn tuşları için kısayollar</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingFnShortcuts.Body">Harici klavye için: dizüstü klavyesinin Fn+1, Fn+Space ve mod tuşu, kısayol olarak. Siz açana kadar kapalı; her biri tek tek ya da hepsi birden açılabilir, başka tuşlar atanabilir. Başka bir programın, Windows'un ya da klavye düzeninizin zaten kullandığı bir kısayol reddedilir ve nedeni gösterilir.</sys:String>
-    <sys:String x:Key="S.Heat.SwitchOffice">Office'e geç</sys:String>
+    <sys:String x:Key="S.Heat.SwitchOffice">Güç Tasarrufu'na geç</sys:String>
     <sys:String x:Key="S.Cooling.Title">Uyarı sınırına doğru gidiyor</sys:String>
     <sys:String x:Key="S.Cooling.Body">CPU {0} °C, GPU {1} °C ve dakikada {2} °C yükseliyor: {3}</sys:String>
     <sys:String x:Key="S.Cooling.Cap">işlemci %{0} ile sınırlandı.</sys:String>
@@ -410,12 +417,12 @@
     <sys:String x:Key="S.Runaway.Cpu">{0}, arka planda {2} dakikadır ara vermeden {1} işlemci çekirdeğini meşgul ediyor. Çalışmaması gerekiyorsa kapatın.</sys:String>
     <sys:String x:Key="S.Runaway.Gpu">{0}, ekranda ona ihtiyaç duyan bir şey yokken {1} dakikadır ekran kartını meşgul ediyor. Çalışmaması gerekiyorsa kapatın.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Görev Yöneticisi'ni aç</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingTitle">Acil Office</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de soğuyana kadar Office'in %70'iyle sınırla. Sürdüğü sürece daha yavaş.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingTitle">Acil Güç Tasarrufu</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de soğuyana kadar Güç Tasarrufu'nun %70'iyle sınırla. Sürdüğü sürece daha yavaş.</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboTitle">Isınmadan önce soğut</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboDesc">Sıcaklık uyarı sınırına doğru gidiyorsa, oraya varmadan Fn+1'e basmanızı söyleyen bir bildirim gelir - fan turbosu, yalnızca dizüstünün kendi klavyesinden açılabiliyor - ve soğuyunca tekrar söyler.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Acil Office</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">İstemezseniz kapalı. Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de %70 ile - Office planının tavanı - sınırlar ve beş dakika boyunca rahatça sınırın altında kalınca bırakır. Sürdüğü sürece makine daha yavaştır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Acil Güç Tasarrufu</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">İstemezseniz kapalı. Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de %70 ile - Güç Tasarrufu planının tavanı - sınırlar ve beş dakika boyunca rahatça sınırın altında kalınca bırakır. Sürdüğü sürece makine daha yavaştır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Isınmadan önce soğut</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Body">Sıcaklık yalnızca karşılaştırılmaz, takip edilir: uyarı sınırına doğru gidiyorsa oraya varmadan Fn+1'e basmanızı söyleyen bir bildirim gelir - fan turbosu, dizüstü onu yalnızca kendi klavyesinden açıyor - ve beş dakika boyunca rahatça altında kalınca turbonun kapatılabileceğini söyler. Kapalıyken hiçbir şey izlenmez ya da söylenmez. Varsayılan olarak açık.</sys:String>
     <sys:String x:Key="S.Heat.WhileAway">Siz yokken {1} {0} °C'ye ulaştı</sys:String>
@@ -511,10 +518,11 @@
     <sys:String x:Key="S.Core.Plan.Current">{0} planı, {1}</sys:String>
     <sys:String x:Key="S.Core.Plan.Missing">Bu makinede {0} moduna uyan güç planı yok ve oluşturulamadı.</sys:String>
     <sys:String x:Key="S.Core.Plan.Refused">Windows plan değişikliğini reddetti (hata {0}).</sys:String>
-    <sys:String x:Key="S.Core.Mode.UnsafeTitle">Performance modu bu makinede henüz güvenli değil.</sys:String>
+    <sys:String x:Key="S.Core.Mode.UnsafeTitle">Performans modu bu makinede henüz güvenli değil.</sys:String>
     <sys:String x:Key="S.Core.Mode.UnsafeWhy">Windows'u En iyi performans güç moduna alır; bu mod bu makinede hiçbir şey çalışmazken bile işlemciyi tam hıza sabitler - Nextcalibur'un onarmak için var olduğu kusur budur.</sys:String>
     <sys:String x:Key="S.Core.Mode.UnsafeWhat">Önce Güç Modu sayfasından onarımı çalıştırın. Bir kez yönetici hakkı ister; sonrasında bu mod güvenle kullanılabilir.</sys:String>
     <sys:String x:Key="S.Core.Mode.Office">Sessiz ve serin. İşlemci boştayken düşük hızlara iner.</sys:String>
+    <sys:String x:Key="S.Core.Mode.Balanced">Günlük kullanım. Windows'un dengeli davranışı, sessiz fan profiliyle.</sys:String>
     <sys:String x:Key="S.Core.Mode.Gaming">Oyunlar için dengeli. İşlemci yük altında tepkisel kalır.</sys:String>
     <sys:String x:Key="S.Core.Mode.Performance">En yüksek hız. Daha çok ısı ve daha gürültülü fan bekleyin.</sys:String>
 
@@ -636,12 +644,14 @@
     <sys:String x:Key="S.Tour.Step.VersionText.Body">Çalıştırdığınız sürüm. Her bildirimde belirtin.</sys:String>
 
     <!-- Sistem -->
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Office modu</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">Sessiz ve serin: güç planı, Windows'un güç modu ve donanım yazılımının kendi profili hafif iş için ayarlanır. İzin verirseniz (bir tepsi ayarı) şarj çıkarıldığında Nextcalibur kendiliğinden Office'e geçer, takıldığında modunuza döner.</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming modu</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">Günlük hızlı mod. Donanım yazılımı Gaming profilini çalıştırır, Windows Dengeli veya Daha iyi performans modunu alır, işlemcinin yüklenmeler arasında yavaşlamasına izin verilir.</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance modu</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Her şey açık: donanım yazılımının Performance profili ve Windows'un en hızlı modları. Daha gürültülü ve daha sıcak; fanlara değdiği zamanlar için.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Güç Tasarrufu</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">En serin ve en sessiz: güç planı, Windows'un en iyi güç verimliliği modu ve donanım yazılımının sessiz profili hafif iş ve pil için ayarlanır; işlemci %70'te tutulur. Ağır işte yavaşlar. Ayarlar'da pildeki mod bu seçilirse şarj çıkınca buna geçilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeBalanced.Title">Dengeli (Ofis)</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Günlük kullanım: Windows'un bu makine için seçtiği dengeli ayarlar ve Casper'ın Office fan profili. Varsayılan mod budur; oyun açılınca program kuralları ya da oyun sorusu Oyun'a geçirir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Oyun</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">Oyunlar için: Dengeli ile Yüksek performans arası. Donanım yazılımı Gaming profilini çalıştırır (fanlar daha erken hızlanır), Windows Daha iyi performans modunu alır, işlemci yüklenmeler arasında yine dinlenebilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performans</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Her şey açık: donanım yazılımının Performance profili, Windows'un Yüksek performans planı ve en hızlı güç modu. Daha gürültülü ve daha sıcak; fanlara değdiği zamanlar için.</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Title">Modun anlamı</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Body">Kartların altındaki satır seçili modun şu an ne yaptığını açıklar. Windows kartlardan hiçbirine uymayan bir moda alınmışsa tahmin etmek yerine bunu burada söyler.</sys:String>
     <sys:String x:Key="S.Tour.Step.SubtitleText.Title">Durum satırı</sys:String>
@@ -659,13 +669,13 @@
 
     <!-- Güç Modu -->
     <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Title">En iyi güç verimliliği</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows'un pil tasarrufu modu. Yalnızca sistem modu Office iken sunulur; modunuzun aralığı dışındaki kartlar soluklaşır, böylece hızlı bir mod yavaş bir profille (ya da tersi) eşleşemez.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeEfficiency.Body">Windows'un pil tasarrufu modu. Güç Tasarrufu ve Dengeli (Ofis) modlarında sunulur; modunuzun aralığı dışındaki kartlar soluklaşır, böylece hızlı bir mod yavaş bir profille (ya da tersi) eşleşemez.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Title">Dengeli</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows'un varsayılanı. Office ve Gaming'de kullanılabilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBalanced.Body">Windows'un varsayılanı. Güç Tasarrufu, Dengeli (Ofis) ve Oyun'da kullanılabilir.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBetter.Title">Daha iyi performans</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Gaming ve Performance'ta kullanılabilir. Bir sistem modu seçmek burada her zaman o modun kendi varsayılanını seçer; bu kartlar bir adım öteye ya da beriye yaslanmanızı sağlar.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBetter.Body">Dengeli (Ofis), Oyun ve Performans'ta kullanılabilir. Bir sistem modu seçmek burada her zaman o modun kendi varsayılanını seçer; bu kartlar bir adım öteye ya da beriye yaslanmanızı sağlar.</sys:String>
     <sys:String x:Key="S.Tour.Step.PowerModeBest.Title">En iyi performans</sys:String>
-    <sys:String x:Key="S.Tour.Step.PowerModeBest.Body">Windows'un en hızlı modu, yalnızca Performance için. Nextcalibur bunun üstünde bir koruma tutar: dizüstü boştayken bu mod işlemciyi artık tam hızda tutamaz - özgün yazılımın geride bıraktığı kusur buydu.</sys:String>
+    <sys:String x:Key="S.Tour.Step.PowerModeBest.Body">Windows'un en hızlı modu, yalnızca Performans için. Nextcalibur bunun üstünde bir koruma tutar: dizüstü boştayken bu mod işlemciyi artık tam hızda tutamaz - özgün yazılımın geride bıraktığı kusur buydu.</sys:String>
     <sys:String x:Key="S.Tour.Step.OverlayState.Title">Windows moda uyuyor mu?</sys:String>
     <sys:String x:Key="S.Tour.Step.OverlayState.Body">Windows'un güç katmanının seçtiğiniz modla karşılaştırılması. Yeşil, her şey yolunda demektir.</sys:String>
     <sys:String x:Key="S.Tour.Step.OverlayDetail.Title">Ne buldu</sys:String>
@@ -693,7 +703,7 @@
     <sys:String x:Key="S.Tour.Step.SelectAll.Title">Tüm bölgeler birden</sys:String>
     <sys:String x:Key="S.Tour.Step.SelectAll.Body">İşaretleyin; seçtiğiniz renk ve efekt üç bölgeye birlikte gider.</sys:String>
     <sys:String x:Key="S.Tour.Step.ProfileRow.Title">Profiller</sys:String>
-    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Dört kayıtlı aydınlatma kümesi: Office, Gaming, Performance ve kendinize ait bir tane. Bir profil seçmek onu uygular; sonra değiştirdiğiniz her şey ona kaydedilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ProfileRow.Body">Beş kayıtlı aydınlatma kümesi: Güç Tasarrufu, Dengeli (Ofis), Oyun, Performans ve kendinize ait bir tane. Bir profil seçmek onu uygular; sonra değiştirdiğiniz her şey ona kaydedilir.</sys:String>
     <sys:String x:Key="S.Tour.Step.EffectPanel.Title">Efektler</sys:String>
     <sys:String x:Key="S.Tour.Step.EffectPanel.Body">Sabit, nefes, yanıp sönme, kalp atışı, renk döngüsü ve dalga. Son ikisi kendi renklerini üretir; onlar seçiliyken tekerlek soluklaşır.</sys:String>
     <sys:String x:Key="S.Tour.Step.Wheel.Title">Renk tekerleği</sys:String>
@@ -716,8 +726,8 @@
     <sys:String x:Key="S.Tour.Step.SettingStartWithWindows.Body">Nextcalibur'u oturum açılınca yönetici olarak, sormadan başlatır - zamanlanmış bir görevle; yönetici bir programın Windows ile başlamasının tek yolu budur.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartHow.Title">Nasıl başlasın</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingStartHow.Body">Windows ile başladığında: bildirim alanında sessizce ya da pencere açık olarak. Yalnızca Windows ile başlat açıkken seçilir; kapatıp yeniden açmak seçimi korur.</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Title">Pilde Office modu</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfficeOnBattery.Body">Şarj çıkarıldığında Office'e düş; takıldığında önceki moda dön. Varsayılan olarak açık, özgün yazılımın yaptığı gibi.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryMode.Title">Pildeki mod</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryMode.Body">Şarj çıkınca Güç Tasarrufu ya da Dengeli (Ofis); ya da hiç değiştirme. Takılınca önceki modunuza dönülür. Varsayılan Güç Tasarrufu, özgün yazılımın yaptığı gibi.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Title">Aşırı ısınma uyarısı</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingOverheatWarning.Body">Okumalar panelindeki anahtarın aynısı: çiplerden biri eşiğini aştığında tepsiden bir uyarı. Eşiklerin kendisi sıcaklıkların yanındadır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">Sensörler ne sıklıkla okunsun</sys:String>
@@ -753,5 +763,5 @@
 
     <!-- Tepsi -->
     <sys:String x:Key="S.Tour.Step.TrayIcon.Title">Tepsi simgesi</sys:String>
-    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur saatin yanındaki bildirim alanında yaşar; menüsü az önce orada açıldı. Nextcalibur'u aç pencereyi geri getirir. Windows ile başlat oturum açılınca yönetici olarak, sormadan başlatır. Pilde Office modu şarj çıkarıldığındaki otomatik geçiştir. CPU veya GPU ısınınca uyar aşırı ısınma uyarısıdır. Sensörleri okuma sıklığı sayıların ne sıklıkla yenileneceğini belirler. Güncellemeleri otomatik denetle, Güncellemeleri otomatik kur ve Güncellemeleri şimdi denetle adları ne diyorsa odur; Ayarlar sayfasında aynı anahtarlar vardır. Günlük klasörünü aç, Günlüğü aç düğmesiyle aynıdır. Çıkış uygulamayı durdurur - durmasının tek yolu budur. Hepsi bu kadar. Makinenin tadını çıkarın.</sys:String>
+    <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur saatin yanındaki bildirim alanında yaşar; menüsü az önce orada açıldı. Nextcalibur'u aç pencereyi geri getirir. Windows ile başlat oturum açılınca yönetici olarak, sormadan başlatır. Pildeki mod, şarj çıkınca geçilecek mod seçimidir. CPU veya GPU ısınınca uyar aşırı ısınma uyarısıdır. Sensörleri okuma sıklığı sayıların ne sıklıkla yenileneceğini belirler. Güncellemeleri otomatik denetle, Güncellemeleri otomatik kur ve Güncellemeleri şimdi denetle adları ne diyorsa odur; Ayarlar sayfasında aynı anahtarlar vardır. Günlük klasörünü aç, Günlüğü aç düğmesiyle aynıdır. Çıkış uygulamayı durdurur - durmasının tek yolu budur. Hepsi bu kadar. Makinenin tadını çıkarın.</sys:String>
 </ResourceDictionary>

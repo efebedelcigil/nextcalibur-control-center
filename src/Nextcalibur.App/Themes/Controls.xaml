@@ -557,7 +557,7 @@
         </Setter>
     </Style>
 
-    <!-- System Mode Tab (Office / Gaming / High Performance) -->
+    <!-- System Mode Tab (Power Saver / Balanced / Gaming / Performance) -->
     <Style x:Key="SystemModeTab" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{DynamicResource Muted}" />
         <Setter Property="Cursor" Value="Hand" />

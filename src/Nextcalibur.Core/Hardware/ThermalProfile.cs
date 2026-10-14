@@ -24,6 +24,10 @@ public static class ThermalProfile
         SystemMode.Performance => 0,
         SystemMode.Gaming => 1,
         SystemMode.Office => 2,
+        // The firmware has three profiles; Balanced runs with Office's quiet
+        // fans (the owner's choice, 14 October 2026). Read back, profile 2
+        // says Office, and the Windows plan tells the two apart.
+        SystemMode.Balanced => 2,
         _ => throw new ArgumentOutOfRangeException(nameof(mode)),
     };
 

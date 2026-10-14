@@ -41,6 +41,22 @@ public sealed class AppSettings
     /// </summary>
     public bool FnShortcutsEnabled { get; set; }
 
+    /// <summary>
+    /// The mode on battery: Office (Power Saver), Balanced, or none for "leave
+    /// the mode alone". Absent in files from before 0.7, where
+    /// <see cref="QuietOnBattery"/> said it: on means Office, off means none.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Nextcalibur.Core.Power.SystemMode? BatteryMode { get; set; }
+
+    /// <summary>Whether <see cref="BatteryMode"/> was chosen (or carried over), so a null there means "leave it alone".</summary>
+    public bool BatteryModeSet { get; set; }
+
+    /// <summary>The battery's mode as it applies: the setting, or what the older switch said.</summary>
+    [JsonIgnore]
+    public Nextcalibur.Core.Power.SystemMode? ModeOnBattery =>
+        BatteryModeSet ? BatteryMode : QuietOnBattery ? Nextcalibur.Core.Power.SystemMode.Office : null;
+
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 

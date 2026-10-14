@@ -47,9 +47,9 @@ public static partial class ProgramRules
     /// <summary>The rule in force, or null for none.</summary>
     /// <param name="rules">The rules, in the order they were added.</param>
     /// <param name="running">Running processes named in rules, with when the newest of each started.</param>
-    /// <param name="onBatteryKeepingOffice">On battery with "Office on battery" on: only Office rules apply.</param>
+    /// <param name="batteryCeiling">On battery with a battery mode set: no rule for a faster mode applies.</param>
     public static ProgramRule? Winning(IEnumerable<ProgramRule> rules, IReadOnlyDictionary<string, DateTime> running,
-        bool onBatteryKeepingOffice)
+        SystemMode? batteryCeiling)
     {
         ProgramRule? best = null;
         var bestStart = DateTime.MinValue;
@@ -57,7 +57,7 @@ public static partial class ProgramRules
         {
             if (!rule.Enabled || Normalise(rule.Process) is not { } name) continue;
             if (!running.TryGetValue(name, out var started)) continue;
-            if (onBatteryKeepingOffice && rule.Mode != SystemMode.Office) continue;
+            if (batteryCeiling is { } ceiling && !SystemModes.AtMost(rule.Mode, ceiling)) continue;
             if (best is null || started > bestStart) { best = rule; bestStart = started; }
         }
         return best;
