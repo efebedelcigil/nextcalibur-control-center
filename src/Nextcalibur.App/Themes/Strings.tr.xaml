@@ -237,12 +237,12 @@
     <!-- Ayarlar sayfası -->
     <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
     <sys:String x:Key="S.Settings.DebloatTitle">Windows içindeki reklamlar</sys:String>
-    <sys:String x:Key="S.Settings.DebloatDesc">Raphire'ın Win11Debloat aracı: Başlat, Ayarlar, kilit ekranı ve aramadaki reklam, öneri ve ipuçlarını kapatır; kendi menüsünden ne yapılacağını siz seçersiniz. raphi.re'den indirilir; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatDesc">Raphire'in Win11Debloat aracı: Başlat, arama ve kilit ekranındaki reklam ve önerileri kapatır - neyin değişeceğini onun menüsünde siz seçersiniz. Yazarının sitesinden indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Windows içindeki reklamlar</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Raphire'ın Win11Debloat aracını yazarının sitesinden indirip yönetici PowerShell'de açar. Windows'un kendi reklam ve önerilerini kapatır; neyin değişeceğini onun menüsünde seçersiniz. Nextcalibur'un parçası değildir; açılmadan önce sorulur ve geri yükleme noktası önerilir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
-    <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech'in WinUtil aracı: sık kullanılan programları kurar, gereksiz Windows parçalarını kaldırır, ince ayarlar yapar - her birini onun penceresinde siz seçersiniz. Yazarının sitesinden indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>
     <sys:String x:Key="S.Settings.DriversTitle">Sürücüler</sys:String>
     <sys:String x:Key="S.Settings.DriversDesc">Tarayıcınızda dizüstü bilgisayar üreticisinin kendi sürücü indirme sayfası.</sys:String>
@@ -250,9 +250,9 @@
     <sys:String x:Key="S.Settings.ReportTitle">Sorun bildir</sys:String>
     <sys:String x:Key="S.Settings.ReportDesc">Projenin GitHub'daki sorun bildirme sayfası. O günün günlük dosyasını ekleyin (sol alttaki Günlüğü aç).</sys:String>
     <sys:String x:Key="S.Settings.ReportButton">GitHub'da aç</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyTitle">Gizlilik</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur verilerle ne yapar: hiçbir şey toplanmaz, hakkınızda hiçbir şey gönderilmez.</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyButton">Gizlilik</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyTitle">Gizlilik politikası</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur hakkınızda hiçbir veri toplamaz ve hiçbir yere göndermez. Yalnızca bu bilgisayarda neyi tuttuğunu ve yaptığı birkaç bağlantıyı okuyun.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyButton">Politikayı oku</sys:String>
     <sys:String x:Key="S.Settings.GroupBehaviour">Davranış</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Windows ile başlat</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açılınca yönetici olarak, sormadan başlar.</sys:String>
@@ -883,4 +883,16 @@
     <sys:String x:Key="S.Core.Critical.Indexing">Windows Arama dizinlemesi ({0})</sys:String>
     <sys:String x:Key="S.Core.Critical.RestorePoint">oluşturulan bir geri yükleme noktası ({0})</sys:String>
     <sys:String x:Key="S.Core.Critical.Install">kurulmakta olan bir program ({0})</sys:String>
+
+    <!-- Scan for games, usage -->
+    <sys:String x:Key="S.Settings.GameScanTitle">Oyunları tara</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Steam, Epic, GOG, Ubisoft, EA, Riot ve Xbox ile kurulan oyunları bulur ve her birini aşağıdaki listeye Oyun moduyla ekler. Elle eklediğiniz programlar olduğu gibi kalır. Kaldırdığınız bir oyun bir daha eklenmez. Anahtar açıkken yeni kurulan oyunlar günde bir kez, hiçbir zaman oyun sırasında olmadan aranır.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanButton">Tara</sys:String>
+    <sys:String x:Key="S.Settings.GameScanAutoTip">Yeni kurulan oyunları günde bir kez ara</sys:String>
+    <sys:String x:Key="S.Games.Result">{0} oyun bulundu, {1} tanesi listeye eklendi.</sys:String>
+    <sys:String x:Key="S.Games.NoneFound">Başlatıcıların kayıtlarında oyun bulunamadı.</sys:String>
+    <sys:String x:Key="S.Games.RulesOn">Program kuralları açıldı.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GameScanButton.Title">Oyunları tara</sys:String>
+    <sys:String x:Key="S.Tour.Step.GameScanButton.Body">NVIDIA'nın uygulamasındaki gibi: kurulu oyunlar başlatıcıların kendi kayıtlarından bulunur ve çalışırken Oyun moduna geçirir. Başka bir programı - bir düzenleyici, uzun bir dışa aktarma - aşağıdan elle eklersiniz.</sys:String>
+    <sys:String x:Key="S.Readings.Usage">%{0}</sys:String>
 </ResourceDictionary>

@@ -9,6 +9,12 @@ public sealed class ProgramRule
     public string Process { get; set; } = "";
     public SystemMode Mode { get; set; } = SystemMode.Office;
     public bool Enabled { get; set; } = true;
+
+    /// <summary>The game's name, for a rule the game scan added; null for one added by hand.</summary>
+    public string? Label { get; set; }
+
+    /// <summary>Added by the game scan (<see cref="GameLibrary"/>) rather than by hand.</summary>
+    public bool FromScan { get; set; }
 }
 
 /// <summary>

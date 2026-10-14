@@ -77,7 +77,67 @@ public sealed class TrayPresence : IDisposable
         });
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(Strings.Get("S.Tray.Exit"), null, (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty));
+        Paint(menu);
         return menu;
+    }
+
+    /// <summary>The window's theme, for the menu: WinForms draws Windows' light menu unless told otherwise.</summary>
+    public static bool Dark { get; set; } = true;
+
+    /// <summary>The menu in the theme the window has just taken.</summary>
+    public void ApplyTheme(bool dark)
+    {
+        Dark = dark;
+        if (_disposed || _icon.ContextMenuStrip is not { } menu) return;
+        Paint(menu);
+    }
+
+    private static void Paint(Forms.ToolStrip menu)
+    {
+        menu.Renderer = Dark ? new Forms.ToolStripProfessionalRenderer(new DarkMenuColours()) { RoundedEdges = false } : new Forms.ToolStripProfessionalRenderer();
+        var fore = Dark ? DarkMenuColours.Text : System.Drawing.SystemColors.MenuText;
+        var back = Dark ? DarkMenuColours.Back : System.Drawing.SystemColors.Menu;
+        void Walk(Forms.ToolStripItemCollection items)
+        {
+            foreach (Forms.ToolStripItem item in items)
+            {
+                item.ForeColor = fore;
+                item.BackColor = back;
+                if (item is Forms.ToolStripMenuItem { DropDown: { } drop } sub && sub.HasDropDownItems)
+                {
+                    drop.Renderer = menu.Renderer;
+                    drop.BackColor = back;
+                    Walk(sub.DropDownItems);
+                }
+            }
+        }
+        menu.BackColor = back;
+        Walk(menu.Items);
+    }
+
+    /// <summary>The dark palette's colours for a WinForms menu (Palette.Dark.xaml).</summary>
+    private sealed class DarkMenuColours : Forms.ProfessionalColorTable
+    {
+        public static readonly System.Drawing.Color Back = System.Drawing.Color.FromArgb(0x14, 0x16, 0x1C);
+        public static readonly System.Drawing.Color Text = System.Drawing.Color.FromArgb(0xE6, 0xE8, 0xEE);
+        private static readonly System.Drawing.Color Hover = System.Drawing.Color.FromArgb(0x1E, 0x22, 0x2D);
+        private static readonly System.Drawing.Color Border = System.Drawing.Color.FromArgb(0x22, 0x25, 0x30);
+        public override System.Drawing.Color ToolStripDropDownBackground => Back;
+        public override System.Drawing.Color ImageMarginGradientBegin => Back;
+        public override System.Drawing.Color ImageMarginGradientMiddle => Back;
+        public override System.Drawing.Color ImageMarginGradientEnd => Back;
+        public override System.Drawing.Color MenuBorder => Border;
+        public override System.Drawing.Color MenuItemBorder => Hover;
+        public override System.Drawing.Color MenuItemSelected => Hover;
+        public override System.Drawing.Color MenuItemSelectedGradientBegin => Hover;
+        public override System.Drawing.Color MenuItemSelectedGradientEnd => Hover;
+        public override System.Drawing.Color MenuItemPressedGradientBegin => Hover;
+        public override System.Drawing.Color MenuItemPressedGradientEnd => Hover;
+        public override System.Drawing.Color SeparatorDark => Border;
+        public override System.Drawing.Color SeparatorLight => Border;
+        public override System.Drawing.Color CheckBackground => Hover;
+        public override System.Drawing.Color CheckSelectedBackground => Hover;
+        public override System.Drawing.Color CheckPressedBackground => Hover;
     }
 
     /// <summary>Remakes the menu in the current language; the old one is disposed.</summary>

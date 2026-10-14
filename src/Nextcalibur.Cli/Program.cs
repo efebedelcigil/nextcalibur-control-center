@@ -46,6 +46,7 @@ internal static class Program
                 "preflight" => PreflightCommand(),
                 "nvpower" => NvPower(),
                 "firmware" => Firmware(),
+                "games" => Games(),
                 _ => Help(),
             };
         }
@@ -494,6 +495,15 @@ internal static class Program
     }
 
     /// <summary>What the firmware's SMBIOS tables say about the machine. Reads Windows' copy; nothing is sent or written.</summary>
+    /// <summary>The games the launchers' records list, and the programs each runs as (what Scan for games adds).</summary>
+    private static int Games()
+    {
+        var games = Nextcalibur.Core.Power.GameLibrary.Scan();
+        foreach (var g in games) Console.WriteLine($"{g.Source,-8} {g.Name}  ->  {string.Join(", ", g.Processes)}");
+        Console.WriteLine($"{games.Count} game(s)");
+        return 0;
+    }
+
     private static int Firmware()
     {
         var f = FirmwareInventory.Read();

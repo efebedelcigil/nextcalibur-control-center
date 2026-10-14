@@ -239,12 +239,12 @@
     <!-- Settings page -->
     <sys:String x:Key="S.Settings.GroupTools">Tools</sys:String>
     <sys:String x:Key="S.Settings.DebloatTitle">Ads inside Windows</sys:String>
-    <sys:String x:Key="S.Settings.DebloatDesc">Raphire's Win11Debloat: turns off the ads, suggestions and tips in Start, Settings, the lock screen and search; you choose what it does in its own menu. Downloaded from raphi.re; not part of Nextcalibur and not connected to it.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatDesc">Raphire's Win11Debloat: turns off the ads and suggestions in Start, search and the lock screen - you choose what changes in its menu. Downloaded from its author; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Ads inside Windows</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Downloads Raphire's Win11Debloat from its author's site and opens it in an administrator PowerShell. It turns off Windows' own ads and suggestions; you choose what changes in its menu. Not part of Nextcalibur; you are asked first, and a restore point is offered.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
-    <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur.</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil: installs common programs, removes unneeded Windows parts and applies tweaks - you choose each one in its window. Downloaded from its author; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>
     <sys:String x:Key="S.Settings.DriversTitle">Drivers</sys:String>
     <sys:String x:Key="S.Settings.DriversDesc">The laptop maker's own driver download page, in your browser.</sys:String>
@@ -252,9 +252,9 @@
     <sys:String x:Key="S.Settings.ReportTitle">Report a problem</sys:String>
     <sys:String x:Key="S.Settings.ReportDesc">The project's issue page on GitHub. Attach the day's log file (Open log, bottom left).</sys:String>
     <sys:String x:Key="S.Settings.ReportButton">Open issues</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyTitle">Privacy</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyDesc">What Nextcalibur does with data: nothing collected, nothing sent about you.</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyButton">Privacy</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyTitle">Privacy policy</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur collects nothing about you and sends nothing anywhere. Read what it keeps on this computer only, and the few connections it makes.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyButton">Read the policy</sys:String>
     <sys:String x:Key="S.Settings.GroupBehaviour">Behaviour</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Start with Windows</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, elevated, without a prompt.</sys:String>
@@ -885,4 +885,16 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Core.Critical.Indexing">Windows Search indexing ({0})</sys:String>
     <sys:String x:Key="S.Core.Critical.RestorePoint">a restore point being made ({0})</sys:String>
     <sys:String x:Key="S.Core.Critical.Install">a program being installed ({0})</sys:String>
+
+    <!-- Scan for games, usage -->
+    <sys:String x:Key="S.Settings.GameScanTitle">Scan for games</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Finds the games installed through Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox and adds each to the list below with Gaming. Programs you add by hand stay as they are. A found game you remove is not added again. The switch looks for newly installed games once a day, never during a game.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanButton">Scan</sys:String>
+    <sys:String x:Key="S.Settings.GameScanAutoTip">Look for newly installed games once a day</sys:String>
+    <sys:String x:Key="S.Games.Result">{0} games found, {1} added to the list.</sys:String>
+    <sys:String x:Key="S.Games.NoneFound">No games found in the launchers' records.</sys:String>
+    <sys:String x:Key="S.Games.RulesOn">Program rules have been switched on.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GameScanButton.Title">Scan for games</sys:String>
+    <sys:String x:Key="S.Tour.Step.GameScanButton.Body">Like NVIDIA's app: the installed games are found from the launchers' own records and switch to Gaming while they run. Anything else - an editor, a long render - you add by hand below.</sys:String>
+    <sys:String x:Key="S.Readings.Usage">{0}%</sys:String>
 </ResourceDictionary>

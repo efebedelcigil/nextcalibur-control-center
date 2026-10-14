@@ -96,6 +96,15 @@ public sealed class AppSettings
     /// <summary>Of <see cref="EfficiencyModePrograms"/>, the ones the automatic scan added (shown as such).</summary>
     public List<string> EfficiencyModeAutoAdded { get; set; } = new();
 
+    /// <summary>Games found by the scan whose rule the person removed: never added again.</summary>
+    public List<string> GamesExcluded { get; set; } = new();
+
+    /// <summary>Looking for newly installed games by itself, once a day (on by default; the scan only reads).</summary>
+    public bool GameScanAuto { get; set; } = true;
+
+    /// <summary>When the games were last looked for.</summary>
+    public DateTime? GamesScannedUtc { get; set; }
+
     /// <summary>Programs the person took out of Efficiency mode: the automatic scan never adds them again.</summary>
     public List<string> EfficiencyModeExcluded { get; set; } = new();
 
@@ -375,7 +384,11 @@ public sealed class AppSettings
         {
             if (rule is null || Power.ProgramRules.Normalise(rule.Process) is not { } name) continue;
             if (rules.Any(r => string.Equals(r.Process, name, StringComparison.OrdinalIgnoreCase))) continue;
-            rules.Add(new Power.ProgramRule { Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office });
+            rules.Add(new Power.ProgramRule
+            {
+                Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office,
+                Label = rule.Label is { Length: > 0 and <= 120 } label ? label : null, FromScan = rule.FromScan,
+            });
         }
         settings.ProgramRules = rules;
         settings.EfficiencyModePrograms = (settings.EfficiencyModePrograms ?? new())
@@ -384,6 +397,9 @@ public sealed class AppSettings
         settings.EfficiencyModeAutoAdded = (settings.EfficiencyModeAutoAdded ?? new())
             .Where(p => settings.EfficiencyModePrograms.Contains(p, StringComparer.OrdinalIgnoreCase))
             .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        settings.GamesExcluded = (settings.GamesExcluded ?? new())
+            .Select(Power.ProgramRules.Normalise).OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase).Take(500).ToList();
         settings.EfficiencyModeExcluded = (settings.EfficiencyModeExcluded ?? new())
             .Select(Power.ProgramRules.Normalise).OfType<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase).Take(200).ToList();

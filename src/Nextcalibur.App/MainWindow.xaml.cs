@@ -2494,6 +2494,8 @@ public partial class MainWindow : Window
         var wanted = _theme.Resolved == Theme.Light
             ? "Themes/Palette.Light.xaml"
             : "Themes/Palette.Dark.xaml";
+        TrayPresence.Dark = _theme.Resolved != Theme.Light;
+        _tray?.ApplyTheme(TrayPresence.Dark);
 
         var merged = Application.Current.Resources.MergedDictionaries;
         for (var i = 0; i < merged.Count; i++)
@@ -2529,9 +2531,28 @@ public partial class MainWindow : Window
         var gpu = SystemInfo.GraphicsName();
 
         CpuName.Text = cpu ?? "--";
-        GpuName.Text = gpu ?? "--";
+        GpuName.Text = ShortDeviceName(gpu) ?? "--";
         CpuName.ToolTip = cpu;
         GpuName.ToolTip = gpu;
+    }
+
+    /// <summary>
+    /// The name as it fits under the gauge: the maker's name and a trailing
+    /// "GPU" dropped ("NVIDIA GeForce RTX 4050 Laptop GPU" is "GeForce RTX
+    /// 4050 Laptop"); the full name stays in the tooltip.
+    /// </summary>
+    internal static string? ShortDeviceName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return name;
+        var shorter = name.Trim();
+        foreach (var maker in new[] { "NVIDIA ", "AMD ", "Intel(R) ", "Intel " })
+            if (shorter.StartsWith(maker, StringComparison.OrdinalIgnoreCase) && shorter.Length > maker.Length + 3)
+            {
+                shorter = shorter[maker.Length..];
+                break;
+            }
+        if (shorter.EndsWith(" GPU", StringComparison.OrdinalIgnoreCase)) shorter = shorter[..^4];
+        return shorter;
     }
 
     // ------------------------------------------------------- memory and disk
@@ -2695,25 +2716,33 @@ public partial class MainWindow : Window
     /// </summary>
     private void RefreshClocks()
     {
+        // The share in use, as Task Manager shows it, before the clock: all
+        // the logical processors averaged since the last tick (a system
+        // query, no interrupt), and the card's own utilisation from NVML.
+        var cores = _cpuUsage.Read();
+        var cpuUse = cores.Length > 0 ? Strings.Get("S.Readings.Usage", Math.Round(cores.Average())) + " · " : "";
+
         // The CPU's draw comes through PawnIO when it is installed and the
         // process is elevated; otherwise the clock stands alone.
         CpuClock.Text = (_cpuClock.ReadGhz(), _cpuPower.ReadWatts()) switch
         {
-            ({ } ghz, { } watts) => $"{ghz:N2} GHz · {watts:0.0} W",
-            ({ } ghz, null) => $"{ghz:N2} GHz",
+            ({ } ghz, { } watts) => $"{cpuUse}{ghz:N2} GHz · {watts:0.0} W",
+            ({ } ghz, null) => $"{cpuUse}{ghz:N2} GHz",
             _ => "--",   // a failed measurement is a dash, never a blank
         };
-        // Clock and draw together, beside the temperature the panel already
-        // shows: the card's whole state on one line, in every mode.
+        // Use, clock and draw together, beside the temperature the panel
+        // already shows: the card's whole state on one line, in every mode.
         GpuClock.Text = _nvidiaDriver == NvidiaDriverState.Missing ? "--"
             : !CardIsAwakeNow() ? Strings.Get("S.Readings.Asleep")
             : (_gpuClock.ReadGhz(), _gpuClock.ReadLoad()) switch
             {
-                ({ } ghz, { } load) => $"{ghz:N2} GHz · {load.Watts:0.0} W",
+                ({ } ghz, { } load) => $"{Strings.Get("S.Readings.Usage", load.UtilisationPercent)} · {ghz:N2} GHz · {load.Watts:0.0} W",
                 ({ } ghz, null) => $"{ghz:N2} GHz",
                 _ => "--",
             };
     }
+
+    private readonly Nextcalibur.Core.Hardware.CoreLoad _cpuUsage = new();
 
     /// <summary>
     /// Colours a reading by how hot it is.
@@ -3045,6 +3074,7 @@ public partial class MainWindow : Window
                 PlanWatchTick();
                 ApplyEfficiencyModes();
                 AutoEfficiencyTick();
+                GameScanTick();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

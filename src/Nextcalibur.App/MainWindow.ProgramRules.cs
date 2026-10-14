@@ -215,6 +215,7 @@ public partial class MainWindow
         _rulesMaster.Unchecked += (_, _) => SetRulesMaster(false);
         _rulesName.DropDownOpened += (_, _) => FillRunningPrograms();
         if (FindName("ProgramRuleAdd") is Button add) add.Click += (_, _) => AddProgramRule();
+        WireGameScan();
         RefreshProgramRuleRows();
     }
 
@@ -284,6 +285,7 @@ public partial class MainWindow
             existing.Mode = mode;
         else
             _settings.ProgramRules.Add(new ProgramRule { Process = name, Mode = mode });
+        _settings.GamesExcluded.RemoveAll(g => string.Equals(g, name, StringComparison.OrdinalIgnoreCase));
         _settings.Save();
         Log.Info("rules", $"Rule: {name} -> {mode}");
         _rulesName.Text = string.Empty;
@@ -318,9 +320,12 @@ public partial class MainWindow
                 box.Unchecked += (_, _) => { if (_rulesUiLoading) return; current.Enabled = false; _settings.Save(); if (ReferenceEquals(_activeRule, current)) EndRuleNow(); StartProgramRules(); };
                 row.Children.Add(box);
 
+                // A found game by its name, its program beside it; one added by hand by its program.
+                var shown = rule.Label is { Length: > 0 } label ? $"{label}  ({rule.Process})" : rule.Process;
                 var text = new TextBlock
                 {
-                    Text = ReferenceEquals(_activeRule, rule) ? Strings.Get("S.Rules.RowActive", rule.Process) : rule.Process,
+                    Text = ReferenceEquals(_activeRule, rule) ? Strings.Get("S.Rules.RowActive", shown) : shown,
+                    TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = shown,
                     FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
                     Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
                 };
@@ -346,6 +351,9 @@ public partial class MainWindow
                 {
                     if (ReferenceEquals(_activeRule, current)) EndRuleNow();
                     _settings.ProgramRules.Remove(current);
+                    // A found game taken off the list stays off it: the daily scan does not bring it back.
+                    if (current.FromScan && !_settings.GamesExcluded.Contains(current.Process, StringComparer.OrdinalIgnoreCase))
+                        _settings.GamesExcluded.Add(current.Process);
                     _settings.Save();
                     Log.Info("rules", $"Rule removed: {current.Process}");
                     StartProgramRules();
