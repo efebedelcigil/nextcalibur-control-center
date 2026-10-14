@@ -41,6 +41,7 @@ internal static class Program
                 "gpu" => Gpu(args),
                 "events" => Events(args),
                 "plans" => Plans(),
+                "heat" => Heat(args),
                 _ => Help(),
             };
         }
@@ -309,6 +310,73 @@ internal static class Program
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// Why is it hot: the power limits and throttle point the firmware set,
+    /// what has held the cores back since boot, then a line a second - the
+    /// controller's and the processor's own temperatures, fans, package
+    /// power, clock, and what is holding the cores back right now. Reads
+    /// only. Needs an elevated prompt and PawnIO.
+    /// </summary>
+    private static int Heat(string[] args)
+    {
+        var seconds = args.Length > 1 && int.TryParse(args[1], out var s) ? s : 60;
+        using var msr = new CpuPowerReader();
+        if (!msr.CanOpen())
+        {
+            Error("PawnIO could not be opened - run elevated, with PawnIO installed.");
+            return 2;
+        }
+
+        var unit = msr.ReadDiagnostic(CpuLimits.PowerUnit) ?? 0;
+        if (msr.ReadDiagnostic(CpuLimits.PackagePowerLimit) is { } limit)
+        {
+            var pl = CpuLimits.DecodePowerLimits(limit, unit);
+            Console.WriteLine($"PL1 {pl.Pl1Watts:0.#} W ({(pl.Pl1On ? "on" : "off")}, window {pl.Pl1WindowSeconds:0.#} s)   " +
+                              $"PL2 {pl.Pl2Watts:0.#} W ({(pl.Pl2On ? "on" : "off")})   {(pl.Locked ? "locked by firmware" : "not locked")}");
+        }
+        if (msr.ReadDiagnostic(CpuLimits.TemperatureTarget) is { } target)
+        {
+            var (tj, offset) = CpuLimits.DecodeTarget(target);
+            Console.WriteLine($"Throttle point (TjMax) {tj} °C, offset {offset} -> throttles at {tj - offset} °C");
+        }
+        if (msr.ReadDiagnostic(CpuLimits.PackageThermStatus) is { } pkg)
+        {
+            var f = CpuLimits.DecodeThermStatus(pkg);
+            Console.WriteLine($"Since boot: thermal throttling {Yes(f.HotSinceBoot)}, PROCHOT {Yes(f.ProchotSinceBoot)}, power-limit notification {Yes(f.PowerLimitSinceBoot)}");
+        }
+        if (msr.ReadDiagnostic(CpuLimits.PerfLimitReasons) is { } reasons)
+        {
+            var (_, logged) = CpuLimits.DecodeLimitReasons(reasons);
+            Console.WriteLine("Held back since boot by: " + (logged.Count == 0 ? "nothing" : string.Join("; ", logged)));
+        }
+        Console.WriteLine();
+
+        EcMailbox? mailbox = null;
+        ThermalReader? ec = null;
+        try { mailbox = new EcMailbox(); ec = new ThermalReader(mailbox); }
+        catch (Exception ex) when (ex is not OutOfMemoryException) { Console.WriteLine("(controller not readable: " + ex.Message + ")"); }
+
+        using var clock = new CpuClockReader();
+        Console.WriteLine($"{"time",-8} {"EC CPU",6} {"pkg",4} {"GPU",4} {"fanC",5} {"fanG",5} {"pkg W",6} {"GHz",5}  held back now by");
+        msr.ReadWatts();
+        var deadline = DateTime.UtcNow.AddSeconds(seconds);
+        while (DateTime.UtcNow < deadline)
+        {
+            Thread.Sleep(1000);
+            ThermalSample? t = ec is not null && ec.TryRead(out var sample) ? sample : null;
+            var pkgC = msr.ReadPackageTemperatureC();
+            var watts = msr.ReadWatts();
+            var ghz = clock.ReadGhz();
+            var now = msr.ReadDiagnostic(CpuLimits.PerfLimitReasons) is { } r ? CpuLimits.DecodeLimitReasons(r).Now : [];
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss} {t?.CpuTemperatureC,6} {pkgC,4} {t?.GpuTemperatureC,4} {t?.CpuFanRpm,5} {t?.GpuFanRpm,5} " +
+                              $"{watts,6:0.0} {ghz,5:0.00}  {(now.Count == 0 ? "-" : string.Join("; ", now.Select(n => n.Split(' ')[0])))}");
+        }
+        mailbox?.Dispose();
+        return 0;
+
+        static string Yes(bool b) => b ? "YES" : "no";
     }
 
     private static int Clocks()

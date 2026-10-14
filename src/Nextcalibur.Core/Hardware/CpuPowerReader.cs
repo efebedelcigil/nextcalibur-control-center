@@ -223,6 +223,18 @@ public sealed class CpuPowerReader : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// One of the registers in <see cref="CpuLimits.Readable"/>, for the
+    /// heat diagnosis; null when it cannot be read. Read-only, and only
+    /// those: anything else is refused before the driver is asked.
+    /// </summary>
+    public ulong? ReadDiagnostic(uint msr)
+    {
+        if (!CpuLimits.Readable.Contains(msr)) throw new ArgumentOutOfRangeException(nameof(msr), "Not a diagnostic register.");
+        if (!Open()) return null;
+        return ReadMsr(msr, out var value) ? value : null;
+    }
+
     /// <summary>Allows a new attempt to open the PawnIO device, for example after the driver is installed.</summary>
     public void Reset()
     {

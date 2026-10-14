@@ -38,3 +38,6 @@ graphify-out/
 # Read off one machine; never published.
 docs/Excalibur-Guc/
 docs/Nextcalibur-yedek/
+
+# The owner's manual test list, machine-specific
+test.md
