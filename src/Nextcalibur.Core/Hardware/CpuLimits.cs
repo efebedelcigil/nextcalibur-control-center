@@ -15,12 +15,39 @@ public static class CpuLimits
     public const uint TemperatureTarget = 0x1A2; // MSR_TEMPERATURE_TARGET
     public const uint PackageThermStatus = 0x1B1; // IA32_PACKAGE_THERM_STATUS
     public const uint PerfLimitReasons = 0x64F;  // MSR_CORE_PERF_LIMIT_REASONS
+    public const uint PackagePowerInfo = 0x614;  // MSR_PKG_POWER_SKU: Intel's own definition
+    public const uint ConfigTdpNominal = 0x648;  // MSR_CONFIG_TDP_NOMINAL
+    public const uint ConfigTdpLevel1 = 0x649;   // MSR_CONFIG_TDP_LEVEL_1
+    public const uint ConfigTdpLevel2 = 0x64A;   // MSR_CONFIG_TDP_LEVEL_2
+    public const uint ConfigTdpControl = 0x64B;  // MSR_CONFIG_TDP_CONTROL
 
     /// <summary>The registers <see cref="CpuPowerReader.ReadDiagnostic"/> will read; nothing else, and nothing is ever written.</summary>
     public static readonly IReadOnlySet<uint> Readable = new HashSet<uint>
     {
         PowerUnit, PackagePowerLimit, CoreThermStatus, TemperatureTarget, PackageThermStatus, PerfLimitReasons,
+        PackagePowerInfo, ConfigTdpNominal, ConfigTdpLevel1, ConfigTdpLevel2, ConfigTdpControl,
     };
+
+    /// <summary>
+    /// The processor's own definition of its power - what Intel set in the
+    /// silicon, before any laptop maker: the thermal design power (base
+    /// power) and the range a limit may be set in. Zero for a field the
+    /// processor leaves empty.
+    /// </summary>
+    public readonly record struct PowerInfo(double TdpWatts, double MinWatts, double MaxWatts);
+
+    public static PowerInfo DecodePowerInfo(ulong info, ulong unit)
+    {
+        var watt = 1.0 / (1L << (int)(unit & 0xF));
+        return new PowerInfo((info & 0x7FFF) * watt, ((info >> 16) & 0x7FFF) * watt, ((info >> 32) & 0x7FFF) * watt);
+    }
+
+    /// <summary>A configurable-TDP level (1 or 2): its package power and its ratio; zero when the processor offers none.</summary>
+    public static (double Watts, int Ratio) DecodeTdpLevel(ulong level, ulong unit)
+    {
+        var watt = 1.0 / (1L << (int)(unit & 0xF));
+        return ((level & 0x7FFF) * watt, (int)((level >> 16) & 0xFF));
+    }
 
     /// <summary>The package power limits: PL1 (sustained) with its time window, PL2 (short), and whether the firmware locked them.</summary>
     public readonly record struct PowerLimits(double Pl1Watts, bool Pl1On, double Pl1WindowSeconds, double Pl2Watts, bool Pl2On, bool Locked);

@@ -60,6 +60,16 @@ public class CpuLimitsTests
     }
 
     [Fact]
+    public void Intels_own_definition_reads_in_watts()
+    {
+        // Base 45 W, range 35-115 W, in 1/8 W.
+        var info = CpuLimits.DecodePowerInfo(360 | (280UL << 16) | (920UL << 32), Unit);
+        Assert.Equal(new CpuLimits.PowerInfo(45, 35, 115), info);
+        Assert.Equal((35.0, 21), CpuLimits.DecodeTdpLevel(280 | (21UL << 16), Unit));
+        Assert.Equal((0.0, 0), CpuLimits.DecodeTdpLevel(0, Unit));
+    }
+
+    [Fact]
     public void Only_the_diagnostic_registers_are_readable()
     {
         Assert.Contains(CpuLimits.PerfLimitReasons, CpuLimits.Readable);

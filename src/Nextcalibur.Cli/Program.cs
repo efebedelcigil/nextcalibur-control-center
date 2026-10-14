@@ -42,6 +42,7 @@ internal static class Program
                 "events" => Events(args),
                 "plans" => Plans(),
                 "heat" => Heat(args),
+                "limits" => Limits(args),
                 _ => Help(),
             };
         }
@@ -386,6 +387,66 @@ internal static class Program
         return 0;
 
         static string Yes(bool b) => b ? "YES" : "no";
+    }
+
+    /// <summary>
+    /// Who sets the processor's power limits, and when: Intel's own
+    /// definition first, then a line whenever the limits in force or the
+    /// firmware's mode change (and every ten seconds), for switching modes
+    /// and plugging the charger in and out while it runs. Reads only.
+    /// </summary>
+    private static int Limits(string[] args)
+    {
+        var seconds = args.Length > 1 && int.TryParse(args[1], out var s) ? s : 120;
+        using var msr = new CpuPowerReader();
+        if (!msr.CanOpen())
+        {
+            Error("PawnIO could not be opened - run elevated, with PawnIO installed.");
+            return 2;
+        }
+
+        var unit = msr.ReadDiagnostic(CpuLimits.PowerUnit) ?? 0;
+        if (msr.ReadDiagnostic(CpuLimits.PackagePowerInfo) is { } info)
+        {
+            var i = CpuLimits.DecodePowerInfo(info, unit);
+            Console.WriteLine($"Intel's definition (MSR 0x614): base power {i.TdpWatts:0.#} W, limit range {i.MinWatts:0.#}-{i.MaxWatts:0.#} W");
+        }
+        foreach (var (name, reg) in new[] { ("cTDP level 1", CpuLimits.ConfigTdpLevel1), ("cTDP level 2", CpuLimits.ConfigTdpLevel2) })
+        {
+            if (msr.ReadDiagnostic(reg) is { } level)
+            {
+                var (w, ratio) = CpuLimits.DecodeTdpLevel(level, unit);
+                Console.WriteLine($"{name}: {(w == 0 ? "none" : $"{w:0.#} W at ratio {ratio}")}");
+            }
+        }
+        if (msr.ReadDiagnostic(CpuLimits.ConfigTdpControl) is { } control)
+            Console.WriteLine($"cTDP level in force: {control & 0x3}{((control & (1UL << 31)) != 0 ? " (locked)" : "")}");
+        Console.WriteLine("Note: the limits below are the MSR copy; the processor also has a memory-mapped copy the platform software may set, and the lower of the two applies.");
+        Console.WriteLine();
+
+        EcMailbox? mailbox = null;
+        try { mailbox = new EcMailbox(); } catch (Exception ex) when (ex is not OutOfMemoryException) { Console.WriteLine("(controller not readable: " + ex.Message + ")"); }
+
+        Console.WriteLine($"{"time",-8} {"power",-8} {"EC mode",-12} {"PL1",8} {"PL2",8}  change");
+        string? last = null;
+        var lastPrint = DateTime.MinValue;
+        var deadline = DateTime.UtcNow.AddSeconds(seconds);
+        while (DateTime.UtcNow < deadline)
+        {
+            var mode = mailbox is null ? "?" : (ThermalProfile.Read(mailbox)?.ToString() ?? "?");
+            var power = PowerSource.OnBattery() ? "battery" : "charger";
+            var pl = msr.ReadDiagnostic(CpuLimits.PackagePowerLimit) is { } l ? CpuLimits.DecodePowerLimits(l, unit) : (CpuLimits.PowerLimits?)null;
+            var now = $"{power,-8} {mode,-12} {pl?.Pl1Watts,7:0.#}W {pl?.Pl2Watts,7:0.#}W";
+            if (now != last || DateTime.UtcNow - lastPrint >= TimeSpan.FromSeconds(10))
+            {
+                Console.WriteLine($"{DateTime.Now:HH:mm:ss} {now}  {(last is null || now == last ? "" : "<-- changed")}");
+                last = now;
+                lastPrint = DateTime.UtcNow;
+            }
+            Thread.Sleep(500);
+        }
+        mailbox?.Dispose();
+        return 0;
     }
 
     private static int Clocks()
