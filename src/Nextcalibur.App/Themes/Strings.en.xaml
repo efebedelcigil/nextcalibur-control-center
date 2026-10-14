@@ -88,6 +88,13 @@
     <sys:String x:Key="S.Lighting.ProfBalanced">Balanced (Office)</sys:String>
     <sys:String x:Key="S.FirstChanges.Creating">Making a restore point before Nextcalibur's first changes to this computer...</sys:String>
     <sys:String x:Key="S.FirstChanges.NoPointWhy">Windows could not make a restore point before Nextcalibur's first changes (power plan repairs, the mode profile): {0}. They would be made with no way back.</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingTitle">USB power saving</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingDesc">On, USB devices not in use are put to sleep (battery and heat); off, they never sleep and mouse and keyboard receivers never lag. Windows' setting by default; Nextcalibur never changes it on its own. Written the same in every mode.</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingTitle">Wi-Fi power saving</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingDesc">On, the wireless adapter saves power as Windows' Balanced plan has it (usually on battery only); off, it always runs at maximum performance and the connection never stalls. Windows' setting by default; Nextcalibur never changes it on its own.</sys:String>
+    <sys:String x:Key="S.Settings.SavingMixed">Different in the modes: {0}</sys:String>
+    <sys:String x:Key="S.Settings.SavingOn">on</sys:String>
+    <sys:String x:Key="S.Settings.SavingOff">off</sys:String>
     <sys:String x:Key="S.System.Office">Power Saver</sys:String>
     <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
     <sys:String x:Key="S.System.Performance">Performance</sys:String>

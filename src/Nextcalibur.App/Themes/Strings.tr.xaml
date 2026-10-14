@@ -86,6 +86,13 @@
     <sys:String x:Key="S.Lighting.ProfBalanced">Dengeli (Ofis)</sys:String>
     <sys:String x:Key="S.FirstChanges.Creating">Nextcalibur bu bilgisayarda ilk değişikliklerini yapmadan önce bir geri yükleme noktası oluşturuluyor...</sys:String>
     <sys:String x:Key="S.FirstChanges.NoPointWhy">Nextcalibur'un ilk değişikliklerinden (güç planı onarımları, mod profili) önce Windows bir geri yükleme noktası oluşturamadı: {0}. Bu değişiklikler bir dönüş yolu olmadan yapılmış olur.</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingTitle">USB güç tasarrufu</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingDesc">Açıkken kullanılmayan USB aygıtları uyutulur (pil ve ısı kazancı); kapalıyken hiç uyumaz, fare ve klavye alıcıları gecikmez. Varsayılan Windows'un ayarı; Nextcalibur kendiliğinden değiştirmez. Her modda aynı yazılır.</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingTitle">Wi-Fi güç tasarrufu</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingDesc">Açıkken kablosuz bağdaştırıcı Windows'un Dengeli ayarıyla tasarruf eder (genelde yalnız pilde); kapalıyken her zaman en yüksek performansta, bağlantı takılmaz. Varsayılan Windows'un ayarı; Nextcalibur kendiliğinden değiştirmez.</sys:String>
+    <sys:String x:Key="S.Settings.SavingMixed">Modlarda farklı: {0}</sys:String>
+    <sys:String x:Key="S.Settings.SavingOn">açık</sys:String>
+    <sys:String x:Key="S.Settings.SavingOff">kapalı</sys:String>
     <sys:String x:Key="S.System.Office">Güç Tasarrufu</sys:String>
     <sys:String x:Key="S.System.Gaming">Oyun</sys:String>
     <sys:String x:Key="S.System.Performance">Performans</sys:String>

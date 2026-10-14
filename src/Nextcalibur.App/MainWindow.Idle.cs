@@ -4,6 +4,8 @@ using Nextcalibur.Core.Configuration;
 using Nextcalibur.Core.Power;
 using ComboBox = System.Windows.Controls.ComboBox;
 using ComboBoxItem = System.Windows.Controls.ComboBoxItem;
+using ToggleButton = System.Windows.Controls.Primitives.ToggleButton;
+using TextBlock = System.Windows.Controls.TextBlock;
 
 namespace Nextcalibur.App;
 
@@ -23,6 +25,9 @@ public partial class MainWindow
     private readonly Dictionary<Guid, Timeouts> _idleKnown = [];
 
     private int _screenSaverKnown = -1;
+    private ToggleButton? _usbSaving, _wifiSaving;
+    private TextBlock? _usbSavingState, _wifiSavingState;
+    private readonly Dictionary<(Guid, DeviceSaving), PlanTuning.AcDc> _savingKnown = [];
     private StackPanel? _idleRows;
     private ComboBox? _idleScreenSaver;
     private bool _idleUiLoading;
@@ -40,6 +45,13 @@ public partial class MainWindow
         if (_idleRows is null || _idleScreenSaver is null) return;
 
         _idleScreenSaver.SelectionChanged += (_, _) => ScreenSaverChosen();
+
+        _usbSaving = FindName("SettingUsbSaving") as ToggleButton;
+        _wifiSaving = FindName("SettingWifiSaving") as ToggleButton;
+        _usbSavingState = FindName("SettingUsbSavingState") as TextBlock;
+        _wifiSavingState = FindName("SettingWifiSavingState") as TextBlock;
+        if (_usbSaving is not null) _usbSaving.Click += (_, _) => SavingChosen(DeviceSaving.Usb, _usbSaving.IsChecked == true);
+        if (_wifiSaving is not null) _wifiSaving.Click += (_, _) => SavingChosen(DeviceSaving.Wifi, _wifiSaving.IsChecked == true);
         RememberIdleTimeouts();
     }
 
@@ -51,6 +63,7 @@ public partial class MainWindow
         _idleKnown.Clear();
         foreach (var (_, plan) in _idlePlans)
             if (IdleTimeouts.Read(plan) is { } t) _idleKnown[plan] = t;
+        ReadSavings();
         RefreshIdleRows();
     }
 
@@ -91,6 +104,7 @@ public partial class MainWindow
         }
 
         if (ScreenSaver.Current() != _screenSaverKnown) changed = true;
+        if (ReadSavings()) changed = true;
         if (changed) RefreshIdleRows();
     }
 
@@ -114,6 +128,8 @@ public partial class MainWindow
 
             _screenSaverKnown = ScreenSaver.Current();
             FillIdleChoices(_idleScreenSaver, _screenSaverKnown, "S.Idle.Off");
+            ShowSaving(DeviceSaving.Usb, _usbSaving, _usbSavingState);
+            ShowSaving(DeviceSaving.Wifi, _wifiSaving, _wifiSavingState);
         }
         finally
         {
@@ -198,6 +214,59 @@ public partial class MainWindow
             Log.Warn("idle", $"Could not set {setting} for {plan:D}");
             Dispatcher.BeginInvoke(RememberIdleTimeouts);
         }
+    }
+
+    /// <summary>Reads the USB and wireless savings of every mode's plan; true when anything changed since the last read.</summary>
+    private bool ReadSavings()
+    {
+        var changed = false;
+        foreach (var (_, plan) in _idlePlans)
+        foreach (var kind in new[] { DeviceSaving.Usb, DeviceSaving.Wifi })
+        {
+            if (DevicePowerSaving.Read(plan, kind) is not { } now) continue;
+            if (!_savingKnown.TryGetValue((plan, kind), out var known) || known != now)
+            {
+                if (_savingKnown.ContainsKey((plan, kind))) Log.Info("idle", $"{kind} power saving of {plan:D} changed in Windows");
+                _savingKnown[(plan, kind)] = now;
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /// <summary>A switch as the plans have it: on, off, or - when the modes differ - which mode has what.</summary>
+    private void ShowSaving(DeviceSaving kind, ToggleButton? toggle, TextBlock? state)
+    {
+        if (toggle is null || state is null) return;
+        var values = _idlePlans.Where(p => _savingKnown.ContainsKey((p.Plan, kind)))
+            .Select(p => (p.Mode, Value: _savingKnown[(p.Plan, kind)])).ToList();
+        var on = DevicePowerSaving.State(values.Select(v => v.Value));
+        toggle.IsChecked = on == true;
+        toggle.IsEnabled = values.Count > 0;
+        state.Text = on is null && values.Count > 0
+            ? Strings.Get("S.Settings.SavingMixed", string.Join(", ", values.Select(v =>
+                $"{(v.Mode is { } m ? ModeName(m) : Strings.Get("S.Idle.ActivePlan"))}: {Strings.Get(DevicePowerSaving.Saving(v.Value) ? "S.Settings.SavingOn" : "S.Settings.SavingOff")}")))
+            : string.Empty;
+    }
+
+    /// <summary>The person's switch: the same value into every mode's plan, plugged in and on battery.</summary>
+    private void SavingChosen(DeviceSaving kind, bool on)
+    {
+        var value = on
+            ? DevicePowerSaving.On(kind, DevicePowerSaving.Read(ModeProfile.BalancedPlan, kind))
+            : DevicePowerSaving.Off;
+        var written = 0;
+        foreach (var (_, plan) in _idlePlans)
+        {
+            if (DevicePowerSaving.Write(plan, kind, value))
+            {
+                _savingKnown[(plan, kind)] = value;
+                written++;
+            }
+        }
+        Log.Info("idle", $"{kind} power saving {(on ? "on" : "off")} ({value.Ac}/{value.Dc}) in {written} plan(s)");
+        Audit($"{kind.ToString().ToLowerInvariant()}-power-saving", "done", ("on", on), ("ac", value.Ac), ("dc", value.Dc), ("plans", written));
+        RefreshIdleRows();
     }
 
     private void ScreenSaverChosen()
