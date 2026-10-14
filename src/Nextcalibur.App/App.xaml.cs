@@ -422,6 +422,12 @@ public partial class App : Application
                             window.Show();
                             window.WindowState = WindowState.Normal;
                             window.Activate();
+                            // Brought to the top for a moment: Activate alone can leave
+                            // a window behind the one in front, with only its button flashing.
+                            window.Topmost = true;
+                            window.Topmost = false;
+                            window.Focus();
+                            Log.Info("wake", "Asked to show the window: shown");
                         });
                     }
                     catch (Exception ex) when (ex is OperationCanceledException or InvalidOperationException)

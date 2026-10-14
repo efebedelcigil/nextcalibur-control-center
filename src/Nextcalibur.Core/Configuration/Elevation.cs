@@ -58,6 +58,11 @@ public static class Elevation
         // at every logon. So from here it is the prompt or nothing.
         var viaTask = args.Contains(ViaTaskArgument, StringComparer.OrdinalIgnoreCase);
 
+        // This start came from the person (a click, a key), so it may bring a
+        // window forward; the copy that will - the one already running, woken by
+        // the task's copy - gets that right too, or Windows only flashes its button.
+        AllowSetForegroundWindow(AnyProcess);
+
         // The prompt-free way, when the tasks exist and point at this copy.
         if (!viaTask
             && TaskPointsAt(tray ? StartupTask : OpenTask, executablePath)
@@ -97,7 +102,9 @@ public static class Elevation
     public static bool RegisterOpenTask(string executablePath)
     {
         if (!MayStartWithoutPrompt(executablePath)) return false;
-        if (TaskPointsAt(OpenTask, executablePath)) return false;
+        // Also re-registered when it still refuses a second run: tasks made
+        // before 0.7 did ("IgnoreNew"), and see Create for what that broke.
+        if (TaskPointsAt(OpenTask, executablePath) && RunsInParallel(OpenTask)) return false;
         return Create(OpenTask, executablePath, ViaTaskArgument, logon: false);
     }
 
@@ -223,6 +230,34 @@ public static class Elevation
     /// file between the write and the read, and registered a task of its
     /// own choosing at the highest level.
     /// </summary>
+    /// <summary>
+    /// Whether a task lets a second run start while one is running. The
+    /// on-demand task has to: the copy it started stays running for as long
+    /// as the application does, and with "IgnoreNew" a second start - the
+    /// desktop icon pressed while the window was in the tray - was dropped
+    /// by Windows without a word, so the window never came forward (the
+    /// owner's report, 14 October 2026). The second copy only finds the first
+    /// and asks it to show its window, then exits.
+    /// </summary>
+    private static bool RunsInParallel(string task)
+    {
+        var slash = task.LastIndexOf('\\');
+        try
+        {
+            var type = Type.GetTypeFromProgID("Schedule.Service");
+            if (type is null) return true;
+            dynamic service = Activator.CreateInstance(type)!;
+            service.Connect();
+            dynamic registered = service.GetFolder(slash <= 0 ? "\\" : task[..slash]).GetTask(task[(slash + 1)..]);
+            const int parallel = 0;   // TASK_INSTANCES_PARALLEL
+            return (int)registered.Definition.Settings.MultipleInstances == parallel;
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or IOException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+        {
+            return true;   // cannot tell: leave the task as it is
+        }
+    }
+
     private static bool Create(string task, string executablePath, string arguments, bool logon)
     {
         var sid = WindowsIdentity.GetCurrent().User?.Value;
@@ -258,7 +293,7 @@ public static class Elevation
                 <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
                 <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
                 <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
-                <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+                <MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy>
                 <StartWhenAvailable>false</StartWhenAvailable>
                 <Hidden>false</Hidden>
               </Settings>
@@ -295,4 +330,9 @@ public static class Elevation
             return false;
         }
     }
+
+    private const uint AnyProcess = unchecked((uint)-1);   // ASFW_ANY
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool AllowSetForegroundWindow(uint processId);
 }
