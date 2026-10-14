@@ -159,6 +159,9 @@ public sealed class CpuClockReader : IDisposable
 /// <param name="UtilisationPercent">How much of the last sampling period the GPU was busy.</param>
 public readonly record struct GpuLoad(double Watts, int UtilisationPercent);
 
+/// <summary>A graphics card's power limits, in watts: NVIDIA's default, the one in force, and the settable range when known.</summary>
+public readonly record struct GpuPowerLimits(double DefaultWatts, double EnforcedWatts, double? MinWatts, double? MaxWatts);
+
 /// <summary>
 /// Reads the graphics card's clock through NVML, the library NVIDIA ships with
 /// its driver. The vendor software uses the same one.
@@ -198,6 +201,15 @@ public sealed class GpuClockReader : IDisposable
 
     [DllImport(Nvml, EntryPoint = "nvmlDeviceGetDisplayActive")]
     private static extern int GetDisplayActive(IntPtr device, out int isActive);
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetPowerManagementDefaultLimit")]
+    private static extern int GetDefaultPowerLimit(IntPtr device, out uint milliwatts);
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetEnforcedPowerLimit")]
+    private static extern int GetEnforcedPowerLimit(IntPtr device, out uint milliwatts);
+
+    [DllImport(Nvml, EntryPoint = "nvmlDeviceGetPowerManagementLimitConstraints")]
+    private static extern int GetPowerLimitConstraints(IntPtr device, out uint minMilliwatts, out uint maxMilliwatts);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct NvmlUtilisation
@@ -341,6 +353,30 @@ public sealed class GpuClockReader : IDisposable
         try
         {
             return GetClock(_device, ClockGraphics, out var mhz) == Success ? mhz / 1000.0 : null;
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            _ready = false;
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// The card's power definitions: NVIDIA's default limit for this card,
+    /// the limit in force (the laptop maker's, with Dynamic Boost), and the
+    /// range it may be set in. Null when unreadable. Call only while the card
+    /// is awake - NVML wakes a sleeping card.
+    /// </summary>
+    public GpuPowerLimits? ReadPowerLimits()
+    {
+        if (!EnsureReady()) return null;
+
+        try
+        {
+            if (GetDefaultPowerLimit(_device, out var def) != Success) return null;
+            if (GetEnforcedPowerLimit(_device, out var enforced) != Success) return null;
+            var range = GetPowerLimitConstraints(_device, out var min, out var max) == Success;
+            return new GpuPowerLimits(def / 1000.0, enforced / 1000.0, range ? min / 1000.0 : null, range ? max / 1000.0 : null);
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {
