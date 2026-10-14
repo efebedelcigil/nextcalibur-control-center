@@ -131,6 +131,11 @@
 
     <!-- Ayarlar sayfası -->
     <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
+    <sys:String x:Key="S.Settings.OfgbTitle">Windows içindeki reklamlar</sys:String>
+    <sys:String x:Key="S.Settings.OfgbDesc">OFGB: Windows 11'in kendi yerlerindeki reklamları (Başlat, Ayarlar, kilit ekranı, Dosya Gezgini...) kapatmak için açık kaynak bir araç. xM4ddy'nin; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur. Düğme sürüm sayfasını tarayıcıda açar, indirip çalıştırmak size kalmıştır.</sys:String>
+    <sys:String x:Key="S.Settings.OfgbButton">OFGB sayfası</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Title">OFGB</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Body">Windows 11'in kendi içindeki reklamları kapatan, başkasına ait açık kaynak bir araç. Nextcalibur onu indirmez ve çalıştırmaz: düğme yalnızca yazarının GitHub'daki sürüm sayfasını açar.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>

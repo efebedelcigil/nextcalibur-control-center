@@ -1359,6 +1359,8 @@
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="1" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="1" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
                                         <!-- Row 0, Col 0: 1. WinUtil -->
@@ -1433,6 +1435,28 @@
                                             <Button x:Name="SettingPrivacyButton" Grid.Column="1" Content="{DynamicResource S.Settings.PrivacyButton}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
                                         </Grid>
+
+                                        <!-- Row 3, Col 0-2: Horizontal Divider -->
+                                        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Background="{DynamicResource Line}" Margin="0,4" />
+
+                                        <!-- Row 4, Col 0: 5. OFGB -->
+                                        <Grid Grid.Row="4" Grid.Column="0" Margin="0,6,16,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.OfgbTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.OfgbDesc}"
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingOfgbButton" Grid.Column="1" Content="{DynamicResource S.Settings.OfgbButton}"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <!-- Row 4, Col 1: Vertical Divider -->
+                                        <Border Grid.Row="4" Grid.Column="1" Background="{DynamicResource Line}" />
                                     </Grid>
                                 </Border>
 

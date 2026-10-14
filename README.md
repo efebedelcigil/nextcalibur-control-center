@@ -133,7 +133,7 @@ so a server that answers "not modified" sends no body.
 | A record of every risky change, and a restore point first | graphics mode, drivers, repairs, WinUtil: asked with "create a restore point first" ticked; the question, the answer, the restore point's number and what was done kept with their times, in a file only administrators can write and in Windows' event log |
 | Memory and every fixed drive | |
 | A guided tour | `?` in the title bar walks every page and every control, and ends at the tray |
-| A Settings page | everything the tray menu has, kept in step with it; the language; start-up preference (tray or window); WinUtil, the laptop maker's driver page, the issues page, the privacy policy |
+| A Settings page | everything the tray menu has, kept in step with it; the language; start-up preference (tray or window); WinUtil, OFGB's page (someone else's tool for the ads inside Windows 11 - opened in the browser, never downloaded or run by Nextcalibur), the laptop maker's driver page, the issues page, the privacy policy |
 | Tray icon, start with Windows, self-update, dependency update, a log | |
 | Dark, light or Windows' theme; the application's own dialogues | |
 | Nothing outside it changes it | settings where only administrators can write, recorded and put back if changed from outside; the application checks its own files, its folder's permissions and the .NET runtime under it, and stops writing to the firmware if any of that fails; NVIDIA's and PawnIO's files verified before use - see [docs/SECURITY.md](docs/SECURITY.md) |

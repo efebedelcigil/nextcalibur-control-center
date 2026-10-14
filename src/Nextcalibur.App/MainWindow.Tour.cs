@@ -116,6 +116,7 @@ public partial class MainWindow
         new TourStep("SettingWinUtilButton", TourPage.Settings, "SettingWinUtilButton", "Settings"),
         new TourStep("SettingDriversButton", TourPage.Settings, "SettingDriversButton", "Settings"),
         new TourStep("SettingReportButton", TourPage.Settings, "SettingReportButton", "Settings"),
+        new TourStep("SettingOfgbButton", TourPage.Settings, "SettingOfgbButton", "Settings"),
         new TourStep("SettingPrivacyButton", TourPage.Settings, "SettingPrivacyButton", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "SettingStartWithWindows", "Settings"),
         new TourStep("SettingStartHow", TourPage.Settings, "SettingStartHow", "Settings"),

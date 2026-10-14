@@ -164,6 +164,13 @@ public partial class MainWindow
         if (_settingPrivacyButton is not null)
             _settingPrivacyButton.Click += (_, _) => ShowPrivacy();
 
+        // OFGB, the owner's ask (14 October 2026), for the ads Windows 11
+        // shows in its own places. Its release page in the browser, not a
+        // download: what an administrator process runs is what this project
+        // can vouch for, and someone else's executable is not.
+        if (FindName("SettingOfgbButton") is Button ofgb)
+            ofgb.Click += (_, _) => OpenLink(OfgbReleases, "ofgb", "Opened OFGB's release page");
+
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
         WireFnShortcutsPage();
@@ -250,6 +257,9 @@ public partial class MainWindow
     /// the PowerShell inherits this process's elevation, so no second
     /// prompt. What is done inside it is the person's.
     /// </summary>
+    /// <summary>OFGB's own release page; see the button's wiring.</summary>
+    private const string OfgbReleases = "https://github.com/xM4ddy/OFGB/releases/latest";
+
     private async void OpenWinUtil()
     {
         if (!await ConfirmRiskyAsync("winutil", Strings.Get("S.WinUtil.Title"), Strings.Get("S.WinUtil.Body")))

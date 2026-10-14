@@ -133,6 +133,11 @@
 
     <!-- Settings page -->
     <sys:String x:Key="S.Settings.GroupTools">Tools</sys:String>
+    <sys:String x:Key="S.Settings.OfgbTitle">Ads inside Windows</sys:String>
+    <sys:String x:Key="S.Settings.OfgbDesc">OFGB: an open-source tool that turns off the ads Windows 11 shows in its own places (Start, Settings, the lock screen, File Explorer...). It is xM4ddy's; not part of Nextcalibur and not connected to it. The button opens its release page in the browser; downloading and running it is up to you.</sys:String>
+    <sys:String x:Key="S.Settings.OfgbButton">OFGB page</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Title">OFGB</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Body">Someone else's open-source tool that turns off the ads inside Windows 11. Nextcalibur does not download or run it: the button only opens its author's release page on GitHub.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>
