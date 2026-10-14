@@ -363,6 +363,7 @@ public partial class MainWindow : Window
         LoadSystemMode();
         RestoreModeAtStartup();
         LoadLightingUi();
+        if (_support.AllowsWrites) RestoreLightingAtStart();
 
         // Registered once already without the mailbox; the shortcuts that
         // need it - the light, the turbo - can be had now.
@@ -375,6 +376,29 @@ public partial class MainWindow : Window
         Sample();
         RefreshClocks();
         if (IsVisible) _timer.Start();
+    }
+
+    /// <summary>
+    /// The lighting as it was left - colours, effect, brightness, the Fn+Space
+    /// step, on or off. The keyboard keeps none of it over a restart (asked
+    /// about on the forums for the vendor's software, which sets it only once
+    /// it is open); written once at start, the same write as after a resume.
+    /// </summary>
+    private void RestoreLightingAtStart()
+    {
+        if (_led is not { } led || _mailbox is not { } mailbox) return;
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                using (mailbox.Hold()) led.Apply();
+                Log.Info("lighting", "Restored as it was left");
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Log.Warn("lighting", "Could not restore the lighting at start: " + ex.Message);
+            }
+        });
     }
 
     /// <summary>Opens the mailbox and everything that reads through it.</summary>

@@ -12,6 +12,16 @@ namespace Nextcalibur.Core.Tests;
 public class LedStateTests
 {
     [Fact]
+    public void The_Fn_Space_step_is_kept_and_an_odd_one_is_full()
+    {
+        Assert.Equal(LedBrightness.Full, new LedState().KeyLevel);
+        var odd = new LedState { KeyLevel = (LedBrightness)7 };
+        Assert.Equal(LedBrightness.Full, LedState.Sanitised(odd).KeyLevel);
+        var off = new LedState { KeyLevel = LedBrightness.Off };
+        Assert.Equal(LedBrightness.Off, LedState.Sanitised(off).KeyLevel);
+    }
+
+    [Fact]
     public void A_colour_comes_back_as_it_went_in()
     {
         var state = new LedState();

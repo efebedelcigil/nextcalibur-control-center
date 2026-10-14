@@ -27,6 +27,8 @@ It is worth a look if:
 | The processor hot or at full clock with little running; fans loud at idle | repairs a Windows power-mode setting the vendor's software leaves (it holds the CPU at full speed at idle); sets the vendor Gaming plan's 99% minimum processor state to 5%; caps both core types in Office (the vendor's Office plan capped only the efficient cores) |
 | Switching Office / Gaming / Performance seems to change nothing | each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together |
 | The vendor's Control Center does not open, shows wrong fan speeds or graphics mode, or stays in one mode | an independent replacement reading the same firmware interface; the graphics mode is read from the firmware |
+| The keyboard lighting gone after a restart until the vendor's app is opened | started with Windows, it sets the lighting back as it was left - colours, effect, brightness, the Fn+Space step - and again after sleep (the restart part is new since 0.6.2) |
+| A game running on the Intel graphics instead of the NVIDIA card | shows the graphics mode the firmware is in and switches it (Hybrid / Discrete / UMA), with a restart you can cancel |
 | You want to know what is heating the machine | overheat warnings name the programs on the chip; programs keeping a core busy for nothing are named |
 | A program (an installer, MATLAB) or a game in the wrong mode | a mode for a program while it runs; after a game played in Office, a question whether it should switch next time |
 
@@ -49,7 +51,9 @@ frekansta kalması (Casper yazılımının bıraktığı bir Windows güç ayar�
 Gaming planının %99 taban ayarını düzeltir, Office'te iki çekirdek türünü de
 sınırlar); modlar arasında geçince bir şey değişmemesi; Control Center'ın
 açılmaması, fan hızını ya da ekran kartı modunu yanlış göstermesi; makineyi
-neyin ısıttığını görmek. Fan eğrisi ve fan kontrolü yoktur (Fn+1 fan
+neyin ısıttığını görmek; yeniden başlatınca klavye ışığının gitmesi (Windows
+ile açılınca ışığı bırakıldığı gibi geri getirir); oyunun NVIDIA yerine
+Intel grafikte çalışması (ekran kartı modunu gösterir ve değiştirir). Fan eğrisi ve fan kontrolü yoktur (Fn+1 fan
 turbosunu yalnızca dahili klavye açar), güç limitini yükseltmez, Linux'ta
 çalışmaz. İndirmek için aşağıdaki *Download* bölümündeki `-1-Installer.exe`
 dosyası.
@@ -118,7 +122,7 @@ so a server that answers "not modified" sends no body.
 | Temperatures, fan speeds, clocks, CPU package power | CPU power through PawnIO, when installed |
 | The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |
 | Staying out of the way of games and heavy work | borderless and full-screen game detection, lower process priority in the background, fewer firmware reads - never none |
-| Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected |
+| Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected; set back as it was left at start and after sleep |
 | Overheat warning | a threshold per chip, typeable; names the programs using the chip; from Gaming or Performance, a button that switches to Office |
 | Cool down before it gets hot | the temperature followed, not just compared: heading for the line, a notification says to press Fn+1 for the fan turbo before it gets there - the turbo is the controller's own and only its keyboard switches it (see [docs/PROTOCOL.md](docs/PROTOCOL.md)); *Emergency Office*, off unless chosen, also holds the processor to 70% |
 | Programs heating the machine for nothing | a program keeping a core or the graphics card busy, flat, for fifteen minutes in the background is named, with Task Manager a click away; nothing is ended |

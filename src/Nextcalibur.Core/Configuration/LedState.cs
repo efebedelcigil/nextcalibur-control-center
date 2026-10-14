@@ -53,6 +53,14 @@ public sealed class LedState
     /// <summary>Whether the lighting is switched on at all.</summary>
     public bool Enabled { get; set; } = true;
 
+    /// <summary>
+    /// The firmware's brightness step as Fn+Space last left it - full, off,
+    /// dim. Kept so the lighting comes back as it was at the next start: the
+    /// keyboard keeps nothing over a restart, and the vendor's software
+    /// sets it again only once it is open.
+    /// </summary>
+    public Hardware.LedBrightness KeyLevel { get; set; } = Hardware.LedBrightness.Full;
+
     public string ActiveProfile { get; set; } = UserDefine;
 
     public Dictionary<string, LedProfile> Profiles { get; set; } = new()
@@ -182,6 +190,8 @@ public sealed class LedState
 
         if (loaded.ActiveProfile is null || !loaded.Profiles.ContainsKey(loaded.ActiveProfile))
             loaded.ActiveProfile = UserDefine;
+
+        if (!Enum.IsDefined(loaded.KeyLevel)) loaded.KeyLevel = Hardware.LedBrightness.Full;
 
         foreach (var profile in loaded.Profiles.Values)
         {

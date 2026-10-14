@@ -81,9 +81,19 @@ public sealed class LedController(EcMailbox mailbox, LedState? state = null)
     /// it back. Every write carries the field, so a write that always said
     /// "full" undid the key silently. The event watcher keeps this current;
     /// writes carry it; only <see cref="SetBrightness"/>, where the person has
-    /// said what they want, puts it back to full.
+    /// said what they want, puts it back to full. Kept with the rest of the
+    /// lighting, so a restart brings back the step as well as the colours.
     /// </summary>
-    public LedBrightness HardwareLevel { get; set; } = LedBrightness.Full;
+    public LedBrightness HardwareLevel
+    {
+        get => State.KeyLevel;
+        set
+        {
+            if (State.KeyLevel == value) return;
+            State.KeyLevel = value;
+            State.Save();
+        }
+    }
 
     /// <summary>
     /// What the keyboard is actually showing, as one number: the chosen

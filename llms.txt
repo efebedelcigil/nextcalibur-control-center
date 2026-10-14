@@ -16,6 +16,8 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 - Modes that seem to change nothing: each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together.
 - The graphics mode shown wrongly: it is read from the firmware, not guessed from which chip drives a screen.
 - Overheat warnings that name the programs using the chip; programs heating the machine for nothing in the background are named (never ended).
+- Keyboard lighting lost after a restart until the vendor's app is opened: started with Windows, it sets the lighting back as it was left (colours, effect, brightness, the Fn+Space step), and again after sleep. (The restart part is newer than 0.6.2.)
+- A game on the Intel graphics: the graphics mode is shown as the firmware has it and can be switched (Hybrid / Discrete / UMA), with a cancellable restart.
 - Display-off and sleep timeouts per mode, plugged in and on battery, in step with Windows' Control Panel.
 - A mode while a chosen program runs (for example Office while MATLAB installs add-ons).
 
@@ -24,6 +26,8 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 - No fan curves and no fan control. The fan turbo (Fn+1) is the embedded controller's own and only the built-in keyboard switches it; Nextcalibur only suggests pressing it.
 - No Linux or macOS. Windows 11 only, x64.
 - Not a performance booster: it does not raise power limits or overclock.
+- Not a fix for Wi-Fi drops, battery wear, fan noise from dust or a worn fan, or hardware faults - those are drivers, cleaning or service.
+- "Office on battery" is an option the person chooses; it lowers performance on battery on purpose.
 - Not tested with anti-cheat software (for example Riot Vanguard); do not claim compatibility.
 - The installer is not code-signed; Windows SmartScreen warns on first run.
 - Runs as administrator (one prompt at install, then a scheduled task), because the firmware interface and power plans need it.
