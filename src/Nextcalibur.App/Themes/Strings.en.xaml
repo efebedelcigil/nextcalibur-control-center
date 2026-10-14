@@ -89,15 +89,15 @@
     <sys:String x:Key="S.FirstChanges.Creating">Making a restore point before Nextcalibur's first changes to this computer...</sys:String>
     <sys:String x:Key="S.FirstChanges.NoPointWhy">Windows could not make a restore point before Nextcalibur's first changes (power plan repairs, the mode profile): {0}. They would be made with no way back.</sys:String>
     <sys:String x:Key="S.Settings.UsbSavingTitle">USB power saving</sys:String>
-    <sys:String x:Key="S.Settings.UsbSavingDesc">On, USB devices not in use are put to sleep (battery and heat); off, they never sleep and mouse and keyboard receivers never lag. Windows' setting by default; Nextcalibur never changes it on its own. Written the same in every mode.</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingDesc">On: unused USB devices sleep to save power. Off: they never sleep, so mouse and keyboard receivers never lag. Starts as Windows has it.</sys:String>
     <sys:String x:Key="S.Settings.WifiSavingTitle">Wi-Fi power saving</sys:String>
-    <sys:String x:Key="S.Settings.WifiSavingDesc">On, the wireless adapter saves power as Windows' Balanced plan has it (usually on battery only); off, it always runs at maximum performance and the connection never stalls. Windows' setting by default; Nextcalibur never changes it on its own.</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingDesc">On: the Wi-Fi adapter saves power, mostly on battery. Off: always at full speed, the connection never stalls. Starts as Windows has it.</sys:String>
     <sys:String x:Key="S.Settings.SavingMixed">Different in the modes: {0}</sys:String>
     <sys:String x:Key="S.Settings.SavingOn">on</sys:String>
     <sys:String x:Key="S.Settings.SavingOff">off</sys:String>
     <sys:String x:Key="S.Settings.GroupCeilings">Processor ceilings</sys:String>
     <sys:String x:Key="S.Settings.CeilingsTitle">Each mode's ceiling</sys:String>
-    <sys:String x:Key="S.Settings.CeilingsDesc">How fast each mode may run the processor, never above the upper bound Nextcalibur measured. Power Saver as a percentage: any value under 100% turns the boost off, which keeps the machine much cooler. Balanced, Gaming and Performance as a clock speed: the boost stays on up to it. Lowering a ceiling as dust builds up keeps the heat down until the next cleaning.</sys:String>
+    <sys:String x:Key="S.Settings.CeilingsDesc">The highest speed each mode may run the processor at, never above the measured limit. Under 100% in Power Saver turns the boost off. Lower it to keep a dusty machine cooler.</sys:String>
     <sys:String x:Key="S.Ceiling.Percent">{0}%</sys:String>
     <sys:String x:Key="S.Ceiling.PercentTop">{0}% (highest)</sys:String>
     <sys:String x:Key="S.Ceiling.NoLimit">No limit</sys:String>
@@ -145,7 +145,7 @@
     <sys:String x:Key="S.CeilingTest.SuggestButton">Open the ceiling test</sys:String>
     <sys:String x:Key="S.Settings.GroupGpu">Graphics card</sys:String>
     <sys:String x:Key="S.Settings.NvPowerTitle">NVIDIA power management mode</sys:String>
-    <sys:String x:Key="S.Settings.NvPowerDesc">The global setting in the NVIDIA Control Panel. "Normal" lets the card clock down at idle; in a game it still goes to full speed. "Prefer maximum performance" holds the card at full clock at idle too - heat and power, nothing gained. Per-game settings are left alone.</sys:String>
+    <sys:String x:Key="S.Settings.NvPowerDesc">NVIDIA Control Panel's global setting. "Normal" lets the card slow down at idle and still reach full speed in games; "Prefer maximum performance" keeps it hot for nothing.</sys:String>
     <sys:String x:Key="S.NvPower.Normal">Normal (recommended)</sys:String>
     <sys:String x:Key="S.NvPower.Adaptive">Adaptive</sys:String>
     <sys:String x:Key="S.NvPower.Maximum">Prefer maximum performance</sys:String>
@@ -179,7 +179,7 @@
     <sys:String x:Key="S.Def.battery.health">Battery health</sys:String>
     <sys:String x:Key="S.Settings.GroupIdleLoad">Programs busy at idle</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadTitle">Efficiency mode</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadDesc">Scan finds the background programs that keep working while nobody uses the computer. A program you tick is put into Windows' Efficiency mode (the same as Task Manager's): it heats the processor less, and nothing is closed. It is set again whenever the program starts; untick it and it is back to normal. Windows itself, drivers and security software are never listed.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadDesc">Scan lists background programs that keep working while nobody uses the computer. A ticked program runs in Windows' Efficiency mode and heats the processor less; nothing is closed.</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadScan">Scan</sys:String>
     <sys:String x:Key="S.IdleLoad.NothingYet">Not scanned yet.</sys:String>
     <sys:String x:Key="S.IdleLoad.Row">{0} - now {1}% of the processor</sys:String>
@@ -243,46 +243,46 @@
     <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Ads inside Windows</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Downloads Raphire's Win11Debloat from its author's site and opens it in an administrator PowerShell. It turns off Windows' own ads and suggestions; you choose what changes in its menu. Not part of Nextcalibur; you are asked first, and a restore point is offered.</sys:String>
-    <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilTitle">Windows clean-up and tweaks</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil: installs common programs, removes unneeded Windows parts and applies tweaks - you choose each one in its window. Downloaded from its author; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>
     <sys:String x:Key="S.Settings.DriversTitle">Drivers</sys:String>
-    <sys:String x:Key="S.Settings.DriversDesc">The laptop maker's own driver download page, in your browser.</sys:String>
+    <sys:String x:Key="S.Settings.DriversDesc">The laptop maker's driver download page, in your browser.</sys:String>
     <sys:String x:Key="S.Settings.DriversButton">Driver downloads</sys:String>
     <sys:String x:Key="S.Settings.ReportTitle">Report a problem</sys:String>
-    <sys:String x:Key="S.Settings.ReportDesc">The project's issue page on GitHub. Attach the day's log file (Open log, bottom left).</sys:String>
-    <sys:String x:Key="S.Settings.ReportButton">Open issues</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">The project's issue page on GitHub. Attach the day's log (Open log, bottom left).</sys:String>
+    <sys:String x:Key="S.Settings.ReportButton">Open on GitHub</sys:String>
     <sys:String x:Key="S.Settings.PrivacyTitle">Privacy policy</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur collects nothing about you and sends nothing anywhere. Read what it keeps on this computer only, and the few connections it makes.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur collects nothing about you and sends nothing anywhere.</sys:String>
     <sys:String x:Key="S.Settings.PrivacyButton">Read the policy</sys:String>
     <sys:String x:Key="S.Settings.GroupBehaviour">Behaviour</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Start with Windows</sys:String>
-    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, elevated, without a prompt.</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Starts at sign-in, without a prompt.</sys:String>
     <sys:String x:Key="S.Settings.StartHowTitle">How it starts</sys:String>
     <sys:String x:Key="S.Settings.StartHowDesc">In the notification area, or with the window open.</sys:String>
     <sys:String x:Key="S.Settings.StartInTray">In the tray</sys:String>
     <sys:String x:Key="S.Settings.StartOnScreen">With the window</sys:String>
     <sys:String x:Key="S.Settings.BatteryModeTitle">Mode on battery</sys:String>
     <sys:String x:Key="S.Settings.BatteryModeOff">Leave it</sys:String>
-    <sys:String x:Key="S.Settings.BatteryModeDesc">When the charger comes out, no mode faster than this one stays on; when it goes back in, your mode returns. A mode already cooler is left alone.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeDesc">When the charger comes out, nothing faster than this mode stays on; plugged back in, your mode returns.</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Language</sys:String>
-    <sys:String x:Key="S.Settings.LanguageDesc">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageDesc">Applied at once. The first start uses the language Windows is set to.</sys:String>
     <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
     <sys:String x:Key="S.Settings.LanguageTurkish">Türkçe</sys:String>
-    <sys:String x:Key="S.Settings.GroupReadings">Readings</sys:String>
+    <sys:String x:Key="S.Settings.GroupReadings">Sensors</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningTitle">Warn when the CPU or GPU runs hot</sys:String>
-    <sys:String x:Key="S.Settings.OverheatWarningDesc">The thresholds are beside the temperatures.</sys:String>
-    <sys:String x:Key="S.Settings.IntervalTitle">Read the sensors every</sys:String>
-    <sys:String x:Key="S.Settings.IntervalDesc">How often to poll the temperatures, fans and clocks.</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningDesc">The thresholds are set beside the temperatures.</sys:String>
+    <sys:String x:Key="S.Settings.IntervalTitle">Sensor reading interval</sys:String>
+    <sys:String x:Key="S.Settings.IntervalDesc">How often temperatures, fans and clocks are read.</sys:String>
     <sys:String x:Key="S.Settings.Interval1">1 s</sys:String>
     <sys:String x:Key="S.Settings.Interval2">2 s</sys:String>
     <sys:String x:Key="S.Settings.Interval5">5 s</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 s</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Updates</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateTitle">Updates</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateDesc">Looked for every quarter of an hour and a minute after waking from sleep - a question GitHub answers "nothing new" to without sending anything else. A new version is offered once and can be put off that once; the next time it comes up it is installed, never in the middle of a game.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Automatic updates</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">Checked every 15 minutes and a minute after waking. A new version is offered once and can be put off once; it is never installed during a game.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Check for updates now</sys:String>
-    <sys:String x:Key="S.Settings.CheckNowDesc">Asks GitHub right away and tells you the answer either way.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowDesc">Asks GitHub now and tells you the answer.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Check now</sys:String>
 
     <!-- Readings panel -->
@@ -441,15 +441,15 @@
     <sys:String x:Key="S.Heat.GpuBusy">On the graphics card: {0}.</sys:String>
     <sys:String x:Key="S.Settings.GroupFnKeys">External keyboard</sys:String>
     <sys:String x:Key="S.Settings.GroupIdle">Sleep and screen</sys:String>
-    <sys:String x:Key="S.Settings.IdleTitle">Display off and sleep timeouts</sys:String>
-    <sys:String x:Key="S.Settings.IdleDesc">Each mode is a power plan of its own; these are the values the Control Panel's "Change plan settings" shows. A change here is written to Windows, a change in Windows shows here, and each mode keeps its own. Nextcalibur changes none of them on its own.</sys:String>
+    <sys:String x:Key="S.Settings.IdleTitle">Screen-off and sleep times</sys:String>
+    <sys:String x:Key="S.Settings.IdleDesc">Each mode is its own power plan: these are the same values as in Control Panel, and a change in either shows in both. Nextcalibur never changes them by itself.</sys:String>
     <sys:String x:Key="S.Idle.Mode">Mode</sys:String>
     <sys:String x:Key="S.Idle.DisplayAc">Display off (plugged in)</sys:String>
     <sys:String x:Key="S.Idle.DisplayDc">Display off (on battery)</sys:String>
     <sys:String x:Key="S.Idle.SleepAc">Sleep (plugged in)</sys:String>
     <sys:String x:Key="S.Idle.SleepDc">Sleep (on battery)</sys:String>
     <sys:String x:Key="S.Idle.ScreenSaver">Screen saver</sys:String>
-    <sys:String x:Key="S.Idle.ScreenSaverDesc">Windows keeps one timeout for it: the same plugged in and on battery, in every mode. With none chosen, switching it on uses Windows' blank screen.</sys:String>
+    <sys:String x:Key="S.Idle.ScreenSaverDesc">Windows keeps one time for it, the same in every mode and on battery.</sys:String>
     <sys:String x:Key="S.Idle.Never">Never</sys:String>
     <sys:String x:Key="S.Idle.Off">Off</sys:String>
     <sys:String x:Key="S.Idle.Minutes">{0} min</sys:String>
@@ -458,8 +458,8 @@
     <sys:String x:Key="S.Idle.ActivePlan">Active power plan</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Title">Sleep and screen</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Body">When the display turns off and the computer sleeps, one row for each mode, plugged in and on battery. Each row is that mode's power plan: the same place as the plan settings in the Control Panel. A change in one shows in the other; nothing changes unless you choose it.</sys:String>
-    <sys:String x:Key="S.Settings.AskGameTitle">Ask when a game was played in a quiet mode</sys:String>
-    <sys:String x:Key="S.Settings.AskGameDesc">When a program that covers the screen - a game, most likely - stayed open in Power Saver or Balanced (Office) for a few minutes, this window asks after it has closed: should it switch to Gaming (or Performance) from now on? The answer is added to this list as a rule; a program answered "No" is not asked about again. Browsers and video players are never asked about. Nothing is shown while the game runs.</sys:String>
+    <sys:String x:Key="S.Settings.AskGameTitle">Ask after a game played in a quiet mode</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">If a full-screen program ran a few minutes in a quiet mode, you are asked after it closes whether it should use Gaming from now on. Nothing is shown during the game.</sys:String>
     <sys:String x:Key="S.Game.AskTitle">{0} was open in {1}</sys:String>
     <sys:String x:Key="S.Game.AskBody">{0} was just covering the screen, and you were in {1}. Switch to Gaming whenever {0} opens from now on? Your mode comes back when it closes.
 
@@ -470,7 +470,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">No need to add games one by one. When a program that covers the screen stayed open in Power Saver or Balanced (Office) for a few minutes, you are asked here after it closes, and the answer becomes a rule. Nothing comes as a notification during a game: heat and suggestions from that time are shown as a summary in this window once it has closed.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program rules</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">A mode for a program</sys:String>
-    <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine for long - a video export, a large install - Power Saver; for a game, Gaming or Performance. A mode you pick by hand meanwhile wins. On battery, a rule asking for a faster mode than the battery's does not apply.</sys:String>
+    <sys:String x:Key="S.Settings.RulesDesc">While a program on the list runs, its mode is on; when it closes, your mode returns. A mode you pick by hand meanwhile wins.</sys:String>
     <sys:String x:Key="S.Rules.Title">Program rule</sys:String>
     <sys:String x:Key="S.Rules.Started">{0} is running: {1} mode until it closes.</sys:String>
     <sys:String x:Key="S.Rules.Ended">{0} closed: back to {1} mode.</sys:String>
@@ -482,7 +482,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Title">A mode for a program</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Body">Off until you switch it on. Add a program and a mode - pick it from the programs running, or type its name - and while it runs that mode is on; when it closes, the mode you had comes back. Windows says when a program starts or stops; nothing is polled. A mode you choose by hand meanwhile wins.</sys:String>
     <sys:String x:Key="S.Settings.FnShortcutsTitle">Shortcuts for the Fn keys</sys:String>
-    <sys:String x:Key="S.Settings.FnShortcutsDesc">An external keyboard cannot send Fn - every keyboard keeps its Fn key to itself. These shortcuts do the laptop keyboard's Fn jobs from any keyboard. Each is checked against Windows' own shortcuts, every other program's and the characters your keyboard layouts type.</sys:String>
+    <sys:String x:Key="S.Settings.FnShortcutsDesc">An external keyboard has no Fn key the laptop can see. These shortcuts do the laptop's Fn jobs from any keyboard.</sys:String>
     <sys:String x:Key="S.Settings.FnSelectAll">All of them</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklight">Keyboard light (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Full, off, half - the order Fn+Space uses.</sys:String>
@@ -519,9 +519,9 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Runaway.Gpu">{0} has kept the graphics card busy for {1} minutes with nothing on screen needing it. If it should not be working, close it.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Open Task Manager</sys:String>
     <sys:String x:Key="S.Settings.AutoCoolingTitle">Emergency Power Saver</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's ceiling - the boost off - until it has cooled. Slower while it lasts.</sys:String>
-    <sys:String x:Key="S.Settings.AutoFanTurboTitle">Cool down before it gets hot</sys:String>
-    <sys:String x:Key="S.Settings.AutoFanTurboDesc">When the temperature is heading for the warning line, a notification says to press Fn+1 - the fan turbo, which only the laptop's own keyboard can switch - before it gets there, and again once it has cooled.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature heads for the warning line, the processor is held to Power Saver's speed until it cools.</sys:String>
+    <sys:String x:Key="S.Settings.AutoFanTurboTitle">Warn before it gets hot</sys:String>
+    <sys:String x:Key="S.Settings.AutoFanTurboDesc">When the temperature heads for the warning line, you are told to press Fn+1 for full fan speed - only the laptop's own keyboard can.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Emergency Power Saver</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, the processor is also held to Power Saver's ceiling - which turns the boost off - and let go after five minutes comfortably below the line. The machine is slower while it lasts.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Cool down before it gets hot</sys:String>
@@ -681,23 +681,23 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Graphics settings</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWake">The graphics card is awake at full clocks with nothing to draw, costing about {0} W. Holding processes: {1}.</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">The graphics card is awake at full clocks with nothing to draw, costing about {0} W.</sys:String>
-    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows Fixes &amp; Optimizations</sys:String>
-    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Compensate for known Windows faults</sys:String>
-    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Watches for the few Windows components known to get stuck and cost the machine heat, and restarts them. It says what it did.</sys:String>
-    <sys:String x:Key="S.Settings.FixTextInputHostTitle">Fix TextInputHost.exe CPU loop</sys:String>
-    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Restarts the touch keyboard &amp; emoji process if it freezes in a background loop consuming an entire CPU core.</sys:String>
-    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Fix Phone Link (CrossDeviceService) CPU loop</sys:String>
-    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Restarts the Phone Link service if it gets stuck spinning in a background CPU loop.</sys:String>
-    <sys:String x:Key="S.Settings.FixWidgetsTitle">Fix Widgets (Widgets.exe) CPU loop</sys:String>
-    <sys:String x:Key="S.Settings.FixWidgetsDesc">Restarts the Windows Widgets board if its background web engine freezes consuming CPU cycles.</sys:String>
-    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Alert when graphics card is held awake</sys:String>
-    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Notifies you if background apps prevent the NVIDIA card from powering down when idle.</sys:String>
-    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Trim Desktop Window Manager (dwm.exe) memory</sys:String>
-    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Safely releases leaked cache memory from the desktop manager when it exceeds 1.5 GB, without closing or flickering windows.</sys:String>
-    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Trim Windows Explorer (explorer.exe) memory</sys:String>
-    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Safely flushes cached thumbnail and shell memory when Explorer exceeds 1.2 GB, without restarting the taskbar.</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduTitle">Disable NDU network driver memory leak</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduDesc">Disables the Windows Network Data Usage (NDU) driver to prevent multi-gigabyte kernel memory leaks. Requires a restart. Note: Disables per-app network usage tracking in Task Manager and Windows Settings.</sys:String>
+    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows fixes</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Fix known Windows faults</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Restarts a few Windows components known to get stuck and heat the machine, and tells you.</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostTitle">Touch keyboard (TextInputHost) stuck</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Restarts the touch keyboard and emoji process if it gets stuck using a whole core.</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Phone Link (CrossDeviceService) stuck</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Restarts Phone Link if it gets stuck busy in the background.</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsTitle">Widgets stuck</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsDesc">Restarts the Widgets board if it gets stuck using the processor.</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Warn when the graphics card is kept awake</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Tells you when a background program keeps the NVIDIA card from sleeping.</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Desktop manager (dwm.exe) memory</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Frees the desktop manager's leaked memory past 1.5 GB, without closing any window.</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Explorer (explorer.exe) memory</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Frees Explorer's swollen cache past 1.2 GB, without restarting the taskbar.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduTitle">Network usage driver (NDU) leak</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Turns off the Windows network usage driver (NDU), which can leak gigabytes of memory. Needs a restart; per-app data usage is no longer counted.</sys:String>
 
     <!-- The tour: the card's words, one step after another -->
     <sys:String x:Key="S.Tour.Finish">Finish</sys:String>
@@ -834,7 +834,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">How often to read the sensors</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">One reading every second, two, five or ten. Each reading is one firmware call; two seconds is the default and costs a tenth of a percent of one core.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Updates</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Every quarter of an hour, and after waking from sleep, the application asks GitHub whether there is a new version - an empty "nothing new" when there is not. A new version is offered with a question you can answer no, once. The next time it comes up - six hours later, or at the next start - it is installed, with one button and no question, when no game has the screen. Nothing is downloaded before that.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Every 15 minutes, and a minute after waking from sleep, Nextcalibur asks GitHub whether there is a new version. A new one is offered once and can be put off once; it is never installed during a game.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Language</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">English or Turkish, applied at once and remembered. The first start takes the language Windows is set to.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Check now</sys:String>
@@ -868,10 +868,10 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- 0.7: battery report, automatic Efficiency mode, readable reasons -->
     <sys:String x:Key="S.IdleLoad.RowAuto">{0} (added automatically)</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadAutoTitle">Find them by itself</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadAutoDesc">Every 15 minutes, only while nobody has touched the computer for a few minutes and no game or full-screen program is open, a short low-priority scan looks for background programs that stay busy. One busy on two scans in a row is put into Efficiency mode and marked here as added automatically. Programs with a window are never touched; one you untick is never added again.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoTitle">Find them automatically</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoDesc">Every 15 minutes, while you are away and no game is open, a short scan adds programs that stay busy. Programs with a window are never added; one you untick stays out.</sys:String>
     <sys:String x:Key="S.Settings.BatteryReportTitle">Battery report</sys:String>
-    <sys:String x:Key="S.Settings.BatteryReportDesc">Windows' own report: the battery's design and present capacity, how it has worn, and recent use. Made on this computer and opened in your browser; nothing is sent anywhere.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryReportDesc">Windows' own report on how worn the battery is. Opened in your browser; nothing is sent.</sys:String>
     <sys:String x:Key="S.Settings.BatteryReportButton">Show report</sys:String>
     <sys:String x:Key="S.BatteryReport.Failed">Windows could not make the battery report.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingBatteryReportButton.Title">Battery report</sys:String>
@@ -888,7 +888,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- Scan for games, usage -->
     <sys:String x:Key="S.Settings.GameScanTitle">Scan for games</sys:String>
-    <sys:String x:Key="S.Settings.GameScanDesc">Finds the games installed through Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox and adds each to the list below with Gaming. Programs you add by hand stay as they are. A found game you remove is not added again. The switch looks for newly installed games once a day, never during a game.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Finds games installed through Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox and adds them with Gaming. The switch looks for new ones once a day.</sys:String>
     <sys:String x:Key="S.Settings.GameScanButton">Scan</sys:String>
     <sys:String x:Key="S.Settings.GameScanAutoTip">Look for newly installed games once a day</sys:String>
     <sys:String x:Key="S.Games.Result">{0} games found, {1} added to the list.</sys:String>
@@ -897,4 +897,10 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.GameScanButton.Title">Scan for games</sys:String>
     <sys:String x:Key="S.Tour.Step.GameScanButton.Body">Like NVIDIA's app: the installed games are found from the launchers' own records and switch to Gaming while they run. Anything else - an editor, a long render - you add by hand below.</sys:String>
     <sys:String x:Key="S.Readings.Usage">{0}%</sys:String>
+
+    <!-- Recommended screen and sleep times -->
+    <sys:String x:Key="S.Idle.Recommended">Recommended</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedTip">Sets sensible screen and sleep times for every mode</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedTitle">Set the recommended times?</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedBody" xml:space="preserve">Every mode gets these screen-off and sleep times (plugged in / on battery):&#10;&#10;Power Saver: screen 5 / 3 min, sleep 15 / 10 min&#10;Balanced: screen 10 / 5 min, sleep 30 / 15 min&#10;Gaming and Performance: screen 15 / 5 min, sleep 60 / 15 min&#10;&#10;A game or a video keeps the screen on by itself. You can change any of them afterwards.</sys:String>
 </ResourceDictionary>

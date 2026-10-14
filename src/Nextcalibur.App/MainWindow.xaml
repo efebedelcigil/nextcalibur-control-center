@@ -1878,12 +1878,21 @@
                                 <TextBlock Text="{DynamicResource S.Settings.GroupIdle}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
                                     <StackPanel>
-                                        <StackPanel Margin="0,3">
-                                            <TextBlock Text="{DynamicResource S.Settings.IdleTitle}" FontSize="12" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource Ink}" />
-                                            <TextBlock Text="{DynamicResource S.Settings.IdleDesc}" TextWrapping="Wrap"
-                                                       Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
-                                        </StackPanel>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleDesc}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <Button x:Name="IdleRecommended" Grid.Column="1" Content="{DynamicResource S.Idle.Recommended}"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center"
+                                                    ToolTip="{DynamicResource S.Idle.RecommendedTip}" />
+                                        </Grid>
 
                                         <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
 

@@ -1,4 +1,4 @@
-using System.Management;
+﻿using System.Management;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -293,6 +293,16 @@ public partial class MainWindow
         RefreshProgramRuleRows();
     }
 
+    /// <summary>The games whose programs are shown opened out under their name.</summary>
+    private readonly HashSet<string> _rulesExpanded = new(StringComparer.CurrentCultureIgnoreCase);
+
+    /// <summary>
+    /// The list. A game the scan found with more than one program (GTA V:
+    /// GTA5 and PlayGTAV) is one row under its name, with a small arrow that
+    /// opens its programs underneath like a folder tree (the owner's ask of
+    /// 14 October 2026); its switch, mode and remove act on all of them. A
+    /// program added by hand is a row of its own.
+    /// </summary>
     private void RefreshProgramRuleRows()
     {
         if (_rulesRows is null || _rulesMaster is null) return;
@@ -306,68 +316,173 @@ public partial class MainWindow
             if (FindName("ProgramRuleAddRow") is UIElement addRow) addRow.IsEnabled = casper && _settings.ProgramRulesEnabled;
 
             _rulesRows.Children.Clear();
-            foreach (var rule in _settings.ProgramRules.ToList())
+            var groups = _settings.ProgramRules.ToList()
+                .GroupBy(r => r.Label is { Length: > 0 } label ? "L:" + label : "P:" + r.Process, StringComparer.CurrentCultureIgnoreCase);
+            foreach (var group in groups)
             {
-                var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                var rules = group.ToList();
+                if (rules.Count == 1) { _rulesRows.Children.Add(RuleRow(rules, rules[0].Label is { Length: > 0 } l ? $"{l}  ({rules[0].Process})" : rules[0].Process, expander: null)); continue; }
 
-                var current = rule;
-                var box = new CheckBox { IsChecked = rule.Enabled, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 10, 0) };
-                box.Checked += (_, _) => { if (_rulesUiLoading) return; current.Enabled = true; _settings.Save(); StartProgramRules(); };
-                box.Unchecked += (_, _) => { if (_rulesUiLoading) return; current.Enabled = false; _settings.Save(); if (ReferenceEquals(_activeRule, current)) EndRuleNow(); StartProgramRules(); };
-                row.Children.Add(box);
-
-                // A found game by its name, its program beside it; one added by hand by its program.
-                var shown = rule.Label is { Length: > 0 } label ? $"{label}  ({rule.Process})" : rule.Process;
-                var text = new TextBlock
+                var label = rules[0].Label!;
+                var open = _rulesExpanded.Contains(label);
+                var children = new StackPanel { Margin = new Thickness(26, 0, 0, 2), Visibility = open ? Visibility.Visible : Visibility.Collapsed };
+                for (var i = 0; i < rules.Count; i++)
+                    children.Children.Add(ChildRow(rules[i], last: i == rules.Count - 1));
+                _rulesRows.Children.Add(RuleRow(rules, label, Chevron(open, () =>
                 {
-                    Text = ReferenceEquals(_activeRule, rule) ? Strings.Get("S.Rules.RowActive", shown) : shown,
-                    TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = shown,
-                    FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
-                    Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
-                };
-                Grid.SetColumn(text, 1);
-                row.Children.Add(text);
-
-                var mode = new ComboBox { MinWidth = 120, Margin = new Thickness(8, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
-                foreach (var m in SystemModes.InOrder) mode.Items.Add(new ModeChoice(m));
-                mode.SelectedIndex = SystemModes.Rank(rule.Mode);
-                mode.SelectionChanged += (_, _) =>
-                {
-                    if (_rulesUiLoading || mode.SelectedItem is not ModeChoice { Mode: var chosen }) return;
-                    current.Mode = chosen;
-                    _settings.Save();
-                    // In force now: the new mode at once; the mode to go back to stays.
-                    if (ReferenceEquals(_activeRule, current) && !_ruleOverridden && _currentMode != chosen) ApplyRuleMode(chosen);
-                };
-                Grid.SetColumn(mode, 2);
-                row.Children.Add(mode);
-
-                var remove = new Button { Content = "✕", Width = 28, Height = 28, ToolTip = Strings.Get("S.Rules.Remove") };
-                remove.Click += (_, _) =>
-                {
-                    if (ReferenceEquals(_activeRule, current)) EndRuleNow();
-                    _settings.ProgramRules.Remove(current);
-                    // A found game taken off the list stays off it: the daily scan does not bring it back.
-                    if (current.FromScan && !_settings.GamesExcluded.Contains(current.Process, StringComparer.OrdinalIgnoreCase))
-                        _settings.GamesExcluded.Add(current.Process);
-                    _settings.Save();
-                    Log.Info("rules", $"Rule removed: {current.Process}");
-                    StartProgramRules();
-                    RefreshProgramRuleRows();
-                };
-                Grid.SetColumn(remove, 3);
-                row.Children.Add(remove);
-
-                _rulesRows.Children.Add(row);
+                    var nowOpen = children.Visibility != Visibility.Visible;
+                    children.Visibility = nowOpen ? Visibility.Visible : Visibility.Collapsed;
+                    if (nowOpen) _rulesExpanded.Add(label); else _rulesExpanded.Remove(label);
+                    return nowOpen;
+                })));
+                _rulesRows.Children.Add(children);
             }
         }
         finally
         {
             _rulesUiLoading = false;
         }
+    }
+
+    /// <summary>One row: a rule, or a game's rules together.</summary>
+    private Grid RuleRow(List<ProgramRule> rules, string shown, FrameworkElement? expander)
+    {
+        var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+        // The arrow's column is kept for every row, so the names line up.
+        var arrow = expander ?? new Border { Width = 18 };
+        row.Children.Add(arrow);
+
+        var box = new CheckBox { IsChecked = rules.All(r => r.Enabled), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 10, 0) };
+        box.Click += (_, _) =>
+        {
+            var on = box.IsChecked == true;
+            foreach (var r in rules)
+            {
+                r.Enabled = on;
+                if (!on && ReferenceEquals(_activeRule, r)) EndRuleNow();
+            }
+            _settings.Save();
+            StartProgramRules();
+            RefreshProgramRuleRows();
+        };
+        Grid.SetColumn(box, 1);
+        row.Children.Add(box);
+
+        var active = rules.Any(r => ReferenceEquals(_activeRule, r));
+        var text = new TextBlock
+        {
+            Text = active ? Strings.Get("S.Rules.RowActive", shown) : shown,
+            TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = string.Join(", ", rules.Select(r => r.Process)),
+            FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
+            Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
+        };
+        Grid.SetColumn(text, 2);
+        row.Children.Add(text);
+
+        var mode = new ComboBox { MinWidth = 120, Margin = new Thickness(8, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
+        foreach (var m in SystemModes.InOrder) mode.Items.Add(new ModeChoice(m));
+        mode.SelectedIndex = SystemModes.Rank(rules[0].Mode);
+        mode.SelectionChanged += (_, _) =>
+        {
+            if (_rulesUiLoading || mode.SelectedItem is not ModeChoice { Mode: var chosen }) return;
+            foreach (var r in rules)
+            {
+                r.Mode = chosen;
+                // In force now: the new mode at once; the mode to go back to stays.
+                if (ReferenceEquals(_activeRule, r) && !_ruleOverridden && _currentMode != chosen) ApplyRuleMode(chosen);
+            }
+            _settings.Save();
+        };
+        Grid.SetColumn(mode, 3);
+        row.Children.Add(mode);
+
+        var remove = new Button { Content = "âœ•", Width = 28, Height = 28, ToolTip = Strings.Get("S.Rules.Remove") };
+        remove.Click += (_, _) =>
+        {
+            foreach (var r in rules)
+            {
+                if (ReferenceEquals(_activeRule, r)) EndRuleNow();
+                _settings.ProgramRules.Remove(r);
+                // A found game taken off the list stays off it: the daily scan does not bring it back.
+                if (r.FromScan && !_settings.GamesExcluded.Contains(r.Process, StringComparer.OrdinalIgnoreCase))
+                    _settings.GamesExcluded.Add(r.Process);
+                Log.Info("rules", $"Rule removed: {r.Process}");
+            }
+            _settings.Save();
+            StartProgramRules();
+            RefreshProgramRuleRows();
+        };
+        Grid.SetColumn(remove, 4);
+        row.Children.Add(remove);
+        return row;
+    }
+
+    /// <summary>One of a game's programs, under it, drawn as a branch of a tree.</summary>
+    private Grid ChildRow(ProgramRule rule, bool last)
+    {
+        var row = new Grid { Margin = new Thickness(0, 1, 0, 1) };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(18) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+        var line = (System.Windows.Media.Brush)FindResource("Line");
+        var branch = new System.Windows.Shapes.Path
+        {
+            // A vertical line, and a short one across to the name: â”” for the last, â”œ otherwise.
+            Data = System.Windows.Media.Geometry.Parse(last ? "M5,0 L5,10 L14,10" : "M5,0 L5,22 M5,10 L14,10"),
+            Stroke = line, StrokeThickness = 1.2, VerticalAlignment = VerticalAlignment.Top, SnapsToDevicePixels = true,
+        };
+        row.Children.Add(branch);
+
+        var current = rule;
+        var box = new CheckBox { IsChecked = rule.Enabled, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) };
+        box.Click += (_, _) =>
+        {
+            current.Enabled = box.IsChecked == true;
+            if (!current.Enabled && ReferenceEquals(_activeRule, current)) EndRuleNow();
+            _settings.Save();
+            StartProgramRules();
+            RefreshProgramRuleRows();
+        };
+        Grid.SetColumn(box, 1);
+        row.Children.Add(box);
+
+        var name = new TextBlock
+        {
+            Text = ReferenceEquals(_activeRule, rule) ? Strings.Get("S.Rules.RowActive", rule.Process) : rule.Process,
+            Style = (Style)FindResource("StatusTextStyle"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(name, 2);
+        row.Children.Add(name);
+        return row;
+    }
+
+    /// <summary>The small arrow that opens a game's programs: pointing right when shut, down when open; the accent under the pointer.</summary>
+    private FrameworkElement Chevron(bool open, Func<bool> toggle)
+    {
+        var path = new System.Windows.Shapes.Path
+        {
+            Data = System.Windows.Media.Geometry.Parse("M0,0 L4.5,4.5 L0,9"),
+            Stroke = (System.Windows.Media.Brush)FindResource("Muted"), StrokeThickness = 1.6,
+            StrokeStartLineCap = System.Windows.Media.PenLineCap.Round, StrokeEndLineCap = System.Windows.Media.PenLineCap.Round,
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+            RenderTransformOrigin = new Point(0.5, 0.5),
+            RenderTransform = new System.Windows.Media.RotateTransform(open ? 90 : 0),
+        };
+        var hit = new Border { Width = 18, Height = 24, Background = System.Windows.Media.Brushes.Transparent, Cursor = System.Windows.Input.Cursors.Hand, Child = path };
+        hit.MouseEnter += (_, _) => path.Stroke = (System.Windows.Media.Brush)FindResource("Accent");
+        hit.MouseLeave += (_, _) => path.Stroke = (System.Windows.Media.Brush)FindResource("Muted");
+        hit.MouseLeftButtonUp += (_, _) =>
+        {
+            var nowOpen = toggle();
+            path.RenderTransform = new System.Windows.Media.RotateTransform(nowOpen ? 90 : 0);
+        };
+        return hit;
     }
 }

@@ -48,6 +48,27 @@ public static class IdleTimeouts
     public static PlanTuning.AcDc Carry(PlanTuning.AcDc theirs, bool pluggedIn, int seconds) =>
         pluggedIn ? theirs with { Ac = seconds } : theirs with { Dc = seconds };
 
+    /// <summary>
+    /// Sensible timeouts for each mode, offered on a button (the owner's
+    /// report of 14 October 2026: the vendor's plans had, among others,
+    /// Gaming turning the screen off after 10 minutes plugged in and never
+    /// on battery). Shorter on battery than plugged in, everywhere; the quiet
+    /// modes shorter than the fast ones, which run long jobs and games - and
+    /// a game or a video holds the screen on by itself anyway. Written only
+    /// when the person presses the button.
+    /// </summary>
+    public static Timeouts Recommended(SystemMode mode)
+    {
+        static PlanTuning.AcDc Min(int ac, int dc) => new(ac * 60, dc * 60);
+        return mode switch
+        {
+            SystemMode.Office => new Timeouts(Min(5, 3), Min(15, 10)),
+            SystemMode.Balanced => new Timeouts(Min(10, 5), Min(30, 15)),
+            SystemMode.Gaming => new Timeouts(Min(15, 5), Min(60, 15)),
+            _ => new Timeouts(Min(15, 5), Min(60, 15)),
+        };
+    }
+
     /// <summary>The choices offered, Windows' own list, with the current value added when it is not on it; "never" last.</summary>
     public static IReadOnlyList<int> Choices(int current)
     {

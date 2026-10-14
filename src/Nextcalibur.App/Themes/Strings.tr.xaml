@@ -87,15 +87,15 @@
     <sys:String x:Key="S.FirstChanges.Creating">Nextcalibur bu bilgisayarda ilk değişikliklerini yapmadan önce bir geri yükleme noktası oluşturuluyor...</sys:String>
     <sys:String x:Key="S.FirstChanges.NoPointWhy">Nextcalibur'un ilk değişikliklerinden (güç planı onarımları, mod profili) önce Windows bir geri yükleme noktası oluşturamadı: {0}. Bu değişiklikler bir dönüş yolu olmadan yapılmış olur.</sys:String>
     <sys:String x:Key="S.Settings.UsbSavingTitle">USB güç tasarrufu</sys:String>
-    <sys:String x:Key="S.Settings.UsbSavingDesc">Açıkken kullanılmayan USB aygıtları uyutulur (pil ve ısı kazancı); kapalıyken hiç uyumaz, fare ve klavye alıcıları gecikmez. Varsayılan Windows'un ayarı; Nextcalibur kendiliğinden değiştirmez. Her modda aynı yazılır.</sys:String>
+    <sys:String x:Key="S.Settings.UsbSavingDesc">Açık: kullanılmayan USB aygıtları güç tasarrufu için uyur. Kapalı: hiç uyumaz, fare ve klavye alıcıları gecikmez. Başlangıçta Windows'taki gibidir.</sys:String>
     <sys:String x:Key="S.Settings.WifiSavingTitle">Wi-Fi güç tasarrufu</sys:String>
-    <sys:String x:Key="S.Settings.WifiSavingDesc">Açıkken kablosuz bağdaştırıcı Windows'un Dengeli ayarıyla tasarruf eder (genelde yalnız pilde); kapalıyken her zaman en yüksek performansta, bağlantı takılmaz. Varsayılan Windows'un ayarı; Nextcalibur kendiliğinden değiştirmez.</sys:String>
+    <sys:String x:Key="S.Settings.WifiSavingDesc">Açık: Wi-Fi bağdaştırıcısı çoğunlukla pilde güç tasarrufu yapar. Kapalı: her zaman tam hızda, bağlantı takılmaz. Başlangıçta Windows'taki gibidir.</sys:String>
     <sys:String x:Key="S.Settings.SavingMixed">Modlarda farklı: {0}</sys:String>
     <sys:String x:Key="S.Settings.SavingOn">açık</sys:String>
     <sys:String x:Key="S.Settings.SavingOff">kapalı</sys:String>
     <sys:String x:Key="S.Settings.GroupCeilings">İşlemci tavanları</sys:String>
     <sys:String x:Key="S.Settings.CeilingsTitle">Her modun tavanı</sys:String>
-    <sys:String x:Key="S.Settings.CeilingsDesc">Her modun işlemciyi en fazla ne kadar hızlı çalıştıracağı; Nextcalibur'un ölçtüğü üst sınırın üstüne çıkılamaz. Güç Tasarrufu yüzdeyle: %100'ün altındaki her değer turboyu kapatır, makine belirgin biçimde serin kalır. Dengeli, Oyun ve Performans saat hızıyla: turbo o hıza kadar açık kalır. Toz biriktikçe tavanı düşürmek, bir sonraki temizliğe kadar ısıyı azaltır.</sys:String>
+    <sys:String x:Key="S.Settings.CeilingsDesc">Her modun işlemciyi çalıştırabileceği en yüksek hız; ölçülen sınırın üstüne çıkılamaz. Güç Tasarrufu'nda %100'ün altı turboyu kapatır. Tozlanan bir makineyi serin tutmak için düşürün.</sys:String>
     <sys:String x:Key="S.Ceiling.Percent">%{0}</sys:String>
     <sys:String x:Key="S.Ceiling.PercentTop">%{0} (en yüksek)</sys:String>
     <sys:String x:Key="S.Ceiling.NoLimit">Sınırsız</sys:String>
@@ -143,7 +143,7 @@
     <sys:String x:Key="S.CeilingTest.SuggestButton">Tavan testini aç</sys:String>
     <sys:String x:Key="S.Settings.GroupGpu">Ekran kartı</sys:String>
     <sys:String x:Key="S.Settings.NvPowerTitle">NVIDIA güç yönetimi modu</sys:String>
-    <sys:String x:Key="S.Settings.NvPowerDesc">NVIDIA Denetim Masası'ndaki genel ayar. "Normal" kartın boştayken saatini düşürmesine izin verir; oyunda yine tam hıza çıkar. "Maksimum performansı tercih et" kartı boşta da tam saatte tutar - ısı ve güç, kazanç yok. Oyun başına ayarlara dokunulmaz.</sys:String>
+    <sys:String x:Key="S.Settings.NvPowerDesc">NVIDIA Denetim Masası'ndaki genel ayar. "Normal" kartın boştayken yavaşlamasına izin verir, oyunda yine tam hıza çıkar; "Maksimum performansı tercih et" kartı boşuna sıcak tutar.</sys:String>
     <sys:String x:Key="S.NvPower.Normal">Normal (önerilen)</sys:String>
     <sys:String x:Key="S.NvPower.Adaptive">Uyarlamalı</sys:String>
     <sys:String x:Key="S.NvPower.Maximum">Maksimum performansı tercih et</sys:String>
@@ -177,7 +177,7 @@
     <sys:String x:Key="S.Def.battery.health">Pil sağlığı</sys:String>
     <sys:String x:Key="S.Settings.GroupIdleLoad">Boşta yük yapan programlar</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadTitle">Verimlilik modu</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadDesc">Tara, bilgisayarı kimse kullanmazken de çalışan arka plan programlarını bulur. İşaretlediğiniz program Windows'un Verimlilik moduna alınır (Görev Yöneticisi'ndeki ile aynı): işlemciyi daha az ısıtır, hiçbir şey kapatılmaz. Program her açıldığında yeniden uygulanır; işareti kaldırınca normale döner. Windows'un kendisi, sürücüler ve güvenlik yazılımları hiç listelenmez.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadDesc">Tara, bilgisayarı kimse kullanmazken de çalışan arka plan programlarını listeler. İşaretlenen program Windows'un Verimlilik modunda çalışır ve işlemciyi daha az ısıtır; hiçbir şey kapatılmaz.</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadScan">Tara</sys:String>
     <sys:String x:Key="S.IdleLoad.NothingYet">Henüz taranmadı.</sys:String>
     <sys:String x:Key="S.IdleLoad.Row">{0} - şu an işlemcinin %{1} kadarı</sys:String>
@@ -241,46 +241,46 @@
     <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Windows içindeki reklamlar</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Raphire'ın Win11Debloat aracını yazarının sitesinden indirip yönetici PowerShell'de açar. Windows'un kendi reklam ve önerilerini kapatır; neyin değişeceğini onun menüsünde seçersiniz. Nextcalibur'un parçası değildir; açılmadan önce sorulur ve geri yükleme noktası önerilir.</sys:String>
-    <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
+    <sys:String x:Key="S.Settings.WinUtilTitle">Windows temizliği ve ince ayarlar</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech'in WinUtil aracı: sık kullanılan programları kurar, gereksiz Windows parçalarını kaldırır, ince ayarlar yapar - her birini onun penceresinde siz seçersiniz. Yazarının sitesinden indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>
     <sys:String x:Key="S.Settings.DriversTitle">Sürücüler</sys:String>
-    <sys:String x:Key="S.Settings.DriversDesc">Tarayıcınızda dizüstü bilgisayar üreticisinin kendi sürücü indirme sayfası.</sys:String>
+    <sys:String x:Key="S.Settings.DriversDesc">Dizüstü üreticisinin sürücü indirme sayfası, tarayıcınızda.</sys:String>
     <sys:String x:Key="S.Settings.DriversButton">Sürücü sayfası</sys:String>
     <sys:String x:Key="S.Settings.ReportTitle">Sorun bildir</sys:String>
-    <sys:String x:Key="S.Settings.ReportDesc">Projenin GitHub'daki sorun bildirme sayfası. O günün günlük dosyasını ekleyin (sol alttaki Günlüğü aç).</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">Projenin GitHub'daki sorun sayfası. O günün günlüğünü ekleyin (sol alttaki Günlüğü aç).</sys:String>
     <sys:String x:Key="S.Settings.ReportButton">GitHub'da aç</sys:String>
     <sys:String x:Key="S.Settings.PrivacyTitle">Gizlilik politikası</sys:String>
-    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur hakkınızda hiçbir veri toplamaz ve hiçbir yere göndermez. Yalnızca bu bilgisayarda neyi tuttuğunu ve yaptığı birkaç bağlantıyı okuyun.</sys:String>
+    <sys:String x:Key="S.Settings.PrivacyDesc">Nextcalibur hakkınızda hiçbir veri toplamaz ve hiçbir yere göndermez.</sys:String>
     <sys:String x:Key="S.Settings.PrivacyButton">Politikayı oku</sys:String>
     <sys:String x:Key="S.Settings.GroupBehaviour">Davranış</sys:String>
     <sys:String x:Key="S.Settings.StartWithWindowsTitle">Windows ile başlat</sys:String>
-    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açılınca yönetici olarak, sormadan başlar.</sys:String>
+    <sys:String x:Key="S.Settings.StartWithWindowsDesc">Oturum açılınca sormadan başlar.</sys:String>
     <sys:String x:Key="S.Settings.StartHowTitle">Nasıl başlasın</sys:String>
     <sys:String x:Key="S.Settings.StartHowDesc">Bildirim alanında ya da pencere açık olarak.</sys:String>
     <sys:String x:Key="S.Settings.StartInTray">Tepside</sys:String>
     <sys:String x:Key="S.Settings.StartOnScreen">Pencereyle</sys:String>
     <sys:String x:Key="S.Settings.BatteryModeTitle">Pildeki mod</sys:String>
-    <sys:String x:Key="S.Settings.BatteryModeDesc">Şarj kablosu çıkınca bu moddan daha hızlı bir modda kalınmaz; takılınca önceki modunuza dönülür. Zaten daha serin bir moddaysanız dokunulmaz.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryModeDesc">Şarj kablosu çıkınca bu moddan daha hızlısı açık kalmaz; takılınca önceki modunuz geri gelir.</sys:String>
     <sys:String x:Key="S.Settings.BatteryModeOff">Değiştirme</sys:String>
     <sys:String x:Key="S.Settings.LanguageTitle">Dil</sys:String>
-    <sys:String x:Key="S.Settings.LanguageDesc">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
+    <sys:String x:Key="S.Settings.LanguageDesc">Hemen uygulanır. İlk açılışta Windows'un dili kullanılır.</sys:String>
     <sys:String x:Key="S.Settings.LanguageEnglish">English</sys:String>
     <sys:String x:Key="S.Settings.LanguageTurkish">Türkçe</sys:String>
     <sys:String x:Key="S.Settings.GroupReadings">Sensörler</sys:String>
     <sys:String x:Key="S.Settings.OverheatWarningTitle">CPU veya GPU ısınınca uyar</sys:String>
-    <sys:String x:Key="S.Settings.OverheatWarningDesc">Eşik değerleri sıcaklıkların yanındadır.</sys:String>
-    <sys:String x:Key="S.Settings.IntervalTitle">Sensörleri okuma sıklığı</sys:String>
-    <sys:String x:Key="S.Settings.IntervalDesc">Sıcaklık, fan ve saat hızlarının ne sıklıkla sorgulanacağı.</sys:String>
+    <sys:String x:Key="S.Settings.OverheatWarningDesc">Eşikler sıcaklıkların yanından ayarlanır.</sys:String>
+    <sys:String x:Key="S.Settings.IntervalTitle">Sensör okuma sıklığı</sys:String>
+    <sys:String x:Key="S.Settings.IntervalDesc">Sıcaklık, fan ve saat hızlarının okunma sıklığı.</sys:String>
     <sys:String x:Key="S.Settings.Interval1">1 sn</sys:String>
     <sys:String x:Key="S.Settings.Interval2">2 sn</sys:String>
     <sys:String x:Key="S.Settings.Interval5">5 sn</sys:String>
     <sys:String x:Key="S.Settings.Interval10">10 sn</sys:String>
     <sys:String x:Key="S.Settings.GroupUpdates">Güncellemeler</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateTitle">Güncellemeler</sys:String>
-    <sys:String x:Key="S.Settings.AutoUpdateDesc">Çeyrek saatte bir ve uykudan uyanınca bir dakika sonra bakılır - yeni bir şey yoksa GitHub başka hiçbir şey göndermeden "yeni yok" der. Yeni sürüm bir kez sorulur ve o bir kez ertelenebilir; bir dahaki çıkışında kurulur, hiçbir zaman oyunun ortasında değil.</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateTitle">Otomatik güncellemeler</sys:String>
+    <sys:String x:Key="S.Settings.AutoUpdateDesc">15 dakikada bir ve uykudan uyandıktan bir dakika sonra bakılır. Yeni sürüm bir kez sorulur, bir kez ertelenebilir; oyun sırasında asla kurulmaz.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowTitle">Güncellemeleri şimdi denetle</sys:String>
-    <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve her durumda sonucu bildirir.</sys:String>
+    <sys:String x:Key="S.Settings.CheckNowDesc">Hemen GitHub'a sorar ve sonucu söyler.</sys:String>
     <sys:String x:Key="S.Settings.CheckNowButton">Şimdi denetle</sys:String>
 
     <!-- Okuma paneli -->
@@ -439,15 +439,15 @@
     <sys:String x:Key="S.Heat.GpuBusy">Ekran kartındakiler: {0}.</sys:String>
     <sys:String x:Key="S.Settings.GroupFnKeys">Harici klavye</sys:String>
     <sys:String x:Key="S.Settings.GroupIdle">Uyku ve ekran</sys:String>
-    <sys:String x:Key="S.Settings.IdleTitle">Ekranı kapatma ve uyku süreleri</sys:String>
-    <sys:String x:Key="S.Settings.IdleDesc">Her mod kendi güç planıdır; buradaki değerler Denetim Masası'ndaki "Plan ayarlarını değiştir" ile aynıdır. Burada değiştirdiğiniz Windows'a yazılır, Windows'ta değiştirdiğiniz burada görünür; her mod kendi değerini korur. Nextcalibur kendiliğinden hiçbirini değiştirmez.</sys:String>
+    <sys:String x:Key="S.Settings.IdleTitle">Ekran kapanma ve uyku süreleri</sys:String>
+    <sys:String x:Key="S.Settings.IdleDesc">Her mod kendi güç planıdır: bunlar Denetim Masası'ndaki değerlerin aynısıdır, birinde yapılan değişiklik ikisinde de görünür. Nextcalibur bunları kendiliğinden değiştirmez.</sys:String>
     <sys:String x:Key="S.Idle.Mode">Mod</sys:String>
     <sys:String x:Key="S.Idle.DisplayAc">Ekran kapanır (prizde)</sys:String>
     <sys:String x:Key="S.Idle.DisplayDc">Ekran kapanır (pilde)</sys:String>
     <sys:String x:Key="S.Idle.SleepAc">Uyku (prizde)</sys:String>
     <sys:String x:Key="S.Idle.SleepDc">Uyku (pilde)</sys:String>
     <sys:String x:Key="S.Idle.ScreenSaver">Ekran koruyucu</sys:String>
-    <sys:String x:Key="S.Idle.ScreenSaverDesc">Windows bunun için tek bir süre tutar: pilde ve prizde, her modda aynı. Seçili bir ekran koruyucu yoksa açıldığında Windows'un boş ekranı kullanılır.</sys:String>
+    <sys:String x:Key="S.Idle.ScreenSaverDesc">Windows bunun için tek bir süre tutar; her modda ve pilde aynıdır.</sys:String>
     <sys:String x:Key="S.Idle.Never">Hiçbir zaman</sys:String>
     <sys:String x:Key="S.Idle.Off">Kapalı</sys:String>
     <sys:String x:Key="S.Idle.Minutes">{0} dk</sys:String>
@@ -456,8 +456,8 @@
     <sys:String x:Key="S.Idle.ActivePlan">Etkin güç planı</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Title">Uyku ve ekran</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleRows.Body">Ekranın kapanacağı ve bilgisayarın uykuya geçeceği süreler, her mod için ayrı bir satırda, prizde ve pilde. Her satır o modun güç planıdır: Denetim Masası'ndaki plan ayarlarıyla aynı yer. Birinde değiştirdiğiniz öbüründe görünür; siz seçmedikçe hiçbir şey değişmez.</sys:String>
-    <sys:String x:Key="S.Settings.AskGameTitle">Bir oyun sessiz bir modda oynandıysa sor</sys:String>
-    <sys:String x:Key="S.Settings.AskGameDesc">Ekranı kaplayan bir program - büyük olasılıkla bir oyun - Güç Tasarrufu ya da Dengeli (Ofis) modunda birkaç dakika açık kaldıysa, kapandıktan sonra bu pencerede sorulur: bundan sonra o açılınca Oyun'a (ya da Performans'a) geçilsin mi? Yanıt bu listeye bir kural olarak eklenir; "Hayır" denen bir program bir daha sorulmaz. Tarayıcılar ve video oynatıcılar hiç sorulmaz. Oyun sürerken hiçbir şey gösterilmez.</sys:String>
+    <sys:String x:Key="S.Settings.AskGameTitle">Sessiz modda oynanan oyundan sonra sor</sys:String>
+    <sys:String x:Key="S.Settings.AskGameDesc">Tam ekran bir program sessiz bir modda birkaç dakika açık kaldıysa, kapanınca bundan sonra Oyun modunu kullanıp kullanmayacağı sorulur. Oyun sırasında hiçbir şey gösterilmez.</sys:String>
     <sys:String x:Key="S.Game.AskTitle">{0} {1} modunda açıktı</sys:String>
     <sys:String x:Key="S.Game.AskBody">{0} az önce ekranı kaplıyordu ve {1} modundaydınız. Bundan sonra {0} açılınca Oyun moduna geçilsin mi? Kapandığında önceki modunuz geri gelir.
 
@@ -468,7 +468,7 @@
     <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">Oyunları tek tek eklemeniz gerekmez. Ekranı kaplayan bir program Güç Tasarrufu ya da Dengeli (Ofis) modunda birkaç dakika açık kaldıysa, kapandıktan sonra burada sorulur ve yanıtınız bir kural olur. Oyun sürerken hiçbir uyarı bildirim olarak gelmez: o sırada olan ısınmalar ve öneriler oyun kapanınca bu pencerede bir özet olarak gösterilir.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program kuralları</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">Bir program için mod</sys:String>
-    <sys:String x:Key="S.Settings.RulesDesc">Bu listedeki bir program çalışırken onun modu açık olur; kapanınca önceki modunuz geri gelir. Makineyi uzun süre ısıtan bir iş için - video dışa aktarma, büyük bir kurulum - Güç Tasarrufu; bir oyun için Oyun ya da Performans. Bu arada elle seçtiğiniz mod geçerli olur. Pildeyken, pildeki moddan daha hızlı bir mod isteyen kurallar uygulanmaz.</sys:String>
+    <sys:String x:Key="S.Settings.RulesDesc">Listedeki bir program çalışırken onun modu açık olur; kapanınca önceki modunuz geri gelir. Bu sırada elle seçtiğiniz mod geçerli olur.</sys:String>
     <sys:String x:Key="S.Rules.Title">Program kuralı</sys:String>
     <sys:String x:Key="S.Rules.Started">{0} çalışıyor: kapanana kadar {1} modu.</sys:String>
     <sys:String x:Key="S.Rules.Ended">{0} kapandı: {1} moduna dönüldü.</sys:String>
@@ -480,7 +480,7 @@
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Title">Bir program için mod</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Body">Siz açana kadar kapalı. Bir program ve bir mod ekleyin - çalışan programlardan seçin ya da adını yazın - o program çalışırken o mod açık olur; kapanınca önceki modunuz geri gelir. Bir programın açıldığını ya da kapandığını Windows bildirir; hiçbir şey sürekli taranmaz. Bu arada elle seçtiğiniz mod geçerli olur.</sys:String>
     <sys:String x:Key="S.Settings.FnShortcutsTitle">Fn tuşları için kısayollar</sys:String>
-    <sys:String x:Key="S.Settings.FnShortcutsDesc">Harici bir klavye Fn gönderemez - her klavye Fn tuşunu kendi içinde tutar. Bu kısayollar dizüstü klavyesinin Fn işlerini herhangi bir klavyeden yapar. Her biri Windows'un kendi kısayollarına, diğer programlarınkine ve klavye düzenlerinizin yazdığı karakterlere karşı denetlenir.</sys:String>
+    <sys:String x:Key="S.Settings.FnShortcutsDesc">Harici klavyenin Fn tuşunu dizüstü göremez. Bu kısayollar dizüstünün Fn işlerini herhangi bir klavyeden yapar.</sys:String>
     <sys:String x:Key="S.Settings.FnSelectAll">Tümü</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklight">Klavye ışığı (Fn+Space)</sys:String>
     <sys:String x:Key="S.Fn.KeyboardBacklightDesc">Tam, kapalı, yarım - Fn+Space'in sırası.</sys:String>
@@ -517,9 +517,9 @@
     <sys:String x:Key="S.Runaway.Gpu">{0}, ekranda ona ihtiyaç duyan bir şey yokken {1} dakikadır ekran kartını meşgul ediyor. Çalışmaması gerekiyorsa kapatın.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Görev Yöneticisi'ni aç</sys:String>
     <sys:String x:Key="S.Settings.AutoCoolingTitle">Acil Güç Tasarrufu</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi soğuyana kadar Güç Tasarrufu'nun tavanıyla - turbo kapalı - sınırla. Sürdüğü sürece daha yavaş.</sys:String>
-    <sys:String x:Key="S.Settings.AutoFanTurboTitle">Isınmadan önce soğut</sys:String>
-    <sys:String x:Key="S.Settings.AutoFanTurboDesc">Sıcaklık uyarı sınırına doğru gidiyorsa, oraya varmadan Fn+1'e basmanızı söyleyen bir bildirim gelir - fan turbosu, yalnızca dizüstünün kendi klavyesinden açılabiliyor - ve soğuyunca tekrar söyler.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına giderken işlemci soğuyana kadar Güç Tasarrufu hızında tutulur.</sys:String>
+    <sys:String x:Key="S.Settings.AutoFanTurboTitle">Isınmadan önce uyar</sys:String>
+    <sys:String x:Key="S.Settings.AutoFanTurboDesc">Sıcaklık uyarı sınırına giderken fanları tam hıza almak için Fn+1'e basmanız söylenir - bunu yalnızca dizüstünün kendi klavyesi yapabilir.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Acil Güç Tasarrufu</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">İstemezseniz kapalı. Sıcaklık uyarı sınırına doğru gidiyorsa işlemci Güç Tasarrufu'nun tavanıyla - turboyu kapatır - sınırlanır ve beş dakika boyunca rahatça sınırın altında kalınca bırakılır. Sürdüğü sürece makine daha yavaştır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Isınmadan önce soğut</sys:String>
@@ -679,23 +679,23 @@
     <sys:String x:Key="S.WindowsFault.OpenGraphicsSettings">Grafik ayarları</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWake">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor. Tutan işlemler: {1}.</sys:String>
     <sys:String x:Key="S.Core.Fault.GpuWakeNoProcesses">Ekran kartı çizecek hiçbir şey yokken tam saat hızında uyanık ve yaklaşık {0} W güç harcıyor.</sys:String>
-    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows Onarımları ve İyileştirmeleri</sys:String>
-    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Bilinen Windows hatalarını telafi et</sys:String>
-    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Takılıp makineyi ısıtan birkaç bilinen Windows bileşenini izler ve yeniden başlatır. Ne yaptığını söyler.</sys:String>
-    <sys:String x:Key="S.Settings.FixTextInputHostTitle">TextInputHost.exe işlemci kilitlenmesini onar</sys:String>
-    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Dokunmatik klavye ve emoji bileşeni arka planda takılıp bir işlemci çekirdeğini tüketirse güvenle yeniden başlatır.</sys:String>
-    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Telefon Bağlantısı (CrossDeviceService) işlemci döngüsünü onar</sys:String>
-    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Windows Telefon Bağlantısı arka planda kilitlenip işlemciyi sürekli meşgul ederse güvenle yeniden başlatır.</sys:String>
-    <sys:String x:Key="S.Settings.FixWidgetsTitle">Pencere Öğeleri (Widgets.exe) işlemci kilitlenmesini onar</sys:String>
-    <sys:String x:Key="S.Settings.FixWidgetsDesc">Hava durumu ve haberler bileşeni arka planda takılıp işlemci tüketirse güvenle yeniden başlatır.</sys:String>
-    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Ekran kartı uyanık tutulduğunda uyar</sys:String>
-    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Arka plan uygulamaları boştayken harici NVIDIA ekran kartının uykuya geçmesini engellerse uyarır.</sys:String>
-    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Masaüstü Pencere Yöneticisi (dwm.exe) belleğini temizle</sys:String>
-    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Masaüstü yöneticisi 1,5 GB belleği aşarsa sızıntı yapan önbelleği pencereleri kapatmadan veya kırpmadan güvenle serbest bırakır.</sys:String>
-    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Windows Gezgini (explorer.exe) belleğini temizle</sys:String>
-    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Windows Gezgini 1,2 GB belleği aşarsa şişen küçük resim ve arayüz önbelleğini görev çubuğunu yeniden başlatmadan güvenle temizler.</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduTitle">NDU ağ sürücüsü bellek sızıntısını önle</sys:String>
-    <sys:String x:Key="S.Settings.DisableNduDesc">Gigabaytlarca çekirdek bellek sızıntısını önlemek için Windows Ağ Veri Kullanımı (NDU) sürücüsünü devre dışı bırakır. Yeniden başlatma gerekir. Not: Görev Yöneticisi ve Ayarlar'daki uygulama bazlı veri kullanımı takibi durur.</sys:String>
+    <sys:String x:Key="S.Settings.GroupWindowsFaults">Windows düzeltmeleri</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsTitle">Bilinen Windows hatalarını düzelt</sys:String>
+    <sys:String x:Key="S.Settings.WindowsFaultsDesc">Takılıp makineyi ısıttığı bilinen birkaç Windows bileşenini yeniden başlatır ve söyler.</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostTitle">Dokunmatik klavye (TextInputHost) takılması</sys:String>
+    <sys:String x:Key="S.Settings.FixTextInputHostDesc">Dokunmatik klavye ve emoji bileşeni takılıp bir çekirdeği tüketirse yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceTitle">Telefon Bağlantısı (CrossDeviceService) takılması</sys:String>
+    <sys:String x:Key="S.Settings.FixCrossDeviceDesc">Telefon Bağlantısı arka planda takılıp meşgul kalırsa yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsTitle">Pencere Öğeleri takılması</sys:String>
+    <sys:String x:Key="S.Settings.FixWidgetsDesc">Pencere Öğeleri takılıp işlemciyi kullanırsa yeniden başlatır.</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeTitle">Ekran kartı uyanık tutulursa uyar</sys:String>
+    <sys:String x:Key="S.Settings.WatchGpuAwakeDesc">Bir arka plan programı NVIDIA kartın uyumasını engellerse söyler.</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryTitle">Masaüstü yöneticisi (dwm.exe) belleği</sys:String>
+    <sys:String x:Key="S.Settings.TrimDwmMemoryDesc">Masaüstü yöneticisi 1,5 GB'ı aşarsa sızan belleği hiçbir pencereyi kapatmadan boşaltır.</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryTitle">Windows Gezgini (explorer.exe) belleği</sys:String>
+    <sys:String x:Key="S.Settings.TrimExplorerMemoryDesc">Windows Gezgini 1,2 GB'ı aşarsa şişen önbelleği görev çubuğunu yeniden başlatmadan boşaltır.</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduTitle">Ağ kullanımı sürücüsü (NDU) sızıntısı</sys:String>
+    <sys:String x:Key="S.Settings.DisableNduDesc">Gigabaytlarca bellek sızdırabilen Windows ağ kullanımı sürücüsünü (NDU) kapatır. Yeniden başlatma gerekir; uygulama başına veri kullanımı artık sayılmaz.</sys:String>
 
     <!-- Tur: kartın sözleri, adım adım -->
     <sys:String x:Key="S.Tour.Finish">Bitir</sys:String>
@@ -832,7 +832,7 @@
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Title">Sensörler ne sıklıkla okunsun</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingInterval2.Body">Saniyede bir, iki, beş veya on saniyede bir okuma. Her okuma bir donanım yazılımı çağrısıdır; iki saniye varsayılandır ve bir çekirdeğin yüzde onda birine mal olur.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Title">Güncellemeler</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Uygulama çeyrek saatte bir ve uykudan uyanınca GitHub'a yeni sürüm olup olmadığını sorar - yoksa boş bir "yeni yok" cevabı. Yeni sürüm, bir kez hayır diyebileceğiniz bir soruyla gelir. Bir dahaki çıkışında - altı saat sonra ya da bir sonraki açılışta - ekranda oyun yokken, sorusuz ve tek düğmeyle kurulur. O ana kadar hiçbir şey indirilmez.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingUpdatesAutomatic.Body">Nextcalibur 15 dakikada bir ve uykudan uyandıktan bir dakika sonra GitHub'a yeni sürüm olup olmadığını sorar. Yeni sürüm bir kez sorulur, bir kez ertelenebilir; oyun sırasında asla kurulmaz.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Title">Dil</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingLanguageEnglish.Body">İngilizce veya Türkçe; anında uygulanır ve hatırlanır. İlk açılışta Windows'un dili alınır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingCheckNowButton.Title">Şimdi denetle</sys:String>
@@ -866,10 +866,10 @@
 
     <!-- 0.7: battery report, automatic Efficiency mode, readable reasons -->
     <sys:String x:Key="S.IdleLoad.RowAuto">{0} (otomatik eklendi)</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadAutoTitle">Kendiliğinden bul</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadAutoDesc">Her 15 dakikada bir, yalnızca birkaç dakikadır kimse bilgisayara dokunmamışken ve açık bir oyun ya da tam ekran program yokken, düşük öncelikli kısa bir tarama sürekli meşgul olan arka plan programlarını arar. Art arda iki taramada meşgul görünen program Verimlilik moduna alınır ve burada otomatik eklendi diye işaretlenir. Penceresi olan programlara hiç dokunulmaz; işaretini kaldırdığınız bir program bir daha eklenmez.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoTitle">Otomatik bul</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoDesc">Siz yokken ve oyun açık değilken her 15 dakikada bir kısa bir tarama, sürekli meşgul kalan programları ekler. Penceresi olan programlar eklenmez; işaretini kaldırdığınız bir daha eklenmez.</sys:String>
     <sys:String x:Key="S.Settings.BatteryReportTitle">Pil raporu</sys:String>
-    <sys:String x:Key="S.Settings.BatteryReportDesc">Windows'un kendi raporu: pilin tasarım ve şimdiki kapasitesi, ne kadar yıprandığı ve son kullanımı. Bu bilgisayarda oluşturulup tarayıcınızda açılır; hiçbir yere gönderilmez.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryReportDesc">Windows'un pilin ne kadar yıprandığını gösteren kendi raporu. Tarayıcınızda açılır; hiçbir yere gönderilmez.</sys:String>
     <sys:String x:Key="S.Settings.BatteryReportButton">Raporu göster</sys:String>
     <sys:String x:Key="S.BatteryReport.Failed">Windows pil raporunu oluşturamadı.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingBatteryReportButton.Title">Pil raporu</sys:String>
@@ -886,7 +886,7 @@
 
     <!-- Scan for games, usage -->
     <sys:String x:Key="S.Settings.GameScanTitle">Oyunları tara</sys:String>
-    <sys:String x:Key="S.Settings.GameScanDesc">Steam, Epic, GOG, Ubisoft, EA, Riot ve Xbox ile kurulan oyunları bulur ve her birini aşağıdaki listeye Oyun moduyla ekler. Elle eklediğiniz programlar olduğu gibi kalır. Kaldırdığınız bir oyun bir daha eklenmez. Anahtar açıkken yeni kurulan oyunlar günde bir kez, hiçbir zaman oyun sırasında olmadan aranır.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Steam, Epic, GOG, Ubisoft, EA, Riot ve Xbox ile kurulan oyunları bulur ve Oyun moduyla ekler. Anahtar açıkken yenileri günde bir kez aranır.</sys:String>
     <sys:String x:Key="S.Settings.GameScanButton">Tara</sys:String>
     <sys:String x:Key="S.Settings.GameScanAutoTip">Yeni kurulan oyunları günde bir kez ara</sys:String>
     <sys:String x:Key="S.Games.Result">{0} oyun bulundu, {1} tanesi listeye eklendi.</sys:String>
@@ -895,4 +895,10 @@
     <sys:String x:Key="S.Tour.Step.GameScanButton.Title">Oyunları tara</sys:String>
     <sys:String x:Key="S.Tour.Step.GameScanButton.Body">NVIDIA'nın uygulamasındaki gibi: kurulu oyunlar başlatıcıların kendi kayıtlarından bulunur ve çalışırken Oyun moduna geçirir. Başka bir programı - bir düzenleyici, uzun bir dışa aktarma - aşağıdan elle eklersiniz.</sys:String>
     <sys:String x:Key="S.Readings.Usage">%{0}</sys:String>
+
+    <!-- Recommended screen and sleep times -->
+    <sys:String x:Key="S.Idle.Recommended">Önerilen süreler</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedTip">Her mod için mantıklı ekran ve uyku sürelerini ayarlar</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedTitle">Önerilen süreler ayarlansın mı?</sys:String>
+    <sys:String x:Key="S.Idle.RecommendedBody" xml:space="preserve">Her moda şu ekran kapatma ve uyku süreleri yazılır (prizde / pilde):&#10;&#10;Güç Tasarrufu: ekran 5 / 3 dk, uyku 15 / 10 dk&#10;Dengeli (Ofis): ekran 10 / 5 dk, uyku 30 / 15 dk&#10;Oyun ve Performans: ekran 15 / 5 dk, uyku 60 / 15 dk&#10;&#10;Oyun ya da video ekranı kendisi açık tutar. Sonradan her birini değiştirebilirsiniz.</sys:String>
 </ResourceDictionary>

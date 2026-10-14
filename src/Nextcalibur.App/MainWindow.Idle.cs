@@ -52,6 +52,31 @@ public partial class MainWindow
         _wifiSavingState = FindName("SettingWifiSavingState") as TextBlock;
         if (_usbSaving is not null) _usbSaving.Click += (_, _) => SavingChosen(DeviceSaving.Usb, _usbSaving.IsChecked == true);
         if (_wifiSaving is not null) _wifiSaving.Click += (_, _) => SavingChosen(DeviceSaving.Wifi, _wifiSaving.IsChecked == true);
+        if (FindName("IdleRecommended") is System.Windows.Controls.Button recommended)
+            recommended.Click += (_, _) => ApplyRecommendedIdle();
+        RememberIdleTimeouts();
+    }
+
+    /// <summary>
+    /// The "Recommended" button: every mode's plan gets the timeouts in
+    /// <see cref="IdleTimeouts.Recommended"/>, after a yes. The person's own
+    /// choice - Nextcalibur never does this by itself.
+    /// </summary>
+    private void ApplyRecommendedIdle()
+    {
+        if (!Dialogs.Ask(Strings.Get("S.Idle.RecommendedTitle"), Strings.Get("S.Idle.RecommendedBody"), defaultNo: true)) return;
+        ResolveIdlePlans(force: true);
+        var written = 0;
+        foreach (var (mode, plan) in _idlePlans)
+        {
+            if (mode is not { } m) continue;
+            var t = IdleTimeouts.Recommended(m);
+            if (IdleTimeouts.Write(plan, IdleSetting.DisplayOff, t.Display)) written++;
+            if (IdleTimeouts.Write(plan, IdleSetting.Sleep, t.Sleep)) written++;
+            Log.Info("idle", "Recommended timeouts written", ("mode", m), ("plan", plan.ToString("D")),
+                ("displayAc", t.Display.Ac), ("displayDc", t.Display.Dc), ("sleepAc", t.Sleep.Ac), ("sleepDc", t.Sleep.Dc));
+        }
+        Audit("idle-timeouts", "recommended", ("settings", written));
         RememberIdleTimeouts();
     }
 
