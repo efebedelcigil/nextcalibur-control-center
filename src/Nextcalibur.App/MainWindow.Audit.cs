@@ -57,6 +57,11 @@ public partial class MainWindow
         {
             outcome = await Task.Run(() => RestorePoint.Create("Nextcalibur: before its first changes"));
         }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // The start must go on: a failure here is a point not made, asked about like any other.
+            outcome = new RestorePointOutcome(false, null, null, -1, ex.Message);
+        }
         finally
         {
             if (onScreen)

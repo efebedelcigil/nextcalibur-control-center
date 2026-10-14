@@ -88,9 +88,12 @@ public partial class MainWindow
         LoadSystemMode();
     }
 
+    /// <summary>True while a ceiling test writes its steps into a plan: those are ours, not a change from outside.</summary>
+    internal bool CeilingTestRunning { get; set; }
+
     private void WatchProfileValues()
     {
-        if (_profileExpected.Count == 0) return;
+        if (_profileExpected.Count == 0 || CeilingTestRunning) return;
         var cooling = PlanTuning.Cooling;
         var changed = new List<(SystemMode Mode, Guid Setting, PlanTuning.AcDc Was, PlanTuning.AcDc Now)>();
         foreach (var mode in SystemModes.InOrder)

@@ -94,8 +94,9 @@ public partial class MainWindow
     /// <summary>Looks at what is running now and puts the right mode in force.</summary>
     private void EvaluateProgramRules()
     {
-        // On a plan that is none of the modes', rules do not switch it away.
-        if (OnForeignPlan) return;
+        // On a plan that is none of the modes', rules do not switch it away;
+        // nor during a ceiling test, which holds its own mode.
+        if (OnForeignPlan || CeilingTestRunning) return;
         if (_exiting) return;
         var names = ActiveRuleNames();
         var running = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);

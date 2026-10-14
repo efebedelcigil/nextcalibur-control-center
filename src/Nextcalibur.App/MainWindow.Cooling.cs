@@ -86,8 +86,9 @@ public partial class MainWindow
 
     private void StartCooling(ThermalSample s)
     {
-        // On a plan that is none of the modes', its ceiling is not lowered.
-        if (OnForeignPlan) return;
+        // On a plan that is none of the modes', its ceiling is not lowered -
+        // nor during a ceiling test, whose measurements it would change.
+        if (OnForeignPlan || CeilingTestRunning) return;
         SuggestCeilingTestIfOften();
         try
         {

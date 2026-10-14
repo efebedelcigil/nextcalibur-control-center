@@ -179,6 +179,7 @@ internal sealed class CeilingTestWindow : Window
         });
 
         _running = new CancellationTokenSource();
+        _main.CeilingTestRunning = true;
         _cancel.Content = Strings.Get("S.CeilingTest.Stop");
         var previousMode = _main.CurrentModeForTest;
         List<CeilingStep> steps = [];
@@ -199,6 +200,7 @@ internal sealed class CeilingTestWindow : Window
             await Task.Run(RestartServices);
             if (previousMode is { } back && back != _mode) _main.ApplyModeForTest(back);
             LogRunning("after", await Task.Run(() => TestPreflight.Scan(TimeSpan.FromSeconds(1))));
+            _main.CeilingTestRunning = false;
             _running = null;
         }
         ShowResult(steps);
