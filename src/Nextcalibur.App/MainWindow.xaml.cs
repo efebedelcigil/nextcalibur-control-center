@@ -985,7 +985,7 @@ public partial class MainWindow : Window
         // Both pages describe state that other software can change while we are
         // running, so re-read it when the page comes into view rather than
         // showing whatever was true at startup.
-        if (NavPower.IsChecked == true) { RefreshOverlay(); LoadPowerModes(); }
+        if (NavPower.IsChecked == true) { RefreshOverlay(); LoadPowerModes(); _ = LoadDefinitionsAsync(); }
         if (NavDisplay.IsChecked == true) LoadGpuMode();
 
         // Lighting and Settings have no readings panel, so nothing needs the

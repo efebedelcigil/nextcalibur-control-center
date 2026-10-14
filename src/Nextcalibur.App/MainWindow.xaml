@@ -942,7 +942,8 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" /> <!-- Header -->
                             <RowDefinition Height="Auto" /> <!-- 4 Power Mode Option Cards -->
-                            <RowDefinition Height="*" />    <!-- Status and Repair Bar -->
+                            <RowDefinition Height="Auto" /> <!-- Status and Repair Bar -->
+                            <RowDefinition Height="*" />    <!-- The components' power definitions, and who set them -->
                         </Grid.RowDefinitions>
 
                         <!-- Header -->
@@ -1055,6 +1056,20 @@
                                 <Button x:Name="FixButton" Grid.Column="1" Content="{DynamicResource S.Power.Repair}"
                                         VerticalAlignment="Center" Visibility="Collapsed"
                                         Click="OnRepairClick" Padding="18,8" />
+                            </Grid>
+                        </Border>
+
+                        <!-- The components' power values: in force, as their maker defines them, and who set them -->
+                        <Border Grid.Row="3" Style="{DynamicResource Card}" Margin="0,12,0,0">
+                            <Grid Margin="20,12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{DynamicResource S.Def.Title}" Style="{DynamicResource Label}" />
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+                                    <StackPanel x:Name="DefinitionRows" />
+                                </ScrollViewer>
                             </Grid>
                         </Border>
                     </Grid>
