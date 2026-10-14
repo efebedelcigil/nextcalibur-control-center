@@ -63,6 +63,19 @@ public static class MachineScan
 {
     public static string RecordPath => Path.Combine(Security.ProtectedStore.Root, "machine-scan.json");
 
+    /// <summary>
+    /// Whether the firmware differs from the last scan. A field the last scan
+    /// did not record (older versions kept fewer, and the EC's release is
+    /// often blank) is not a change: it once reported "QQ141 () -> QQ141
+    /// (06/27/2024)" on every first start after an update.
+    /// </summary>
+    internal static bool FirmwareChanged(MachineScanRecord before, MachineScanRecord now)
+    {
+        static bool Differs(string? was, string? @is) => !string.IsNullOrWhiteSpace(was) && !string.Equals(was, @is, StringComparison.Ordinal);
+        return Differs(before.BiosVersion, now.BiosVersion) || Differs(before.BoardProduct, now.BoardProduct)
+            || Differs(before.BiosDate, now.BiosDate) || Differs(before.EcRelease, now.EcRelease);
+    }
+
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
 
     /// <summary>Scans, compares with the last record, keeps the new one. Returns the verdict to act on.</summary>
@@ -91,8 +104,7 @@ public static class MachineScan
             record.LevelChangedAtUtc = record.ScannedAtUtc;
             Log.Warn("support", $"The machine's verdict changed from {previous.Level} to {verdict.Level} since {previous.ScannedAtUtc:u} ({previous.Trigger})");
         }
-        if (previous is not null && (previous.BiosVersion != record.BiosVersion || previous.BoardProduct != record.BoardProduct
-                                     || previous.BiosDate != record.BiosDate || previous.EcRelease != record.EcRelease))
+        if (previous is not null && FirmwareChanged(previous, record))
         {
             // A firmware update can change what the mailbox answers; the
             // verdict above has already asked it again, and this says why it may differ.

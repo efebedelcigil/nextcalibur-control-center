@@ -47,6 +47,7 @@ internal static class Program
                 "nvpower" => NvPower(),
                 "firmware" => Firmware(),
                 "games" => Games(),
+                "selftest" => Nextcalibur.Cli.SelfTest.Run(),
                 _ => Help(),
             };
         }

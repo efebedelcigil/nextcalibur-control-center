@@ -21,6 +21,18 @@ namespace Nextcalibur.App;
 public partial class MainWindow
 {
     private ManagementEventWatcher? _ruleStarts, _ruleStops;
+
+    /// <summary>
+    /// When Windows will not deliver process-start events (on this machine's
+    /// Windows build Win32_ProcessStartTrace answers "Invalid parameter" to
+    /// any query - found by the automated test, 14 October 2026), the rules'
+    /// programs are looked for every few seconds instead: one process list,
+    /// compared with the last, and the rules looked at only when the set of
+    /// rule programs running has changed. A few milliseconds every 3 seconds.
+    /// </summary>
+    private System.Threading.Timer? _rulePoll;
+    private string _rulePollSeen = "";
+    private static readonly TimeSpan RulePollEvery = TimeSpan.FromSeconds(3);
     private ProgramRule? _activeRule;
     private SystemMode? _ruleReturnMode;
 
@@ -72,15 +84,49 @@ public partial class MainWindow
         }
         catch (Exception ex) when (ex is ManagementException or UnauthorizedAccessException or System.Runtime.InteropServices.COMException)
         {
-            // Not silent and not stuck: the slow timer looks instead (see ProgramRulesTick).
-            Log.Warn("rules", "Could not watch for programs starting; looking every minute instead: " + ex.Message);
+            // Not silent and not stuck: the process list is looked at instead.
+            Log.Warn("rules", "Windows will not report program starts; looking every 3 seconds instead", ("reason", ex.Message));
             StopProgramRuleWatch();
+            StartRulePoll(watched);
         }
         EvaluateProgramRules();
     }
 
+    private void StartRulePoll(HashSet<string> watched)
+    {
+        _rulePollSeen = "";
+        _rulePoll = new System.Threading.Timer(_ =>
+        {
+            try
+            {
+                var running = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var process in System.Diagnostics.Process.GetProcesses())
+                {
+                    using (process)
+                        if (watched.Contains(process.ProcessName)) running.Add(process.ProcessName);
+                }
+                var seen = string.Join("|", running);
+                if (seen == _rulePollSeen) return;
+                _rulePollSeen = seen;
+                Dispatcher.BeginInvoke(async () =>
+                {
+                    EvaluateProgramRules();
+                    // As with the stop event: a process just gone can still be listed for a moment.
+                    await Task.Delay(1500);
+                    EvaluateProgramRules();
+                });
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Log.Warn("rules", "Looking for the rules' programs: " + ex.Message);
+            }
+        }, null, RulePollEvery, RulePollEvery);
+    }
+
     private void StopProgramRuleWatch()
     {
+        _rulePoll?.Dispose();
+        _rulePoll = null;
         foreach (var watcher in new[] { _ruleStarts, _ruleStops })
         {
             if (watcher is null) continue;
@@ -187,9 +233,7 @@ public partial class MainWindow
     /// </summary>
     private void ProgramRulesTick()
     {
-        // With no watch (Windows refused it), the rules are looked at here instead.
-        var noWatch = _ruleStarts is null && ActiveRuleNames().Count > 0;
-        if ((_activeRule is null && !noWatch) || DateTime.UtcNow - _rulesLookedAt < TimeSpan.FromMinutes(1)) return;
+        if (_activeRule is null || DateTime.UtcNow - _rulesLookedAt < TimeSpan.FromMinutes(1)) return;
         _rulesLookedAt = DateTime.UtcNow;
         EvaluateProgramRules();
     }

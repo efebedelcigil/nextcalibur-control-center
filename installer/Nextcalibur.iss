@@ -329,6 +329,12 @@ begin
                 '', SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
       RaiseException(FmtMessage(CustomMessage('VelopackFailed'), [IntToStr(Code)]));
     DeleteFile(ExpandConstant('{tmp}\Nextcalibur-win-Setup.exe'));
+
+    // Velopack ended the running copy to replace it. That is an install, not
+    // a crash: the session marker it left is removed, so the next start does
+    // not count it towards a crash loop (see CrashGuard).
+    Exec(ExpandConstant('{cmd}'), '/c del /s /q "' + ExpandConstant('{commonappdata}') + '\Nextcalibur\session.json"',
+         '', SW_HIDE, ewWaitUntilTerminated, Code);
   end;
 
   if (CurStep = ssPostInstall) and WizardIsComponentSelected('deps\pawnio') and (not PawnIOInstalled) then
