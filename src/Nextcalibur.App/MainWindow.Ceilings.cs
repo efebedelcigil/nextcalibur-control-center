@@ -193,14 +193,27 @@ public partial class MainWindow
     // ------------------------------------------------------------ the test
 
     /// <summary>Opens the ceiling test for a mode.</summary>
-    internal void OpenCeilingTest(SystemMode mode)
+    internal async void OpenCeilingTest(SystemMode mode)
     {
-        if (!_support.AllowsWrites || _settings.FirstChangesRestorePoint is null) return;
+        if (!_support.AllowsWrites || _settings.FirstChangesRestorePoint is null || _ceilingTest is not null) return;
         var limits = _settings.LimitsFor(mode);
         var current = mode == SystemMode.Office ? ModeProfile.ClampPercent(mode, limits.PercentCeiling) : ModeProfile.ClampFrequency(limits.FrequencyMhz);
         Log.Info("ceiling-test", $"Opened for {mode}, ceiling in force {current}");
-        new CeilingTestWindow(this, mode, current, () => _thermal is { } t && t.TryRead(out var s) ? s.CpuTemperatureC : null).ShowDialog();
+        var window = new CeilingTestWindow(this, mode, current, () => _thermal is { } t && t.TryRead(out var s) ? s.CpuTemperatureC : null);
+        _ceilingTest = window;
+        try { window.ShowDialog(); }
+        finally { _ceilingTest = null; }
+
+        // Asked here, with the test's window gone and this one usable again.
+        if (window.Accepted is { } value && await ConfirmCeilingAsync(mode, value))
+            SetCeiling(mode, value, "ceiling test");
     }
+
+    /// <summary>The ceiling test's window while it is open, so an exit can put the machine back.</summary>
+    private CeilingTestWindow? _ceilingTest;
+
+    /// <summary>On exit: a test in progress is stopped and its changes undone.</summary>
+    private void AbortCeilingTest() => _ceilingTest?.AbortAndRestore();
 
     /// <summary>The mode in force, for the test to come back to.</summary>
     internal SystemMode? CurrentModeForTest => _currentMode;

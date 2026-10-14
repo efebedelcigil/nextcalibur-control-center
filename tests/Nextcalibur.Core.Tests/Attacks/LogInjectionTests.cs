@@ -30,7 +30,7 @@ public class LogInjectionTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static readonly Regex Entry = new(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} (INFO |WARN |ERROR) \[\s*\d+\] ");
+    private static readonly Regex Entry = new(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2} (DEBUG|INFO |WARN |ERROR|FATAL) \[\d+:\s*\d+\] ");
 
     private string[] LinesWrittenBy(Action write)
     {

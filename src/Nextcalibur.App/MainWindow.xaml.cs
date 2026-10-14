@@ -398,6 +398,7 @@ public partial class MainWindow : Window
     private void RestoreLightingAtStart()
     {
         if (_led is not { } led || _mailbox is not { } mailbox) return;
+        if (CrashGuard.SafeMode) { Log.Warn("lighting", "Safe start: the lighting is not put back"); return; }
         _ = Task.Run(() =>
         {
             try
@@ -815,6 +816,8 @@ public partial class MainWindow : Window
 
         if (_settingsSaveDelay is { IsEnabled: true }) { _settingsSaveDelay.Stop(); _settings.Save(); }
         Log.Info("exit", _sessionEnding ? "Windows is ending the session" : $"Exit confirmed from {_exitRoute ?? "the update restart"}");
+        // A ceiling test in progress leaves nothing behind: its plan and its stopped services are put back.
+        AbortCeilingTest();
 
         {
             _timer.Stop();
@@ -1084,6 +1087,7 @@ public partial class MainWindow : Window
     private void EnsureFirmwareProfile(SystemMode mode)
     {
         if (_mailbox is null || !_support.AllowsWrites) return;
+        if (CrashGuard.SafeMode) { Log.Warn("mode", "Safe start: the firmware profile is not put back"); return; }
         try
         {
             // Balanced runs on Office's profile, which reads back as Office.
@@ -1633,6 +1637,7 @@ public partial class MainWindow : Window
             _exiting = true;
             _settings.Save();
             await _updates.DownloadAsync(progress);
+            CrashGuard.End();   // a restart into the new version is a clean end
             _updates.ApplyAndRestart([]);
             // Only reached if the restart did not happen.
             _exiting = false;
@@ -2744,6 +2749,7 @@ public partial class MainWindow : Window
     }
 
     private readonly Nextcalibur.Core.Hardware.CoreLoad _cpuUsage = new();
+    private DateTime _heartbeatAt = DateTime.MinValue;
 
     /// <summary>
     /// Colours a reading by how hot it is.
@@ -3068,6 +3074,11 @@ public partial class MainWindow : Window
                 // hidden — it is the reason the application stays resident at all.
                 GameTick();
                 NoticeGate.Flush();
+                if (DateTime.UtcNow - _heartbeatAt >= TimeSpan.FromMinutes(1))
+                {
+                    _heartbeatAt = DateTime.UtcNow;
+                    CrashGuard.Heartbeat();
+                }
                 RunawayTick();
                 RetryTakenShortcuts();
                 ProgramRulesTick();

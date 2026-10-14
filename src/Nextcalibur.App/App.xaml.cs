@@ -149,7 +149,12 @@ public partial class App : Application
         // fault there ended the process without a line anywhere (seen in the
         // sandbox, 23 September 2026: started, logged its start, and nothing).
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            Log.Error("crash", "Unhandled exception; the process is ending", e.ExceptionObject as Exception);
+        {
+            // The last lines: what killed it, and a note in the session marker
+            // so the next start can say so and, if it keeps happening, start safe.
+            Log.Fatal("crash", $"Unhandled exception; terminating {e.IsTerminating}", e.ExceptionObject as Exception);
+            CrashGuard.RecordFault(e.ExceptionObject as Exception);
+        };
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
             Log.Error("task", "Unobserved task exception", e.Exception);
@@ -270,6 +275,8 @@ public partial class App : Application
 
         Log.Start("Nextcalibur", typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
         Nextcalibur.Core.Security.AuditLog.AppVersion = typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?";
+        // Did the last run end cleanly? A loop of early crashes makes this a safe start (see CrashGuard).
+        CrashGuard.Begin(typeof(App).Assembly.GetName().Version?.ToString(3) ?? "?");
 
         // The retirement pass cleans up traces of features that have been dropped in this
         // or earlier versions (see Footprint.RetireOldVersions and docs/BRIEF.md §32).
@@ -352,6 +359,7 @@ public partial class App : Application
         };
         ListenForWakeRequests(app);
         app.Run();
+        CrashGuard.End();
 
         _instanceLock?.ReleaseMutex();
         _instanceLock?.Dispose();

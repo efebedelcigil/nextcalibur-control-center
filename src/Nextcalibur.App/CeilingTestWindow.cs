@@ -43,6 +43,10 @@ internal sealed class CeilingTestWindow : Window
     private CancellationTokenSource _scanning = new();
     private CancellationTokenSource? _running;
     private readonly List<string> _closed = [];
+    private bool _closingWindow;
+
+    /// <summary>The ceiling the person chose to apply; the main window asks and writes it once this window has closed.</summary>
+    public int? Accepted { get; private set; }
     private readonly List<string> _stoppedServices = [];
 
     public CeilingTestWindow(MainWindow main, SystemMode mode, int current, Func<int?> ecCpu)
@@ -73,10 +77,12 @@ internal sealed class CeilingTestWindow : Window
         _start.Click += async (_, _) =>
         {
             // One button, two jobs: start the test, then apply its result.
+            // The question about applying it is asked by the main window once
+            // this one is closed: while this one is open the main window is
+            // disabled, and a question in it could not be answered.
             if (_proposed is { } value)
             {
-                if (!await _main.ConfirmCeilingAsync(_mode, value)) return;
-                _main.SetCeiling(_mode, value, "ceiling test");
+                Accepted = value;
                 Close();
             }
             else await StartAsync();
@@ -84,8 +90,9 @@ internal sealed class CeilingTestWindow : Window
         _cancel.Click += (_, _) => CancelOrClose();
         Closing += (_, e) =>
         {
-            if (_running is not null) { e.Cancel = true; _running.Cancel(); }
-            else _scanning.Cancel();
+            if (_running is not null) { e.Cancel = true; _running.Cancel(); return; }
+            _closingWindow = true;
+            _scanning.Cancel();
         };
 
         _body.Margin = new Thickness(18);
@@ -111,7 +118,14 @@ internal sealed class CeilingTestWindow : Window
     {
         while (!stop.IsCancellationRequested)
         {
-            var found = await Task.Run(() => TestPreflight.Scan());
+            Preflight found;
+            try { found = await Task.Run(() => TestPreflight.Scan()); }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Log.Warn("ceiling-test", "Scan: " + ex.Message);
+                try { await Task.Delay(2000, stop); } catch (TaskCanceledException) { return; }
+                continue;
+            }
             if (stop.IsCancellationRequested) return;
             _latest = found;
             ShowPreflight(found);
@@ -159,6 +173,12 @@ internal sealed class CeilingTestWindow : Window
 
         // One last look, right before anything is closed.
         var final = await Task.Run(() => TestPreflight.Scan());
+        // Closed while it looked: nothing is closed, nothing is started.
+        if (_closingWindow || !IsLoaded)
+        {
+            Log.Info("ceiling-test", "Window closed before the start; nothing was closed");
+            return;
+        }
         if (final.CriticalWork.Count > 0)
         {
             _status.Text = Strings.Get("S.CeilingTest.Blocked", string.Join(", ", final.CriticalWork));
@@ -194,12 +214,17 @@ internal sealed class CeilingTestWindow : Window
         {
             Log.Info("ceiling-test", "Stopped by the person");
         }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // Whatever went wrong, the machine is put back below; the window says the test stopped.
+            Log.Warn("ceiling-test", "The test failed: " + ex.Message);
+        }
         finally
         {
-            await Task.Run(() => _main.PutModePlanBack(_mode));
-            await Task.Run(RestartServices);
+            await Task.Run(RestoreAfterTest);
             if (previousMode is { } back && back != _mode) _main.ApplyModeForTest(back);
-            LogRunning("after", await Task.Run(() => TestPreflight.Scan(TimeSpan.FromSeconds(1))));
+            try { LogRunning("after", await Task.Run(() => TestPreflight.Scan(TimeSpan.FromSeconds(1)))); }
+            catch (Exception ex) when (ex is not OutOfMemoryException) { Log.Warn("ceiling-test", ex.Message); }
             _main.CeilingTestRunning = false;
             _running = null;
         }
@@ -240,6 +265,35 @@ internal sealed class CeilingTestWindow : Window
                 // Gone already.
             }
         }
+    }
+
+    private bool _restored;
+
+    /// <summary>
+    /// The mode's plan as the settings have it, and the stopped services
+    /// started again - after the test, and also when Nextcalibur exits in
+    /// the middle of one (see <see cref="AbortAndRestore"/>). Once only.
+    /// </summary>
+    private void RestoreAfterTest()
+    {
+        lock (_stoppedServices)
+        {
+            if (_restored) return;
+            _restored = true;
+        }
+        try { _main.PutModePlanBack(_mode); }
+        catch (Exception ex) when (ex is not OutOfMemoryException) { Log.Warn("ceiling-test", "Plan back: " + ex.Message); }
+        RestartServices();
+    }
+
+    /// <summary>Nextcalibur is exiting while the test runs: stopped at once, and the machine put back.</summary>
+    public void AbortAndRestore()
+    {
+        if (_running is null) return;
+        Log.Info("ceiling-test", "Nextcalibur is exiting; the test is stopped and the machine put back");
+        _running.Cancel();
+        RestoreAfterTest();
+        _main.CeilingTestRunning = false;
     }
 
     private void RestartServices()
@@ -322,8 +376,9 @@ internal sealed class CeilingTestWindow : Window
                 // the controller's when it has none (the owner's rule).
                 double? c = msr.ReadPackageTemperatureC() ?? _ecCpu();
                 if (c is not { } celsius) continue;
-                samples.Add((celsius, msr.ReadWatts() ?? 0, clock.ReadGhz() ?? 0));
-                Dispatcher.BeginInvoke(() => _status.Text = Strings.Get("S.CeilingTest.Reading", Label(value), celsius, samples[^1].W, samples[^1].Ghz));
+                var reading = (C: celsius, W: msr.ReadWatts() ?? 0, Ghz: clock.ReadGhz() ?? 0);
+                samples.Add(reading);
+                Dispatcher.BeginInvoke(() => _status.Text = Strings.Get("S.CeilingTest.Reading", Label(value), reading.C, reading.W, reading.Ghz));
 
                 // Clearly over for ten seconds: this step will not hold; no need to keep the heat on.
                 if (celsius > target + CeilingTest.PeakAllowanceC) overSince ??= DateTime.UtcNow; else overSince = null;
@@ -349,7 +404,7 @@ internal sealed class CeilingTestWindow : Window
         while (DateTime.UtcNow < until)
         {
             await Task.Delay(2000, cancel);
-            if (msr.ReadPackageTemperatureC() is { } c && c <= 60) return;
+            if ((msr.ReadPackageTemperatureC() ?? _ecCpu()) is { } c && c <= 60) return;
         }
     }
 
