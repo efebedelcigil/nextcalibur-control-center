@@ -4152,7 +4152,7 @@
       },
       "norm_label": "acdc",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L88"
+      "source_location": "L95"
     },
     {
       "id": "tests_nextcalibur_core_tests_idletimeoutstests_nextcalibur_core_tests_idletimeoutstests",
@@ -10330,13 +10330,13 @@
             "callee": "TryParse",
             "receiver_type": "Guid",
             "lang": "csharp",
-            "line": "L120"
+            "line": "L127"
           }
         ]
       },
       "norm_label": ".activeplan()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L117"
+      "source_location": "L124"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_applyprofile",
@@ -10356,13 +10356,13 @@
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L198"
+            "line": "L205"
           }
         ]
       },
       "norm_label": ".applyprofile()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187"
+      "source_location": "L194"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_floorrepaired",
@@ -10380,7 +10380,7 @@
       },
       "norm_label": ".floorrepaired()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L138"
+      "source_location": "L145"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_forgetfloors",
@@ -10398,7 +10398,7 @@
       },
       "norm_label": ".forgetfloors()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L173"
+      "source_location": "L180"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_mark",
@@ -10416,7 +10416,7 @@
       },
       "norm_label": ".mark()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L273"
+      "source_location": "L280"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_markedplans",
@@ -10436,19 +10436,19 @@
             "callee": "TryParse",
             "receiver_type": "Guid",
             "lang": "csharp",
-            "line": "L311"
+            "line": "L318"
           },
           {
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L313"
+            "line": "L320"
           }
         ]
       },
       "norm_label": ".markedplans()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L298"
+      "source_location": "L305"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_markname",
@@ -10466,7 +10466,7 @@
       },
       "norm_label": ".markname()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L271"
+      "source_location": "L278"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_pinnedfloors",
@@ -10486,13 +10486,13 @@
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L132"
+            "line": "L139"
           }
         ]
       },
       "norm_label": ".pinnedfloors()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126"
+      "source_location": "L133"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_powerreadacvalueindex",
@@ -10510,7 +10510,7 @@
       },
       "norm_label": ".powerreadacvalueindex()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L353"
+      "source_location": "L360"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_powerreaddcvalueindex",
@@ -10528,7 +10528,7 @@
       },
       "norm_label": ".powerreaddcvalueindex()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L356"
+      "source_location": "L363"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_powersetactivescheme",
@@ -10546,7 +10546,7 @@
       },
       "norm_label": ".powersetactivescheme()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L365"
+      "source_location": "L372"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_powerwriteacvalueindex",
@@ -10564,7 +10564,7 @@
       },
       "norm_label": ".powerwriteacvalueindex()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L359"
+      "source_location": "L366"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_powerwritedcvalueindex",
@@ -10582,7 +10582,7 @@
       },
       "norm_label": ".powerwritedcvalueindex()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L362"
+      "source_location": "L369"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_profilemarker",
@@ -10602,13 +10602,13 @@
             "callee": "ToString",
             "receiver_type": "Guid",
             "lang": "csharp",
-            "line": "L81"
+            "line": "L88"
           }
         ]
       },
       "norm_label": ".profilemarker()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L81"
+      "source_location": "L88"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_read",
@@ -10626,7 +10626,7 @@
       },
       "norm_label": ".read()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L90"
+      "source_location": "L97"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_removemarkerskeyifempty",
@@ -10644,7 +10644,7 @@
       },
       "norm_label": ".removemarkerskeyifempty()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L321"
+      "source_location": "L328"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_repairneveroffdisplay",
@@ -10662,7 +10662,7 @@
       },
       "norm_label": ".repairneveroffdisplay()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L208"
+      "source_location": "L215"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_repairpinnedfloors",
@@ -10682,19 +10682,19 @@
             "callee": "Min",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L148"
+            "line": "L155"
           },
           {
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L150"
+            "line": "L157"
           }
         ]
       },
       "norm_label": ".repairpinnedfloors()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L141"
+      "source_location": "L148"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_restorefloors",
@@ -10712,7 +10712,7 @@
       },
       "norm_label": ".restorefloors()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L162"
+      "source_location": "L169"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
@@ -10732,13 +10732,13 @@
             "callee": "Min",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L239"
+            "line": "L246"
           }
         ]
       },
       "norm_label": ".startcooling()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L228"
+      "source_location": "L235"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_stopcooling",
@@ -10756,7 +10756,7 @@
       },
       "norm_label": ".stopcooling()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L246"
+      "source_location": "L253"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_subgroupof",
@@ -10792,7 +10792,7 @@
       },
       "norm_label": ".unmark()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L288"
+      "source_location": "L295"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_write",
@@ -10810,7 +10810,7 @@
       },
       "norm_label": ".write()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L98"
+      "source_location": "L105"
     },
     {
       "id": "src_nextcalibur_core_power_programrules_nextcalibur_core_power_programrules_processnamepattern",
@@ -33790,7 +33790,7 @@
       },
       "norm_label": ".parsemarker()",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L343"
+      "source_location": "L350"
     },
     {
       "id": "tests_nextcalibur_core_tests_coolingpolicytests_nextcalibur_core_tests_coolingpolicytests_markers_read_back",
@@ -43231,7 +43231,7 @@
       },
       "norm_label": "cooling",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L221"
+      "source_location": "L228"
     },
     {
       "id": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_repairs",
@@ -43248,7 +43248,7 @@
       },
       "norm_label": "repairs",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84"
+      "source_location": "L91"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_drivegauge",
@@ -58456,7 +58456,7 @@
         "ref_token": "DllImport"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L353",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -58471,7 +58471,7 @@
         "ref_token": "DllImport"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L356",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -58486,7 +58486,7 @@
         "ref_token": "DllImport"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L365",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -58501,7 +58501,7 @@
         "ref_token": "DllImport"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L359",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -58516,7 +58516,7 @@
         "ref_token": "DllImport"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L362",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -79291,7 +79291,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L190",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -79303,7 +79303,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L191",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -79315,7 +79315,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L193",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -79327,7 +79327,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L194",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -79339,7 +79339,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L197",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -79351,7 +79351,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L198",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -79363,7 +79363,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L138",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -79375,7 +79375,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L176",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -79387,7 +79387,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L176",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -79399,7 +79399,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L278",
+      "source_location": "L285",
       "weight": 1.0
     },
     {
@@ -79411,7 +79411,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L313",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
@@ -79423,7 +79423,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L349",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -79435,7 +79435,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L129",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -79447,19 +79447,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L131",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_read",
-      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_subgroupof",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L92",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -79471,7 +79459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L93",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -79483,7 +79471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L94",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -79495,7 +79483,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L95",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_read",
+      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_subgroupof",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -79507,7 +79507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L210",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -79519,7 +79519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L211",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -79531,7 +79531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L212",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -79543,7 +79543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L213",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -79555,7 +79555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L214",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -79567,7 +79567,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L144",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -79579,7 +79579,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L147",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -79591,7 +79591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L148",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -79603,7 +79603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L148",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -79615,7 +79615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L155",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -79627,7 +79627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L165",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -79639,7 +79639,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L168",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -79651,7 +79651,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L168",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -79663,36 +79663,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L168",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
       "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
       "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_activeplan",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L231",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
-      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_read",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L237",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
-      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_mark",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -79704,6 +79680,30 @@
     },
     {
       "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
+      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_read",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
+      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_mark",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_startcooling",
       "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_acdc",
       "relation": "calls",
       "_origin": "ast",
@@ -79711,7 +79711,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L239",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -79723,7 +79723,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L239",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -79735,7 +79735,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L240",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -79747,7 +79747,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L251",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -79759,7 +79759,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L253",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -79771,7 +79771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L253",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -79783,7 +79783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L293",
+      "source_location": "L300",
       "weight": 1.0
     },
     {
@@ -79795,7 +79795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L100",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -79807,7 +79807,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L101",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -79819,7 +79819,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L102",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -79831,7 +79831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L108",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -79843,7 +79843,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L110",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -79855,7 +79855,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L111",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -79867,7 +79867,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L112",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -89147,7 +89147,7 @@
         "ref_token": "IEnumerable"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -93380,7 +93380,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L221",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -93392,7 +93392,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -94119,7 +94119,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -94134,7 +94134,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -94584,7 +94584,7 @@
         "ref_token": "Floor"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -94764,7 +94764,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -94779,7 +94779,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -94794,7 +94794,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -95169,7 +95169,7 @@
         "ref_token": "Marker"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -95184,7 +95184,7 @@
         "ref_token": "Marker"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -95349,7 +95349,7 @@
         "ref_token": "Name"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -95394,7 +95394,7 @@
         "ref_token": "Original"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -95484,7 +95484,7 @@
         "ref_token": "Plan"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -95499,7 +95499,7 @@
         "ref_token": "Plan"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -95814,7 +95814,7 @@
         "ref_token": "Setting"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L84",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -102686,7 +102686,7 @@
         "ref_qualifier": "ModeProfile"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -103007,7 +103007,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L273",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -103022,7 +103022,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L98",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -104777,7 +104777,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -104792,7 +104792,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L273",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -104807,7 +104807,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L271",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -104822,7 +104822,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L353",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -104837,7 +104837,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L356",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -104852,7 +104852,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L365",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -104867,7 +104867,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L359",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -104882,7 +104882,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L362",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -104897,7 +104897,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L81",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -104912,7 +104912,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L90",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -104927,7 +104927,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L208",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -104957,7 +104957,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L288",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -104972,7 +104972,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L98",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -106727,7 +106727,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L353",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -106742,7 +106742,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L356",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -106757,7 +106757,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L365",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -106772,7 +106772,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L359",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -106787,7 +106787,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L362",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -108872,7 +108872,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -109735,7 +109735,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L343",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -109750,7 +109750,7 @@
         "ref_token": "AcDc"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L90",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -110275,7 +110275,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L117",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -110665,7 +110665,7 @@
         "ref_token": "IReadOnlyList"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -110680,7 +110680,7 @@
         "ref_token": "IReadOnlyList"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -110695,7 +110695,7 @@
         "ref_token": "IReadOnlyList"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L141",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -111040,7 +111040,7 @@
         "ref_token": "List"
       },
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -123128,7 +123128,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L88",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -133552,13 +133552,24 @@
     },
     {
       "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning",
+      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_write",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning",
       "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_activeplan",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L117",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -133569,7 +133580,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L126",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -133580,7 +133591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L138",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -133591,7 +133602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L141",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -133602,7 +133613,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L162",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -133613,7 +133624,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L173",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -133624,7 +133635,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L187",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -133635,7 +133646,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L208",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -133646,7 +133657,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L228",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -133657,7 +133668,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L246",
+      "source_location": "L253",
       "weight": 1.0
     },
     {
@@ -133668,7 +133679,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L271",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -133679,7 +133690,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L273",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -133690,7 +133701,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L288",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -133701,7 +133712,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L301",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -133712,7 +133723,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L321",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -133723,7 +133734,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L343",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -133734,7 +133745,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L353",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -133745,7 +133756,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L356",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -133756,7 +133767,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L359",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -133767,7 +133778,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L362",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -133778,7 +133789,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L365",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -133800,7 +133811,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L81",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -133811,18 +133822,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L90",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning",
-      "target": "src_nextcalibur_core_power_plantuning_nextcalibur_core_power_plantuning_write",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/Nextcalibur.Core/Power/PlanTuning.cs",
-      "source_location": "L98",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -143931,5 +143931,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "00fe2faf6871cc24817ab5a8f09c3a9e49492e8e"
+  "built_at_commit": "f29d8f63bb359581e434aa5d6faca9470544227b"
 }
