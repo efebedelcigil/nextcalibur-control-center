@@ -43,6 +43,7 @@ internal static class Program
                 "plans" => Plans(),
                 "heat" => Heat(args),
                 "limits" => Limits(args),
+                "preflight" => PreflightCommand(),
                 _ => Help(),
             };
         }
@@ -462,6 +463,19 @@ internal static class Program
             Thread.Sleep(500);
         }
         mailbox?.Dispose();
+        return 0;
+    }
+
+    /// <summary>What a ceiling test would find before it starts: work that stops it, and what it would close. Reads only; closes nothing.</summary>
+    private static int PreflightCommand()
+    {
+        var found = TestPreflight.Scan();
+        Console.WriteLine(found.CriticalWork.Count == 0 ? "Critical work: none" : "Critical work (the test would not start): " + string.Join(", ", found.CriticalWork));
+        foreach (var group in found.ToClose.GroupBy(i => i.Kind))
+        {
+            Console.WriteLine($"{group.Key}:");
+            foreach (var i in group) Console.WriteLine($"  {i.Name,-32} pid {i.Pid,6}  cpu {i.CpuPercent,5:0.0}%  io {i.MegabytesPerSecond,6:0.00} MB/s  {i.ServiceName}");
+        }
         return 0;
     }
 

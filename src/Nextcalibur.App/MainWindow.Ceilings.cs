@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Nextcalibur.Core.Configuration;
+using Nextcalibur.Core.Hardware;
 using Nextcalibur.Core.Power;
 using ComboBox = System.Windows.Controls.ComboBox;
 using ComboBoxItem = System.Windows.Controls.ComboBoxItem;
@@ -40,6 +41,7 @@ public partial class MainWindow
                 var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
                 row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(170) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
                 row.Children.Add(new TextBlock
                 {
@@ -85,6 +87,16 @@ public partial class MainWindow
                 };
                 Grid.SetColumn(box, 1);
                 row.Children.Add(box);
+
+                var test = new System.Windows.Controls.Button
+                {
+                    Content = Strings.Get("S.CeilingTest.Button"), MinWidth = 90, Height = 28, Margin = new Thickness(8, 0, 0, 0),
+                    IsEnabled = _support.AllowsWrites && CpuPowerReader.DriverInstalled,
+                    ToolTip = Strings.Get("S.CeilingTest.ButtonTip"),
+                };
+                test.Click += (_, _) => OpenCeilingTest(chosenMode);
+                Grid.SetColumn(test, 2);
+                row.Children.Add(test);
                 _ceilingRows.Children.Add(row);
             }
         }
@@ -118,6 +130,64 @@ public partial class MainWindow
         Audit("ceiling", "done", ("mode", mode.ToString()), ("value", value), ("unit", mode == SystemMode.Office ? "%" : "MHz"), ("how", how));
         RefreshCeilingRows();
     }
+
+    // ------------------------------------------------------------ the test
+
+    /// <summary>Opens the ceiling test for a mode.</summary>
+    internal void OpenCeilingTest(SystemMode mode)
+    {
+        if (!_support.AllowsWrites || _settings.FirstChangesRestorePoint is null) return;
+        var limits = _settings.LimitsFor(mode);
+        var current = mode == SystemMode.Office ? ModeProfile.ClampPercent(mode, limits.PercentCeiling) : ModeProfile.ClampFrequency(limits.FrequencyMhz);
+        Log.Info("ceiling-test", $"Opened for {mode}, ceiling in force {current}");
+        new CeilingTestWindow(this, mode, current, () => _thermal is { } t && t.TryRead(out var s) ? s.CpuTemperatureC : null).ShowDialog();
+    }
+
+    /// <summary>The mode in force, for the test to come back to.</summary>
+    internal SystemMode? CurrentModeForTest => _currentMode;
+
+    /// <summary>A mode switched to for the test - and back after - as the mode buttons do it.</summary>
+    internal void ApplyModeForTest(SystemMode mode)
+    {
+        try
+        {
+            ApplyMode(mode);
+            _currentMode = mode;
+            LoadSystemMode();
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            Log.Warn("ceiling-test", $"Could not switch to {mode}: {ex.Message}");
+        }
+    }
+
+    /// <summary>One step's ceiling, written straight into the mode's plan; the settings are not touched.</summary>
+    internal void WriteTestCeiling(SystemMode mode, int value)
+    {
+        if (SystemModeService.PlanFor(mode) is not { } plan) return;
+        if (mode == SystemMode.Office)
+        {
+            PlanTuning.Write(plan.Plan, PlanTuning.MaxState, new PlanTuning.AcDc(value, value));
+            PlanTuning.Write(plan.Plan, PlanTuning.MaxState1, new PlanTuning.AcDc(value, value));
+        }
+        else
+        {
+            PlanTuning.Write(plan.Plan, ModeProfile.FrequencyMax, new PlanTuning.AcDc(value, value));
+            PlanTuning.Write(plan.Plan, ModeProfile.FrequencyMax1, new PlanTuning.AcDc(value, value));
+        }
+    }
+
+    /// <summary>After the test, the mode's plan as the settings have it - the ceiling in force, not the last step's.</summary>
+    internal void PutModePlanBack(SystemMode mode)
+    {
+        if (SystemModeService.PlanFor(mode) is { } plan)
+            PlanTuning.ApplyProfile(mode, plan.Plan, ModeProfile.ReadBaseline(), _settings.LimitsFor(mode));
+    }
+
+    /// <summary>The result, applied the way every change that could need undoing is: asked, with a restore point offered.</summary>
+    internal Task<bool> ConfirmCeilingAsync(SystemMode mode, int value) =>
+        ConfirmRiskyAsync("ceiling-test", Strings.Get("S.CeilingTest.ApplyTitle"),
+            Strings.Get("S.CeilingTest.ApplyBody", ModeName(mode), mode == SystemMode.Office ? Strings.Get("S.Ceiling.Percent", value) : Strings.Get("S.Ceiling.Ghz", (value / 1000.0).ToString("0.0"))));
 
     /// <summary>Hook for the watch on the plans: what was just written is what the plans should hold. Filled in by MainWindow.PlanWatch.</summary>
     partial void RememberProfileWrites();

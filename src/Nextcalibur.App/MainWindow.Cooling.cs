@@ -88,6 +88,7 @@ public partial class MainWindow
     {
         // On a plan that is none of the modes', its ceiling is not lowered.
         if (OnForeignPlan) return;
+        SuggestCeilingTestIfOften();
         try
         {
             _coolingCapped = _settings.AutoCooling && PlanTuning.StartCooling();
@@ -116,6 +117,37 @@ public partial class MainWindow
         Log.Info("cooling", $"Started at CPU {s.CpuTemperatureC} °C / GPU {s.GpuTemperatureC} °C, {rate:+0.0;-0.0} °C/min; capped={_coolingCapped} turbo suggested={_coolingSuggested}");
         NotifyOrKeepForAfterGame(Strings.Get("S.Cooling.Title"),
             Strings.Get("S.Cooling.Body", s.CpuTemperatureC, s.GpuTemperatureC, rate.ToString("+0.0;-0.0"), what));
+    }
+
+    /// <summary>
+    /// Cooling needed often in one mode - three times in a week - says the
+    /// machine cools worse than when its ceiling was set: dust, most likely.
+    /// A ceiling test is suggested, at most once a week and never over a game.
+    /// </summary>
+    private void SuggestCeilingTestIfOften()
+    {
+        if (_currentMode is not { } mode) return;
+        var now = DateTime.UtcNow;
+        _settings.CoolingStarts.Add($"{mode}|{now:O}");
+        _settings.CoolingStarts = _settings.CoolingStarts
+            .Where(e => e.Split('|') is [_, var at] && DateTime.TryParse(at, null, System.Globalization.DateTimeStyles.RoundtripKind, out var t) && now - t < TimeSpan.FromDays(7))
+            .ToList();
+        _settings.Save();
+
+        var count = _settings.CoolingStarts.Count(e => e.StartsWith(mode + "|", StringComparison.Ordinal));
+        if (count < 3 || GameInFront || _settings.CeilingTestSuggestedUtc is { } last && now - last < TimeSpan.FromDays(7)) return;
+        _settings.CeilingTestSuggestedUtc = now;
+        _settings.Save();
+        Log.Info("ceiling-test", $"Suggested: cooling needed {count} times in a week in {mode}");
+        if (!Toasts.TryShow(Strings.Get("S.CeilingTest.SuggestTitle"), Strings.Get("S.CeilingTest.SuggestBody", ModeName(mode), count),
+                Strings.Get("S.CeilingTest.SuggestButton"), () => Dispatcher.BeginInvoke(() => { ShowFromSuggestion(); OpenCeilingTest(mode); })))
+            _tray?.ShowMessage(Strings.Get("S.CeilingTest.SuggestTitle"), Strings.Get("S.CeilingTest.SuggestBody", ModeName(mode), count));
+    }
+
+    private void ShowFromSuggestion()
+    {
+        if (!IsVisible || WindowState == System.Windows.WindowState.Minimized) { Show(); WindowState = System.Windows.WindowState.Normal; }
+        Activate();
     }
 
     private void StopCooling(string why)

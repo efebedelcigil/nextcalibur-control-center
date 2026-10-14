@@ -65,6 +65,12 @@ public sealed class AppSettings
     /// </summary>
     public string? FirstChangesRestorePoint { get; set; }
 
+    /// <summary>When cooling had to start, per mode, over the last week: often means the cooling has got worse, and a ceiling test is suggested.</summary>
+    public List<string> CoolingStarts { get; set; } = new();
+
+    /// <summary>When a ceiling test was last suggested; at most once a week.</summary>
+    public DateTime? CeilingTestSuggestedUtc { get; set; }
+
     /// <summary>Power Saver's ceiling in percent, chosen by the person or a ceiling test; never above the measured upper bound. Null: the mode's own.</summary>
     public int? SaverCeilingPercent { get; set; }
 
