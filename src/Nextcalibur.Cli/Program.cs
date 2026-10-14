@@ -332,6 +332,21 @@ internal static class Program
     private static int Heat(string[] args)
     {
         var seconds = args.Length > 1 && int.TryParse(args[1], out var s) ? s : 60;
+
+        // --load: every logical processor busy for the whole run, to see the
+        // power the limits really let through - the limit in force, not the
+        // copy in the register. Short on purpose; the processor protects
+        // itself at its throttle point either way.
+        using var stop = new CancellationTokenSource();
+        if (args.Contains("--load"))
+        {
+            for (var i = 0; i < Environment.ProcessorCount; i++)
+            {
+                new Thread(() => { var x = 1.0; while (!stop.IsCancellationRequested) x = Math.Sqrt(x + 1.5); })
+                    { IsBackground = true, Priority = ThreadPriority.BelowNormal }.Start();
+            }
+            Console.WriteLine($"Load on: {Environment.ProcessorCount} threads for {seconds} s");
+        }
         using var msr = new CpuPowerReader();
         if (!msr.CanOpen())
         {
@@ -383,6 +398,7 @@ internal static class Program
             Console.WriteLine($"{DateTime.Now:HH:mm:ss} {t?.CpuTemperatureC,6} {pkgC,4} {t?.GpuTemperatureC,4} {t?.CpuFanRpm,5} {t?.GpuFanRpm,5} " +
                               $"{watts,6:0.0} {ghz,5:0.00}  {(now.Count == 0 ? "-" : string.Join("; ", now.Select(n => n.Split(' ')[0])))}");
         }
+        stop.Cancel();
         mailbox?.Dispose();
         return 0;
 
