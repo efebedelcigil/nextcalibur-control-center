@@ -26,7 +26,7 @@ namespace Nextcalibur.Core.Power;
 ///   High performance holds the processor at 100% plugged in.
 /// - <b>Office</b> is Power saver, never less efficient than Balanced, with
 ///   the efficient variant of its boost mode (measured: the average clock
-///   at idle 4.3 -> 3.4 GHz), both core types held to 70%, and - on a
+///   at idle 4.3 -> 3.4 GHz), both core types held to 90% - the boost off (see PlanTuning.CoolCeiling), and - on a
 ///   processor that has two kinds of core - work on the efficient ones first.
 /// </summary>
 public static class ModeProfile

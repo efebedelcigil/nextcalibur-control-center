@@ -26,7 +26,7 @@ namespace Nextcalibur.Core.Power;
 ///   <see cref="DisplayOffSeconds"/>; a "never" chosen later in Windows'
 ///   Settings is the owner's and is left alone.
 /// - <b>Cooling.</b> While the processor stays over its warning line the
-///   active plan's ceiling is lowered to the Office plan's 70%, and put back
+///   active plan's ceiling is lowered to Power Saver's 90% - the boost off - and put back
 ///   when it has cooled. The value it replaced is kept under
 ///   <see cref="MarkersKey"/>, so a crash or a power cut in the middle is
 ///   undone at the next start.
@@ -69,8 +69,15 @@ public static class PlanTuning
     /// <summary>What a pinned floor is set to: Windows' own Balanced value.</summary>
     public const int SafeFloor = 5;
 
-    /// <summary>The Office ceiling - the vendor's Office plan's own value - and the one cooling uses.</summary>
-    public const int CoolCeiling = 70;
+    /// <summary>
+    /// Power Saver's ceiling, and the one cooling uses. Any value under 100
+    /// turns the boost off altogether, and that is where the heat is
+    /// (measured 14 October 2026, all cores loaded: 70% 1.53 GHz 16 W 53 °C,
+    /// 80% 1.82 GHz 19 W 57 °C, 90% 2.01 GHz 22 W 60 °C, 100% 3.57 GHz 53 W
+    /// 97 °C). 90 keeps the boost off and the processor a third faster than
+    /// the vendor's 70.
+    /// </summary>
+    public const int CoolCeiling = 90;
 
     private const string SchemesKey = @"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes";
     private const string FloorMarker = "NextcaliburOriginalMinState";

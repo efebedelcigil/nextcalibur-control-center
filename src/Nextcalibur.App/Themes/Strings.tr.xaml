@@ -418,11 +418,11 @@
     <sys:String x:Key="S.Runaway.Gpu">{0}, ekranda ona ihtiyaç duyan bir şey yokken {1} dakikadır ekran kartını meşgul ediyor. Çalışmaması gerekiyorsa kapatın.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Görev Yöneticisi'ni aç</sys:String>
     <sys:String x:Key="S.Settings.AutoCoolingTitle">Acil Güç Tasarrufu</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de soğuyana kadar Güç Tasarrufu'nun %70'iyle sınırla. Sürdüğü sürece daha yavaş.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de soğuyana kadar Güç Tasarrufu'nun %90'ıyla - turbo kapalı - sınırla. Sürdüğü sürece daha yavaş.</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboTitle">Isınmadan önce soğut</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboDesc">Sıcaklık uyarı sınırına doğru gidiyorsa, oraya varmadan Fn+1'e basmanızı söyleyen bir bildirim gelir - fan turbosu, yalnızca dizüstünün kendi klavyesinden açılabiliyor - ve soğuyunca tekrar söyler.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Acil Güç Tasarrufu</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">İstemezseniz kapalı. Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de %70 ile - Güç Tasarrufu planının tavanı - sınırlar ve beş dakika boyunca rahatça sınırın altında kalınca bırakır. Sürdüğü sürece makine daha yavaştır.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">İstemezseniz kapalı. Sıcaklık uyarı sınırına doğru gidiyorsa işlemciyi de %90 ile - Güç Tasarrufu'nun tavanı, turboyu kapatır - sınırlar ve beş dakika boyunca rahatça sınırın altında kalınca bırakır. Sürdüğü sürece makine daha yavaştır.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Isınmadan önce soğut</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Body">Sıcaklık yalnızca karşılaştırılmaz, takip edilir: uyarı sınırına doğru gidiyorsa oraya varmadan Fn+1'e basmanızı söyleyen bir bildirim gelir - fan turbosu, dizüstü onu yalnızca kendi klavyesinden açıyor - ve beş dakika boyunca rahatça altında kalınca turbonun kapatılabileceğini söyler. Kapalıyken hiçbir şey izlenmez ya da söylenmez. Varsayılan olarak açık.</sys:String>
     <sys:String x:Key="S.Heat.WhileAway">Siz yokken {1} {0} °C'ye ulaştı</sys:String>
@@ -645,7 +645,7 @@
 
     <!-- Sistem -->
     <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Güç Tasarrufu</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">En serin ve en sessiz: güç planı, Windows'un en iyi güç verimliliği modu ve donanım yazılımının sessiz profili hafif iş ve pil için ayarlanır; işlemci %70'te tutulur. Ağır işte yavaşlar. Ayarlar'da pildeki mod bu seçilirse şarj çıkınca buna geçilir.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">En serin ve en sessiz: güç planı, Windows'un en iyi güç verimliliği modu ve donanım yazılımının sessiz profili hafif iş ve pil için ayarlanır; işlemci %90'da tutulur, bu turboyu kapatır (yaklaşık 2 GHz). Ağır işte yavaşlar ama serin kalır: bütün çekirdekler doluyken 60 °C ölçüldü. Ayarlar'da pildeki mod bu seçilirse şarj çıkınca buna geçilir.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeBalanced.Title">Dengeli (Ofis)</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Günlük kullanım: Windows'un bu makine için seçtiği dengeli ayarlar ve Casper'ın Office fan profili. Varsayılan mod budur; oyun açılınca program kuralları ya da oyun sorusu Oyun'a geçirir.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Oyun</sys:String>

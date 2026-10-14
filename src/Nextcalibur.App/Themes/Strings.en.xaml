@@ -420,11 +420,11 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Runaway.Gpu">{0} has kept the graphics card busy for {1} minutes with nothing on screen needing it. If it should not be working, close it.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Open Task Manager</sys:String>
     <sys:String x:Key="S.Settings.AutoCoolingTitle">Emergency Power Saver</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's 70% until it has cooled. Slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's 90% - the boost off - until it has cooled. Slower while it lasts.</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboTitle">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboDesc">When the temperature is heading for the warning line, a notification says to press Fn+1 - the fan turbo, which only the laptop's own keyboard can switch - before it gets there, and again once it has cooled.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Emergency Power Saver</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, this also holds the processor to 70% - the Power Saver plan's ceiling - and lets it go once things are well below the line for five minutes. The machine is slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, this also holds the processor to 90% - Power Saver's ceiling, which turns the boost off - and lets it go once things are well below the line for five minutes. The machine is slower while it lasts.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Body">The temperature is followed, not just compared: when it is on its way to the warning line, a notification says to press Fn+1 before it gets there - the fan turbo, which the laptop switches only from its own keyboard - and, once it has been well below for five minutes, that the turbo can go off. Off: nothing is followed or said. On by default.</sys:String>
     <sys:String x:Key="S.Heat.WhileAway">While you were away the {1} reached {0} °C</sys:String>
@@ -647,7 +647,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- System -->
     <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Power Saver</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">The coolest and quietest: the power plan, Windows' best power efficiency mode and the firmware's quiet profile are set for light work and battery; the processor is held to 70%. Slower under heavy work. With this as the mode on battery in Settings, it is switched to when the charger comes out.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">The coolest and quietest: the power plan, Windows' best power efficiency mode and the firmware's quiet profile are set for light work and battery; the processor is held to 90%, which turns the boost off (about 2 GHz). Slower under heavy work, and cool: measured at 60 °C with every core busy. With this as the mode on battery in Settings, it is switched to when the charger comes out.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeBalanced.Title">Balanced (Office)</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Everyday use: the balanced settings Windows chose for this machine and Casper's Office fan profile. This is the default mode; when a game opens, a program rule or the question after a game switches to Gaming.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming</sys:String>

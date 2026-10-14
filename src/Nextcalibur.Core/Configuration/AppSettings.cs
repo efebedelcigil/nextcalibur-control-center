@@ -18,7 +18,7 @@ public sealed class AppSettings
 
     /// <summary>
     /// "Emergency Office": while a chip is heading for its warning line, also
-    /// hold the processor to the Office plan's 70%, and let it go once it
+    /// hold the processor to Power Saver's 90% (the boost off), and let it go once it
     /// has cooled. Off by default - the owner's correction of 11 October
     /// 2026: the thing asked for was the fans, not a slower processor.
     /// </summary>
