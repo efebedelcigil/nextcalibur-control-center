@@ -22,6 +22,21 @@ public sealed class MachineScanRecord
     public string? BiosVersion { get; set; }
     public string? BoardProduct { get; set; }
 
+    /// <summary>
+    /// The firmware's own tables (SMBIOS), read at every start - see
+    /// <see cref="FirmwareInventory"/>. On the G870 the identity fields are
+    /// the reference design's placeholders ("Type1Manufacturer"), so the
+    /// machine is told by how its firmware answers, not by what it calls itself.
+    /// </summary>
+    public string? BiosDate { get; set; }
+    public string? BiosRelease { get; set; }
+    public string? EcRelease { get; set; }
+    public string? SystemProduct { get; set; }
+    public string? ProcessorName { get; set; }
+    public int? ProcessorMaxMhz { get; set; }
+    public int? MemoryTotalMb { get; set; }
+    public string? Memory { get; set; }
+
     /// <summary>When the level last changed, and from what.</summary>
     public SupportLevel? PreviousLevel { get; set; }
     public DateTime? LevelChangedAtUtc { get; set; }
@@ -68,6 +83,7 @@ public static class MachineScan
             LevelChangedAtUtc = previous?.LevelChangedAtUtc,
         };
         ReadBios(record);
+        ReadFirmware(record);
 
         if (previous is not null && previous.Level != verdict.Level)
         {
@@ -75,8 +91,20 @@ public static class MachineScan
             record.LevelChangedAtUtc = record.ScannedAtUtc;
             Log.Warn("support", $"The machine's verdict changed from {previous.Level} to {verdict.Level} since {previous.ScannedAtUtc:u} ({previous.Trigger})");
         }
-        if (previous is not null && (previous.BiosVersion != record.BiosVersion || previous.BoardProduct != record.BoardProduct))
-            Log.Info("support", $"BIOS or board differs from the last scan: {previous.BiosVersion} -> {record.BiosVersion}");
+        if (previous is not null && (previous.BiosVersion != record.BiosVersion || previous.BoardProduct != record.BoardProduct
+                                     || previous.BiosDate != record.BiosDate || previous.EcRelease != record.EcRelease))
+        {
+            // A firmware update can change what the mailbox answers; the
+            // verdict above has already asked it again, and this says why it may differ.
+            Log.Warn("support", $"Firmware differs from the last scan: BIOS {previous.BiosVersion} ({previous.BiosDate}) -> {record.BiosVersion} ({record.BiosDate}), EC {previous.EcRelease} -> {record.EcRelease}");
+            Security.AuditLog.Record("firmware-changed", new Dictionary<string, object?>
+            {
+                ["biosFrom"] = previous.BiosVersion, ["biosTo"] = record.BiosVersion,
+                ["dateFrom"] = previous.BiosDate, ["dateTo"] = record.BiosDate,
+                ["ecFrom"] = previous.EcRelease, ["ecTo"] = record.EcRelease,
+                ["verdict"] = verdict.Level.ToString(),
+            });
+        }
 
         Save(record);
         return verdict;
@@ -117,6 +145,24 @@ public static class MachineScan
     {
         var plans = SystemModeService.EnumeratePlans();
         return plans.ContainsKey("Office") && plans.ContainsKey("Gaming");
+    }
+
+    /// <summary>The last firmware inventory read, for the rest of the application this run.</summary>
+    public static FirmwareInventory Firmware { get; private set; } = new();
+
+    private static void ReadFirmware(MachineScanRecord record)
+    {
+        var f = FirmwareInventory.Read();
+        Firmware = f;
+        record.BiosDate = f.BiosDate;
+        record.BiosRelease = f.BiosRelease;
+        record.EcRelease = f.EcRelease;
+        record.SystemProduct = f.Product;
+        record.ProcessorName = f.ProcessorName;
+        record.ProcessorMaxMhz = f.ProcessorMaxMhz;
+        record.MemoryTotalMb = f.Memory.Sum(m => m.SizeMb);
+        record.Memory = string.Join(", ", f.Memory.Select(m => $"{m.SizeMb} MB {m.ConfiguredSpeedMts} MT/s {m.Manufacturer} {m.PartNumber}"));
+        Log.Info("support", "Firmware: " + f.Describe());
     }
 
     private static void ReadBios(MachineScanRecord record)

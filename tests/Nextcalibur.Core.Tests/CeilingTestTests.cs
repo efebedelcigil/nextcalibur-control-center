@@ -19,7 +19,8 @@ public class CeilingTestTests
     {
         Assert.Equal([3000, 2800, 2600, 2400], CeilingTest.Steps(SystemMode.Gaming, 3000, 0));
         // With no limit, the steps below start from the clock reached.
-        Assert.Equal([0, 3400, 3200], CeilingTest.Steps(SystemMode.Gaming, 0, 3650).Take(3));
+        Assert.Equal([0, 3600, 3400], CeilingTest.Steps(SystemMode.Gaming, 0, 3650).Take(3));
+        Assert.Equal([0, 4600, 4400], CeilingTest.Steps(SystemMode.Gaming, 0, 4700).Take(3));
     }
 
     [Fact]

@@ -52,8 +52,9 @@ public static class CeilingTest
         }
 
         steps.Add(current);
-        var start = current > 0 ? current : (topClockMhz / 200) * 200;
-        for (var f = start - 200; f >= 2400; f -= 200) steps.Add(f);
+        // Below the limit in force; with none, the first round step under the top clock.
+        var first = current > 0 ? current - 200 : (Math.Max(topClockMhz, 1) - 1) / 200 * 200;
+        for (var f = first; f >= 2400; f -= 200) steps.Add(f);
         return steps;
     }
 

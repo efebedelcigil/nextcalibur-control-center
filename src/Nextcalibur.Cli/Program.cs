@@ -45,6 +45,7 @@ internal static class Program
                 "limits" => Limits(args),
                 "preflight" => PreflightCommand(),
                 "nvpower" => NvPower(),
+                "firmware" => Firmware(),
                 _ => Help(),
             };
         }
@@ -489,6 +490,20 @@ internal static class Program
             return 2;
         }
         Console.WriteLine($"Power management mode: {mode.Value} ({(mode.Set ? "set on the global profile" : "not set - the driver's default")})");
+        return 0;
+    }
+
+    /// <summary>What the firmware's SMBIOS tables say about the machine. Reads Windows' copy; nothing is sent or written.</summary>
+    private static int Firmware()
+    {
+        var f = FirmwareInventory.Read();
+        Console.WriteLine($"BIOS      {f.BiosVendor} {f.BiosVersion}, {f.BiosDate}, release {f.BiosRelease ?? "-"}");
+        Console.WriteLine($"EC        firmware release {f.EcRelease ?? "-"}");
+        Console.WriteLine($"System    {f.Manufacturer} / {f.Product} / {f.ProductVersion} / sku {f.Sku} / family {f.Family}");
+        Console.WriteLine($"Board     {f.BoardManufacturer} {f.BoardProduct}");
+        Console.WriteLine($"CPU       {f.ProcessorName}, max {f.ProcessorMaxMhz} MHz, {f.ProcessorCores} cores, {f.ProcessorThreads} threads");
+        foreach (var m in f.Memory) Console.WriteLine($"Memory    {m.Locator}: {m.SizeMb} MB, {m.SpeedMts} MT/s (running {m.ConfiguredSpeedMts}), {m.Manufacturer} {m.PartNumber}");
+        Console.WriteLine($"Battery   {f.BatteryName} {f.BatteryChemistry}, design {f.BatteryDesignMwh} mWh");
         return 0;
     }
 

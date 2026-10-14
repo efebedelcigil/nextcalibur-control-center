@@ -270,7 +270,8 @@ internal sealed class CeilingTestWindow : Window
         var results = new List<CeilingStep>();
         using var msr = new CpuPowerReader();
         using var clock = new CpuClockReader();
-        var values = CeilingTest.Steps(_mode, _current, 0).ToList();
+        // With no limit, the firmware's top clock is where the steps start below.
+        var values = CeilingTest.Steps(_mode, _current, MachineScan.Firmware.ProcessorMaxMhz ?? 0).ToList();
         for (var i = 0; i < values.Count; i++)
         {
             cancel.ThrowIfCancellationRequested();
@@ -290,7 +291,7 @@ internal sealed class CeilingTestWindow : Window
             if (CeilingTest.Held(_mode, step)) break;
 
             // With no limit, the steps below start from the clock this one reached.
-            if (i == 0 && _mode != SystemMode.Office && _current == 0)
+            if (i == 0 && _mode != SystemMode.Office && _current == 0 && MachineScan.Firmware.ProcessorMaxMhz is null)
                 values = [value, .. CeilingTest.Steps(_mode, 0, (int)(step.Ghz * 1000)).Skip(1)];
 
             _status.Text = Strings.Get("S.CeilingTest.Cooling");
