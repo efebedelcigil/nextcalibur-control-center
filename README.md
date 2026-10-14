@@ -1,157 +1,149 @@
 # Graph Report - nextcalibur-control-center  (2026-10-14)
 
 ## Corpus Check
-- 180 files · ~228,124 words
+- 180 files · ~229,619 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 3, .wsb 2, .iss 1)
 
 ## Summary
-- 3004 nodes · 6537 edges · 180 communities (146 shown, 34 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 350 edges (avg confidence: 0.84)
+- 3010 nodes · 6549 edges · 174 communities (141 shown, 33 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 351 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `364655a0`
+- Built from commit: `bb3def70`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - MainWindow
-- AppSettings
 - FnShortcut
+- Authenticode
 - PlanTuning
+- .CheckProgram
+- TrayPresence
+- .OnLoaded
 - ProtectedStore
-- .Get
-- GpuClockReader
+- .Info
 - RunawayWatchTests
-- IShellLinkW
+- GpuClockReader
+- .Get
 - WindowsFaults
 - ProgramRule
-- RadioButton
+- AppSettings
+- Elevation
+- IShellLinkW
 - Window
-- EcMailbox
-- Nextcalibur.App
-- .RequestRestart
-- .Info
-- TrayPresence
-- Nextcalibur.Core.Hardware
-- .Main
-- UserPresence
-- .Survey
-- SystemInfo
-- .Check
 - WindowsFaultsTests
-- NetworkCostTests
-- SystemModeService
-- .PowerModeControls
-- ProcessPresence
-- Program
-- CoolingPolicyTests
-- .RemoveMachineTraces
-- .StartSlowTimer
 - CpuPowerReader
+- NetworkCostTests
+- RadioButton
+- Nextcalibur.Core.Hardware
+- SystemInfo
+- UserPresence
 - Fact
-- InstallFolderGuard
-- .SignatureIsValid
-- LedState
-- MachineScanRecord
 - Button
-- .OnClosing
-- Authenticode
-- microsoft_win32
+- Nextcalibur.App
+- Fact
+- ProcessPresence
+- SystemTools
+- .RequestRestart
+- SystemModeService
+- EcMailbox
+- CoolingPolicyTests
+- LedState
 - Dependency
-- GpuModeService
-- Nextcalibur.Core.Configuration
+- Fact
+- .Check
+- .Ask
 - DotNetRuntimeDependency
 - RestorePoint
-- BacklightKeyWatcher
+- system_text_json
+- Nextcalibur.Core.Configuration
 - Nextcalibur.Core.csproj
-- Integrity
-- .CheckProgram
-- .Ask
+- .IdleChosen
 - .For
 - MemoryTrimmer
 - DependencyStatus
 - ToggleButton
-- .Dictionary
+- GpuModeService
 - analyse-autopsy.py
-- UpdateService
-- CoreLoad
+- MachineScanRecord
+- SystemMode
 - ResourceDictionary
 - RuntimeDependencyTests
-- SystemMode
-- .ApplyFnShortcuts
-- LedController
+- SmiCommand
+- PowerOverlayService
+- .GetColour
 - ColourWheel
 - DevicePowerState
-- PowerOverlayService
+- .PowerModeControls
+- LedController
+- Program
 - FanGauge
-- .GameTick
-- Unelevated
+- microsoft_win32
 - DonutGauge
-- ThemeService
+- .Migrate
 - SegmentedBar
+- GameSession
+- CoreLoad
+- Nextcalibur Control Center
+- ThemeService
 - LogInjectionTests
-- Integrity.cs
-- SystemTools
 - Grid
-- LedEffect
-- PawnIoDependency
+- .RefreshProgramRuleRows
+- LedBrightness
+- .HasAccess
 - BatteryModePolicy
 - StringsDictionaryTests
 - ValueConverters.cs
-- GPU mode ("Display Mode")
 - Nextcalibur 0.5.2
-- Nextcalibur 0.5.4
-- Nextcalibur Control Center
+- system_management
 - Strings
-- .RefreshProgramRuleRows
-- .IdleChosen
-- SmiCommandTests
-- Nextcalibur.Core.Security
+- .OnProfileChecked
 - Hardware Protocol
 - Nextcalibur 0.5.3
+- LedZone
 - NvidiaDriverState
-- .Values_are_the_ones_measured_from_the_vendor
 - IntPtr
-- HostileFilesTests
 - Border
 - StackPanel
-- .Sanitised
+- PendingRestartInfo
 - SupportVerdict
+- WordsInCodeTests
+- Nextcalibur.Core.Security
 - .ToHsv
 - Nextcalibur on a machine that has never had the vendor software
 - README.md
 - Nextcalibur 0.5.0
-- .IsSystemFileSignedBy
-- ProfileFiles
+- ThermalSample
+- PawnIoDependency
 - Probe
-- .GetAsync
+- .OnClosing
 - Nextcalibur 0.5.1
+- Nextcalibur 0.5.5
+- LedEffect
 - NotificationState
-- IntegrityKind
 - Test-Ui.ps1
-- Text
 - 4. LED — `a1 = 0x0100`
 - Nextcalibur 0.5.9
 - Nextcalibur 0.6.0
 - Releasing, and signing
 - .Pick
 - .ForegroundProcess
-- .ChangeSetting
 - TourPage
-- .Current
+- BatteryModePolicy.cs
+- .Record
+- .Values_are_the_ones_measured_from_the_vendor
 - Log-Graphics.ps1
+- Text
 - Privacy
 - Nextcalibur 0.6.2
 - Security
-- LedZone
 - MachineWideGate
-- PowerSource
 - Notice
 - Nextcalibur 0.5.11
 - AppIdentity.cs
-- .Set
 - SmiSubsystem
 - Grant-MailboxAccess.ps1
 - Trace-ModeSwitch.ps1
@@ -165,11 +157,13 @@
 - .ArrangeOverride
 - BrightnessSlider
 - ComboBox
+- .TryParseRgb
 - .Modules_are_the_released_ones
 - Tools
 - 0.5.7.md
 - CpuWarnValue
 - DialogCheck
+- Toasts.cs
 - Words
 - ColGauge
 - DialogProgress
@@ -188,7 +182,7 @@
 - Typography.xaml
 
 ## God Nodes (most connected - your core abstractions)
-1. `MainWindow` - 346 edges
+1. `MainWindow` - 347 edges
 2. `Window` - 178 edges
 3. `AppSettings` - 75 edges
 4. `Nextcalibur.Core.Hardware` - 54 edges
@@ -214,611 +208,591 @@
 ## Import Cycles
 - None detected.
 
-## Communities (180 total, 34 thin omitted)
+## Communities (174 total, 33 thin omitted)
 
 ### Community 0 - "MainWindow"
 Cohesion: 0.03
-Nodes (64): AssemblyInformationalVersionAttribute, CheckBox, DeferredOverheat, GameEnd, HwndSource, ObservableCollection, PluggedIn, Queue (+56 more)
+Nodes (69): CheckBox, DeferredOverheat, HwndSource, ObservableCollection, PluggedIn, Queue, SizeChangedEventArgs, Slider (+61 more)
 
-### Community 1 - "AppSettings"
-Cohesion: 0.04
-Nodes (53): DateTime, Dictionary, FnShortcut, JsonElement, List, ProgramRule, AppSettings, AcceptedVendorSoftware (+45 more)
-
-### Community 2 - "FnShortcut"
+### Community 1 - "FnShortcut"
 Cohesion: 0.05
 Nodes (43): Nextcalibur.Core.Input, INotifyPropertyChanged, Problem, DriveRow, Detail, Name, Percent, PercentText (+35 more)
+
+### Community 2 - "Authenticode"
+Cohesion: 0.06
+Nodes (38): CatalogInfo, Nextcalibur 0.5.4, Privacy, Quieter in the background, Security, Security, the second pass, Smaller, Tested on (+30 more)
 
 ### Community 3 - "PlanTuning"
 Cohesion: 0.08
 Nodes (29): Floor, Marker, Original, Action, AcDc, Guid, IReadOnlyList, IdleSetting (+21 more)
 
-### Community 4 - "ProtectedStore"
+### Community 4 - ".CheckProgram"
+Cohesion: 0.06
+Nodes (27): Lazy, ProcessModule, FileSystemAccessRule, FileSystemRights, SecurityIdentifier, InstallFolderGuard, Dictionary, HashSet (+19 more)
+
+### Community 5 - "TrayPresence"
+Cohesion: 0.06
+Nodes (30): ContextMenuStrip, EventHandler, Icon, Item, NotifyIcon, ProcessInformation, EventArgs, List (+22 more)
+
+### Community 6 - ".OnLoaded"
 Cohesion: 0.07
-Nodes (26): Content, DirectorySecurity, Hash, IReadOnlyList, JsonSerializerOptions, AuditLog, AppVersion, Dictionary (+18 more)
+Nodes (15): AssemblyInformationalVersionAttribute, Asynchronous dispatcher & UI thread hardening, MessageBoxButton, MessageBoxResult, Window, Dialogs, Owner, Dictionary (+7 more)
 
-### Community 5 - ".Get"
+### Community 7 - "ProtectedStore"
+Cohesion: 0.07
+Nodes (23): Content, DirectorySecurity, Hash, IReadOnlyList, Dictionary, FileSystemAccessRule, FileSystemRights, IReadOnlyList (+15 more)
+
+### Community 8 - ".Info"
 Cohesion: 0.08
-Nodes (12): Asynchronous dispatcher & UI thread hardening, SolidColorBrush, MessageBoxButton, MessageBoxResult, Window, Dialogs, Owner, Dictionary (+4 more)
+Nodes (15): The threat model, and what the code does about it, Application, DllImport, Mutex, App, RegistryKey, Footprint, Exception (+7 more)
 
-### Community 6 - "GpuClockReader"
-Cohesion: 0.08
-Nodes (22): NvmlProcessInfo, NvmlUtilisation, PdhFmtCounterValue, DateTime, DllImport, Func, IntPtr, IReadOnlyList (+14 more)
-
-### Community 7 - "RunawayWatchTests"
+### Community 9 - "RunawayWatchTests"
 Cohesion: 0.06
 Nodes (35): Cpu, CpuMs, DateTime, Dictionary, Func, IReadOnlyDictionary, IReadOnlyList, ISet (+27 more)
 
-### Community 8 - "IShellLinkW"
-Cohesion: 0.06
-Nodes (16): IPropertyStore, PropertyKey, PropVariant, Slider, DllImport, Guid, IEnumerable, IntPtr (+8 more)
+### Community 10 - "GpuClockReader"
+Cohesion: 0.08
+Nodes (21): NvmlProcessInfo, NvmlUtilisation, PdhFmtCounterValue, DateTime, DllImport, Func, IntPtr, IReadOnlyList (+13 more)
 
-### Community 9 - "WindowsFaults"
+### Community 11 - ".Get"
+Cohesion: 0.07
+Nodes (12): GameEnd, SolidColorBrush, IReadOnlyList, GameEnd, ModeDiscrete, ModeHybrid, ModeUma, Func (+4 more)
+
+### Community 12 - "WindowsFaults"
 Cohesion: 0.07
 Nodes (35): EnumWindowsProc, IO_COUNTERS, Process, PROCESS_MEMORY_COUNTERS, ProcessMetrics, Share, DateTime, Dictionary (+27 more)
 
-### Community 10 - "ProgramRule"
+### Community 13 - "ProgramRule"
 Cohesion: 0.07
 Nodes (26): GeneratedRegex, HashSet, IEnumerable, IReadOnlyDictionary, TimeSpan, GameSessions, DateTime, IEnumerable (+18 more)
 
-### Community 11 - "RadioButton"
-Cohesion: 0.06
-Nodes (40): FxBlink, FxBreathing, FxCycle, FxHeartbeat, FxStatic, FxWave, ModeDiscrete, ModeGaming (+32 more)
+### Community 14 - "AppSettings"
+Cohesion: 0.04
+Nodes (41): FnShortcut, JsonElement, ProgramRule, AppSettings, AcceptedVendorSoftware, AskModeForGames, AutoCheckForUpdates, AutoCooling (+33 more)
 
-### Community 12 - "Window"
+### Community 15 - "Elevation"
 Cohesion: 0.08
-Nodes (43): TemperatureToDoubleConverter, Detail, Foreground, IsMouseOver, ItemsSource.Count, Name, PercentText, BannerBody (+35 more)
+Nodes (14): dynamic, Encoding, StartupRegistration, IsEnabled, Elevation, CardSwitchTasks, Fact, InlineData (+6 more)
 
-### Community 13 - "EcMailbox"
-Cohesion: 0.11
-Nodes (16): Exception, FirmwareModeReading, IDisposable, ManagementObject, ManagementScope, Func, EcMailbox, EcMailboxUnavailableException (+8 more)
+### Community 16 - "IShellLinkW"
+Cohesion: 0.07
+Nodes (14): IPropertyStore, PropertyKey, PropVariant, DllImport, Guid, IEnumerable, IntPtr, StringBuilder (+6 more)
 
-### Community 14 - "Nextcalibur.App"
-Cohesion: 0.11
-Nodes (22): Nextcalibur.App, Nextcalibur.App.Controls, system_drawing, system_linq, system_windows, system_windows_controls, system_windows_controls_button, system_windows_controls_checkbox (+14 more)
+### Community 17 - "Window"
+Cohesion: 0.08
+Nodes (44): TemperatureToDoubleConverter, Detail, Foreground, IsMouseOver, ItemsSource.Count, Name, PercentText, BannerBody (+36 more)
 
-### Community 15 - ".RequestRestart"
+### Community 18 - "WindowsFaultsTests"
+Cohesion: 0.13
+Nodes (6): IReadOnlyDictionary, Stable, Fact, WindowsFaultsTests, Dictionary, TopSharePercent
+
+### Community 19 - "CpuPowerReader"
 Cohesion: 0.09
-Nodes (11): Zero-bottleneck gaming & heavy workload architecture, Fix GPU Switch Restart Prompt & Windows Privilege Adjustment, Nextcalibur 0.5.8, Tested on, Luid, DllImport, EventArgs, IntPtr (+3 more)
+Nodes (21): 5. Other interfaces (no mailbox involved), Corrected: the software *can* switch, through its kernel driver, Found: the switch is one mailbox write, GPU mode ("Display Mode"), GPU sensors, Measured: the two buttons work by entirely different means, Out of scope: the refresh rate, Power management (+13 more)
 
-### Community 16 - ".Info"
-Cohesion: 0.10
-Nodes (7): Func, MessageBoxButton, MessageBoxResult, Exception, Log, Folder, IReadOnlyDictionary
+### Community 20 - "NetworkCostTests"
+Cohesion: 0.11
+Nodes (26): Answer, Bytes, ConcurrentDictionary, Count, HttpMessageHandler, CancellationToken, HttpClient, Task (+18 more)
 
-### Community 17 - "TrayPresence"
+### Community 21 - "RadioButton"
 Cohesion: 0.08
-Nodes (16): ContextMenuStrip, Deep memory & resource leak eradication, Discrete GPU sleep protection in Hybrid mode, Nextcalibur 0.5.5, Startup preferences & installer accuracy, Tested on, EventHandler, Icon (+8 more)
+Nodes (33): FxBlink, FxBreathing, FxCycle, FxHeartbeat, FxStatic, FxWave, ModeGaming, ModeOffice (+25 more)
 
-### Community 18 - "Nextcalibur.Core.Hardware"
+### Community 22 - "Nextcalibur.Core.Hardware"
 Cohesion: 0.14
 Nodes (6): Nextcalibur.Core.Tests, Nextcalibur.Core.Power, Nextcalibur.Core.Hardware, nextcalibur_core_power_plantuning_acdc, system_xml_linq, xunit
 
-### Community 19 - ".Main"
-Cohesion: 0.10
-Nodes (8): The threat model, and what the code does about it, Application, DllImport, Mutex, App, RegistryKey, Footprint, STAThread
-
-### Community 20 - "UserPresence"
-Cohesion: 0.12
-Nodes (14): MonitorInfo, NotificationState, Rect, SessionSwitchEventArgs, Point, Size, DateTime, DllImport (+6 more)
-
-### Community 21 - ".Survey"
-Cohesion: 0.12
-Nodes (8): Func, IEnumerable, IReadOnlyList, RetirementEntry, Trace, Version, NduFix, FootprintTests
-
-### Community 22 - "SystemInfo"
+### Community 23 - "SystemInfo"
 Cohesion: 0.10
 Nodes (16): MemoryStatusEx, DriveUse, DllImport, IReadOnlyList, MarshalAs, DriveUse, Name, MemoryStatusEx (+8 more)
 
-### Community 23 - ".Check"
-Cohesion: 0.11
-Nodes (13): CommonAce, RawSecurityDescriptor, RegistryKey, SecurityIdentifier, MailboxAccess, MailboxAvailability, AccessNotGranted, Available (+5 more)
+### Community 24 - "UserPresence"
+Cohesion: 0.13
+Nodes (12): MonitorInfo, NotificationState, Rect, SessionSwitchEventArgs, DateTime, DllImport, IntPtr, MarshalAs (+4 more)
 
-### Community 25 - "NetworkCostTests"
+### Community 25 - "Fact"
 Cohesion: 0.14
-Nodes (19): Bytes, Count, HttpMessageHandler, CancellationToken, Dictionary, Fact, HttpRequestMessage, HttpResponseMessage (+11 more)
+Nodes (8): Func, IEnumerable, IReadOnlyList, RetirementEntry, Trace, Version, Fact, FootprintTests
 
-### Community 26 - "SystemModeService"
+### Community 26 - "Button"
+Cohesion: 0.07
+Nodes (25): IsChecked, BannerDismissButton, BannerRestartButton, CloseButton, DialogButtonPrimary, DialogButtonSecondary, HideToTrayButton, MinimiseButton (+17 more)
+
+### Community 27 - "Nextcalibur.App"
+Cohesion: 0.12
+Nodes (20): Nextcalibur.App, Nextcalibur.App.Controls, system_drawing, system_linq, system_windows, system_windows_controls, system_windows_controls_button, system_windows_controls_checkbox (+12 more)
+
+### Community 28 - "Fact"
+Cohesion: 0.13
+Nodes (10): IList, GpuLoad, GpuConfiguration, HardwareSupport, Fact, GpuModeTests, Discrete, Hybrid (+2 more)
+
+### Community 29 - "ProcessPresence"
+Cohesion: 0.11
+Nodes (12): DllImport, HashSet, IntPtr, StringBuilder, ProcessPresence, DateTime, TimeSpan, VendorSoftware (+4 more)
+
+### Community 30 - "SystemTools"
+Cohesion: 0.10
+Nodes (14): FileStream, IOException, IEnumerable, ProfileFiles, SystemTools, Cmd, Explorer, Pnputil (+6 more)
+
+### Community 31 - ".RequestRestart"
+Cohesion: 0.11
+Nodes (10): Fix GPU Switch Restart Prompt & Windows Privilege Adjustment, Nextcalibur 0.5.8, Tested on, Luid, DllImport, EventArgs, IntPtr, MarshalAs (+2 more)
+
+### Community 32 - "SystemModeService"
 Cohesion: 0.15
 Nodes (11): InvalidOperationException, Ours, Dictionary, DllImport, Guid, IntPtr, IReadOnlyDictionary, IReadOnlyList (+3 more)
 
-### Community 27 - ".PowerModeControls"
-Cohesion: 0.09
-Nodes (20): Option, Button, IEnumerable, TextBlock, IReadOnlyList, OverlayDiagnosis, GuardMissing, NeedsRepair (+12 more)
+### Community 33 - "EcMailbox"
+Cohesion: 0.14
+Nodes (13): Exception, FirmwareModeReading, IDisposable, ManagementObject, ManagementScope, Func, EcMailbox, EcMailboxUnavailableException (+5 more)
 
-### Community 28 - "ProcessPresence"
-Cohesion: 0.12
-Nodes (12): DllImport, HashSet, IntPtr, StringBuilder, ProcessPresence, DateTime, TimeSpan, VendorSoftware (+4 more)
-
-### Community 29 - "Program"
-Cohesion: 0.11
-Nodes (8): ConsoleColor, B, G, R, Program, DateTimeOffset, ThermalReader, ThermalSample
-
-### Community 30 - "CoolingPolicyTests"
-Cohesion: 0.12
-Nodes (16): At, Margin, DateTime, List, TimeSpan, CoolingPolicy, DegreesPerMinute, Engaged (+8 more)
-
-### Community 31 - ".RemoveMachineTraces"
+### Community 34 - "CoolingPolicyTests"
 Cohesion: 0.13
-Nodes (6): dynamic, Encoding, Elevation, CardSwitchTasks, Fact, TaskFolderTests
+Nodes (15): At, Margin, DateTime, List, TimeSpan, CoolingPolicy, DegreesPerMinute, Engaged (+7 more)
 
-### Community 32 - ".StartSlowTimer"
-Cohesion: 0.09
-Nodes (4): IReadOnlyList, GameEnd, Action, Toasts
-
-### Community 33 - "CpuPowerReader"
-Cohesion: 0.16
-Nodes (9): DllImport, IntPtr, SafeFileHandle, CpuPowerReader, DriverInstalled, Fact, InlineData, Theory (+1 more)
-
-### Community 34 - "Fact"
-Cohesion: 0.16
-Nodes (8): IList, HardwareSupport, Fact, GpuModeTests, Discrete, Hybrid, GpuSwitchProtocolTests, HardwareSupportTests
-
-### Community 35 - "InstallFolderGuard"
-Cohesion: 0.14
-Nodes (10): FileSystemAccessRule, FileSystemRights, SecurityIdentifier, InstallFolderGuard, Fact, InlineData, Theory, ElevationPolicyTests (+2 more)
-
-### Community 36 - ".SignatureIsValid"
-Cohesion: 0.14
-Nodes (10): X509Certificate2, Fact, InlineData, Theory, X509Certificate2, SignatureForgeryTests, SignedByMicrosoft, Fact (+2 more)
-
-### Community 37 - "LedState"
-Cohesion: 0.15
-Nodes (15): B, G, R, LedState, ActiveProfile, BrightnessPercent, Current, Effect (+7 more)
-
-### Community 38 - "MachineScanRecord"
+### Community 35 - "LedState"
 Cohesion: 0.11
-Nodes (18): DateTime, JsonSerializerOptions, List, MachineScan, RecordPath, MachineScanRecord, BiosVendor, BiosVersion (+10 more)
+Nodes (19): Dictionary, LedBrightness, LedProfile, BrightnessPercent, Colours, Effect, LedState, ActiveProfile (+11 more)
 
-### Community 39 - "Button"
-Cohesion: 0.08
-Nodes (24): IsChecked, BannerDismissButton, BannerRestartButton, CloseButton, DialogButtonPrimary, DialogButtonSecondary, FixButton, MinimiseButton (+16 more)
+### Community 36 - "Dependency"
+Cohesion: 0.11
+Nodes (17): CancellationToken, HttpClient, Task, Uri, Version, Dependency, ExpectedSigner, Id (+9 more)
 
-### Community 40 - ".OnClosing"
+### Community 37 - "Fact"
 Cohesion: 0.10
-Nodes (9): CancelEventArgs, SizeChangedEventArgs, KeyEventArgs, RoutedEventArgs, TourStep, Body, SectionName, Title (+1 more)
+Nodes (15): IReadOnlyList, OverlayDiagnosis, GuardMissing, NeedsRepair, OverlayIsStuck, RepairOutcome, Empty, Fact (+7 more)
 
-### Community 41 - "Authenticode"
-Cohesion: 0.25
-Nodes (14): CatalogInfo, DefaultDllImportSearchPaths, DllImport, Guid, IntPtr, MarshalAs, SafeFileHandle, Authenticode (+6 more)
-
-### Community 42 - "microsoft_win32"
-Cohesion: 0.15
-Nodes (9): Nextcalibur.Core.Dependencies, microsoft_win32, system_collections_concurrent, system_net, system_net_http, system_security, system_text, system_text_json (+1 more)
-
-### Community 43 - "Dependency"
+### Community 38 - ".Check"
 Cohesion: 0.13
-Nodes (15): CancellationToken, HttpClient, Task, Uri, Version, Dependency, ExpectedSigner, Id (+7 more)
+Nodes (10): CommonAce, RawSecurityDescriptor, RegistryKey, MailboxAccess, MailboxAvailability, AccessNotGranted, Available, NotSupported (+2 more)
 
-### Community 44 - "GpuModeService"
-Cohesion: 0.18
-Nodes (9): ArgumentNullException, GpuConfiguration, GpuMode, Discrete, Hybrid, Uma, GpuModeService, SwitchOutcome (+1 more)
+### Community 39 - ".Ask"
+Cohesion: 0.22
+Nodes (11): HttpStatusCode, CancellationToken, Fact, HttpClient, HttpRequestMessage, HttpResponseMessage, InlineData, Task (+3 more)
 
-### Community 45 - "Nextcalibur.Core.Configuration"
-Cohesion: 0.15
-Nodes (8): Nextcalibur.Core.Configuration, microsoft_win32_safehandles, system_componentmodel, system_diagnostics, system_io, system_reflection, system_runtime_compilerservices, system_runtime_interopservices
-
-### Community 46 - "DotNetRuntimeDependency"
+### Community 40 - "DotNetRuntimeDependency"
 Cohesion: 0.16
 Nodes (15): CancellationToken, HttpClient, JsonElement, Task, Uri, Version, DotNetRuntimeDependency, ExpectedSigner (+7 more)
 
-### Community 47 - "RestorePoint"
+### Community 41 - "RestorePoint"
 Cohesion: 0.17
 Nodes (10): CreatedAt, RestorePointInfo, Sequence, DateTime, DllImport, RestorePoint, RestorePointInfo, RestorePointOutcome (+2 more)
 
-### Community 48 - "BacklightKeyWatcher"
-Cohesion: 0.11
-Nodes (12): EventArrivedEventArgs, ManagementEventWatcher, BacklightKeyWatcher, FanTurbo, LedBrightness, Full, Half, Off (+4 more)
+### Community 42 - "system_text_json"
+Cohesion: 0.17
+Nodes (9): Nextcalibur.Core.Dependencies, Nextcalibur.Core.Tests.Attacks, system_collections_concurrent, system_net, system_net_http, system_text, system_text_json, system_text_json_serialization (+1 more)
 
-### Community 49 - "Nextcalibur.Core.csproj"
+### Community 43 - "Nextcalibur.Core.Configuration"
+Cohesion: 0.16
+Nodes (8): Nextcalibur.Core.Configuration, microsoft_win32_safehandles, system_componentmodel, system_diagnostics, system_io, system_reflection, system_runtime_compilerservices, system_runtime_interopservices
+
+### Community 44 - "Nextcalibur.Core.csproj"
 Cohesion: 0.11
 Nodes (14): net10.0-windows10.0.19041.0, Microsoft.NET.Test.Sdk (18.10.1), System.Diagnostics.EventLog (10.0.13), System.Management (10.0.13), Velopack (1.2.0), xunit (2.9.3), xunit.runner.visualstudio (4.0.1), Microsoft.NET.Sdk (+6 more)
 
-### Community 50 - "Integrity"
-Cohesion: 0.14
-Nodes (9): Lazy, ProcessModule, Dictionary, HashSet, IReadOnlyList, Integrity, NvmlPath, InlineData (+1 more)
+### Community 45 - ".IdleChosen"
+Cohesion: 0.16
+Nodes (6): ComboBox, Grid, Guid, DllImport, IntPtr, ScreenSaver
 
-### Community 51 - ".CheckProgram"
-Cohesion: 0.20
-Nodes (5): Fact, IntegrityTests, Current, Exe, Manifest
-
-### Community 52 - ".Ask"
-Cohesion: 0.25
-Nodes (10): HttpStatusCode, CancellationToken, Fact, HttpRequestMessage, HttpResponseMessage, InlineData, Task, Theory (+2 more)
-
-### Community 53 - ".For"
+### Community 46 - ".For"
 Cohesion: 0.16
 Nodes (12): MemberData, AcDc, Guid, IReadOnlyDictionary, IReadOnlyList, ModeProfile, Settings, Fact (+4 more)
 
-### Community 54 - "MemoryTrimmer"
+### Community 47 - "MemoryTrimmer"
 Cohesion: 0.15
 Nodes (13): MEMORYSTATUSEX, DateTime, Dictionary, DllImport, IntPtr, MarshalAs, MEMORYSTATUSEX, MemoryTrimmer (+5 more)
 
-### Community 55 - "DependencyStatus"
+### Community 48 - "DependencyStatus"
 Cohesion: 0.14
 Nodes (15): Message, Ok, RestartRequired, CancellationToken, HttpClient, IProgress, IReadOnlyList, Task (+7 more)
 
-### Community 56 - "ToggleButton"
+### Community 49 - "ToggleButton"
 Cohesion: 0.10
-Nodes (20): LedPower, OverheatWarningToggle, SelectAll, SettingAskGameMode, SettingAutoCooling, SettingAutoFanTurbo, SettingDisableNdu, SettingFixCrossDevice (+12 more)
+Nodes (19): OverheatWarningToggle, SelectAll, SettingAskGameMode, SettingAutoCooling, SettingAutoFanTurbo, SettingDisableNdu, SettingFixCrossDevice, SettingFixTextInputHost (+11 more)
 
-### Community 57 - ".Dictionary"
-Cohesion: 0.15
-Nodes (9): IReadOnlyDictionary, Stable, Dictionary, Fact, IEnumerable, Regex, XNamespace, WordsInCodeTests (+1 more)
+### Community 50 - "GpuModeService"
+Cohesion: 0.20
+Nodes (9): ArgumentNullException, FirmwareModeReading, GpuMode, Discrete, Hybrid, Uma, GpuModeService, SwitchOutcome (+1 more)
 
-### Community 58 - "analyse-autopsy.py"
+### Community 51 - "analyse-autopsy.py"
 Cohesion: 0.14
 Nodes (17): collections, io, json, pathlib, pil, sys, describe_file(), load() (+9 more)
 
-### Community 59 - "UpdateService"
-Cohesion: 0.13
-Nodes (12): DateTime, DispatcherTimer, HashSet, Task, TimeSpan, UpdateService, Available, AvailableVersion (+4 more)
+### Community 52 - "MachineScanRecord"
+Cohesion: 0.12
+Nodes (15): DateTime, List, MachineScanRecord, BiosVendor, BiosVersion, BoardProduct, Level, LevelChangedAtUtc (+7 more)
 
-### Community 60 - "CoreLoad"
-Cohesion: 0.14
-Nodes (7): ProcessorPerformance, DefaultDllImportSearchPaths, DllImport, IntPtr, CoreLoad, Count, ProcessorPerformance
+### Community 53 - "SystemMode"
+Cohesion: 0.23
+Nodes (5): PowerModeChangedEventArgs, SystemMode, Gaming, Office, Performance
 
-### Community 61 - "ResourceDictionary"
+### Community 54 - "ResourceDictionary"
 Cohesion: 0.14
 Nodes (17): Bg, CardBorder, Indicator, Knob, PART_Indicator, PART_Track, ResourceDictionary, RootGrid (+9 more)
 
-### Community 62 - "RuntimeDependencyTests"
+### Community 55 - "RuntimeDependencyTests"
 Cohesion: 0.24
 Nodes (5): Fact, InlineData, JsonElement, Theory, RuntimeDependencyTests
 
-### Community 63 - "SystemMode"
-Cohesion: 0.24
-Nodes (5): PowerModeChangedEventArgs, SystemMode, Gaming, Office, Performance
+### Community 56 - "SmiCommand"
+Cohesion: 0.21
+Nodes (6): ArgumentException, SmiCommand, Fact, InlineData, Theory, SmiCommandTests
 
-### Community 65 - "LedController"
+### Community 57 - "PowerOverlayService"
 Cohesion: 0.24
-Nodes (4): LedController, EffectiveBrightnessPercent, HardwareLevel, State
+Nodes (6): DllImport, Guid, PowerModeOption, PowerOverlays, All, PowerOverlayService
 
-### Community 66 - "ColourWheel"
+### Community 58 - ".GetColour"
+Cohesion: 0.24
+Nodes (7): B, G, R, Fact, InlineData, Theory, LedStateTests
+
+### Community 59 - "ColourWheel"
 Cohesion: 0.15
 Nodes (11): BitmapSource, Control, Ellipse, Canvas, DependencyProperty, Image, ColourWheel, Diameter (+3 more)
 
-### Community 67 - "DevicePowerState"
+### Community 60 - "DevicePowerState"
 Cohesion: 0.25
 Nodes (5): DevPropKey, DllImport, Guid, DevicePowerState, DevPropKey
 
-### Community 68 - "PowerOverlayService"
-Cohesion: 0.26
-Nodes (4): DllImport, Guid, PowerOverlayService, IdempotenceTests
+### Community 61 - ".PowerModeControls"
+Cohesion: 0.14
+Nodes (5): Option, Button, IEnumerable, RadioButton, TextBlock
 
-### Community 69 - "FanGauge"
+### Community 62 - "LedController"
+Cohesion: 0.23
+Nodes (5): RoutedPropertyChangedEventArgs, LedController, EffectiveBrightnessPercent, HardwareLevel, State
+
+### Community 64 - "FanGauge"
 Cohesion: 0.15
 Nodes (13): ContentControl, Brush, DependencyProperty, DrawingContext, Pen, FanGauge, ArcBrush, BladeBrush (+5 more)
 
-### Community 70 - ".GameTick"
-Cohesion: 0.15
-Nodes (11): GameSession, DateTime, Dictionary, Name, Pid, GameSession, FirstSeenUtc, Looks (+3 more)
+### Community 65 - "microsoft_win32"
+Cohesion: 0.19
+Nodes (6): Nextcalibur.Cli, microsoft_win32, system_security, system_security_accesscontrol, system_security_cryptography, system_security_principal
 
-### Community 71 - "Unelevated"
-Cohesion: 0.35
-Nodes (7): ProcessInformation, DllImport, IntPtr, ProcessInformation, StartupInfo, Unelevated, StartupInfo
-
-### Community 72 - "DonutGauge"
+### Community 66 - "DonutGauge"
 Cohesion: 0.15
 Nodes (12): Brush, DependencyProperty, DrawingContext, Pen, Size, DonutGauge, ArcBrush, BracketBrush (+4 more)
 
-### Community 73 - "ThemeService"
-Cohesion: 0.14
-Nodes (11): Theme, Theme, Dark, Light, ThemePreference, Dark, Light, System (+3 more)
+### Community 67 - ".Migrate"
+Cohesion: 0.18
+Nodes (3): InlineData, Theory, SettingsTests
 
-### Community 74 - "SegmentedBar"
+### Community 68 - "SegmentedBar"
 Cohesion: 0.14
 Nodes (12): FrameworkElement, Brush, DependencyProperty, DrawingContext, Size, SegmentedBar, LitBrush, Maximum (+4 more)
 
-### Community 75 - "LogInjectionTests"
+### Community 69 - "GameSession"
+Cohesion: 0.14
+Nodes (12): GameSession, DateTime, Dictionary, Name, Pid, GameSession, FirstSeenUtc, Looks (+4 more)
+
+### Community 70 - "CoreLoad"
+Cohesion: 0.15
+Nodes (7): ProcessorPerformance, DefaultDllImportSearchPaths, DllImport, IntPtr, CoreLoad, Count, ProcessorPerformance
+
+### Community 71 - "Nextcalibur Control Center"
+Cohesion: 0.14
+Nodes (14): Building, Documents, Download, Hardware, Is it for your laptop?, Legal, Nextcalibur Control Center, Privacy (+6 more)
+
+### Community 72 - "ThemeService"
+Cohesion: 0.15
+Nodes (11): Theme, Theme, Dark, Light, ThemePreference, Dark, Light, System (+3 more)
+
+### Community 73 - "LogInjectionTests"
 Cohesion: 0.25
 Nodes (6): Action, Fact, InlineData, Regex, Theory, LogInjectionTests
 
-### Community 76 - "Integrity.cs"
-Cohesion: 0.22
-Nodes (5): Nextcalibur.Cli, system_management, system_security_accesscontrol, system_security_cryptography, system_security_principal
-
-### Community 77 - "SystemTools"
-Cohesion: 0.17
-Nodes (9): FileStream, SystemTools, Cmd, Explorer, Pnputil, Powercfg, PowerShell, Schtasks (+1 more)
-
-### Community 78 - "Grid"
+### Community 74 - "Grid"
 Cohesion: 0.15
 Nodes (12): DriveRowGrid, ModalDialogOverlay, PageDisplay, PageLighting, PagePower, PageSettings, PageSystem, ProgramRuleAddRow (+4 more)
 
-### Community 79 - "LedEffect"
-Cohesion: 0.15
-Nodes (13): Dictionary, LedProfile, BrightnessPercent, Colours, Effect, LedEffect, Blink, Breathing (+5 more)
+### Community 76 - "LedBrightness"
+Cohesion: 0.18
+Nodes (8): LedBrightness, Full, Half, Off, Fact, InlineData, Theory, BacklightKeyTests
 
-### Community 80 - "PawnIoDependency"
-Cohesion: 0.15
-Nodes (11): CancellationToken, HttpClient, Task, Version, PawnIoDependency, ExpectedSigner, Id, Name (+3 more)
+### Community 77 - ".HasAccess"
+Cohesion: 0.28
+Nodes (5): SecurityIdentifier, RawSecurityDescriptor, SecurityIdentifier, MailboxAccessCoverageTests, Me
 
-### Community 81 - "BatteryModePolicy"
+### Community 78 - "BatteryModePolicy"
 Cohesion: 0.42
 Nodes (4): BatteryModePolicy, Remembered, Fact, BatteryModePolicyTests
 
-### Community 82 - "StringsDictionaryTests"
+### Community 79 - "StringsDictionaryTests"
 Cohesion: 0.27
 Nodes (6): Dictionary, Fact, InlineData, Theory, XNamespace, StringsDictionaryTests
 
-### Community 83 - "ValueConverters.cs"
+### Community 80 - "ValueConverters.cs"
 Cohesion: 0.29
 Nodes (7): CultureInfo, IValueConverter, Regex, RpmToDoubleConverter, TemperatureToDoubleConverter, system_windows_data, Type
 
-### Community 84 - "GPU mode ("Display Mode")"
-Cohesion: 0.17
-Nodes (12): 5. Other interfaces (no mailbox involved), Corrected: the software *can* switch, through its kernel driver, Found: the switch is one mailbox write, GPU mode ("Display Mode"), GPU sensors, Measured: the two buttons work by entirely different means, Out of scope: the refresh rate, Power management (+4 more)
-
-### Community 85 - "Nextcalibur 0.5.2"
+### Community 81 - "Nextcalibur 0.5.2"
 Cohesion: 0.17
 Nodes (11): A log of its own, A proper installer, A restart you can cancel, CPU power, Every drive, It runs as administrator now, Nextcalibur 0.5.2, Power Mode within the System mode (+3 more)
 
-### Community 86 - "Nextcalibur 0.5.4"
+### Community 82 - "system_management"
 Cohesion: 0.17
-Nodes (11): Nextcalibur 0.5.4, Privacy, Quieter in the background, Security, Security, the second pass, Smaller, Tested on, The language row (+3 more)
+Nodes (5): EventArrivedEventArgs, ManagementEventWatcher, BacklightKeyWatcher, FanTurbo, system_management
 
-### Community 87 - "Nextcalibur Control Center"
-Cohesion: 0.17
-Nodes (12): Building, Documents, Download, Hardware, Legal, Nextcalibur Control Center, Privacy, Rules of the project (+4 more)
-
-### Community 88 - "Strings"
+### Community 83 - "Strings"
 Cohesion: 0.27
 Nodes (6): ResourceDictionary, Strings, Current, UiLanguage, English, Turkish
 
-### Community 90 - ".IdleChosen"
-Cohesion: 0.26
-Nodes (3): ComboBox, Grid, Guid
+### Community 84 - ".OnProfileChecked"
+Cohesion: 0.18
+Nodes (6): LedPower, ProfGaming, ProfOffice, ProfPerformance, ProfUser, Action
 
-### Community 91 - "SmiCommandTests"
-Cohesion: 0.27
-Nodes (5): ArgumentException, Fact, InlineData, Theory, SmiCommandTests
-
-### Community 92 - "Nextcalibur.Core.Security"
-Cohesion: 0.25
-Nodes (4): Nextcalibur.Core.Security, Nextcalibur.Core.Tests.Attacks, system_security_cryptography_x509certificates, system_text_regularexpressions
-
-### Community 93 - "Hardware Protocol"
+### Community 85 - "Hardware Protocol"
 Cohesion: 0.18
 Nodes (11): 1. Transport — ACPI-WMI mailbox, 2. Command structure, 3. Thermal / fan — `a1 = 0x0200`, 6. Safety rules, 7. Not supported, Call sequence, Command families (`a0`), Hardware Protocol (+3 more)
 
-### Community 94 - "Nextcalibur 0.5.3"
+### Community 86 - "Nextcalibur 0.5.3"
 Cohesion: 0.18
 Nodes (10): A guided tour, A Settings page, Also, Cheaper, Everything opened for you opens as you, Installed under Program Files, Nextcalibur 0.5.3, Tested on (+2 more)
 
-### Community 95 - "NvidiaDriverState"
+### Community 87 - "LedZone"
+Cohesion: 0.22
+Nodes (7): Color, LedZone, AllKeyboard, Everything, Left, Middle, Right
+
+### Community 88 - "NvidiaDriverState"
 Cohesion: 0.27
 Nodes (6): DllImport, EssentialDrivers, NvidiaDriverState, Missing, NoCard, Present
 
-### Community 96 - ".Values_are_the_ones_measured_from_the_vendor"
-Cohesion: 0.24
-Nodes (5): ThermalProfile, Fact, InlineData, Theory, ThermalProfileTests
-
-### Community 97 - "IntPtr"
+### Community 89 - "IntPtr"
 Cohesion: 0.38
 Nodes (4): DllImport, IntPtr, Program, SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX
 
-### Community 98 - "HostileFilesTests"
-Cohesion: 0.42
-Nodes (3): IOException, Fact, HostileFilesTests
-
-### Community 99 - "Border"
+### Community 90 - "Border"
 Cohesion: 0.20
 Nodes (10): Banner, Bd, DriveDivider, PreviewA, PreviewB, PreviewC, SettingStartHow, ThemeSwitch (+2 more)
 
-### Community 100 - "StackPanel"
+### Community 91 - "StackPanel"
 Cohesion: 0.20
 Nodes (10): BannerActions, DialogActions, DriveTextStack, FnShortcutRows, IdleRows, PanelWindowsFaultsSubOptions, ProfileRow, ProgramRuleRows (+2 more)
 
-### Community 101 - ".Sanitised"
-Cohesion: 0.33
-Nodes (4): Fact, InlineData, Theory, HostileSettingsTests
+### Community 92 - "PendingRestartInfo"
+Cohesion: 0.24
+Nodes (7): DateTime, Dictionary, List, PendingRestartInfo, BootTimeUtc, ReasonArguments, Reasons
 
-### Community 102 - "SupportVerdict"
+### Community 93 - "SupportVerdict"
 Cohesion: 0.22
 Nodes (9): IReadOnlyList, SupportLevel, ReadOnly, Supported, Unsupported, SupportVerdict, AllowsReads, AllowsWrites (+1 more)
 
-### Community 103 - ".ToHsv"
+### Community 94 - "WordsInCodeTests"
+Cohesion: 0.31
+Nodes (5): Fact, IEnumerable, Regex, XNamespace, WordsInCodeTests
+
+### Community 96 - ".ToHsv"
 Cohesion: 0.25
 Nodes (6): DependencyObject, DependencyPropertyChangedEventArgs, Hue, Saturation, Color, Value
 
-### Community 104 - "Nextcalibur on a machine that has never had the vendor software"
+### Community 97 - "Nextcalibur on a machine that has never had the vendor software"
 Cohesion: 0.22
 Nodes (8): Machine-wide modifications, Nextcalibur on a machine that has never had the vendor software, The mailbox is firmware; reaching it is a matter of rights, The vendor's settings are never touched, Verified, What degrades, and how, What the application depends on, What the vendor's uninstaller does to a running Nextcalibur
 
-### Community 105 - "README.md"
+### Community 98 - "README.md"
 Cohesion: 0.36
 Nodes (3): How it works, Questions people ask, Using it
 
-### Community 106 - "Nextcalibur 0.5.0"
+### Community 99 - "Nextcalibur 0.5.0"
 Cohesion: 0.22
 Nodes (8): A machine that is not this one gets nothing to click, Graphics mode, all three, Install, uninstall, start, Keyboard backlight and Fn+Space, Living beside, and after, the vendor's software, Nextcalibur 0.5.0, System mode is now the whole mode, Under the hood
 
-### Community 107 - ".IsSystemFileSignedBy"
-Cohesion: 0.39
-Nodes (3): Fact, SystemFileTrustTests, Cmd
+### Community 100 - "ThermalSample"
+Cohesion: 0.33
+Nodes (3): DateTimeOffset, ThermalReader, ThermalSample
 
-### Community 109 - "Probe"
+### Community 101 - "PawnIoDependency"
+Cohesion: 0.22
+Nodes (8): Version, PawnIoDependency, ExpectedSigner, Id, Name, Purpose, SilentInstallArguments, UninstallKey
+
+### Community 102 - "Probe"
 Cohesion: 0.22
 Nodes (8): Version, Probe, ExpectedSigner, Id, Name, Purpose, SilentInstallArguments, UninstallKey
 
-### Community 110 - ".GetAsync"
-Cohesion: 0.29
-Nodes (7): Answer, ConcurrentDictionary, CancellationToken, HttpClient, Task, Answer, Conditional
-
-### Community 111 - "Nextcalibur 0.5.1"
+### Community 104 - "Nextcalibur 0.5.1"
 Cohesion: 0.25
 Nodes (7): Display Mode, Nextcalibur 0.5.1, Overheat warning, per chip, Small things, The readings, on every page, The window's own dialogues, Updates, on your terms
 
-### Community 112 - "NotificationState"
+### Community 105 - "Nextcalibur 0.5.5"
+Cohesion: 0.25
+Nodes (6): Deep memory & resource leak eradication, Discrete GPU sleep protection in Hybrid mode, Nextcalibur 0.5.5, Startup preferences & installer accuracy, Tested on, Zero-bottleneck gaming & heavy workload architecture
+
+### Community 106 - "LedEffect"
+Cohesion: 0.25
+Nodes (8): LedEffect, Blink, Breathing, ColourCycle, Heartbeat, Off, Static, Wave
+
+### Community 107 - "NotificationState"
 Cohesion: 0.25
 Nodes (8): NotificationState, AcceptsNotifications, Busy, NotPresent, PresentationMode, QuietTime, RunningDirect3dFullScreen, RunningWindowsStoreApp
 
-### Community 113 - "IntegrityKind"
-Cohesion: 0.25
-Nodes (8): IntegrityKind, FolderWritable, ModuleUnsigned, NvmlUntrusted, PawnIoUntrusted, ProgramChanged, ProgramUnverified, RuntimeUntrusted
-
-### Community 114 - "Test-Ui.ps1"
+### Community 108 - "Test-Ui.ps1"
 Cohesion: 0.39
 Nodes (5): Enabled(), Find(), Invoke(), Say(), Text()
 
-### Community 115 - "Text"
-Cohesion: 0.38
-Nodes (7): RpmToDoubleConverter, Text, CpuFanGauge, CpuName, GpuFanGauge, GpuName, FanGauge
-
-### Community 116 - "4. LED — `a1 = 0x0100`"
+### Community 109 - "4. LED — `a1 = 0x0100`"
 Cohesion: 0.29
 Nodes (7): 4. LED — `a1 = 0x0100`, A sweep of the registers nobody uses (read only, 11 September 2026), Brightness (`B`), Devices (`a2`), Effects (`E`), Read (`a0 = 0xFA00`), Write (`a0 = 0xFB00`)
 
-### Community 117 - "Nextcalibur 0.5.9"
+### Community 110 - "Nextcalibur 0.5.9"
 Cohesion: 0.29
 Nodes (6): Corrections to the 0.5.5 notes, Fixed, .NET 10, Nextcalibur 0.5.9, Nothing outside the application changes it, Tested on
 
-### Community 118 - "Nextcalibur 0.6.0"
+### Community 111 - "Nextcalibur 0.6.0"
 Cohesion: 0.29
 Nodes (6): Heat, Keyboard, Nextcalibur 0.6.0, Safety and records, Smaller, Tested on
 
-### Community 119 - "Releasing, and signing"
+### Community 112 - "Releasing, and signing"
 Cohesion: 0.29
 Nodes (7): How a release happens, Releasing, and signing, Repository settings that matter, Signing: what it is and what it buys, The history rewrite of 13 September 2026, The routes, Wiring it into the workflow
 
-### Community 120 - ".Pick"
+### Community 113 - ".Pick"
 Cohesion: 0.29
 Nodes (3): MouseEventArgs, MouseButtonEventArgs, Point
 
-### Community 121 - ".ForegroundProcess"
+### Community 114 - ".ForegroundProcess"
 Cohesion: 0.38
 Nodes (4): DllImport, IntPtr, Name, Pid
 
-### Community 123 - "TourPage"
+### Community 115 - "TourPage"
 Cohesion: 0.29
 Nodes (7): TourPage, Any, Display, Lighting, Power, Settings, System
 
-### Community 124 - ".Current"
-Cohesion: 0.48
-Nodes (3): DllImport, IntPtr, ScreenSaver
+### Community 116 - "BatteryModePolicy.cs"
+Cohesion: 0.33
+Nodes (4): DllImport, PowerSource, SystemPowerStatus, SystemPowerStatus
 
-### Community 125 - "Log-Graphics.ps1"
+### Community 117 - ".Record"
+Cohesion: 0.33
+Nodes (4): IReadOnlyDictionary, JsonSerializerOptions, AuditLog, AppVersion
+
+### Community 118 - ".Values_are_the_ones_measured_from_the_vendor"
+Cohesion: 0.33
+Nodes (4): Fact, InlineData, Theory, ThermalProfileTests
+
+### Community 119 - "Log-Graphics.ps1"
 Cohesion: 0.48
 Nodes (5): Get-BootStamp(), Get-Nvidia(), Get-RegGpuMode(), Sample(), Write-Header()
 
-### Community 126 - "Privacy"
+### Community 120 - "Text"
+Cohesion: 0.47
+Nodes (6): RpmToDoubleConverter, Text, CpuFanGauge, CpuName, GpuFanGauge, FanGauge
+
+### Community 121 - "Privacy"
 Cohesion: 0.33
 Nodes (6): Changes, Children of the application, Privacy, What it reads, What leaves the machine, What stays on the machine
 
-### Community 127 - "Nextcalibur 0.6.2"
+### Community 122 - "Nextcalibur 0.6.2"
 Cohesion: 0.33
 Nodes (5): Fixed, New, Nextcalibur 0.6.2, Tested on, Updated
 
-### Community 128 - "Security"
+### Community 123 - "Security"
 Cohesion: 0.33
 Nodes (6): Attacks that were tried, How releases are made, Reporting, Security, Supported versions, What counts
 
-### Community 129 - "LedZone"
-Cohesion: 0.33
-Nodes (6): LedZone, AllKeyboard, Everything, Left, Middle, Right
-
-### Community 130 - "MachineWideGate"
+### Community 124 - "MachineWideGate"
 Cohesion: 0.33
 Nodes (4): Mutex, TimeSpan, MachineWideGate, system_threading
 
-### Community 131 - "PowerSource"
-Cohesion: 0.40
-Nodes (4): DllImport, PowerSource, SystemPowerStatus, SystemPowerStatus
-
-### Community 132 - "Notice"
+### Community 125 - "Notice"
 Cohesion: 0.40
 Nodes (4): Interoperability, Notice, Third-party components, What this repository does not contain
 
-### Community 133 - "Nextcalibur 0.5.11"
+### Community 126 - "Nextcalibur 0.5.11"
 Cohesion: 0.40
 Nodes (4): Added, Fixed, Nextcalibur 0.5.11, Tested on
 
-### Community 134 - "AppIdentity.cs"
+### Community 127 - "AppIdentity.cs"
 Cohesion: 0.40
 Nodes (4): system_io_directory, system_io_ioexception, system_io_path, system_runtime_interopservices_comtypes
 
-### Community 136 - "SmiSubsystem"
+### Community 128 - "SmiSubsystem"
 Cohesion: 0.40
 Nodes (5): SmiSubsystem, DisplayMode, Led, Profile, Thermal
 
-### Community 137 - "Grant-MailboxAccess.ps1"
+### Community 129 - "Grant-MailboxAccess.ps1"
 Cohesion: 0.60
 Nodes (3): Get-CurrentDescriptor(), Show-State(), Test-CanReadSecurityKey()
 
-### Community 139 - "Trace-ModeSwitch.ps1"
+### Community 131 - "Trace-ModeSwitch.ps1"
 Cohesion: 0.70
 Nodes (4): Get-Drivers(), Get-RegistryValues(), Get-State(), Get-VendorFiles()
 
-### Community 140 - "Keycaps"
+### Community 132 - "Keycaps"
 Cohesion: 0.50
 Nodes (4): Background, Keycaps, TourShade, Path
 
-### Community 141 - "DriveGauge"
+### Community 133 - "DriveGauge"
 Cohesion: 0.50
 Nodes (4): Percent, DriveGauge, RamGauge, DonutGauge
 
-### Community 143 - "Nextcalibur 0.5.10"
+### Community 135 - "Nextcalibur 0.5.10"
 Cohesion: 0.50
 Nodes (3): Fixed, Nextcalibur 0.5.10, Tested on
 
-### Community 144 - "Nextcalibur 0.5.12"
+### Community 136 - "Nextcalibur 0.5.12"
 Cohesion: 0.50
 Nodes (3): Changed, Nextcalibur 0.5.12, Tested on
 
-### Community 145 - "Nextcalibur 0.5.6"
+### Community 137 - "Nextcalibur 0.5.6"
 Cohesion: 0.50
 Nodes (3): Nextcalibur 0.5.6, Tested on, Windows Installed Apps & Control Panel registration
 
-### Community 146 - "Nextcalibur 0.6.1"
+### Community 138 - "Nextcalibur 0.6.1"
 Cohesion: 0.50
 Nodes (3): Fixed, Nextcalibur 0.6.1, Tested on
 
-### Community 148 - "BrightnessSlider"
+### Community 140 - "BrightnessSlider"
 Cohesion: 0.50
 Nodes (4): BrightnessSlider, CpuWarnSlider, GpuWarnSlider, Slider
 
-### Community 149 - "ComboBox"
+### Community 141 - "ComboBox"
 Cohesion: 0.50
 Nodes (4): IdleScreenSaver, ProgramRuleMode, ProgramRuleName, ComboBox
 
-### Community 150 - ".Modules_are_the_released_ones"
+### Community 142 - ".TryParseRgb"
+Cohesion: 0.50
+Nodes (3): B, G, R
+
+### Community 143 - ".Modules_are_the_released_ones"
 Cohesion: 0.50
 Nodes (3): InlineData, Theory, PawnIoModuleTests
 
-### Community 151 - "Tools"
+### Community 144 - "Tools"
 Cohesion: 0.50
 Nodes (3): Captures (`trace/`), Still worth running, Tools
 
-### Community 154 - "CpuWarnValue"
+### Community 147 - "CpuWarnValue"
 Cohesion: 0.67
 Nodes (3): CpuWarnValue, GpuWarnValue, TextBox
 
-### Community 155 - "DialogCheck"
+### Community 148 - "DialogCheck"
 Cohesion: 0.67
 Nodes (3): DialogCheck, FnSelectAll, CheckBox
 
-### Community 156 - "Words"
+### Community 150 - "Words"
 Cohesion: 0.67
 Nodes (3): Func, Words, Resolver
 
 ## Knowledge Gaps
-- **481 isolated node(s):** `SelectedColour`, `VisualChildrenCount`, `Diameter`, `Maximum`, `ArcBrush` (+476 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 931 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **483 isolated node(s):** `SelectedColour`, `VisualChildrenCount`, `Diameter`, `Maximum`, `ArcBrush` (+478 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 934 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **33 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MainWindow` connect `MainWindow` to `AppSettings`, `FnShortcut`, `PlanTuning`, `LedZone`, `.Get`, `GpuClockReader`, `RunawayWatchTests`, `IShellLinkW`, `WindowsFaults`, `ProgramRule`, `RadioButton`, `Window`, `EcMailbox`, `Nextcalibur.App`, `.RequestRestart`, `.Info`, `TrayPresence`, `UserPresence`, `SystemInfo`, `SystemModeService`, `.PowerModeControls`, `Program`, `CoolingPolicyTests`, `.StartSlowTimer`, `CpuPowerReader`, `.OnClosing`, `GpuModeService`, `Nextcalibur.Core.Configuration`, `BacklightKeyWatcher`, `DependencyStatus`, `UpdateService`, `SystemMode`, `.ApplyFnShortcuts`, `LedController`, `PowerOverlayService`, `.GameTick`, `ThemeService`, `Grid`, `LedEffect`, `BatteryModePolicy`, `Strings`, `.RefreshProgramRuleRows`, `.IdleChosen`, `Nextcalibur.Core.Security`, `NvidiaDriverState`, `SupportVerdict`, `.ForegroundProcess`, `.ChangeSetting`, `TourPage`?**
-  _High betweenness centrality (0.522) - this node is a cross-community bridge._
-- **Why does `Window` connect `Window` to `MainWindow`, `RadioButton`, `Keycaps`, `DriveGauge`, `BrightnessSlider`, `ComboBox`, `CpuWarnValue`, `DialogCheck`, `ColGauge`, `DialogProgress`, `DriveDot`, `DriveList`, `EffectPanel`, `PART_ContentHost`, `TourCanvas`, `Wheel`, `Button`, `ToggleButton`, `Grid`, `Border`, `StackPanel`, `Text`?**
-  _High betweenness centrality (0.095) - this node is a cross-community bridge._
-- **Why does `DependencyStatus` connect `DependencyStatus` to `MainWindow`, `microsoft_win32`, `Dependency`, `.Get`?**
-  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `MainWindow` connect `MainWindow` to `FnShortcut`, `PlanTuning`, `.CheckProgram`, `TrayPresence`, `.OnLoaded`, `.Info`, `RunawayWatchTests`, `GpuClockReader`, `.Get`, `WindowsFaults`, `ProgramRule`, `AppSettings`, `Window`, `CpuPowerReader`, `RadioButton`, `SystemInfo`, `UserPresence`, `Button`, `Nextcalibur.App`, `Fact`, `ProcessPresence`, `.RequestRestart`, `SystemModeService`, `EcMailbox`, `CoolingPolicyTests`, `Nextcalibur.Core.Configuration`, `.IdleChosen`, `DependencyStatus`, `ToggleButton`, `GpuModeService`, `SystemMode`, `PowerOverlayService`, `.PowerModeControls`, `LedController`, `GameSession`, `ThemeService`, `Grid`, `.RefreshProgramRuleRows`, `LedBrightness`, `BatteryModePolicy`, `system_management`, `Strings`, `.OnProfileChecked`, `LedZone`, `NvidiaDriverState`, `SupportVerdict`, `Nextcalibur.Core.Security`, `ThermalSample`, `.OnClosing`, `Nextcalibur 0.5.5`, `LedEffect`, `.ForegroundProcess`, `TourPage`?**
+  _High betweenness centrality (0.482) - this node is a cross-community bridge._
+- **Why does `Window` connect `Window` to `MainWindow`, `Keycaps`, `DriveGauge`, `.OnLoaded`, `.Get`, `BrightnessSlider`, `ComboBox`, `CpuWarnValue`, `DialogCheck`, `RadioButton`, `ColGauge`, `DialogProgress`, `DriveDot`, `Button`, `DriveList`, `EffectPanel`, `PART_ContentHost`, `TourCanvas`, `Wheel`, `ToggleButton`, `Grid`, `.OnProfileChecked`, `Border`, `StackPanel`, `Text`?**
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
+- **Why does `AppSettings` connect `AppSettings` to `MainWindow`, `.Migrate`, `LedState`, `TrayPresence`, `ProtectedStore`, `ThemeService`, `.Info`, `system_text_json`, `WindowsFaultsTests`, `Strings`, `SystemMode`, `Fact`, `PendingRestartInfo`?**
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `AppSettings` (e.g. with `.A_polling_interval_from_the_file_is_a_sane_one()` and `.A_warning_threshold_from_the_file_is_a_sane_one()`) actually correct?**
   _`AppSettings` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `SelectedColour`, `VisualChildrenCount`, `Diameter` to the rest of the system?**
-  _481 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _483 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MainWindow` be split into smaller, more focused modules?**
-  _Cohesion score 0.02792079207920792 - nodes in this community are weakly interconnected._
-- **Should `AppSettings` be split into smaller, more focused modules?**
-  _Cohesion score 0.039272963323596234 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.026371826371826373 - nodes in this community are weakly interconnected._
+- **Should `FnShortcut` be split into smaller, more focused modules?**
+  _Cohesion score 0.05257312106627175 - nodes in this community are weakly interconnected._
