@@ -87,7 +87,8 @@ public partial class MainWindow
     /// <summary>From the slow timer: a change made in Windows - the Control Panel, Settings, powercfg - shows here.</summary>
     private void IdleTimeoutsTick()
     {
-        if (_idleRows is null) return;
+        // During a game the table waits: nobody is looking at it.
+        if (_idleRows is null || NoticeGate.ShouldWait) return;
         var before = _idlePlans;
         ResolveIdlePlans();
 

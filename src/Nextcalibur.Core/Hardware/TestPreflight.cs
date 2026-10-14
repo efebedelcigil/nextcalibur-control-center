@@ -113,21 +113,38 @@ public static class TestPreflight
         var active = cpu >= BusyCpuPercent || mbps >= BusyMegabytesPerSecond;
         if (CriticalNames.Any(n => string.Equals(n, name, StringComparison.OrdinalIgnoreCase)))
             return name is "TiWorker" or "TrustedInstaller" or "MoUsoCoreWorker" or "usocoreworker" or "WaaSMedicAgent" or "SIHClient" or "MpCmdRun" or "srtasks"
-                ? active ? name : null
-                : name;
-        if (string.Equals(name, "msiexec", StringComparison.OrdinalIgnoreCase) && active) return "msiexec";
-        if (string.Equals(name, "MsMpEng", StringComparison.OrdinalIgnoreCase) && cpu >= 10) return "Microsoft Defender scan";
-        if (string.Equals(name, "SearchIndexer", StringComparison.OrdinalIgnoreCase) && cpu >= 10) return "Windows Search indexing";
-        if (string.Equals(name, "vssvc", StringComparison.OrdinalIgnoreCase) && active) return "Volume Shadow Copy (restore point)";
+                ? active ? Describe(name) : null
+                : Describe(name);
+        if (string.Equals(name, "msiexec", StringComparison.OrdinalIgnoreCase) && active)
+            return Words.Get("S.Core.Critical.Install", "a program being installed ({0})", name);
+        if (string.Equals(name, "MsMpEng", StringComparison.OrdinalIgnoreCase) && cpu >= 10)
+            return Words.Get("S.Core.Critical.Defender", "a Microsoft Defender scan ({0})", name);
+        if (string.Equals(name, "SearchIndexer", StringComparison.OrdinalIgnoreCase) && cpu >= 10)
+            return Words.Get("S.Core.Critical.Indexing", "Windows Search indexing ({0})", name);
+        if (string.Equals(name, "vssvc", StringComparison.OrdinalIgnoreCase) && active)
+            return Words.Get("S.Core.Critical.RestorePoint", "a restore point being made ({0})", name);
 
         // A driver, firmware or BIOS installer - by a maker of the machine's parts - at work.
         if (active && path is not null && LooksLikeInstaller(name)
             && Company(path) is { } company
             && new[] { "Microsoft", "NVIDIA", "Intel", "Realtek", "Advanced Micro Devices", "American Megatrends", "Casper", "Tongfang" }
                 .Any(c => company.Contains(c, StringComparison.OrdinalIgnoreCase)))
-            return $"{name} ({company})";
+            return Words.Get("S.Core.Critical.Driver", "a driver or firmware install ({0})", $"{name}, {company}");
         return null;
     }
+
+    /// <summary>The words for one of <see cref="CriticalNames"/>, its process name kept in brackets for the log.</summary>
+    private static string Describe(string name) => name.ToLowerInvariant() switch
+    {
+        "tiworker" or "trustedinstaller" or "mousocoreworker" or "usocoreworker" or "wuauclt" or "waasmedicagent" or "sihclient"
+            => Words.Get("S.Core.Critical.Update", "Windows Update ({0})", name),
+        "drvinst" or "pnputil" => Words.Get("S.Core.Critical.Driver", "a driver or firmware install ({0})", name),
+        "defrag" or "dfrgui" => Words.Get("S.Core.Critical.Optimise", "disk optimisation ({0})", name),
+        "chkdsk" or "autochk" => Words.Get("S.Core.Critical.DiskCheck", "a disk check ({0})", name),
+        "mrt" or "mpcmdrun" => Words.Get("S.Core.Critical.Defender", "a Microsoft Defender scan ({0})", name),
+        "srtasks" => Words.Get("S.Core.Critical.RestorePoint", "a restore point being made ({0})", name),
+        _ => Words.Get("S.Core.Critical.Bios", "a BIOS or firmware update ({0})", name),
+    };
 
     private static bool LooksLikeInstaller(string name) =>
         name.Contains("setup", StringComparison.OrdinalIgnoreCase) || name.Contains("install", StringComparison.OrdinalIgnoreCase)

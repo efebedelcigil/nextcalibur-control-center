@@ -94,10 +94,10 @@ public static class HardwareSupport
             var mode = GpuModeService.ReadFirmwareMode(mailbox);
             if (mode.Mode is null)
             {
-                reasons.Add(Words.Get("S.Core.Support.DisplayRegisterOdd", "The display-mode register did not read as 1 or 2."));
+                reasons.Add(Words.Get("S.Core.Support.DisplayRegisterOdd", "The display-mode value did not read as 1 or 2."));
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
-            reasons.Add(Words.Get("S.Core.Support.DisplayRegister", "Display-mode register reads {0}.", mode.Mode));
+            reasons.Add(Words.Get("S.Core.Support.DisplayRegister", "Display-mode value reads {0}.", mode.Mode));
             running = mode.Mode;
 
             // The other register a mode writes. Same argument: a machine whose
@@ -105,10 +105,10 @@ public static class HardwareSupport
             var profile = ThermalProfile.Read(mailbox);
             if (profile is null)
             {
-                reasons.Add(Words.Get("S.Core.Support.ProfileRegisterOdd", "The thermal-profile register did not read as 0, 1 or 2."));
+                reasons.Add(Words.Get("S.Core.Support.ProfileRegisterOdd", "The fan-profile value did not read as 0, 1 or 2."));
                 return new SupportVerdict(SupportLevel.ReadOnly, reasons);
             }
-            reasons.Add(Words.Get("S.Core.Support.ProfileRegister", "Thermal-profile register reads {0}.", profile));
+            reasons.Add(Words.Get("S.Core.Support.ProfileRegister", "Fan-profile value reads {0}.", profile));
         }
         catch (EcMailboxUnavailableException ex)
         {

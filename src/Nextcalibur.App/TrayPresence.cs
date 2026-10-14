@@ -249,8 +249,17 @@ public sealed class TrayPresence : IDisposable
         _icon.Text = text;
     }
 
-    public void ShowMessage(string title, string body) =>
+    public void ShowMessage(string title, string body)
+    {
+        if (NoticeGate.Defer(title, body, () => ShowBalloon(title, body))) return;
+        ShowBalloon(title, body);
+    }
+
+    private void ShowBalloon(string title, string body)
+    {
+        if (_disposed) return;
         _icon.ShowBalloonTip(5000, title, body, Forms.ToolTipIcon.Warning);
+    }
 
     /// <summary>
     /// The tour's last step: a balloon so the person finds the icon, and the

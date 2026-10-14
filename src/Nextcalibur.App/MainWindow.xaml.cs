@@ -265,6 +265,7 @@ public partial class MainWindow : Window
         LoadTheme();
 
         _tray = new TrayPresence(this, _settings);
+        Toasts.Balloon = (title, body) => _tray?.ShowMessage(title, body);
         _tray.ExitRequested += (_, _) => Exit();
 
         // Said once, through the tray, because that is where this application
@@ -1167,6 +1168,16 @@ public partial class MainWindow : Window
         OpenLogButton.Content = Strings.Get("S.Corner.OpenLog");
         _tray?.RebuildMenu();
         LoadSettingsPage();
+        // The rows the code built - mode names, units, choices - built again:
+        // only the markup follows the dictionary by itself.
+        RefreshCeilingRows();
+        RefreshIdleRows();
+        RefreshIdleLoadRows();
+        RefreshProgramRuleRows();
+        RefreshShortcutRows();
+        _rulesMode?.Items.Refresh();
+        _ = LoadNvPowerAsync();
+        if (NavPower.IsChecked == true) _ = LoadDefinitionsAsync();
         if (_tourActive) PlaceTourStep();   // the card's words, in the new language
         Log.Info("language", $"Switched to {Strings.Current}");
     }
@@ -3026,12 +3037,14 @@ public partial class MainWindow : Window
                 // The overheat warning is the one thing worth a firmware read while
                 // hidden — it is the reason the application stays resident at all.
                 GameTick();
+                NoticeGate.Flush();
                 RunawayTick();
                 RetryTakenShortcuts();
                 ProgramRulesTick();
                 IdleTimeoutsTick();
                 PlanWatchTick();
                 ApplyEfficiencyModes();
+                AutoEfficiencyTick();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

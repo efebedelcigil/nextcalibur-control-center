@@ -97,13 +97,13 @@
     <sys:String x:Key="S.Settings.SavingOff">off</sys:String>
     <sys:String x:Key="S.Settings.GroupCeilings">Processor ceilings</sys:String>
     <sys:String x:Key="S.Settings.CeilingsTitle">Each mode's ceiling</sys:String>
-    <sys:String x:Key="S.Settings.CeilingsDesc">Chosen below the measured upper bounds, never above. Power Saver as a percentage: any value under 100 turns the boost off, and 90% stayed at 60 °C at full load on this machine. Balanced, Gaming and Performance as a clock: the boost stays on and the processor stops at the speed chosen. Lowering them as dust builds up keeps the heat down until a cleaning.</sys:String>
+    <sys:String x:Key="S.Settings.CeilingsDesc">How fast each mode may run the processor, never above the upper bound Nextcalibur measured. Power Saver as a percentage: any value under 100% turns the boost off, which keeps the machine much cooler. Balanced, Gaming and Performance as a clock speed: the boost stays on up to it. Lowering a ceiling as dust builds up keeps the heat down until the next cleaning.</sys:String>
     <sys:String x:Key="S.Ceiling.Percent">{0}%</sys:String>
     <sys:String x:Key="S.Ceiling.PercentTop">{0}% (highest)</sys:String>
     <sys:String x:Key="S.Ceiling.NoLimit">No limit</sys:String>
     <sys:String x:Key="S.Ceiling.Ghz">{0} GHz</sys:String>
     <sys:String x:Key="S.Tour.Step.CeilingRows.Title">Processor ceilings</sys:String>
-    <sys:String x:Key="S.Tour.Step.CeilingRows.Body">Each mode's top speed. Power Saver as a percentage (at most the measured 90%), the others as a clock - the boost stays on. What you choose is written into the mode's power plan at once; it cannot go above the upper bound Nextcalibur measured.</sys:String>
+    <sys:String x:Key="S.Tour.Step.CeilingRows.Body">Each mode's top speed. Power Saver as a percentage, the others as a clock speed with the boost kept on. What you choose is written into the mode's power plan at once and can never go above the upper bound Nextcalibur measured. "Test" finds the highest ceiling that keeps the mode at its temperature.</sys:String>
     <sys:String x:Key="S.Plans.ForeignTitle">Another power plan was chosen</sys:String>
     <sys:String x:Key="S.Plans.ForeignBody">{0} is active now, which is none of Nextcalibur's modes. What Nextcalibur does by itself on the modes' plans (the mode on battery, program rules, Emergency Power Saver) has stopped until you choose a mode.</sys:String>
     <sys:String x:Key="S.Plans.ChangedTitle">Your power plans were changed outside Nextcalibur</sys:String>
@@ -179,12 +179,12 @@
     <sys:String x:Key="S.Def.battery.health">Battery health</sys:String>
     <sys:String x:Key="S.Settings.GroupIdleLoad">Programs busy at idle</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadTitle">Efficiency mode</sys:String>
-    <sys:String x:Key="S.Settings.IdleLoadDesc">Scan finds the background programs that keep working while nobody uses the machine. A program you tick is put into Windows' Efficiency mode (the same as Task Manager's): it heats the processor less, and nothing is closed. It is set again whenever the program starts; untick it and it is back to normal. Windows itself and drivers are not listed.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadDesc">Scan finds the background programs that keep working while nobody uses the computer. A program you tick is put into Windows' Efficiency mode (the same as Task Manager's): it heats the processor less, and nothing is closed. It is set again whenever the program starts; untick it and it is back to normal. Windows itself, drivers and security software are never listed.</sys:String>
     <sys:String x:Key="S.Settings.IdleLoadScan">Scan</sys:String>
     <sys:String x:Key="S.IdleLoad.NothingYet">Not scanned yet.</sys:String>
-    <sys:String x:Key="S.IdleLoad.Row">{0} - {1}% of a core now</sys:String>
+    <sys:String x:Key="S.IdleLoad.Row">{0} - now {1}% of the processor</sys:String>
     <sys:String x:Key="S.Tour.Step.IdleLoadScan.Title">Programs busy at idle</sys:String>
-    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Body">Finds the background programs that keep the processor working while nobody uses the machine, and puts the ones you pick into Windows' Efficiency mode. Nothing is closed.</sys:String>
+    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Body">Finds the background programs that keep the processor working while nobody uses the computer, and puts the ones you pick into Windows' Efficiency mode - or, switched on, finds them by itself while you are away. Nothing is ever closed.</sys:String>
     <sys:String x:Key="S.System.Office">Power Saver</sys:String>
     <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
     <sys:String x:Key="S.System.Performance">Performance</sys:String>
@@ -197,10 +197,10 @@
 
     <!-- Power Mode page -->
     <sys:String x:Key="S.Power.Title">Power Mode</sys:String>
-    <sys:String x:Key="S.Power.Efficiency">Power Saver</sys:String>
+    <sys:String x:Key="S.Power.Efficiency">Best power efficiency</sys:String>
     <sys:String x:Key="S.Power.Balanced">Balanced</sys:String>
-    <sys:String x:Key="S.Power.Better">Performance</sys:String>
-    <sys:String x:Key="S.Power.Best">Ultimate</sys:String>
+    <sys:String x:Key="S.Power.Better">Better performance</sys:String>
+    <sys:String x:Key="S.Power.Best">Best performance</sys:String>
     <sys:String x:Key="S.Power.CurrentMode">CURRENT MODE</sys:String>
     <sys:String x:Key="S.Power.Checking">Checking...</sys:String>
     <sys:String x:Key="S.Power.Repair">Repair</sys:String>
@@ -209,12 +209,12 @@
     <sys:String x:Key="S.Display.Title">Display Mode</sys:String>
     <sys:String x:Key="S.Display.Discrete">Discrete GPU</sys:String>
     <sys:String x:Key="S.Display.DiscreteDesc">Dedicated graphics only</sys:String>
-    <sys:String x:Key="S.Display.DiscreteFromUmaNote">Not directly reachable from UMA</sys:String>
-    <sys:String x:Key="S.Display.Hybrid">MS Hybrid</sys:String>
+    <sys:String x:Key="S.Display.DiscreteFromUmaNote">Not directly reachable from Integrated</sys:String>
+    <sys:String x:Key="S.Display.Hybrid">Hybrid</sys:String>
     <sys:String x:Key="S.Display.HybridDesc">Dynamic graphics switching</sys:String>
-    <sys:String x:Key="S.Display.Uma">UMA Mode</sys:String>
+    <sys:String x:Key="S.Display.Uma">Integrated (UMA)</sys:String>
     <sys:String x:Key="S.Display.UmaDesc">Integrated graphics only</sys:String>
-    <sys:String x:Key="S.Display.UmaFromDiscreteNote">Not directly reachable from Discrete</sys:String>
+    <sys:String x:Key="S.Display.UmaFromDiscreteNote">Not directly reachable from Discrete GPU</sys:String>
 
     <!-- Lighting page -->
     <sys:String x:Key="S.Lighting.ZoneA">Zone A</sys:String>
@@ -223,7 +223,7 @@
     <sys:String x:Key="S.Lighting.ProfOffice">Power Saver</sys:String>
     <sys:String x:Key="S.Lighting.ProfGaming">Gaming</sys:String>
     <sys:String x:Key="S.Lighting.ProfPerformance">Performance</sys:String>
-    <sys:String x:Key="S.Lighting.ProfUser">User Define</sys:String>
+    <sys:String x:Key="S.Lighting.ProfUser">Custom</sys:String>
     <sys:String x:Key="S.Lighting.LedPower">LED on/off</sys:String>
     <sys:String x:Key="S.Lighting.SelectAll">Select all</sys:String>
     <sys:String x:Key="S.Lighting.Reload">Reload settings</sys:String>
@@ -250,7 +250,7 @@
     <sys:String x:Key="S.Settings.DriversDesc">The laptop maker's own driver download page, in your browser.</sys:String>
     <sys:String x:Key="S.Settings.DriversButton">Driver downloads</sys:String>
     <sys:String x:Key="S.Settings.ReportTitle">Report a problem</sys:String>
-    <sys:String x:Key="S.Settings.ReportDesc">The project's issues page on GitHub. Attach the day's log.</sys:String>
+    <sys:String x:Key="S.Settings.ReportDesc">The project's issue page on GitHub. Attach the day's log file (Open log, bottom left).</sys:String>
     <sys:String x:Key="S.Settings.ReportButton">Open issues</sys:String>
     <sys:String x:Key="S.Settings.PrivacyTitle">Privacy</sys:String>
     <sys:String x:Key="S.Settings.PrivacyDesc">What Nextcalibur does with data: nothing collected, nothing sent about you.</sys:String>
@@ -470,14 +470,14 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.SettingAskGameMode.Body">No need to add games one by one. When a program that covers the screen stayed open in Power Saver or Balanced (Office) for a few minutes, you are asked here after it closes, and the answer becomes a rule. Nothing comes as a notification during a game: heat and suggestions from that time are shown as a summary in this window once it has closed.</sys:String>
     <sys:String x:Key="S.Settings.GroupRules">Program rules</sys:String>
     <sys:String x:Key="S.Settings.RulesTitle">A mode for a program</sys:String>
-    <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine - MATLAB, an installer - Power Saver; for a game, Gaming or Performance. A mode you pick by hand meanwhile wins. On battery, a rule asking for a faster mode than the battery's does not apply.</sys:String>
+    <sys:String x:Key="S.Settings.RulesDesc">While a program on this list runs, its mode is on; when it closes, the mode you had comes back. For one that heats the machine for long - a video export, a large install - Power Saver; for a game, Gaming or Performance. A mode you pick by hand meanwhile wins. On battery, a rule asking for a faster mode than the battery's does not apply.</sys:String>
     <sys:String x:Key="S.Rules.Title">Program rule</sys:String>
     <sys:String x:Key="S.Rules.Started">{0} is running: {1} mode until it closes.</sys:String>
     <sys:String x:Key="S.Rules.Ended">{0} closed: back to {1} mode.</sys:String>
     <sys:String x:Key="S.Rules.RowActive">{0}  (running now)</sys:String>
     <sys:String x:Key="S.Rules.Add">Add</sys:String>
     <sys:String x:Key="S.Rules.Remove">Remove this rule</sys:String>
-    <sys:String x:Key="S.Rules.NameHint">A running program from the list, or its name as Task Manager's Details tab shows it (MATLAB, AddOnInstaller, ...)</sys:String>
+    <sys:String x:Key="S.Rules.NameHint">A running program from the list, or its name as Task Manager's Details tab shows it, without ".exe"</sys:String>
     <sys:String x:Key="S.Rules.BadName">That is not a program name. Pick one from the list, or type the name as Task Manager's Details tab shows it, without ".exe".</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Title">A mode for a program</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingProgramRules.Body">Off until you switch it on. Add a program and a mode - pick it from the programs running, or type its name - and while it runs that mode is on; when it closes, the mode you had comes back. Windows says when a program starts or stops; nothing is polled. A mode you choose by hand meanwhile wins.</sys:String>
@@ -519,11 +519,11 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Runaway.Gpu">{0} has kept the graphics card busy for {1} minutes with nothing on screen needing it. If it should not be working, close it.</sys:String>
     <sys:String x:Key="S.Runaway.TaskManager">Open Task Manager</sys:String>
     <sys:String x:Key="S.Settings.AutoCoolingTitle">Emergency Power Saver</sys:String>
-    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's 90% - the boost off - until it has cooled. Slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Settings.AutoCoolingDesc">When the temperature is heading for the warning line, also hold the processor to Power Saver's ceiling - the boost off - until it has cooled. Slower while it lasts.</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboTitle">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Settings.AutoFanTurboDesc">When the temperature is heading for the warning line, a notification says to press Fn+1 - the fan turbo, which only the laptop's own keyboard can switch - before it gets there, and again once it has cooled.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Title">Emergency Power Saver</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, this also holds the processor to 90% - Power Saver's ceiling, which turns the boost off - and lets it go once things are well below the line for five minutes. The machine is slower while it lasts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingAutoCooling.Body">Off unless you want it. When the temperature is heading for the warning line, the processor is also held to Power Saver's ceiling - which turns the boost off - and let go after five minutes comfortably below the line. The machine is slower while it lasts.</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Title">Cool down before it gets hot</sys:String>
     <sys:String x:Key="S.Tour.Step.SettingAutoFanTurbo.Body">The temperature is followed, not just compared: when it is on its way to the warning line, a notification says to press Fn+1 before it gets there - the fan turbo, which the laptop switches only from its own keyboard - and, once it has been well below for five minutes, that the turbo can go off. Off: nothing is followed or said. On by default.</sys:String>
     <sys:String x:Key="S.Heat.WhileAway">While you were away the {1} reached {0} °C</sys:String>
@@ -603,10 +603,10 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Core.Support.NoAccess">The mailbox is present but this account cannot read it yet.</sys:String>
     <sys:String x:Key="S.Core.Support.MailboxPresent">Firmware mailbox present.</sys:String>
     <sys:String x:Key="S.Core.Support.NoThermal">The mailbox did not answer a thermal read.</sys:String>
-    <sys:String x:Key="S.Core.Support.DisplayRegisterOdd">The display-mode register did not read as 1 or 2.</sys:String>
-    <sys:String x:Key="S.Core.Support.DisplayRegister">Display-mode register reads {0}.</sys:String>
-    <sys:String x:Key="S.Core.Support.ProfileRegisterOdd">The thermal-profile register did not read as 0, 1 or 2.</sys:String>
-    <sys:String x:Key="S.Core.Support.ProfileRegister">Thermal-profile register reads {0}.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegisterOdd">The display-mode value did not read as 1 or 2.</sys:String>
+    <sys:String x:Key="S.Core.Support.DisplayRegister">Display-mode value reads {0}.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegisterOdd">The fan-profile value did not read as 0, 1 or 2.</sys:String>
+    <sys:String x:Key="S.Core.Support.ProfileRegister">Fan-profile value reads {0}.</sys:String>
     <sys:String x:Key="S.Core.Support.MailboxFailed">The mailbox could not be used: {0}</sys:String>
     <sys:String x:Key="S.Core.Support.CpuTempOdd">CPU temperature {0} °C is not a number a laptop reports.</sys:String>
     <sys:String x:Key="S.Core.Support.GpuTempOdd">GPU temperature {0} °C is not a number a laptop reports.</sys:String>
@@ -746,13 +746,13 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- System -->
     <sys:String x:Key="S.Tour.Step.ModeOffice.Title">Power Saver</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">The coolest and quietest: the power plan, Windows' best power efficiency mode and the firmware's quiet profile are set for light work and battery; the processor is held to 90%, which turns the boost off (about 2 GHz). Slower under heavy work, and cool: measured at 60 °C with every core busy. With this as the mode on battery in Settings, it is switched to when the charger comes out.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeOffice.Body">The coolest and quietest: the power plan, Windows' best power efficiency mode and the firmware's quiet profile are set for light work and battery; the processor is held below its boost, so heavy work takes longer but the machine stays cool and quiet. With this as the mode on battery in Settings, it is switched to when the charger comes out.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeBalanced.Title">Balanced (Office)</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Everyday use: the balanced settings Windows chose for this machine and Casper's Office fan profile. This is the default mode; when a game opens, a program rule or the question after a game switches to Gaming.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeBalanced.Body">Everyday use: the balanced settings Windows chose for this laptop, with the firmware's quiet fan profile. This is the default mode; when a game opens, a program rule or the question after a game switches to Gaming.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeGaming.Title">Gaming</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">For games: between Balanced and High performance. The firmware runs its Gaming profile (the fans speed up sooner), Windows gets its Better-performance mode, and the processor can still rest between bursts.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeGaming.Body">For games: between Balanced and High performance. The firmware's gaming fan profile (the fans speed up sooner), Windows' Better performance mode, and a processor that can still rest between bursts.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModePerformance.Title">Performance</sys:String>
-    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Everything on: the firmware's Performance profile, Windows' High performance plan and its fastest power mode. Louder and hotter; for when the fans are worth it.</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModePerformance.Body">Everything on: the firmware's performance fan profile, Windows' High performance plan and its fastest power mode. Louder and hotter; for when the speed is worth it.</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Title">What the mode means</sys:String>
     <sys:String x:Key="S.Tour.Step.SystemModeNote.Body">A line under the cards explains what the chosen mode is doing right now. If Windows has been moved to a mode none of the cards match, it says so here instead of guessing.</sys:String>
     <sys:String x:Key="S.Tour.Step.SubtitleText.Title">The status line</sys:String>
@@ -785,14 +785,14 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Tour.Step.FixButton.Body">Shown only when the check finds a problem. Pressing it puts the power settings right; nothing else is touched.</sys:String>
 
     <!-- Display Mode -->
-    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Title">Discrete</sys:String>
+    <sys:String x:Key="S.Tour.Step.ModeDiscrete.Title">Discrete GPU</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeDiscrete.Body">The NVIDIA card drives the screen alone: the most performance, the most power. Changing graphics mode needs a restart, and the switch is written to the firmware only as Windows is actually restarting - cancel the restart and nothing has changed.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeHybrid.Title">Hybrid</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeHybrid.Body">Both: the processor's graphics drive the screen and the NVIDIA card wakes for games and heavy work, sleeping in between. The usual choice.</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeUma.Title">UMA</sys:String>
     <sys:String x:Key="S.Tour.Step.ModeUma.Body">The processor's graphics only; the NVIDIA card is switched off entirely for the longest battery life. Unlike the other two this takes effect at once, no restart.</sys:String>
     <sys:String x:Key="S.Tour.Step.GpuRestartPending.Title">A change is waiting</sys:String>
-    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Body">After choosing Discrete or Hybrid this line stays until the restart. Exiting Nextcalibur before restarting drops the pending change.</sys:String>
+    <sys:String x:Key="S.Tour.Step.GpuRestartPending.Body">After choosing Discrete GPU or Hybrid this line stays until the restart. Exiting Nextcalibur before restarting drops the pending change.</sys:String>
     <sys:String x:Key="S.Tour.Step.GpuModeDetail.Title">What the card is doing</sys:String>
     <sys:String x:Key="S.Tour.Step.GpuModeDetail.Body">The card's clock and power draw when it is awake, and "asleep" when Windows has powered it down. Nextcalibur checks the sleep state from Windows' own records so that looking never wakes the card.</sys:String>
 
@@ -865,4 +865,24 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <!-- The tray -->
     <sys:String x:Key="S.Tour.Step.TrayIcon.Title">The tray icon</sys:String>
     <sys:String x:Key="S.Tour.Step.TrayIcon.Body">Nextcalibur lives in the notification area by the clock; its menu has just been opened there. Open Nextcalibur brings the window back. Start with Windows makes it start at logon, elevated, without a prompt. Mode on battery chooses the mode switched to when the charger comes out. Warn when the CPU or GPU runs hot is the overheat alert. Read the sensors every sets how often the numbers refresh. Check for updates automatically, Install updates automatically and Check for updates now are what they say - the Settings page has the same switches. Open the log folder is the same as the Open log button. Exit stops the application - which is the only way it stops. That is the whole of it. Enjoy the machine.</sys:String>
+
+    <!-- 0.7: battery report, automatic Efficiency mode, readable reasons -->
+    <sys:String x:Key="S.IdleLoad.RowAuto">{0} (added automatically)</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoTitle">Find them by itself</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadAutoDesc">Every 15 minutes, only while nobody has touched the computer for a few minutes and no game or full-screen program is open, a short low-priority scan looks for background programs that stay busy. One busy on two scans in a row is put into Efficiency mode and marked here as added automatically. Programs with a window are never touched; one you untick is never added again.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryReportTitle">Battery report</sys:String>
+    <sys:String x:Key="S.Settings.BatteryReportDesc">Windows' own report: the battery's design and present capacity, how it has worn, and recent use. Made on this computer and opened in your browser; nothing is sent anywhere.</sys:String>
+    <sys:String x:Key="S.Settings.BatteryReportButton">Show report</sys:String>
+    <sys:String x:Key="S.BatteryReport.Failed">Windows could not make the battery report.</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryReportButton.Title">Battery report</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingBatteryReportButton.Body">How worn the battery is, from Windows itself: design capacity against what it holds now, and its recent charge and use. Nothing is downloaded or changed.</sys:String>
+    <sys:String x:Key="S.Core.Critical.Update">Windows Update ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Driver">a driver or firmware install ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Bios">a BIOS or firmware update ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Optimise">disk optimisation ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.DiskCheck">a disk check ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Defender">a Microsoft Defender scan ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Indexing">Windows Search indexing ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.RestorePoint">a restore point being made ({0})</sys:String>
+    <sys:String x:Key="S.Core.Critical.Install">a program being installed ({0})</sys:String>
 </ResourceDictionary>

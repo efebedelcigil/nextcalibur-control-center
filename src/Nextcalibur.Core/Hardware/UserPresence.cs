@@ -83,6 +83,36 @@ public static class UserPresence
         }
     }
 
+    /// <summary>
+    /// How long since the last keyboard or mouse input in this session; zero
+    /// when Windows does not say. "Busy at idle" is measured only past a few
+    /// minutes of this.
+    /// </summary>
+    public static TimeSpan SinceLastInput()
+    {
+        try
+        {
+            var info = new LastInputInfo { Size = (uint)Marshal.SizeOf<LastInputInfo>() };
+            if (!GetLastInputInfo(ref info)) return TimeSpan.Zero;
+            var idleMs = unchecked((uint)Environment.TickCount - info.Time);
+            return TimeSpan.FromMilliseconds(idleMs);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return TimeSpan.Zero;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct LastInputInfo
+    {
+        public uint Size;
+        public uint Time;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool GetLastInputInfo(ref LastInputInfo info);
+
     /// <summary>What Windows says, for the log and the tests.</summary>
     public static string Describe()
     {

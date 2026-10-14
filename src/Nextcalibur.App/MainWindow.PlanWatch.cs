@@ -51,6 +51,9 @@ public partial class MainWindow
     private void PlanWatchTick()
     {
         if (!_support.AllowsWrites || DateTime.UtcNow - _plansWatchedAt < TimeSpan.FromMinutes(1)) return;
+        // Not during a game: the comparison reads every mode's plan, and what
+        // it would say waits anyway. Looked at again once the screen is free.
+        if (NoticeGate.ShouldWait) return;
         _plansWatchedAt = DateTime.UtcNow;
         try
         {

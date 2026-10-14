@@ -25,6 +25,21 @@ public static class Toasts
     /// <param name="onButton">Called on the calling thread's dispatcher when the button is pressed.</param>
     public static bool TryShow(string title, string body, string buttonText, Action onButton)
     {
+        // During a game it waits; shown later, and if the toast cannot be
+        // shown then, the tray's balloon says it instead.
+        if (NoticeGate.Defer(title, body, () =>
+            {
+                if (!Show(title, body, buttonText, onButton)) Balloon?.Invoke(title, body);
+            }))
+            return true;
+        return Show(title, body, buttonText, onButton);
+    }
+
+    /// <summary>The tray's balloon, for a toast that waited and then could not be shown.</summary>
+    internal static Action<string, string>? Balloon { get; set; }
+
+    private static bool Show(string title, string body, string buttonText, Action onButton)
+    {
         try
         {
             var xml = new XmlDocument();

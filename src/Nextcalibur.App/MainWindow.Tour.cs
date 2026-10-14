@@ -118,6 +118,7 @@ public partial class MainWindow
         new TourStep("SettingDriversButton", TourPage.Settings, "SettingDriversButton", "Settings"),
         new TourStep("SettingReportButton", TourPage.Settings, "SettingReportButton", "Settings"),
         new TourStep("SettingDebloatButton", TourPage.Settings, "SettingDebloatButton", "Settings"),
+        new TourStep("SettingBatteryReportButton", TourPage.Settings, "SettingBatteryReportButton", "Settings"),
         new TourStep("SettingPrivacyButton", TourPage.Settings, "SettingPrivacyButton", "Settings"),
         new TourStep("SettingStartWithWindows", TourPage.Settings, "SettingStartWithWindows", "Settings"),
         new TourStep("SettingStartHow", TourPage.Settings, "SettingStartHow", "Settings"),

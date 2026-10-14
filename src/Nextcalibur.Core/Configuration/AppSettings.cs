@@ -86,6 +86,19 @@ public sealed class AppSettings
     /// <summary>Programs the person put into Windows' Efficiency mode, by process name; set again whenever they run.</summary>
     public List<string> EfficiencyModePrograms { get; set; } = new();
 
+    /// <summary>
+    /// Looking for programs busy at idle by itself, now and then, and putting
+    /// them into Efficiency mode (the owner's ask of 14 October 2026). Off
+    /// until switched on.
+    /// </summary>
+    public bool EfficiencyModeAuto { get; set; }
+
+    /// <summary>Of <see cref="EfficiencyModePrograms"/>, the ones the automatic scan added (shown as such).</summary>
+    public List<string> EfficiencyModeAutoAdded { get; set; } = new();
+
+    /// <summary>Programs the person took out of Efficiency mode: the automatic scan never adds them again.</summary>
+    public List<string> EfficiencyModeExcluded { get; set; } = new();
+
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 
@@ -368,6 +381,12 @@ public sealed class AppSettings
         settings.EfficiencyModePrograms = (settings.EfficiencyModePrograms ?? new())
             .Select(Power.ProgramRules.Normalise).OfType<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase).Take(100).ToList();
+        settings.EfficiencyModeAutoAdded = (settings.EfficiencyModeAutoAdded ?? new())
+            .Where(p => settings.EfficiencyModePrograms.Contains(p, StringComparer.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        settings.EfficiencyModeExcluded = (settings.EfficiencyModeExcluded ?? new())
+            .Select(Power.ProgramRules.Normalise).OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase).Take(200).ToList();
         settings.FrequencyLimitsMhz = (settings.FrequencyLimitsMhz ?? new())
             .Where(kv => Enum.TryParse<Power.SystemMode>(kv.Key, out var m) && m != Power.SystemMode.Office)
             .ToDictionary(kv => kv.Key, kv => Power.ModeProfile.ClampFrequency(kv.Value));

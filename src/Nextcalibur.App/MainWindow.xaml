@@ -736,63 +736,64 @@
 
                         <!-- Row 0: System Mode Tabs (Power Saver, Balanced, Gaming, Performance) & what the chosen one is for -->
                         <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                            <StackPanel Orientation="Horizontal">
+                            <!-- Four tabs sharing the width evenly: fixed widths overflowed once there were four -->
+                            <UniformGrid Rows="1" Columns="4" Margin="0,0,-8,0">
                                 <RadioButton x:Name="ModeOffice" Style="{DynamicResource SystemModeTab}"
                                              Tag="Office" GroupName="Mode" Checked="OnSystemModeChanged"
                                              ToolTip="{DynamicResource S.System.OfficeDesc}">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Path Data="{DynamicResource IconModeSaver}" Width="20" Height="20" Stretch="Uniform"
+                                    <DockPanel VerticalAlignment="Center" LastChildFill="True">
+                                        <Path Data="{DynamicResource IconModeSaver}" Width="18" Height="18" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                              VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="{DynamicResource S.System.Office}" FontSize="13" FontWeight="SemiBold"
+                                              VerticalAlignment="Center" Margin="0,0,7,0" />
+                                        <TextBlock Text="{DynamicResource S.System.Office}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="15"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    </DockPanel>
                                 </RadioButton>
 
                                 <RadioButton x:Name="ModeBalanced" Style="{DynamicResource SystemModeTab}"
                                              Tag="Balanced" GroupName="Mode" Checked="OnSystemModeChanged"
                                              ToolTip="{DynamicResource S.System.BalancedDesc}">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Path Data="{DynamicResource IconModeOffice}" Width="20" Height="20" Stretch="Uniform"
+                                    <DockPanel VerticalAlignment="Center" LastChildFill="True">
+                                        <Path Data="{DynamicResource IconModeOffice}" Width="18" Height="18" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                              VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="{DynamicResource S.System.Balanced}" FontSize="13" FontWeight="SemiBold"
+                                              VerticalAlignment="Center" Margin="0,0,7,0" />
+                                        <TextBlock Text="{DynamicResource S.System.Balanced}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="15"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    </DockPanel>
                                 </RadioButton>
 
                                 <RadioButton x:Name="ModeGaming" Style="{DynamicResource SystemModeTab}"
                                              Tag="Gaming" GroupName="Mode" Checked="OnSystemModeChanged"
                                              ToolTip="{DynamicResource S.System.GamingDesc}">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Path Data="{DynamicResource IconModeGaming}" Width="20" Height="20" Stretch="Uniform"
+                                    <DockPanel VerticalAlignment="Center" LastChildFill="True">
+                                        <Path Data="{DynamicResource IconModeGaming}" Width="18" Height="18" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                              VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="{DynamicResource S.System.Gaming}" FontSize="13" FontWeight="SemiBold"
+                                              VerticalAlignment="Center" Margin="0,0,7,0" />
+                                        <TextBlock Text="{DynamicResource S.System.Gaming}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="15"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    </DockPanel>
                                 </RadioButton>
 
                                 <RadioButton x:Name="ModePerformance" Style="{DynamicResource SystemModeTab}"
                                              Tag="Performance" GroupName="Mode" Checked="OnSystemModeChanged"
                                              ToolTip="{DynamicResource S.System.PerformanceDesc}">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Path Data="{DynamicResource IconModePerformance}" Width="20" Height="20" Stretch="Uniform"
+                                    <DockPanel VerticalAlignment="Center" LastChildFill="True">
+                                        <Path Data="{DynamicResource IconModePerformance}" Width="18" Height="18" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                               StrokeThickness="1.7" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
-                                              VerticalAlignment="Center" Margin="0,0,10,0" />
-                                        <TextBlock Text="{DynamicResource S.System.Performance}" FontSize="13" FontWeight="SemiBold"
+                                              VerticalAlignment="Center" Margin="0,0,7,0" />
+                                        <TextBlock Text="{DynamicResource S.System.Performance}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="15"
                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
                                                    VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    </DockPanel>
                                 </RadioButton>
-                            </StackPanel>
+                            </UniformGrid>
 
                             <!-- What the chosen mode is for: one line, the mode's own description -->
                             <TextBlock x:Name="SystemModeDescription" Style="{DynamicResource StatusTextStyle}"
@@ -1257,9 +1258,8 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Bottom: Lighting Profile Buttons (Power Saver, Balanced, Gaming, Performance, User Define) -->
-                            <StackPanel x:Name="ProfileRow" Grid.Row="2" Orientation="Horizontal"
-                                        HorizontalAlignment="Center" Margin="0,10,0,0">
+                            <!-- Bottom: Lighting Profile Buttons (Power Saver, Balanced, Gaming, Performance, Custom): five sharing the width -->
+                            <UniformGrid x:Name="ProfileRow" Grid.Row="2" Rows="1" Columns="5" Margin="-4,10,-4,0">
                                 <RadioButton x:Name="ProfOffice" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfOffice}"
                                              Tag="Office" GroupName="Profile" Checked="OnProfileChecked" />
                                 <RadioButton x:Name="ProfBalanced" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfBalanced}"
@@ -1270,7 +1270,7 @@
                                              Tag="Performance" GroupName="Profile" Checked="OnProfileChecked" />
                                 <RadioButton x:Name="ProfUser" Style="{DynamicResource ProfileButton}" Content="{DynamicResource S.Lighting.ProfUser}"
                                              Tag="UserDefine" GroupName="Profile" Checked="OnProfileChecked" />
-                            </StackPanel>
+                            </UniformGrid>
                         </Grid>
 
                         <!-- Right: Master Switches, Effects Grid, Color Wheel, Brightness Slider -->
@@ -1492,6 +1492,22 @@
 
                                         <!-- Row 4, Col 1: Vertical Divider -->
                                         <Border Grid.Row="4" Grid.Column="1" Background="{DynamicResource Line}" />
+
+                                        <!-- Row 4, Col 2: 6. Windows' own battery report -->
+                                        <Grid Grid.Row="4" Grid.Column="2" Margin="16,6,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.BatteryReportTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.BatteryReportDesc}"
+                                                           Style="{DynamicResource StatusTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" LineHeight="15" />
+                                            </StackPanel>
+                                            <Button x:Name="SettingBatteryReportButton" Grid.Column="1" Content="{DynamicResource S.Settings.BatteryReportButton}"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
+                                        </Grid>
                                     </Grid>
                                 </Border>
 
@@ -1946,6 +1962,22 @@
                                             </StackPanel>
                                             <Button x:Name="IdleLoadScan" Grid.Column="1" Content="{DynamicResource S.Settings.IdleLoadScan}"
                                                     MinWidth="110" Height="28" VerticalAlignment="Center" />
+                                        </Grid>
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+                                        <!-- The same, by itself now and then while nobody uses the machine -->
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleLoadAutoTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleLoadAutoDesc}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <ToggleButton x:Name="SettingIdleLoadAuto" Grid.Column="1"
+                                                          Style="{DynamicResource Pill}" VerticalAlignment="Center" />
                                         </Grid>
                                         <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
                                         <StackPanel x:Name="IdleLoadRows" />

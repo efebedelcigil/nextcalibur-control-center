@@ -167,6 +167,13 @@ public partial class MainWindow
 
         if (FindName("SettingDebloatButton") is Button debloat)
             debloat.Click += (_, _) => OpenWin11Debloat();
+        if (FindName("SettingBatteryReportButton") is Button batteryReport)
+            batteryReport.Click += async (_, _) =>
+            {
+                batteryReport.IsEnabled = false;
+                try { await OpenBatteryReportAsync(); }
+                finally { batteryReport.IsEnabled = true; }
+            };
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -250,14 +257,6 @@ public partial class MainWindow
     }
 
     /// <summary>
-    /// Chris Titus Tech's WinUtil, the owner's ask (12 September 2026): a
-    /// Windows debloat and tweak script, run the way its author documents -
-    /// downloaded from christitus.com into an administrator PowerShell.
-    /// Nothing of it is shipped or vetted here, and the dialogue says so;
-    /// the PowerShell inherits this process's elevation, so no second
-    /// prompt. What is done inside it is the person's.
-    /// </summary>
-    /// <summary>
     /// Raphire's Win11Debloat, the owner's ask (14 October 2026) for the ads
     /// inside Windows 11 - Start, Settings, the lock screen, search. Chosen
     /// for being kept up - a release most months, MIT - and for turning off
@@ -285,6 +284,47 @@ public partial class MainWindow
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
             Dialogs.Warn("Nextcalibur", Strings.Get("S.WinUtil.Failed") + " " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Windows' own battery report (powercfg /batteryreport): the battery's
+    /// design and present capacity, its wear over time and recent use - the
+    /// Tools card's empty slot (the owner's ask of 14 October 2026). Nothing
+    /// is downloaded or changed; the report is written to the person's temp
+    /// folder and opened in their browser, not as administrator.
+    /// </summary>
+    private async Task OpenBatteryReportAsync()
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Nextcalibur-battery-report.html");
+        try
+        {
+            var code = await Task.Run(() =>
+            {
+                using var process = Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.Powercfg,
+                    $"/batteryreport /output \"{path}\"")
+                {
+                    UseShellExecute = false, CreateNoWindow = true,
+                    RedirectStandardOutput = true, RedirectStandardError = true,
+                });
+                if (process is null) return -1;
+                process.StandardOutput.ReadToEnd();
+                if (!process.WaitForExit(30_000)) { process.Kill(); return -2; }
+                return process.ExitCode;
+            });
+            if (code != 0 || !System.IO.File.Exists(path))
+            {
+                Log.Warn("battery-report", $"powercfg /batteryreport ended with {code}");
+                Dialogs.Warn("Nextcalibur", Strings.Get("S.BatteryReport.Failed"));
+                return;
+            }
+            Unelevated.Open(path);
+            Log.Info("battery-report", "Battery report written and opened: " + path);
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException or System.IO.IOException)
+        {
+            Log.Warn("battery-report", ex.Message);
+            Dialogs.Warn("Nextcalibur", Strings.Get("S.BatteryReport.Failed") + " " + ex.Message);
         }
     }
 
@@ -347,6 +387,14 @@ public partial class MainWindow
         EvaluateProgramRules();
     }
 
+    /// <summary>
+    /// Chris Titus Tech's WinUtil, the owner's ask (12 September 2026): a
+    /// Windows debloat and tweak script, run the way its author documents -
+    /// downloaded from christitus.com into an administrator PowerShell.
+    /// Nothing of it is shipped or vetted here, and the dialogue says so;
+    /// the PowerShell inherits this process's elevation, so no second
+    /// prompt. What is done inside it is the person's.
+    /// </summary>
     private async void OpenWinUtil()
     {
         if (!await ConfirmRiskyAsync("winutil", Strings.Get("S.WinUtil.Title"), Strings.Get("S.WinUtil.Body")))

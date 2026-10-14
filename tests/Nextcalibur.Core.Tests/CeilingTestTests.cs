@@ -44,10 +44,11 @@ public class CeilingTestTests
         Assert.Null(CeilingTest.Choose(SystemMode.Performance, [new CeilingStep(0, 97, 97, 53, 3.6)]));
 
     [Theory]
-    [InlineData("TiWorker", 5.0, "TiWorker")]        // Windows installing updates
-    [InlineData("TiWorker", 0.0, null)]              // idle: not at work
-    [InlineData("DrvInst", 0.0, "DrvInst")]          // a driver install, at any load
-    [InlineData("msiexec", 2.0, "msiexec")]
+    [InlineData("TiWorker", 5.0, "Windows Update (TiWorker)")]                  // Windows installing updates
+    [InlineData("TiWorker", 0.0, null)]                                         // idle: not at work
+    [InlineData("DrvInst", 0.0, "a driver or firmware install (DrvInst)")]      // a driver install, at any load
+    [InlineData("AFUWINx64", 0.0, "a BIOS or firmware update (AFUWINx64)")]
+    [InlineData("msiexec", 2.0, "a program being installed (msiexec)")]
     [InlineData("chrome", 50.0, null)]
     public void Work_that_must_not_be_interrupted(string name, double cpu, string? why) =>
         Assert.Equal(why, TestPreflight.IsCritical(name, null, cpu, 0));
