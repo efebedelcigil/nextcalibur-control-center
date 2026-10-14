@@ -1176,6 +1176,7 @@ public partial class MainWindow : Window
         RefreshProgramRuleRows();
         RefreshShortcutRows();
         _rulesMode?.Items.Refresh();
+        ShowGameScanResult();
         _ = LoadNvPowerAsync();
         if (NavPower.IsChecked == true) _ = LoadDefinitionsAsync();
         if (_tourActive) PlaceTourStep();   // the card's words, in the new language

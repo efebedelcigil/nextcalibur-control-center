@@ -19,6 +19,18 @@ public partial class MainWindow
     private static readonly TimeSpan GameScanEvery = TimeSpan.FromDays(1);
     private bool _gameScanRunning;
 
+    /// <summary>The last scan's outcome, said again in the language chosen later.</summary>
+    private (int Found, int Added, bool SwitchedOn)? _lastGameScan;
+
+    private void ShowGameScanResult()
+    {
+        if (_lastGameScan is not { } last || FindName("GameScanResult") is not TextBlock result) return;
+        result.Text = last.Found == 0
+            ? Strings.Get("S.Games.NoneFound")
+            : Strings.Get("S.Games.Result", last.Found, last.Added) + (last.SwitchedOn ? " " + Strings.Get("S.Games.RulesOn") : "");
+        result.Visibility = Visibility.Visible;
+    }
+
     private void WireGameScan()
     {
         if (FindName("GameScanButton") is System.Windows.Controls.Button scan)
@@ -90,12 +102,10 @@ public partial class MainWindow
                 (added.Count > 0 ? ": " + string.Join("; ", added.Select(g => $"{g.Name} [{g.Source}] {string.Join("/", g.Processes)}")) : ""));
             Audit("game-scan", byHand ? "by-hand" : "daily", ("found", found.Count), ("added", added.Count), ("rulesSwitchedOn", switchedOn));
 
-            if (FindName("GameScanResult") is TextBlock result && (byHand || added.Count > 0))
+            if (byHand || added.Count > 0)
             {
-                result.Text = found.Count == 0
-                    ? Strings.Get("S.Games.NoneFound")
-                    : Strings.Get("S.Games.Result", found.Count, added.Count) + (switchedOn ? " " + Strings.Get("S.Games.RulesOn") : "");
-                result.Visibility = Visibility.Visible;
+                _lastGameScan = (found.Count, added.Count, switchedOn);
+                ShowGameScanResult();
             }
             if (added.Count > 0)
             {

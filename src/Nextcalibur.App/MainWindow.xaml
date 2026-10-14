@@ -1379,7 +1379,7 @@
 
                     <!-- ================= PAGE: SETTINGS ================= -->
                     <Grid x:Name="PageSettings" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed">
-                        <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ScrollViewer x:Name="SettingsScroll" Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel HorizontalAlignment="Stretch">
                                 <!-- Section 0: Tools (§21a, §21b) -->
                                 <TextBlock Text="{DynamicResource S.Settings.GroupTools}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
