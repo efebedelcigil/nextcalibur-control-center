@@ -131,11 +131,11 @@
 
     <!-- Ayarlar sayfası -->
     <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
-    <sys:String x:Key="S.Settings.HostsTitle">Reklam ve zararlı alan adlarını engelleme</sys:String>
-    <sys:String x:Key="S.Settings.HostsDesc">StevenBlack/hosts: reklam ve zararlı yazılım alan adlarını (yaklaşık 72 bin) tüm sistemde engelleyen bir hosts listesi. Steven Black'in; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur. Windows'un kendi Başlat ve Ayarlar önerilerini kaldırmaz. Projenin kendi notu: Windows'ta bu büyüklükte bir hosts dosyası DNS İstemcisi servisini yavaşlatabilir; sıkıştırılmış hâlini önerir. Düğme proje sayfasını açar, kurmak size kalmıştır.</sys:String>
-    <sys:String x:Key="S.Settings.HostsButton">Proje sayfası</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Title">Hosts engel listesi</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Body">Reklam ve zararlı yazılım alan adlarını tüm sistemde engelleyen, başkasına ait açık kaynak bir liste. Nextcalibur onu indirmez, hosts dosyanıza dokunmaz: düğme yalnızca projenin GitHub sayfasını açar. Kurulumu ve Windows'taki DNS notunu orada okuyun.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatTitle">Windows içindeki reklamlar</sys:String>
+    <sys:String x:Key="S.Settings.DebloatDesc">Raphire'ın Win11Debloat aracı: Başlat, Ayarlar, kilit ekranı ve aramadaki reklam, öneri ve ipuçlarını kapatır; kendi menüsünden ne yapılacağını siz seçersiniz. raphi.re'den indirilir; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Windows içindeki reklamlar</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Raphire'ın Win11Debloat aracını yazarının sitesinden indirip yönetici PowerShell'de açar. Windows'un kendi reklam ve önerilerini kapatır; neyin değişeceğini onun menüsünde seçersiniz. Nextcalibur'un parçası değildir; açılmadan önce sorulur ve geri yükleme noktası önerilir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>
@@ -215,6 +215,8 @@
     <sys:String x:Key="S.FirstRun.Retry">Güç Modu sayfasından yeniden deneyebilirsiniz.</sys:String>
 
     <!-- Ayarlar sayfası: araçların diyalogları -->
+    <sys:String x:Key="S.Debloat.Title">Win11Debloat açılsın mı?</sys:String>
+    <sys:String x:Key="S.Debloat.Body" xml:space="preserve">Bu, Raphire'ın Win11Debloat aracını yönetici PowerShell penceresinde açar: betik raphi.re'den indirilir ve çalıştırılır. Nextcalibur'un parçası değildir ve burada hiçbir şey onu denetlemez; orada seçtikleriniz - reklamlar, öneriler, uygulamalar, ayarlar - sizinle onun arasındadır. Yazarı değişikliklerinin geri alınabildiğini söylüyor (kendi wiki'sinde anlatılıyor).&#10;&#10;Devam edilsin mi?</sys:String>
     <sys:String x:Key="S.WinUtil.Title">WinUtil açılsın mı?</sys:String>
     <sys:String x:Key="S.WinUtil.Body" xml:space="preserve">Bu, Chris Titus Tech'in WinUtil aracını yönetici PowerShell penceresinde açar: betik christitus.com'dan indirilir ve çalıştırılır. Nextcalibur'un parçası değildir ve burada hiçbir şey onu denetlemez; orada değiştirdikleriniz - hizmetler, uygulamalar, ayarlar - sizinle onun arasındadır.&#10;&#10;Devam edilsin mi?</sys:String>
     <sys:String x:Key="S.WinUtil.Failed">PowerShell başlatılamadı:</sys:String>

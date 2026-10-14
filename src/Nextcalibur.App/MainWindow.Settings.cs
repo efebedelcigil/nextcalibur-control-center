@@ -164,13 +164,8 @@ public partial class MainWindow
         if (_settingPrivacyButton is not null)
             _settingPrivacyButton.Click += (_, _) => ShowPrivacy();
 
-        // StevenBlack's hosts list, the owner's ask (14 October 2026; it took
-        // the place of OFGB, which had not been updated since 2024): ad and
-        // malware domains blocked for the whole system. Its page in the
-        // browser, not a download - what an administrator process changes is
-        // what this project can vouch for, and someone else's list is not.
-        if (FindName("SettingHostsButton") is Button hosts)
-            hosts.Click += (_, _) => OpenLink(HostsProject, "hosts", "Opened StevenBlack/hosts");
+        if (FindName("SettingDebloatButton") is Button debloat)
+            debloat.Click += (_, _) => OpenWin11Debloat();
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -258,8 +253,36 @@ public partial class MainWindow
     /// the PowerShell inherits this process's elevation, so no second
     /// prompt. What is done inside it is the person's.
     /// </summary>
-    /// <summary>StevenBlack/hosts' own page, where its README says how to install it; see the button's wiring.</summary>
-    private const string HostsProject = "https://github.com/StevenBlack/hosts";
+    /// <summary>
+    /// Raphire's Win11Debloat, the owner's ask (14 October 2026) for the ads
+    /// inside Windows 11 - Start, Settings, the lock screen, search. Chosen
+    /// over OFGB (no release since May 2024) and a hosts list (domains, not
+    /// Windows' own suggestions) for being kept up: a release most months,
+    /// MIT. Run the way its author documents, in an administrator PowerShell
+    /// with its own menu; asked first like WinUtil, with a restore point
+    /// offered, since it changes Windows' settings. What is chosen in it is
+    /// the person's.
+    /// </summary>
+    private async void OpenWin11Debloat()
+    {
+        if (!await ConfirmRiskyAsync("win11debloat", Strings.Get("S.Debloat.Title"), Strings.Get("S.Debloat.Body")))
+            return;
+
+        try
+        {
+            using var process = Process.Start(new ProcessStartInfo(Nextcalibur.Core.Security.SystemTools.PowerShell,
+                "-NoProfile -ExecutionPolicy Bypass -Command \"& ([scriptblock]::Create((irm 'https://debloat.raphi.re/')))\"")
+            {
+                UseShellExecute = true,
+            });
+            Log.Info("win11debloat", "Opened Win11Debloat in an administrator PowerShell");
+            Audit("win11debloat", "done");
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Dialogs.Warn("Nextcalibur", Strings.Get("S.WinUtil.Failed") + " " + ex.Message);
+        }
+    }
 
     private async void OpenWinUtil()
     {

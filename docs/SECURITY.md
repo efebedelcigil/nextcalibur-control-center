@@ -120,8 +120,9 @@ rules the code follows.
   thermal profile), each documented in `docs/PROTOCOL.md`, each from a
   value the code chose - never a value read from a file or the network.
 - **The vendor's software is never run, downloaded or modified.** WinUtil
-  is the one thing deliberately run elevated from the network, at the
-  person's explicit request, after a dialogue that says exactly that.
+  and Win11Debloat are the only things deliberately run elevated from the
+  network, each at the person's explicit request, after a dialogue that says
+  exactly that and offers a restore point.
 
 - **The runtime is the machine's, so the machine patches it.** Until 0.5.4
   this application carried its own .NET, which meant nothing on a machine

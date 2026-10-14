@@ -33,8 +33,8 @@ Starting elevated without a prompt is safe only if the executable cannot be
 swapped by something running as your account, which is why the wizard
 installs under Program Files and why a copy in the profile is made read-only
 to the account. Everything the window opens for you - the browser, the log
-folder, Settings - is opened as you, not as administrator; only WinUtil is
-deliberately elevated.
+folder, Settings - is opened as you, not as administrator; only WinUtil and
+Win11Debloat are deliberately elevated, each after asking.
 
 **What does it change on my machine?**
 Three kinds of thing, all of them in the open:

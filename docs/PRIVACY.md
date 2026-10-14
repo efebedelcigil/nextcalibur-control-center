@@ -14,6 +14,7 @@ Only these, and only for the purposes named:
 | A minute after start (when nothing is on screen that should not be interrupted), then at most every six hours, or when you ask | `api.github.com` and `github.com` | A request for PawnIO's release list; a download of its installer if you accept | To offer the driver the CPU power reading needs, and keep it current |
 | At the same times | `raw.githubusercontent.com`, and `builds.dotnet.microsoft.com` for a download | A request for Microsoft's list of .NET releases; a download of the runtime installer if you accept | To offer the .NET runtime's security patches, which Windows also delivers |
 | When you press *Open WinUtil* and confirm | `christitus.com` | A PowerShell download of that script | Because you asked for it; it is not part of Nextcalibur |
+| When you press *Win11Debloat* and confirm | `debloat.raphi.re` | A PowerShell download of that script | Because you asked for it; it is not part of Nextcalibur |
 | When you press *Driver downloads* or *Open issues* | the laptop maker's site, `github.com` | Your browser opens the page | Because you asked for it |
 
 **What the checks cost.** Measured on 13 September 2026, on the wire:
@@ -86,8 +87,8 @@ which are settings.
 
 Programs Nextcalibur opens for you - the browser, Explorer, Windows
 Settings - are started with your ordinary rights, not the administrator
-rights the application runs with. WinUtil alone is started elevated, on
-purpose, after asking.
+rights the application runs with. WinUtil and Win11Debloat alone are started
+elevated, on purpose, after asking.
 
 ## Changes
 

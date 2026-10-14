@@ -133,11 +133,11 @@
 
     <!-- Settings page -->
     <sys:String x:Key="S.Settings.GroupTools">Tools</sys:String>
-    <sys:String x:Key="S.Settings.HostsTitle">Blocking ad and malware domains</sys:String>
-    <sys:String x:Key="S.Settings.HostsDesc">StevenBlack/hosts: a hosts list that blocks ad and malware domains (about 72,000) for the whole system. It is Steven Black's; not part of Nextcalibur and not connected to it. It does not remove Windows' own suggestions in Start and Settings. The project's own note: on Windows a hosts file this large can slow the DNS Client service; it suggests a compressed one. The button opens the project page; installing it is up to you.</sys:String>
-    <sys:String x:Key="S.Settings.HostsButton">Project page</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Title">Hosts blocklist</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Body">Someone else's open-source list that blocks ad and malware domains for the whole system. Nextcalibur does not download it or touch your hosts file: the button only opens the project's GitHub page. Read how to install it, and the note on DNS under Windows, there.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatTitle">Ads inside Windows</sys:String>
+    <sys:String x:Key="S.Settings.DebloatDesc">Raphire's Win11Debloat: turns off the ads, suggestions and tips in Start, Settings, the lock screen and search; you choose what it does in its own menu. Downloaded from raphi.re; not part of Nextcalibur and not connected to it.</sys:String>
+    <sys:String x:Key="S.Settings.DebloatButton">Win11Debloat</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Title">Ads inside Windows</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingDebloatButton.Body">Downloads Raphire's Win11Debloat from its author's site and opens it in an administrator PowerShell. It turns off Windows' own ads and suggestions; you choose what changes in its menu. Not part of Nextcalibur; you are asked first, and a restore point is offered.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>
@@ -217,6 +217,8 @@
     <sys:String x:Key="S.FirstRun.Retry">You can retry from the Power Mode panel.</sys:String>
 
     <!-- Settings page: the tools' dialogues -->
+    <sys:String x:Key="S.Debloat.Title">Open Win11Debloat?</sys:String>
+    <sys:String x:Key="S.Debloat.Body" xml:space="preserve">This opens Raphire's Win11Debloat in an administrator PowerShell window: the script is downloaded from raphi.re and run. It is not part of Nextcalibur and nothing here vets it; what you choose there - ads, suggestions, apps, settings - is between you and it. Its author says its changes can be reverted (described in its wiki).&#10;&#10;Go on?</sys:String>
     <sys:String x:Key="S.WinUtil.Title">Open WinUtil?</sys:String>
     <sys:String x:Key="S.WinUtil.Body" xml:space="preserve">This opens Chris Titus Tech's WinUtil in an administrator PowerShell window: the script is downloaded from christitus.com and run. It is not part of Nextcalibur and nothing here checks it; what you change there - services, apps, settings - is between you and it.&#10;&#10;Continue?</sys:String>
     <sys:String x:Key="S.WinUtil.Failed">PowerShell could not be started:</sys:String>
