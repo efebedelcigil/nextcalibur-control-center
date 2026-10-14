@@ -150,11 +150,46 @@ public static class TestPreflight
         name.Contains("setup", StringComparison.OrdinalIgnoreCase) || name.Contains("install", StringComparison.OrdinalIgnoreCase)
         || name.Contains("update", StringComparison.OrdinalIgnoreCase) || name.Contains("flash", StringComparison.OrdinalIgnoreCase);
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string?> Companies = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>The file's company, remembered: the same programs come up scan after scan.</summary>
     private static string? Company(string path)
     {
-        try { return FileVersionInfo.GetVersionInfo(path).CompanyName; }
-        catch (Exception ex) when (ex is FileNotFoundException or IOException or UnauthorizedAccessException) { return null; }
+        if (Companies.TryGetValue(path, out var known)) return known;
+        string? company;
+        try { company = FileVersionInfo.GetVersionInfo(path).CompanyName; }
+        catch (Exception ex) when (ex is FileNotFoundException or IOException or UnauthorizedAccessException) { company = null; }
+        if (Companies.Count < 2000) Companies[path] = company;
+        return company;
     }
+
+    /// <summary>A process's image path, or null when it cannot be asked (protected, gone).</summary>
+    private static string? ImagePath(int pid)
+    {
+        var handle = OpenProcess(ProcessQueryLimitedInformation, false, pid);
+        if (handle == IntPtr.Zero) return null;
+        try
+        {
+            var buffer = new char[1024];
+            var size = buffer.Length;
+            return QueryFullProcessImageName(handle, 0, buffer, ref size) ? new string(buffer, 0, size) : null;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+    private const uint ProcessQueryLimitedInformation = 0x1000;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(uint access, bool inherit, int pid);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, EntryPoint = "QueryFullProcessImageNameW")]
+    private static extern bool QueryFullProcessImageName(IntPtr process, int flags, [Out] char[] name, ref int size);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool CloseHandle(IntPtr handle);
 
     private readonly record struct ProcessLook(string Name, string? Path, int Session, bool HasWindow, double Cpu, double Io);
 
@@ -167,8 +202,9 @@ public static class TestPreflight
             {
                 try
                 {
-                    string? path = null;
-                    try { path = p.MainModule?.FileName; } catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { }
+                    // The image path from one cheap query, not MainModule - which lists
+                    // every module of every process, and this runs by itself now and then.
+                    var path = ImagePath(p.Id);
                     double cpu = 0;
                     try { cpu = p.TotalProcessorTime.TotalSeconds; } catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { }
                     double io = 0;

@@ -18,6 +18,7 @@ public partial class MainWindow
 {
     private static readonly TimeSpan GameScanEvery = TimeSpan.FromDays(1);
     private bool _gameScanRunning;
+    private readonly DateTime _gameScanNotBefore = DateTime.UtcNow.AddMinutes(5);
 
     /// <summary>The last scan's outcome, said again in the language chosen later.</summary>
     private (int Found, int Added, bool SwitchedOn)? _lastGameScan;
@@ -57,8 +58,8 @@ public partial class MainWindow
     {
         if (!_settings.GameScanAuto || _gameScanRunning || !_support.AllowsWrites || NoticeGate.ShouldWait) return;
         if (_settings.GamesScannedUtc is { } last && DateTime.UtcNow - last < GameScanEvery) return;
-        // Not in the first minutes after start: the machine has enough to do then.
-        if (Environment.TickCount64 < 5 * 60_000) return;
+        // Not in the first minutes after Nextcalibur starts: the machine has enough to do then.
+        if (DateTime.UtcNow < _gameScanNotBefore) return;
         _ = ScanForGamesAsync(byHand: false);
     }
 

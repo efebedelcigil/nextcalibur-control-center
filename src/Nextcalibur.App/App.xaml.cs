@@ -428,6 +428,12 @@ public partial class App : Application
                     {
                         break;
                     }
+                    catch (Exception ex) when (ex is not OutOfMemoryException)
+                    {
+                        // Showing the window failed for some other reason: logged, and
+                        // the listener keeps listening rather than taking the process down.
+                        Log.Error("wake", "Could not bring the window forward", ex);
+                    }
                 }
             }
             catch (Exception ex) when (ex is ObjectDisposedException or ThreadAbortException)
