@@ -43,7 +43,8 @@ event named in its row.
 - **Settings** - `%ProgramData%\Nextcalibur\<your account's SID>\settings.json`
   and `led.json`: your preferences (mode, thresholds, lighting, the switches
   on the Settings page, the program rules, and the names of programs you
-  answered "stay as it is" about after a game). Only administrators can change them - you can read
+  answered "stay as it is" about after a game, and the programs you put into
+  Efficiency mode). Only administrators can change them - you can read
   them - and each has a record of its hash and a last-good copy beside it,
   so a change made from outside the application is noticed and undone.
   Versions up to 0.5.8 kept them in `%AppData%\Nextcalibur`; they are moved
@@ -62,8 +63,10 @@ event named in its row.
   can be read afterwards. The file goes with your settings at uninstall;
   the event log entries are Windows' and stay.
 - **Machine scan** - `%ProgramData%\Nextcalibur\machine-scan.json`: whether
-  this laptop answers like a Casper Excalibur, the BIOS's maker and
-  version, the board's name, and when the verdict last changed - read at
+  this laptop answers like a Casper Excalibur, the BIOS's maker, version,
+  date and release, the embedded controller's release, the system and board
+  names, the processor's name and top clock and the memory modules as the
+  firmware lists them (SMBIOS), and when the verdict last changed - read at
   setup and every start, kept to compare one scan with the next.
 - **Power plan originals** - `HKLM\SOFTWARE\Nextcalibur\PlanMarkers`: the
   value each power plan setting had before Nextcalibur changed it (the
@@ -74,6 +77,11 @@ event named in its row.
 
 All of it is removed by the uninstall; it asks first only about the power
 plans, the power repair and the dependencies, which you may want to keep.
+
+- **Ceiling tests** - in the log and the audit log: what was running before,
+  at each step and after (program names, process numbers, paths, processor
+  and disk use), what was closed and how, the consent you ticked, the
+  readings of each step. On this machine only, like everything above.
 
 ## What it reads
 

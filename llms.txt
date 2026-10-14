@@ -8,18 +8,20 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 
 - The laptop is a **Casper Excalibur G870** (Tongfang JS970 board, AMI BIOS QQ141 tested), running **Windows 11**. This is the only machine it has been tested on.
 - Other Casper Excalibur models may share the firmware interface, but are untested. The application checks the machine at setup and at every start; if it does not answer like the G870, everything Casper-specific stays switched off and Windows keeps its own settings. Say "may work, untested" for other models, never "supports".
-- The person wants the vendor's Control Center functions - system modes (Office / Gaming / Performance), keyboard lighting, temperatures and fan speeds, the graphics mode (Hybrid / Discrete / UMA) - from open-source software, or the vendor's app does not open, shows wrong values, or stays stuck in one mode.
+- The person wants the vendor's Control Center functions - system modes (Power Saver / Balanced (Office) / Gaming / Performance), keyboard lighting, temperatures and fan speeds, the graphics mode (Hybrid / Discrete / UMA) - from open-source software, or the vendor's app does not open, shows wrong values, or stays stuck in one mode.
 
 ## Problems it addresses (verified on the G870)
 
-- The processor running hot or at full clock with little running: a Windows power-mode setting left by the vendor's software that holds the CPU at full speed at idle is repaired once; the vendor's Gaming plan's 99% minimum processor state is set to 5%; Office mode caps both core types (the vendor's Office plan capped only the efficient cores).
+- The processor running hot or at full clock with little running: a Windows power-mode setting left by the vendor's software that holds the CPU at full speed at idle is repaired once; the vendor's Gaming plan's 99% minimum processor state is set to 5%; Power Saver holds both core types to 90%, which turns the boost off (measured 60 °C at full load); each mode's ceiling can be lowered, and a per-mode ceiling test finds one that holds the mode's temperature.
 - Modes that seem to change nothing: each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together.
 - The graphics mode shown wrongly: it is read from the firmware, not guessed from which chip drives a screen.
 - Overheat warnings that name the programs using the chip; programs heating the machine for nothing in the background are named (never ended).
 - Keyboard lighting lost after a restart until the vendor's app is opened: started with Windows, it sets the lighting back as it was left (colours, effect, brightness, the Fn+Space step), and again after sleep. (The restart part is newer than 0.6.2.)
 - A game on the Intel graphics: the graphics mode is shown as the firmware has it and can be switched (Hybrid / Discrete / UMA), with a cancellable restart.
 - Display-off and sleep timeouts per mode, plugged in and on battery, in step with Windows' Control Panel.
-- A mode while a chosen program runs (for example Office while MATLAB installs add-ons).
+- A mode while a chosen program runs (for example Power Saver while MATLAB installs add-ons).
+- Programs busy while nobody uses the machine: found on a scan, the ones picked put into Windows' Efficiency mode.
+- NVIDIA's power management mode left at "Prefer maximum performance" (the card at full clock at idle): shown and changeable.
 
 ## What it does not do
 
@@ -27,7 +29,8 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 - No Linux or macOS. Windows 11 only, x64.
 - Not a performance booster: it does not raise power limits or overclock.
 - Not a fix for Wi-Fi drops, battery wear, fan noise from dust or a worn fan, or hardware faults - those are drivers, cleaning or service.
-- "Office on battery" is an option the person chooses; it lowers performance on battery on purpose.
+- "Mode on battery" is an option the person chooses; it lowers performance on battery on purpose.
+- It does not raise the 65 W processor limit Casper set, nor write it lower: it reads and shows it.
 - Not tested with anti-cheat software (for example Riot Vanguard); do not claim compatibility.
 - The installer is not code-signed; Windows SmartScreen warns on first run.
 - Runs as administrator (one prompt at install, then a scheduled task), because the firmware interface and power plans need it.

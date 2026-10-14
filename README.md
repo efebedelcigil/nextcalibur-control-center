@@ -25,12 +25,12 @@ It is worth a look if:
 | You see | What Nextcalibur does about it |
 |---|---|
 | The processor hot or at full clock with little running; fans loud at idle | repairs a Windows power-mode setting the vendor's software leaves (it holds the CPU at full speed at idle); sets the vendor Gaming plan's 99% minimum processor state to 5%; caps both core types in Office (the vendor's Office plan capped only the efficient cores) |
-| Switching Office / Gaming / Performance seems to change nothing | each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together |
+| Switching modes seems to change nothing | each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together |
 | The vendor's Control Center does not open, shows wrong fan speeds or graphics mode, or stays in one mode | an independent replacement reading the same firmware interface; the graphics mode is read from the firmware |
 | The keyboard lighting gone after a restart until the vendor's app is opened | started with Windows, it sets the lighting back as it was left - colours, effect, brightness, the Fn+Space step - and again after sleep (the restart part is new since 0.6.2) |
 | A game running on the Intel graphics instead of the NVIDIA card | shows the graphics mode the firmware is in and switches it (Hybrid / Discrete / UMA), with a restart you can cancel |
 | You want to know what is heating the machine | overheat warnings name the programs on the chip; programs keeping a core busy for nothing are named |
-| A program (an installer, MATLAB) or a game in the wrong mode | a mode for a program while it runs; after a game played in Office, a question whether it should switch next time |
+| A program (an installer, MATLAB) or a game in the wrong mode | a mode for a program while it runs; after a game played in a quiet mode, a question whether it should switch to Gaming next time |
 
 What it does **not** do: fan curves or fan control (the fan turbo, Fn+1, is
 the controller's own and only the built-in keyboard switches it), raising
@@ -113,23 +113,28 @@ so a server that answers "not modified" sends no body.
 
 | | |
 |---|---|
-| Office / Gaming / Performance modes | the Windows power plan, the power mode and the firmware's thermal profile together, as the vendor does it |
+| Four modes: Power Saver, Balanced (Office), Gaming, Performance | each the Windows power plan, the Windows power mode and the firmware's thermal profile together; Balanced runs on the firmware's Office profile with Windows' balanced plan; the System page says what each is for |
 | Windows power modes as cards, within the chosen mode | |
-| Office on battery, your mode back on the charger, and after a restart | |
+| The mode on battery - Power Saver, Balanced or leave it - your mode back on the charger, and after a restart | |
 | Repair of the power-mode fault the vendor's software leaves | a Windows power mode that holds the CPU at full speed while idle - found, fixed once, guarded |
+| Processor ceilings, chosen and tested | each mode's ceiling within the measured upper bound - Power Saver as a percentage, the others as a clock limit with the boost kept; a ceiling test per mode (full load, from the ceiling in force down, until the mode's temperature holds), suggested when cooling was needed often; before it, what runs is listed and closed only on a ticked consent, and it will not start during an update, a driver or BIOS install or maintenance |
+| Power definitions and who set them | the processor's base power, limits, throttle point and top clock, the graphics card's limit, the battery's capacity - each beside its maker's definition and who set the value in force |
+| Plans watched | a change from outside to what Nextcalibur wrote is told, with a button to put it back; on another plan the automatic parts stand down |
 | Sleep and screen, per mode | display-off and sleep timeouts for every mode in one table, plugged in and on battery, and the screen saver; each row is that mode's power plan, so it is the Control Panel's plan settings and a change in either shows in the other; nothing changed unless chosen |
-| Each mode's power plan tuned | from what Windows itself chose for this machine, read at every start: Gaming is Windows' Balanced without the vendor's 99% floor; Performance is High performance without its pinned floor; Office is Power saver with an efficient boost, both core types held to 70% and - on a processor with two kinds of core - the efficient cores first; a display that never turned off gets ten minutes; every original kept and offered back at uninstall |
+| Each mode's power plan tuned | from what Windows itself chose for this machine, read at every start: Power Saver from Windows' Power saver with an efficient boost, both core types held to 90% (the boost off - measured 60 °C at full load against 97 °C with it), the efficient cores first on a hybrid processor; Balanced is Windows' Balanced; Gaming between Balanced and High performance; Performance is High performance without its pinned floor; every original kept and offered back at uninstall |
 | Temperatures, fan speeds, clocks, CPU package power | CPU power through PawnIO, when installed |
 | The graphics mode - Hybrid, Discrete, UMA | switched in the firmware; a restart you can cancel; the card's clock and draw read without waking it |
 | Staying out of the way of games and heavy work | borderless and full-screen game detection, lower process priority in the background, fewer firmware reads - never none |
-| Keyboard lighting | three zones, colour, six effects, brightness, four profiles; Fn+Space respected; set back as it was left at start and after sleep |
-| Overheat warning | a threshold per chip, typeable; names the programs using the chip; from Gaming or Performance, a button that switches to Office |
+| Keyboard lighting | three zones, colour, six effects, brightness, five profiles; Fn+Space respected; set back as it was left at start and after sleep |
+| Overheat warning | a threshold per chip, typeable; names the programs using the chip; a button that switches to Power Saver; the processor read from two sources - its own register at once, the controller as the reference - so a climb shows seconds earlier |
 | Cool down before it gets hot | the temperature followed, not just compared: heading for the line, a notification says to press Fn+1 for the fan turbo before it gets there - the turbo is the controller's own and only its keyboard switches it (see [docs/PROTOCOL.md](docs/PROTOCOL.md)); *Emergency Office*, off unless chosen, also holds the processor to 70% |
+| USB and Wi-Fi power saving, NVIDIA's power management mode | a switch each, Windows' or NVIDIA's own setting shown and changed - never by Nextcalibur on its own |
+| Programs busy at idle | a scan finds them; the ones you pick go into Windows' Efficiency mode, set again whenever they start; nothing closed |
 | Programs heating the machine for nothing | a program keeping a core or the graphics card busy, flat, for fifteen minutes in the background is named, with Task Manager a click away; nothing is ended |
 | A mode for a program | while a program on your list runs - MATLAB, an installer, a game - its mode is on, and yours comes back when it closes; told by Windows when programs start and stop, nothing polled; off until switched on |
-| Asked once about a game played in Office | after a program that covered the screen closes, the window asks whether it should switch to Gaming or Performance from then on; the answer is a program rule; browsers and players never asked; nothing during the game, and heat from that time shown as one summary after it |
+| Asked once about a game played in a quiet mode | after a program that covered the screen closes, the window asks whether it should switch to Gaming or Performance from then on; the answer is a program rule; browsers and players never asked; nothing during the game, and heat from that time shown as one summary after it |
 | The Fn keys from an external keyboard | the keyboard light and the system mode as shortcuts, off until switched on, any keys; refused when Windows, another program or a keyboard layout already uses them, and moved to free keys if that changes later |
-| Only on the laptop it was made for | the machine is scanned at setup and every start and the verdict kept; on any other laptop everything that is Casper's own stays off and Windows keeps its settings |
+| Only on the laptop it was made for | the machine is scanned at setup and every start (the firmware's own SMBIOS tables included) and the verdict kept; on any other laptop everything that is Casper's own stays off and Windows keeps its settings; a restore point is made before Nextcalibur's first changes |
 | A record of every risky change, and a restore point first | graphics mode, drivers, repairs, WinUtil, Win11Debloat: asked with "create a restore point first" ticked; the question, the answer, the restore point's number and what was done kept with their times, in a file only administrators can write and in Windows' event log |
 | Memory and every fixed drive | |
 | A guided tour | `?` in the title bar walks every page and every control, and ends at the tray |

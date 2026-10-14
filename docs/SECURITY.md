@@ -119,6 +119,15 @@ rules the code follows.
 - **The firmware is written in three registers only** (LED, display mode,
   thermal profile), each documented in `docs/PROTOCOL.md`, each from a
   value the code chose - never a value read from a file or the network.
+- **NVIDIA's settings library is loaded only when signed as Windows installed
+  it** (nvapi64.dll, like nvml.dll), and only the global power management
+  mode is read or written - per-game profiles never.
+- **Closing programs is the ceiling test's alone, and only on a ticked
+  consent.** It will not start while an update, a driver, firmware or BIOS
+  install, disk maintenance, a Defender scan, indexing or a restore point is
+  in progress; Windows' own components, security software, drivers' and input
+  devices' helpers and anything whose file cannot be read are never closed;
+  services stopped for it are started again.
 - **The vendor's software is never run, downloaded or modified.** WinUtil
   and Win11Debloat are the only things deliberately run elevated from the
   network, each at the person's explicit request, after a dialogue that says
