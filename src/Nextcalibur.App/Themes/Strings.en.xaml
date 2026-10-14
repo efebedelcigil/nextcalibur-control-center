@@ -86,6 +86,8 @@
     <sys:String x:Key="S.System.PerformanceDesc">The highest speed: the most eager processor, the fans at their top. The hottest and loudest.</sys:String>
     <sys:String x:Key="S.System.Balanced">Balanced (Office)</sys:String>
     <sys:String x:Key="S.Lighting.ProfBalanced">Balanced (Office)</sys:String>
+    <sys:String x:Key="S.FirstChanges.Creating">Making a restore point before Nextcalibur's first changes to this computer...</sys:String>
+    <sys:String x:Key="S.FirstChanges.NoPointWhy">Windows could not make a restore point before Nextcalibur's first changes (power plan repairs, the mode profile): {0}. They would be made with no way back.</sys:String>
     <sys:String x:Key="S.System.Office">Power Saver</sys:String>
     <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
     <sys:String x:Key="S.System.Performance">Performance</sys:String>

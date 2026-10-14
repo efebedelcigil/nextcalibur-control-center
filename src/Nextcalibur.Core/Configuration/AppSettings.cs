@@ -57,6 +57,14 @@ public sealed class AppSettings
     public Nextcalibur.Core.Power.SystemMode? ModeOnBattery =>
         BatteryModeSet ? BatteryMode : QuietOnBattery ? Nextcalibur.Core.Power.SystemMode.Office : null;
 
+    /// <summary>
+    /// The restore point made before Nextcalibur's first changes to this
+    /// machine: "made:" and its number, or "without" when Windows could not
+    /// make one and the person chose to go on. Null until then - and while it
+    /// is null, no plan repair, profile or first-run repair is made.
+    /// </summary>
+    public string? FirstChangesRestorePoint { get; set; }
+
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 

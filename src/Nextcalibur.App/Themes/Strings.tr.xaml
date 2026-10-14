@@ -84,6 +84,8 @@
     <sys:String x:Key="S.System.PerformanceDesc">En yüksek hız: işlemci en istekli, fanlar en yüksek devirde. En sıcak ve en gürültülü.</sys:String>
     <sys:String x:Key="S.System.Balanced">Dengeli (Ofis)</sys:String>
     <sys:String x:Key="S.Lighting.ProfBalanced">Dengeli (Ofis)</sys:String>
+    <sys:String x:Key="S.FirstChanges.Creating">Nextcalibur bu bilgisayarda ilk değişikliklerini yapmadan önce bir geri yükleme noktası oluşturuluyor...</sys:String>
+    <sys:String x:Key="S.FirstChanges.NoPointWhy">Nextcalibur'un ilk değişikliklerinden (güç planı onarımları, mod profili) önce Windows bir geri yükleme noktası oluşturamadı: {0}. Bu değişiklikler bir dönüş yolu olmadan yapılmış olur.</sys:String>
     <sys:String x:Key="S.System.Office">Güç Tasarrufu</sys:String>
     <sys:String x:Key="S.System.Gaming">Oyun</sys:String>
     <sys:String x:Key="S.System.Performance">Performans</sys:String>

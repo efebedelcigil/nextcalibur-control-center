@@ -255,7 +255,7 @@ public partial class MainWindow : Window
 
     // ---------------------------------------------------------------- startup
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         ClearInventedValues();
         LoadTheme();
@@ -320,8 +320,9 @@ public partial class MainWindow : Window
         StartIntegrityWatch();
 
         // Windows' once-a-day restore point limit, if a run was cut off while
-        // it was lifted: put back before anything else (see RestorePoint).
-        Task.Run(Nextcalibur.Core.Security.RestorePoint.RecoverLimit);
+        // it was lifted: put back before anything else (see RestorePoint) -
+        // and before the first changes' restore point lifts it again.
+        await Task.Run(Nextcalibur.Core.Security.RestorePoint.RecoverLimit);
         if (_support.Level == SupportLevel.Unsupported) return;
 
         _mailboxSupported = EcMailbox.IsSupported();
@@ -333,10 +334,14 @@ public partial class MainWindow : Window
         // Plans named after the vendor's modes, and the changes made to them,
         // are for the vendor's machine only: anywhere else Windows keeps its
         // own (the owner's rule, 11 October 2026).
-        if (_support.AllowsWrites)
+        // Nothing of Nextcalibur's own changes - plans, repairs, the profile -
+        // before a restore point exists to go back to (the owner's rule, 14
+        // October 2026). Once per machine; see FirstChangesGateAsync.
+        if (_support.AllowsWrites && await FirstChangesGateAsync())
         {
             SystemModeService.EnsurePlansExist();
             TunePlansAtStart();
+            App.RunPendingOverlayRepair();
             RememberIdleTimeouts();
         }
         StartFnShortcuts();

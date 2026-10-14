@@ -608,6 +608,20 @@ public partial class App : Application
             return;
         }
         StartWithWindowsOnFirstRun();
+
+        // Not here: before the window, there is no restore point yet. The
+        // window makes one first and then repairs (see FirstChangesGateAsync).
+        OverlayRepairPending = true;
+    }
+
+    /// <summary>The first run's power-mode repair, waiting for the restore point the window makes first.</summary>
+    internal static bool OverlayRepairPending { get; set; }
+
+    /// <summary>The first run's power-mode repair, once the restore point is there.</summary>
+    internal static void RunPendingOverlayRepair()
+    {
+        if (!OverlayRepairPending) return;
+        OverlayRepairPending = false;
         RepairPowerOverlayOnFirstRun();
     }
 
