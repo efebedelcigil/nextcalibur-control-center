@@ -133,11 +133,11 @@
 
     <!-- Settings page -->
     <sys:String x:Key="S.Settings.GroupTools">Tools</sys:String>
-    <sys:String x:Key="S.Settings.OfgbTitle">Ads inside Windows</sys:String>
-    <sys:String x:Key="S.Settings.OfgbDesc">OFGB: an open-source tool that turns off the ads Windows 11 shows in its own places (Start, Settings, the lock screen, File Explorer...). It is xM4ddy's; not part of Nextcalibur and not connected to it. The button opens its release page in the browser; downloading and running it is up to you.</sys:String>
-    <sys:String x:Key="S.Settings.OfgbButton">OFGB page</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Title">OFGB</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Body">Someone else's open-source tool that turns off the ads inside Windows 11. Nextcalibur does not download or run it: the button only opens its author's release page on GitHub.</sys:String>
+    <sys:String x:Key="S.Settings.HostsTitle">Blocking ad and malware domains</sys:String>
+    <sys:String x:Key="S.Settings.HostsDesc">StevenBlack/hosts: a hosts list that blocks ad and malware domains (about 72,000) for the whole system. It is Steven Black's; not part of Nextcalibur and not connected to it. It does not remove Windows' own suggestions in Start and Settings. The project's own note: on Windows a hosts file this large can slow the DNS Client service; it suggests a compressed one. The button opens the project page; installing it is up to you.</sys:String>
+    <sys:String x:Key="S.Settings.HostsButton">Project page</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Title">Hosts blocklist</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Body">Someone else's open-source list that blocks ad and malware domains for the whole system. Nextcalibur does not download it or touch your hosts file: the button only opens the project's GitHub page. Read how to install it, and the note on DNS under Windows, there.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows debloat and tweaks</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Chris Titus Tech's WinUtil, in an administrator PowerShell. Downloaded from christitus.com; not part of Nextcalibur.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">Open WinUtil</sys:String>

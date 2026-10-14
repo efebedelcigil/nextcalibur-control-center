@@ -131,11 +131,11 @@
 
     <!-- Ayarlar sayfası -->
     <sys:String x:Key="S.Settings.GroupTools">Araçlar</sys:String>
-    <sys:String x:Key="S.Settings.OfgbTitle">Windows içindeki reklamlar</sys:String>
-    <sys:String x:Key="S.Settings.OfgbDesc">OFGB: Windows 11'in kendi yerlerindeki reklamları (Başlat, Ayarlar, kilit ekranı, Dosya Gezgini...) kapatmak için açık kaynak bir araç. xM4ddy'nin; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur. Düğme sürüm sayfasını tarayıcıda açar, indirip çalıştırmak size kalmıştır.</sys:String>
-    <sys:String x:Key="S.Settings.OfgbButton">OFGB sayfası</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Title">OFGB</sys:String>
-    <sys:String x:Key="S.Tour.Step.SettingOfgbButton.Body">Windows 11'in kendi içindeki reklamları kapatan, başkasına ait açık kaynak bir araç. Nextcalibur onu indirmez ve çalıştırmaz: düğme yalnızca yazarının GitHub'daki sürüm sayfasını açar.</sys:String>
+    <sys:String x:Key="S.Settings.HostsTitle">Reklam ve zararlı alan adlarını engelleme</sys:String>
+    <sys:String x:Key="S.Settings.HostsDesc">StevenBlack/hosts: reklam ve zararlı yazılım alan adlarını (yaklaşık 72 bin) tüm sistemde engelleyen bir hosts listesi. Steven Black'in; Nextcalibur'un parçası değildir ve bizimle bir bağı yoktur. Windows'un kendi Başlat ve Ayarlar önerilerini kaldırmaz. Projenin kendi notu: Windows'ta bu büyüklükte bir hosts dosyası DNS İstemcisi servisini yavaşlatabilir; sıkıştırılmış hâlini önerir. Düğme proje sayfasını açar, kurmak size kalmıştır.</sys:String>
+    <sys:String x:Key="S.Settings.HostsButton">Proje sayfası</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Title">Hosts engel listesi</sys:String>
+    <sys:String x:Key="S.Tour.Step.SettingHostsButton.Body">Reklam ve zararlı yazılım alan adlarını tüm sistemde engelleyen, başkasına ait açık kaynak bir liste. Nextcalibur onu indirmez, hosts dosyanıza dokunmaz: düğme yalnızca projenin GitHub sayfasını açar. Kurulumu ve Windows'taki DNS notunu orada okuyun.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilTitle">Windows sadeleştirme ve ince ayar</sys:String>
     <sys:String x:Key="S.Settings.WinUtilDesc">Yönetici PowerShell'de Chris Titus Tech'in WinUtil aracı. christitus.com'dan indirilir; Nextcalibur'un parçası değildir.</sys:String>
     <sys:String x:Key="S.Settings.WinUtilButton">WinUtil'i aç</sys:String>

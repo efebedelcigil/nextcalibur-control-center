@@ -164,12 +164,13 @@ public partial class MainWindow
         if (_settingPrivacyButton is not null)
             _settingPrivacyButton.Click += (_, _) => ShowPrivacy();
 
-        // OFGB, the owner's ask (14 October 2026), for the ads Windows 11
-        // shows in its own places. Its release page in the browser, not a
-        // download: what an administrator process runs is what this project
-        // can vouch for, and someone else's executable is not.
-        if (FindName("SettingOfgbButton") is Button ofgb)
-            ofgb.Click += (_, _) => OpenLink(OfgbReleases, "ofgb", "Opened OFGB's release page");
+        // StevenBlack's hosts list, the owner's ask (14 October 2026; it took
+        // the place of OFGB, which had not been updated since 2024): ad and
+        // malware domains blocked for the whole system. Its page in the
+        // browser, not a download - what an administrator process changes is
+        // what this project can vouch for, and someone else's list is not.
+        if (FindName("SettingHostsButton") is Button hosts)
+            hosts.Click += (_, _) => OpenLink(HostsProject, "hosts", "Opened StevenBlack/hosts");
 
         if (_tray is not null)
             _tray.SettingsChanged += (_, _) => Dispatcher.BeginInvoke(LoadSettingsPage);
@@ -257,8 +258,8 @@ public partial class MainWindow
     /// the PowerShell inherits this process's elevation, so no second
     /// prompt. What is done inside it is the person's.
     /// </summary>
-    /// <summary>OFGB's own release page; see the button's wiring.</summary>
-    private const string OfgbReleases = "https://github.com/xM4ddy/OFGB/releases/latest";
+    /// <summary>StevenBlack/hosts' own page, where its README says how to install it; see the button's wiring.</summary>
+    private const string HostsProject = "https://github.com/StevenBlack/hosts";
 
     private async void OpenWinUtil()
     {
