@@ -45,7 +45,8 @@ Three kinds of thing, all of them in the open:
   laptop is idle). The repair is explained on screen when it happens. Each
   mode's plan also gets its own processor settings - boost, energy
   preference, which cores work first, cooling policy, a floor that lets the
-  processor rest - and a display timeout of "never" becomes ten minutes,
+  processor rest - taken from Windows' own Power saver, Balanced and High
+  performance plans as Windows set them on that machine, read at every start, and a display timeout of "never" becomes ten minutes,
   once. Every original is kept under `HKLM\SOFTWARE\Nextcalibur\PlanMarkers`
   and offered back at uninstall. The display and sleep timeouts you choose
   on the Settings page are written to the same plans the Control Panel

@@ -40,6 +40,10 @@ public partial class MainWindow
                 Audit("plan-floor-repair", "done-automatically", ("plan", name), ("to", PlanTuning.SafeFloor));
             }
 
+            // What Windows chose for this machine, read afresh each start.
+            var baseline = ModeProfile.ReadBaseline();
+            Log.Info("power", $"Mode profile from Windows' own plans: balanced EPP {baseline.Balanced[ModeProfile.EnergyPreference]}, " +
+                              $"power saver EPP {baseline.PowerSaver[ModeProfile.EnergyPreference]}, hybrid {baseline.Hybrid}");
             foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
             {
                 if (SystemModeService.PlanFor(mode) is not { } plan) continue;
@@ -48,7 +52,7 @@ public partial class MainWindow
                     Log.Info("power", $"{mode} plan's display timeout was never; set to {PlanTuning.DisplayOffSeconds / 60} minutes");
                     Audit("plan-display-timeout", "done-automatically", ("mode", mode.ToString()), ("to", PlanTuning.DisplayOffSeconds));
                 }
-                var changed = PlanTuning.ApplyProfile(mode, plan.Plan);
+                var changed = PlanTuning.ApplyProfile(mode, plan.Plan, baseline);
                 if (changed.Count == 0) continue;
                 Log.Info("power", $"{mode} plan given the mode profile: {changed.Count} setting(s)");
                 Audit("plan-profile", "done-automatically", ("mode", mode.ToString()),

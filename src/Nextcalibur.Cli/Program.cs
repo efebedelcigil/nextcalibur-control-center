@@ -102,6 +102,15 @@ internal static class Program
         foreach (var (name, _, floor) in PlanTuning.PinnedFloors())
             Console.WriteLine($"Pinned floor: {name} at {floor.Ac}/{floor.Dc} - the app sets it to {PlanTuning.SafeFloor}");
         Console.WriteLine($"Cooling marker present: {PlanTuning.Cooling}; floor repaired: {PlanTuning.FloorRepaired()}");
+
+        // The mode profile as this machine's own plans give it.
+        var baseline = ModeProfile.ReadBaseline();
+        Console.WriteLine($"Hybrid processor: {baseline.Hybrid}");
+        string Name(Guid g) => g == PlanTuning.MinState ? "min" : g == PlanTuning.MaxState ? "max" : g == PlanTuning.MaxState1 ? "max1"
+            : g == ModeProfile.BoostMode ? "boost" : g == ModeProfile.EnergyPreference ? "epp" : g == ModeProfile.EnergyPreference1 ? "epp1"
+            : g == ModeProfile.Scheduling ? "sched" : g == ModeProfile.ShortScheduling ? "short" : "cool";
+        foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
+            Console.WriteLine($"{mode,-12} " + string.Join("  ", ModeProfile.For(mode, baseline).Select(kv => $"{Name(kv.Key)} {kv.Value.Ac}/{kv.Value.Dc}")));
         return 0;
     }
 

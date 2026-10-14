@@ -1,47 +1,103 @@
 using Nextcalibur.Core.Power;
 using Xunit;
+using AcDc = Nextcalibur.Core.Power.PlanTuning.AcDc;
 
 namespace Nextcalibur.Core.Tests;
 
 public class ModeProfileTests
 {
-    public static TheoryData<SystemMode> Modes => new() { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance };
-
-    [Theory]
-    [MemberData(nameof(Modes))]
-    public void Every_mode_sets_every_setting_and_nothing_else(SystemMode mode) =>
-        Assert.Equal(ModeProfile.Settings.OrderBy(g => g), ModeProfile.For(mode).Keys.OrderBy(g => g));
-
-    [Theory]
-    [MemberData(nameof(Modes))]
-    public void Values_fit_the_original_markers(SystemMode mode)
+    public static TheoryData<SystemMode, bool> Modes => new()
     {
-        // Originals are kept as "ac,dc" percentages; every value written must read back.
-        foreach (var v in ModeProfile.For(mode).Values)
+        { SystemMode.Office, true }, { SystemMode.Gaming, true }, { SystemMode.Performance, true },
+        { SystemMode.Office, false }, { SystemMode.Gaming, false }, { SystemMode.Performance, false },
+    };
+
+    [Theory]
+    [MemberData(nameof(Modes))]
+    public void Every_mode_sets_every_setting_and_nothing_else(SystemMode mode, bool hybrid) =>
+        Assert.Equal(ModeProfile.Settings.OrderBy(g => g), ModeProfile.For(mode, ModeProfile.Defaults(hybrid)).Keys.OrderBy(g => g));
+
+    [Theory]
+    [MemberData(nameof(Modes))]
+    public void Values_fit_the_original_markers(SystemMode mode, bool hybrid)
+    {
+        // Originals are kept as "ac,dc"; every value written must read back.
+        foreach (var v in ModeProfile.For(mode, ModeProfile.Defaults(hybrid)).Values)
             Assert.Equal(v, PlanTuning.ParseMarker($"{v.Ac},{v.Dc}"));
     }
 
     [Theory]
     [MemberData(nameof(Modes))]
-    public void No_mode_pins_the_processor(SystemMode mode)
+    public void No_mode_pins_the_processor(SystemMode mode, bool hybrid)
     {
-        var floor = ModeProfile.For(mode)[PlanTuning.MinState];
+        // High performance's own floor is 100% plugged in: never taken.
+        var floor = ModeProfile.For(mode, ModeProfile.Defaults(hybrid))[PlanTuning.MinState];
         Assert.True(floor.Ac < PlanTuning.PinnedFloor && floor.Dc < PlanTuning.PinnedFloor);
     }
 
     [Fact]
-    public void Office_caps_both_processor_classes()
+    public void Gaming_is_what_Windows_chose_for_Balanced_here()
     {
-        var office = ModeProfile.For(SystemMode.Office);
-        Assert.Equal(PlanTuning.CoolCeiling, office[PlanTuning.MaxState].Ac);
-        Assert.Equal(PlanTuning.CoolCeiling, office[PlanTuning.MaxState1].Ac);
+        // A machine whose Balanced differs from the defaults: Gaming follows it.
+        var b = ModeProfile.Defaults(true);
+        var balanced = b.Balanced.ToDictionary(x => x.Key, x => x.Value);
+        balanced[ModeProfile.EnergyPreference] = new AcDc(38, 55);
+        balanced[ModeProfile.BoostMode] = new AcDc(1, 1);
+        var gaming = ModeProfile.For(SystemMode.Gaming, b with { Balanced = balanced });
+        Assert.Equal(new AcDc(38, 55), gaming[ModeProfile.EnergyPreference]);
+        Assert.Equal(new AcDc(1, 1), gaming[ModeProfile.BoostMode]);
     }
 
     [Fact]
-    public void Office_leans_further_toward_efficiency_than_gaming_and_gaming_than_performance()
+    public void Office_caps_both_processor_classes_with_an_efficient_boost()
     {
-        int Epp(SystemMode m) => ModeProfile.For(m)[ModeProfile.EnergyPreference].Ac;
+        var office = ModeProfile.For(SystemMode.Office, ModeProfile.Defaults(true));
+        Assert.Equal(PlanTuning.CoolCeiling, office[PlanTuning.MaxState].Ac);
+        Assert.Equal(PlanTuning.CoolCeiling, office[PlanTuning.MaxState1].Ac);
+        Assert.Equal(4, office[ModeProfile.BoostMode].Ac); // power saver's aggressive -> efficient aggressive
+    }
+
+    [Fact]
+    public void Office_is_never_less_efficient_than_Balanced()
+    {
+        var b = ModeProfile.Defaults(false);
+        var saver = b.PowerSaver.ToDictionary(x => x.Key, x => x.Value);
+        saver[ModeProfile.EnergyPreference] = new AcDc(20, 70); // a power saver set oddly
+        var office = ModeProfile.For(SystemMode.Office, b with { PowerSaver = saver });
+        Assert.Equal(new AcDc(45, 70), office[ModeProfile.EnergyPreference]);
+    }
+
+    [Fact]
+    public void Core_preference_only_on_a_processor_with_two_kinds_of_core()
+    {
+        var hybrid = ModeProfile.For(SystemMode.Office, ModeProfile.Defaults(true));
+        var plain = ModeProfile.For(SystemMode.Office, ModeProfile.Defaults(false));
+        Assert.Equal(4, hybrid[ModeProfile.Scheduling].Ac);
+        Assert.Equal(5, plain[ModeProfile.Scheduling].Ac);
+        Assert.Equal(2, ModeProfile.For(SystemMode.Performance, ModeProfile.Defaults(true))[ModeProfile.Scheduling].Ac);
+    }
+
+    [Fact]
+    public void The_modes_lean_from_efficiency_to_performance()
+    {
+        int Epp(SystemMode m) => ModeProfile.For(m, ModeProfile.Defaults(true))[ModeProfile.EnergyPreference].Ac;
         Assert.True(Epp(SystemMode.Office) > Epp(SystemMode.Gaming));
         Assert.True(Epp(SystemMode.Gaming) > Epp(SystemMode.Performance));
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(1, 3)]
+    [InlineData(2, 4)]
+    [InlineData(5, 4)]
+    public void Boost_modes_have_an_efficient_variant(int boost, int efficient) =>
+        Assert.Equal(efficient, ModeProfile.Efficient(boost));
+
+    [Fact]
+    public void This_machine_reads_a_baseline()
+    {
+        // Reads only; on any Windows the built-in plans answer.
+        var b = ModeProfile.ReadBaseline();
+        Assert.Equal(ModeProfile.Settings.Count, b.Balanced.Count);
     }
 }
