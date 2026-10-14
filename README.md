@@ -30,7 +30,7 @@ It is worth a look if:
 | The keyboard lighting gone after a restart until the vendor's app is opened | started with Windows, it sets the lighting back as it was left - colours, effect, brightness, the Fn+Space step - and again after sleep (the restart part is new since 0.6.2) |
 | A game running on the Intel graphics instead of the NVIDIA card | shows the graphics mode the firmware is in and switches it (Hybrid / Discrete / UMA), with a restart you can cancel |
 | You want to know what is heating the machine | overheat warnings name the programs on the chip; programs keeping a core busy for nothing are named |
-| A program (an installer, MATLAB) or a game in the wrong mode | a mode for a program while it runs; after a game played in a quiet mode, a question whether it should switch to Gaming next time |
+| A game or a long job in the wrong mode | Scan for games (Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox) switches to Gaming while a game runs; any other program can be added by hand; after a game played in a quiet mode, a question whether it should switch next time |
 
 What it does **not** do: fan curves or fan control (the fan turbo, Fn+1, is
 the controller's own and only the built-in keyboard switches it), raising
@@ -129,9 +129,11 @@ so a server that answers "not modified" sends no body.
 | Overheat warning | a threshold per chip, typeable; names the programs using the chip; a button that switches to Power Saver; the processor read from two sources - its own register at once, the controller as the reference - so a climb shows seconds earlier |
 | Cool down before it gets hot | the temperature followed, not just compared: heading for the line, a notification says to press Fn+1 for the fan turbo before it gets there - the turbo is the controller's own and only its keyboard switches it (see [docs/PROTOCOL.md](docs/PROTOCOL.md)); *Emergency Office*, off unless chosen, also holds the processor to 70% |
 | USB and Wi-Fi power saving, NVIDIA's power management mode | a switch each, Windows' or NVIDIA's own setting shown and changed - never by Nextcalibur on its own |
-| Programs busy at idle | a scan finds them; the ones you pick go into Windows' Efficiency mode, set again whenever they start; nothing closed |
+| Programs busy at idle | a scan finds them, or - switched on - one every 15 minutes while you are away; they go into Windows' Efficiency mode, set again whenever they start; nothing closed |
+| Crash protection and a standard log | a run that did not end cleanly is reported at the next start; crashes soon after starting make the next start a safe one; ISO 8601 log lines with levels, exception chains and fields; `nextcalibur selftest` checks every place it meets Windows and the hardware |
+| Battery wear | Windows' own battery report, one button in Settings |
 | Programs heating the machine for nothing | a program keeping a core or the graphics card busy, flat, for fifteen minutes in the background is named, with Task Manager a click away; nothing is ended |
-| A mode for a program | while a program on your list runs - MATLAB, an installer, a game - its mode is on, and yours comes back when it closes; told by Windows when programs start and stop, nothing polled; off until switched on |
+| A mode for a program | while a program on your list runs - a game, an editor, a long export - its mode is on, and yours comes back when it closes; told by Windows when programs start where Windows does, otherwise a look at the process list every 3 seconds; off until switched on, or until Scan for games is pressed |
 | Asked once about a game played in a quiet mode | after a program that covered the screen closes, the window asks whether it should switch to Gaming or Performance from then on; the answer is a program rule; browsers and players never asked; nothing during the game, and heat from that time shown as one summary after it |
 | The Fn keys from an external keyboard | the keyboard light and the system mode as shortcuts, off until switched on, any keys; refused when Windows, another program or a keyboard layout already uses them, and moved to free keys if that changes later |
 | Only on the laptop it was made for | the machine is scanned at setup and every start (the firmware's own SMBIOS tables included) and the verdict kept; on any other laptop everything that is Casper's own stays off and Windows keeps its settings; a restore point is made before Nextcalibur's first changes |

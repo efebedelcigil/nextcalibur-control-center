@@ -20,7 +20,8 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 - A game on the Intel graphics: the graphics mode is shown as the firmware has it and can be switched (Hybrid / Discrete / UMA), with a cancellable restart.
 - Display-off and sleep timeouts per mode, plugged in and on battery, in step with Windows' Control Panel.
 - A mode while a chosen program runs (for example Power Saver while MATLAB installs add-ons).
-- Programs busy while nobody uses the machine: found on a scan, the ones picked put into Windows' Efficiency mode.
+- Programs busy while nobody uses the machine: found on a scan (or automatically, every 15 minutes while away), put into Windows' Efficiency mode.
+- Games in the wrong mode: Scan for games reads Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox installs and switches to Gaming while a game runs.
 - NVIDIA's power management mode left at "Prefer maximum performance" (the card at full clock at idle): shown and changeable.
 
 ## What it does not do
