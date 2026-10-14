@@ -5293,19 +5293,19 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L478"
+            "line": "L494"
           },
           {
             "callee": "TryParse",
             "receiver_type": "Enum",
             "lang": "csharp",
-            "line": "L497"
+            "line": "L513"
           }
         ]
       },
       "norm_label": ".led()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L469"
+      "source_location": "L485"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_tryparseeffect",
@@ -5323,7 +5323,7 @@
       },
       "norm_label": ".tryparseeffect()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L533"
+      "source_location": "L549"
     },
     {
       "id": "src_nextcalibur_core_configuration_ledstate_nextcalibur_core_configuration_ledstate_getcolour",
@@ -12074,16 +12074,28 @@
         ],
         "unresolved_calls": [
           {
+            "callee": "Sqrt",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L345"
+          },
+          {
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L346"
+            "line": "L348"
           },
           {
             "callee": "Sleep",
             "receiver_type": "Thread",
             "lang": "csharp",
-            "line": "L377"
+            "line": "L392"
+          },
+          {
+            "callee": "Cancel",
+            "receiver_type": "CancellationTokenSource",
+            "lang": "csharp",
+            "line": "L401"
           }
         ]
       },
@@ -12109,25 +12121,25 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L412"
+            "line": "L428"
           },
           {
             "callee": "FromSeconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L440"
+            "line": "L456"
           },
           {
             "callee": "Sleep",
             "receiver_type": "Thread",
             "lang": "csharp",
-            "line": "L446"
+            "line": "L462"
           }
         ]
       },
       "norm_label": ".limits()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L398"
+      "source_location": "L414"
     },
     {
       "id": "src_nextcalibur_core_hardware_cpulimits_nextcalibur_core_hardware_cpulimits_decodelimitreasons",
@@ -27279,13 +27291,13 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L567"
+            "line": "L583"
           }
         ]
       },
       "norm_label": ".overlay()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L561"
+      "source_location": "L577"
     },
     {
       "id": "src_nextcalibur_core_power_poweroverlay_nextcalibur_core_power_poweroverlays_describe",
@@ -27629,7 +27641,7 @@
       },
       "norm_label": ".error()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L650"
+      "source_location": "L666"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_events",
@@ -27709,7 +27721,7 @@
       },
       "norm_label": ".findstocksoftware()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L626"
+      "source_location": "L642"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_gpu",
@@ -27819,13 +27831,13 @@
             "callee": "GetCurrent",
             "receiver_type": "WindowsIdentity",
             "lang": "csharp",
-            "line": "L645"
+            "line": "L661"
           }
         ]
       },
       "norm_label": ".iselevated()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L643"
+      "source_location": "L659"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_main",
@@ -27871,13 +27883,13 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L622"
+            "line": "L638"
           }
         ]
       },
       "norm_label": ".printsample()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L620"
+      "source_location": "L636"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_sensors",
@@ -27913,7 +27925,7 @@
       },
       "norm_label": ".tryparsergb()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L549"
+      "source_location": "L565"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_warn",
@@ -27931,7 +27943,7 @@
       },
       "norm_label": ".warn()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L649"
+      "source_location": "L665"
     },
     {
       "id": "src_nextcalibur_cli_program_nextcalibur_cli_program_write",
@@ -27951,13 +27963,13 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L656"
+            "line": "L672"
           }
         ]
       },
       "norm_label": ".write()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L652"
+      "source_location": "L668"
     },
     {
       "id": "src_nextcalibur_core_hardware_ecmailbox_nextcalibur_core_hardware_ecmailbox_issupported",
@@ -28155,19 +28167,19 @@
             "callee": "WriteLine",
             "receiver_type": "Console",
             "lang": "csharp",
-            "line": "L461"
+            "line": "L477"
           },
           {
             "callee": "Sleep",
             "receiver_type": "Thread",
             "lang": "csharp",
-            "line": "L464"
+            "line": "L480"
           }
         ]
       },
       "norm_label": ".clocks()",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L452"
+      "source_location": "L468"
     },
     {
       "id": "src_nextcalibur_core_hardware_clockreader_nextcalibur_core_hardware_cpuclockreader_dispose",
@@ -71931,7 +71943,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L650",
+      "source_location": "L666",
       "weight": 1.0
     },
     {
@@ -71967,7 +71979,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L345",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -71979,7 +71991,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L351",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -71991,7 +72003,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L356",
+      "source_location": "L371",
       "weight": 1.0
     },
     {
@@ -72003,7 +72015,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L361",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -72087,7 +72099,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L498",
+      "source_location": "L514",
       "weight": 1.0
     },
     {
@@ -72099,7 +72111,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L508",
+      "source_location": "L524",
       "weight": 1.0
     },
     {
@@ -72111,7 +72123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L411",
+      "source_location": "L427",
       "weight": 1.0
     },
     {
@@ -72123,7 +72135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L418",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -72135,7 +72147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L436",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -72147,7 +72159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L437",
+      "source_location": "L453",
       "weight": 1.0
     },
     {
@@ -72159,7 +72171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L438",
+      "source_location": "L454",
       "weight": 1.0
     },
     {
@@ -72339,7 +72351,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L567",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -72351,7 +72363,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L585",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -72459,7 +72471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L649",
+      "source_location": "L665",
       "weight": 1.0
     },
     {
@@ -93183,7 +93195,7 @@
         "ref_token": "LedZone"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L497",
+      "source_location": "L513",
       "weight": 1.0
     },
     {
@@ -101140,7 +101152,7 @@
         "ref_token": "B"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L549",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -101515,7 +101527,7 @@
         "ref_token": "ConsoleColor"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L652",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -102415,7 +102427,7 @@
         "ref_token": "G"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L549",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -104980,7 +104992,7 @@
         "ref_token": "LedEffect"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L533",
+      "source_location": "L549",
       "weight": 1.0
     },
     {
@@ -105610,7 +105622,7 @@
         "ref_token": "R"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L549",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -106930,7 +106942,7 @@
         "ref_token": "ThermalSample"
       },
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L620",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -126787,7 +126799,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L398",
+      "source_location": "L414",
       "weight": 1.0
     },
     {
@@ -126798,7 +126810,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L452",
+      "source_location": "L468",
       "weight": 1.0
     },
     {
@@ -126809,7 +126821,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L469",
+      "source_location": "L485",
       "weight": 1.0
     },
     {
@@ -126820,7 +126832,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L533",
+      "source_location": "L549",
       "weight": 1.0
     },
     {
@@ -126831,7 +126843,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L549",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -126842,7 +126854,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L561",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -126853,7 +126865,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L620",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -126864,7 +126876,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L626",
+      "source_location": "L642",
       "weight": 1.0
     },
     {
@@ -126875,7 +126887,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L643",
+      "source_location": "L659",
       "weight": 1.0
     },
     {
@@ -126886,7 +126898,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L649",
+      "source_location": "L665",
       "weight": 1.0
     },
     {
@@ -126897,7 +126909,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L650",
+      "source_location": "L666",
       "weight": 1.0
     },
     {
@@ -126908,7 +126920,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L652",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -137303,7 +137315,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L459",
+      "source_location": "L475",
       "weight": 1.0
     },
     {
@@ -137315,7 +137327,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L460",
+      "source_location": "L476",
       "weight": 1.0
     },
     {
@@ -137327,7 +137339,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L336",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -137339,7 +137351,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L342",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
@@ -137351,7 +137363,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L373",
+      "source_location": "L388",
       "weight": 1.0
     },
     {
@@ -137363,7 +137375,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L378",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -137375,7 +137387,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L379",
+      "source_location": "L394",
       "weight": 1.0
     },
     {
@@ -137387,7 +137399,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L381",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -137399,7 +137411,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L491",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -137411,7 +137423,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L503",
+      "source_location": "L519",
       "weight": 1.0
     },
     {
@@ -137423,7 +137435,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L513",
+      "source_location": "L529",
       "weight": 1.0
     },
     {
@@ -137435,7 +137447,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L523",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -137447,7 +137459,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L402",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -137459,7 +137471,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L408",
+      "source_location": "L424",
       "weight": 1.0
     },
     {
@@ -137471,7 +137483,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L565",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -137483,7 +137495,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L602",
+      "source_location": "L618",
       "weight": 1.0
     },
     {
@@ -139295,7 +139307,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L454",
+      "source_location": "L470",
       "weight": 1.0
     },
     {
@@ -139307,7 +139319,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L455",
+      "source_location": "L471",
       "weight": 1.0
     },
     {
@@ -139343,7 +139355,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L335",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -139355,7 +139367,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L368",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -139367,7 +139379,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L368",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -139379,7 +139391,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L371",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -139391,7 +139403,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L471",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -139403,7 +139415,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L472",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -139415,7 +139427,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L401",
+      "source_location": "L417",
       "weight": 1.0
     },
     {
@@ -139427,7 +139439,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L428",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -139439,7 +139451,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.Cli/Program.cs",
-      "source_location": "L564",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -140884,5 +140896,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "30d8886722debad7a37a2257ce290bbd0f6119c8"
+  "built_at_commit": "8525aa321c8fb14a80c1fc619b94cbb190d9b83f"
 }
