@@ -174,6 +174,7 @@ public partial class MainWindow
         WireProgramRulesPage();
         WireIdlePage();
         WireCeilingsPage();
+        WireNvPower();
         _settingsPageWired = true;
         LoadSettingsPage();
     }

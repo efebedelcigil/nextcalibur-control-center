@@ -44,6 +44,7 @@ internal static class Program
                 "heat" => Heat(args),
                 "limits" => Limits(args),
                 "preflight" => PreflightCommand(),
+                "nvpower" => NvPower(),
                 _ => Help(),
             };
         }
@@ -476,6 +477,18 @@ internal static class Program
             Console.WriteLine($"{group.Key}:");
             foreach (var i in group) Console.WriteLine($"  {i.Name,-32} pid {i.Pid,6}  cpu {i.CpuPercent,5:0.0}%  io {i.MegabytesPerSecond,6:0.00} MB/s  {i.ServiceName}");
         }
+        return 0;
+    }
+
+    /// <summary>NVIDIA's power management mode on the global profile. Reads only.</summary>
+    private static int NvPower()
+    {
+        if (NvidiaPowerMode.Read() is not { } mode)
+        {
+            Error("Could not be read (no NVIDIA driver, or nvapi64.dll not trusted).");
+            return 2;
+        }
+        Console.WriteLine($"Power management mode: {mode.Value} ({(mode.Set ? "set on the global profile" : "not set - the driver's default")})");
         return 0;
     }
 

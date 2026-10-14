@@ -131,6 +131,65 @@ public partial class MainWindow
         RefreshCeilingRows();
     }
 
+    // ------------------------------------------------- NVIDIA's power mode
+
+    private ComboBox? _nvPower;
+    private bool _nvPowerLoading;
+    private uint? _nvPowerShown;
+
+    /// <summary>NVIDIA's power management mode, the driver's global setting (see NvidiaPowerMode).</summary>
+    private void WireNvPower()
+    {
+        _nvPower = FindName("SettingNvPower") as ComboBox;
+        if (_nvPower is null) return;
+        _nvPower.SelectionChanged += async (_, _) =>
+        {
+            if (_nvPowerLoading || _nvPower.SelectedItem is not ComboBoxItem { Tag: uint value } || value == _nvPowerShown) return;
+            await SetNvPowerAsync(value);
+        };
+        _ = LoadNvPowerAsync();
+    }
+
+    private async Task LoadNvPowerAsync()
+    {
+        if (_nvPower is null) return;
+        var now = await Task.Run(NvidiaPowerMode.Read);
+        _nvPowerLoading = true;
+        try
+        {
+            _nvPower.Items.Clear();
+            foreach (var (value, key) in new[] { (NvidiaPowerMode.OptimalPower, "S.NvPower.Normal"), (NvidiaPowerMode.Adaptive, "S.NvPower.Adaptive"), (NvidiaPowerMode.PreferMaximum, "S.NvPower.Maximum") })
+            {
+                var item = new ComboBoxItem { Content = Strings.Get(key), Tag = value };
+                _nvPower.Items.Add(item);
+                if (now?.Value == value) _nvPower.SelectedItem = item;
+            }
+            _nvPowerShown = now?.Value;
+            _nvPower.IsEnabled = now is not null && _support.AllowsReads;
+            if (now is null) _nvPower.ToolTip = Strings.Get("S.NvPower.Unavailable");
+        }
+        finally
+        {
+            _nvPowerLoading = false;
+        }
+    }
+
+    private async Task SetNvPowerAsync(uint value)
+    {
+        var before = _nvPowerShown;
+        if (!await ConfirmRiskyAsync("nvidia-power-mode", Strings.Get("S.NvPower.ConfirmTitle"), Strings.Get("S.NvPower.ConfirmBody"),
+                details: new Dictionary<string, object?> { ["from"] = before, ["to"] = value }))
+        {
+            await LoadNvPowerAsync();
+            return;
+        }
+        var ok = await Task.Run(() => NvidiaPowerMode.Write(value));
+        Log.Info("gpu", $"NVIDIA power management mode {before} -> {value}: {(ok ? "done" : "failed")}");
+        Audit("nvidia-power-mode", ok ? "done" : "failed", ("from", before), ("to", value));
+        if (!ok) Dialogs.Warn("Nextcalibur", Strings.Get("S.NvPower.Failed"));
+        await LoadNvPowerAsync();
+    }
+
     // ------------------------------------------------------------ the test
 
     /// <summary>Opens the ceiling test for a mode.</summary>

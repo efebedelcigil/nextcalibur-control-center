@@ -78,6 +78,14 @@ public static class Integrity
 
     public static string NvmlPath => Path.Combine(Environment.SystemDirectory, "nvml.dll");
 
+    private static readonly Lazy<bool> NvapiTrusted = new(() => Check("nvapi", NvapiPath, Microsoft, Nvidia));
+
+    /// <summary>NVIDIA's nvapi64.dll, for the driver's power management mode.</summary>
+    public static string NvapiPath => Path.Combine(Environment.SystemDirectory, "nvapi64.dll");
+
+    /// <summary>Whether nvapi64.dll is signed as Windows installed it. Asked before it is loaded, like nvml.dll.</summary>
+    public static bool NvapiIsTrusted() => NvapiTrusted.Value;
+
     /// <summary>
     /// Whether nvml.dll may be loaded. Answered once per process: once
     /// loaded, a library is what it was when it was loaded, whatever happens
