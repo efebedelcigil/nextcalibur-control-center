@@ -256,9 +256,9 @@ public partial class MainWindow
     /// <summary>
     /// Raphire's Win11Debloat, the owner's ask (14 October 2026) for the ads
     /// inside Windows 11 - Start, Settings, the lock screen, search. Chosen
-    /// over OFGB (no release since May 2024) and a hosts list (domains, not
-    /// Windows' own suggestions) for being kept up: a release most months,
-    /// MIT. Run the way its author documents, in an administrator PowerShell
+    /// for being kept up - a release most months, MIT - and for turning off
+    /// Windows' own suggestions rather than blocking domains. Run the way its
+    /// author documents, in an administrator PowerShell
     /// with its own menu; asked first like WinUtil, with a restore point
     /// offered, since it changes Windows' settings. What is chosen in it is
     /// the person's.
