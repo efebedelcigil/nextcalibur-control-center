@@ -68,4 +68,19 @@ public static partial class ProgramRules
         }
         return best;
     }
+
+    /// <summary>
+    /// Whether a started or stopped image is one of the rules'. The trace
+    /// events carry the kernel's image name, cut at 15 characters
+    /// ("AddOnInstaller.exe" arrives as "AddOnInstaller."), so a 15-character
+    /// name matches any rule it is the start of; the application checks
+    /// again against the full process name.
+    /// </summary>
+    public static bool IsWatched(IReadOnlySet<string> names, string? image)
+    {
+        if (string.IsNullOrEmpty(image)) return false;
+        var name = image.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? image[..^4] : image;
+        if (names.Contains(name)) return true;
+        return image.Length == 15 && names.Any(n => (n + ".exe").StartsWith(image, StringComparison.OrdinalIgnoreCase));
+    }
 }

@@ -40,33 +40,40 @@ public partial class MainWindow
             return;
         }
 
-        // The trace events carry the kernel's image name, which is cut at 15
-        // characters ("AddOnInstaller.exe" arrives as "AddOnInstaller."), so
-        // both spellings are asked for; the name itself is checked again by
-        // EvaluateProgramRules, against the full process name.
-        var spellings = names.SelectMany(n => new[] { n + ".exe", (n + ".exe")[..Math.Min(15, n.Length + 4)] })
-            .Distinct(StringComparer.OrdinalIgnoreCase);
-        var filter = string.Join(" OR ", spellings.Select(n => $"ProcessName = '{n}'"));
+        // One watch for every program start and stop, the names checked here
+        // (14 October 2026): a WHERE clause with a term for each name was
+        // refused by Windows ("Invalid parameter") once the game scan had
+        // added a dozen, and every rule silently stopped working. Process
+        // starts are a few a second at most; a set lookup each costs nothing.
+        var watched = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
         try
         {
-            _ruleStarts = new ManagementEventWatcher(new WqlEventQuery($"SELECT ProcessName FROM Win32_ProcessStartTrace WHERE {filter}"));
-            _ruleStops = new ManagementEventWatcher(new WqlEventQuery($"SELECT ProcessName FROM Win32_ProcessStopTrace WHERE {filter}"));
-            _ruleStarts.EventArrived += (_, _) => Dispatcher.BeginInvoke(EvaluateProgramRules);
+            _ruleStarts = new ManagementEventWatcher(new WqlEventQuery("SELECT ProcessName FROM Win32_ProcessStartTrace"));
+            _ruleStops = new ManagementEventWatcher(new WqlEventQuery("SELECT ProcessName FROM Win32_ProcessStopTrace"));
+            _ruleStarts.EventArrived += (_, e) =>
+            {
+                if (ProgramRules.IsWatched(watched, e.NewEvent["ProcessName"] as string)) Dispatcher.BeginInvoke(EvaluateProgramRules);
+            };
             // A process that has just stopped can still be listed for a moment:
             // looked at again a little later, or the rule would never end.
-            _ruleStops.EventArrived += (_, _) => Dispatcher.BeginInvoke(async () =>
+            _ruleStops.EventArrived += (_, e) =>
             {
-                EvaluateProgramRules();
-                await Task.Delay(1500);
-                EvaluateProgramRules();
-            });
+                if (!ProgramRules.IsWatched(watched, e.NewEvent["ProcessName"] as string)) return;
+                Dispatcher.BeginInvoke(async () =>
+                {
+                    EvaluateProgramRules();
+                    await Task.Delay(1500);
+                    EvaluateProgramRules();
+                });
+            };
             _ruleStarts.Start();
             _ruleStops.Start();
-            Log.Info("rules", $"Watching for {string.Join(", ", names)}");
+            Log.Info("rules", "Watching for program starts", ("programs", names.Count), ("names", string.Join(", ", names)));
         }
         catch (Exception ex) when (ex is ManagementException or UnauthorizedAccessException or System.Runtime.InteropServices.COMException)
         {
-            Log.Warn("rules", "Could not watch for programs starting: " + ex.Message);
+            // Not silent and not stuck: the slow timer looks instead (see ProgramRulesTick).
+            Log.Warn("rules", "Could not watch for programs starting; looking every minute instead: " + ex.Message);
             StopProgramRuleWatch();
         }
         EvaluateProgramRules();
@@ -180,7 +187,9 @@ public partial class MainWindow
     /// </summary>
     private void ProgramRulesTick()
     {
-        if (_activeRule is null || DateTime.UtcNow - _rulesLookedAt < TimeSpan.FromMinutes(1)) return;
+        // With no watch (Windows refused it), the rules are looked at here instead.
+        var noWatch = _ruleStarts is null && ActiveRuleNames().Count > 0;
+        if ((_activeRule is null && !noWatch) || DateTime.UtcNow - _rulesLookedAt < TimeSpan.FromMinutes(1)) return;
         _rulesLookedAt = DateTime.UtcNow;
         EvaluateProgramRules();
     }
