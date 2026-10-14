@@ -1,7 +1,7 @@
 # Graph Report - nextcalibur-control-center  (2026-10-14)
 
 ## Corpus Check
-- 182 files · ~231,186 words
+- 182 files · ~231,285 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 3, .wsb 2, .iss 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7fc5fdfc`
+- Built from commit: `087cd458`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
