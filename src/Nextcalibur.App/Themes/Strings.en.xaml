@@ -418,7 +418,7 @@
 
     <!-- Modes -->
     <sys:String x:Key="S.Mode.ChangeFailed">Could not change the mode</sys:String>
-    <sys:String x:Key="S.Power.NotInMode">Not available in {0} mode. Change the mode on the System page first.</sys:String>
+    <sys:String x:Key="S.Power.NotInMode">Not available in {0}. Change the mode on the System page.</sys:String>
 
     <!-- Graphics mode -->
     <sys:String x:Key="S.Gpu.Title">Graphics mode</sys:String>
@@ -633,10 +633,10 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Core.Overlay.Better">Better performance</sys:String>
     <sys:String x:Key="S.Core.Overlay.Best">Best performance</sys:String>
     <sys:String x:Key="S.Core.Overlay.Unknown">Unrecognised</sys:String>
-    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">Longest battery life and the quietest fans. The processor is held back, so heavy work takes longer.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows decides. Speeds up when you need it and settles down when you don't. The right choice for most of the time.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BetterDesc">Leans towards speed. Slightly warmer and noisier than Balanced, with quicker responses under load.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BestDesc">Everything the machine has. Expect noticeably more heat, louder fans and shorter battery life.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">Longest battery life, quietest fans. Heavy work takes longer.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows decides: fast when needed, calm otherwise.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BetterDesc">Quicker under load; a little warmer and louder.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BestDesc">Everything the machine has: more heat, louder fans, less battery.</sys:String>
     <sys:String x:Key="S.Core.Repair.Cleared">Cleared the stuck Best-performance overlay (power mode is now Balanced).</sys:String>
     <sys:String x:Key="S.Core.Repair.KeyClosed">Could not open the overlay setting key for writing.</sys:String>
     <sys:String x:Key="S.Core.Repair.Guarded">Set the Best-performance overlay's minimum processor state to {0}% so it can no longer pin the CPU if re-activated.</sys:String>

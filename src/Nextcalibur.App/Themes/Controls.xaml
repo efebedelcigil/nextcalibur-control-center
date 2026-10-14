@@ -660,13 +660,13 @@
     <Style x:Key="PowerModeCard" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{DynamicResource Muted}" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Height" Value="240" />
+        <Setter Property="Height" Value="200" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="CardBorder" Background="{DynamicResource CardBackground}"
                             BorderBrush="{DynamicResource CardBorder}" BorderThickness="1"
-                            CornerRadius="8" Padding="14,18">
+                            CornerRadius="8" Padding="10,12">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>

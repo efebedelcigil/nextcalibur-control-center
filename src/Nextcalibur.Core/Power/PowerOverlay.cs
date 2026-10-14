@@ -35,16 +35,16 @@ public static class PowerOverlays
     public static IReadOnlyList<PowerModeOption> All =>
     [
         new(BetterBattery, Describe(BetterBattery),
-            Words.Get("S.Core.Overlay.EfficiencyDesc", "Longest battery life and the quietest fans. The processor is held back, so heavy work takes longer.")),
+            Words.Get("S.Core.Overlay.EfficiencyDesc", "Longest battery life, quietest fans. Heavy work takes longer.")),
 
         new(None, Describe(None),
-            Words.Get("S.Core.Overlay.BalancedDesc", "Windows decides. Speeds up when you need it and settles down when you don't. The right choice for most of the time.")),
+            Words.Get("S.Core.Overlay.BalancedDesc", "Windows decides: fast when needed, calm otherwise.")),
 
         new(HighPerformance, Describe(HighPerformance),
-            Words.Get("S.Core.Overlay.BetterDesc", "Leans towards speed. Slightly warmer and noisier than Balanced, with quicker responses under load.")),
+            Words.Get("S.Core.Overlay.BetterDesc", "Quicker under load; a little warmer and louder.")),
 
         new(MaxPerformance, Describe(MaxPerformance),
-            Words.Get("S.Core.Overlay.BestDesc", "Everything the machine has. Expect noticeably more heat, louder fans and shorter battery life.")),
+            Words.Get("S.Core.Overlay.BestDesc", "Everything the machine has: more heat, louder fans, less battery.")),
     ];
 }
 

@@ -416,7 +416,7 @@
 
     <!-- Modlar -->
     <sys:String x:Key="S.Mode.ChangeFailed">Mod değiştirilemedi</sys:String>
-    <sys:String x:Key="S.Power.NotInMode">{0} modunda kullanılamaz. Önce Sistem sayfasından modu değiştirin.</sys:String>
+    <sys:String x:Key="S.Power.NotInMode">{0} modunda kullanılamaz. Modu Sistem sayfasından değiştirin.</sys:String>
 
     <!-- Grafik modu -->
     <sys:String x:Key="S.Gpu.Title">Grafik modu</sys:String>
@@ -631,10 +631,10 @@
     <sys:String x:Key="S.Core.Overlay.Better">Daha iyi performans</sys:String>
     <sys:String x:Key="S.Core.Overlay.Best">En iyi performans</sys:String>
     <sys:String x:Key="S.Core.Overlay.Unknown">Tanınmayan</sys:String>
-    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">En uzun pil ömrü ve en sessiz fanlar. İşlemci geride tutulur; ağır işler daha uzun sürer.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows karar verir. Gerektiğinde hızlanır, gerekmediğinde yavaşlar. Çoğu zaman için doğru seçim.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BetterDesc">Hıza yaslanır. Dengeli'den biraz daha sıcak ve gürültülü; yük altında daha çabuk tepki verir.</sys:String>
-    <sys:String x:Key="S.Core.Overlay.BestDesc">Makinenin elindeki her şey. Belirgin biçimde daha çok ısı, daha gürültülü fan ve daha kısa pil ömrü bekleyin.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.EfficiencyDesc">En uzun pil ömrü, en sessiz fanlar. Ağır işler daha uzun sürer.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BalancedDesc">Windows karar verir: gerektiğinde hızlı, gerisinde sakin.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BetterDesc">Yük altında daha çabuk; biraz daha sıcak ve gürültülü.</sys:String>
+    <sys:String x:Key="S.Core.Overlay.BestDesc">Makinenin her şeyi: daha çok ısı, daha gürültülü fan, daha az pil.</sys:String>
     <sys:String x:Key="S.Core.Repair.Cleared">Takılı kalan En iyi performans katmanı temizlendi (güç modu artık Dengeli).</sys:String>
     <sys:String x:Key="S.Core.Repair.KeyClosed">Katman ayarı anahtarı yazmak için açılamadı.</sys:String>
     <sys:String x:Key="S.Core.Repair.Guarded">En iyi performans katmanının en düşük işlemci durumu %{0} yapıldı; yeniden etkinleşse bile CPU'yu artık sabitleyemez.</sys:String>
