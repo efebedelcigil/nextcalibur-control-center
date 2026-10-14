@@ -38,6 +38,8 @@ public static class ModeProfile
     public static readonly Guid Scheduling = new("93b8b6dc-0698-4d1c-9ee4-0644e900c85d");        // SCHEDPOLICY
     public static readonly Guid ShortScheduling = new("bae08b81-2d5e-4688-ad6a-13243356654b");   // SHORTSCHEDPOLICY
     public static readonly Guid CoolingPolicy = new("94d3a615-a899-4ac5-ae2b-e4d8f634367f");     // SYSCOOLPOL
+    public static readonly Guid FrequencyMax = new("75b0ae3f-bce0-45a7-8c89-c9611c25e100");      // PROCFREQMAX, MHz, 0 = none
+    public static readonly Guid FrequencyMax1 = new("75b0ae3f-bce0-45a7-8c89-c9611c25e101");     // PROCFREQMAX1
 
     // Windows' built-in plans: the same identifiers on every installation.
     public static readonly Guid PowerSaverPlan = new("a1841308-3541-4fab-bc81-f71556f20b4a");
@@ -58,7 +60,36 @@ public static class ModeProfile
     [
         PlanTuning.MinState, PlanTuning.MaxState, PlanTuning.MaxState1,
         BoostMode, EnergyPreference, EnergyPreference1, Scheduling, ShortScheduling, CoolingPolicy,
+        FrequencyMax, FrequencyMax1,
     ];
+
+    /// <summary>
+    /// The person's ceilings for a mode, within the measured upper bounds
+    /// (the owner's rule, 14 October 2026): Power Saver as a percentage - any
+    /// value under 100 turns the boost off - and the boosting modes as a
+    /// clock limit in MHz, the boost kept up to it. Null means the mode's own.
+    /// </summary>
+    public sealed record Limits(int? PercentCeiling, int? FrequencyMhz)
+    {
+        public static Limits None { get; } = new(null, null);
+    }
+
+    /// <summary>The highest ceiling a mode may have, in percent: Power Saver's measured 90, the others the processor's own.</summary>
+    public static int UpperPercent(SystemMode mode) => mode == SystemMode.Office ? PlanTuning.CoolCeiling : 100;
+
+    /// <summary>The lowest percentage offered: below it the machine is too slow to be worth it.</summary>
+    public const int LowestPercent = 50;
+
+    /// <summary>The range a clock limit may be set in, in MHz; 0 is no limit.</summary>
+    public const int LowestFrequencyMhz = 1500, HighestFrequencyMhz = 6000;
+
+    /// <summary>A percentage ceiling as it may be written: within the lowest and the mode's upper bound.</summary>
+    public static int ClampPercent(SystemMode mode, int? wanted) =>
+        Math.Clamp(wanted ?? UpperPercent(mode), LowestPercent, UpperPercent(mode));
+
+    /// <summary>A clock limit as it may be written: 0 (none) or within the range.</summary>
+    public static int ClampFrequency(int? wanted) =>
+        wanted is not { } f || f <= 0 ? 0 : Math.Clamp(f, LowestFrequencyMhz, HighestFrequencyMhz);
 
     /// <summary>
     /// What Windows chose on this machine: its three built-in plans' values
@@ -78,6 +109,7 @@ public static class ModeProfile
         [PlanTuning.MinState] = Both(5), [PlanTuning.MaxState] = Both(100), [PlanTuning.MaxState1] = Both(100),
         [BoostMode] = Both(2), [EnergyPreference] = Both(60), [EnergyPreference1] = Both(60),
         [Scheduling] = Both(5), [ShortScheduling] = Both(5), [CoolingPolicy] = Both(0),
+        [FrequencyMax] = Both(0), [FrequencyMax1] = Both(0),
     };
 
     private static readonly Dictionary<Guid, PlanTuning.AcDc> BalancedDefaults = new()
@@ -85,6 +117,7 @@ public static class ModeProfile
         [PlanTuning.MinState] = Both(5), [PlanTuning.MaxState] = Both(100), [PlanTuning.MaxState1] = Both(100),
         [BoostMode] = Both(2), [EnergyPreference] = new(45, 50), [EnergyPreference1] = new(45, 50),
         [Scheduling] = Both(5), [ShortScheduling] = Both(5), [CoolingPolicy] = new(1, 0),
+        [FrequencyMax] = Both(0), [FrequencyMax1] = Both(0),
     };
 
     private static readonly Dictionary<Guid, PlanTuning.AcDc> HighDefaults = new()
@@ -92,6 +125,7 @@ public static class ModeProfile
         [PlanTuning.MinState] = new(100, 5), [PlanTuning.MaxState] = Both(100), [PlanTuning.MaxState1] = Both(100),
         [BoostMode] = Both(5), [EnergyPreference] = Both(0), [EnergyPreference1] = Both(0),
         [Scheduling] = Both(5), [ShortScheduling] = Both(5), [CoolingPolicy] = Both(1),
+        [FrequencyMax] = Both(0), [FrequencyMax1] = Both(0),
     };
 
     /// <summary>Reads the baseline from this machine; a value that cannot be read is Windows' documented default.</summary>
@@ -104,6 +138,27 @@ public static class ModeProfile
 
     /// <summary>The baseline with Windows' documented defaults throughout, for tests and as a last resort.</summary>
     public static Baseline Defaults(bool hybrid) => new(SaverDefaults, BalancedDefaults, HighDefaults, hybrid);
+
+    /// <summary>What a mode's plan is given, setting by setting, from the baseline and the person's ceilings.</summary>
+    public static IReadOnlyDictionary<Guid, PlanTuning.AcDc> For(SystemMode mode, Baseline b, Limits? limits)
+    {
+        var values = For(mode, b).ToDictionary(kv => kv.Key, kv => kv.Value);
+        if (values.Count == 0) return values;
+        limits ??= Limits.None;
+
+        if (mode == SystemMode.Office)
+        {
+            var percent = ClampPercent(mode, limits.PercentCeiling);
+            values[PlanTuning.MaxState] = values[PlanTuning.MaxState1] = Both(percent);
+            values[FrequencyMax] = values[FrequencyMax1] = Both(0);
+        }
+        else
+        {
+            var mhz = ClampFrequency(limits.FrequencyMhz);
+            values[FrequencyMax] = values[FrequencyMax1] = Both(mhz);
+        }
+        return values;
+    }
 
     /// <summary>What a mode's plan is given, setting by setting, from the baseline.</summary>
     public static IReadOnlyDictionary<Guid, PlanTuning.AcDc> For(SystemMode mode, Baseline b)

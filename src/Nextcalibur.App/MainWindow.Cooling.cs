@@ -52,7 +52,7 @@ public partial class MainWindow
                     Log.Info("power", $"{mode} plan's display timeout was never; set to {PlanTuning.DisplayOffSeconds / 60} minutes");
                     Audit("plan-display-timeout", "done-automatically", ("mode", mode.ToString()), ("to", PlanTuning.DisplayOffSeconds));
                 }
-                var changed = PlanTuning.ApplyProfile(mode, plan.Plan, baseline);
+                var changed = PlanTuning.ApplyProfile(mode, plan.Plan, baseline, _settings.LimitsFor(mode));
                 if (changed.Count == 0) continue;
                 Log.Info("power", $"{mode} plan given the mode profile: {changed.Count} setting(s)");
                 Audit("plan-profile", "done-automatically", ("mode", mode.ToString()),
@@ -86,6 +86,8 @@ public partial class MainWindow
 
     private void StartCooling(ThermalSample s)
     {
+        // On a plan that is none of the modes', its ceiling is not lowered.
+        if (OnForeignPlan) return;
         try
         {
             _coolingCapped = _settings.AutoCooling && PlanTuning.StartCooling();

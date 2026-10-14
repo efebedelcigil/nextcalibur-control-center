@@ -1810,6 +1810,21 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Processor ceilings: each mode's, within the measured upper bounds -->
+                                <TextBlock Text="{DynamicResource S.Settings.GroupCeilings}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
+                                    <StackPanel>
+                                        <StackPanel Margin="0,3">
+                                            <TextBlock Text="{DynamicResource S.Settings.CeilingsTitle}" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Ink}" />
+                                            <TextBlock Text="{DynamicResource S.Settings.CeilingsDesc}" TextWrapping="Wrap"
+                                                       Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+                                        <StackPanel x:Name="CeilingRows" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Sleep and screen: each mode's timeouts, and the screen saver -->
                                 <TextBlock Text="{DynamicResource S.Settings.GroupIdle}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">

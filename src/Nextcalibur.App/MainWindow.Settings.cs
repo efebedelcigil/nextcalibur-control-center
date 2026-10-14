@@ -173,6 +173,7 @@ public partial class MainWindow
         WireFnShortcutsPage();
         WireProgramRulesPage();
         WireIdlePage();
+        WireCeilingsPage();
         _settingsPageWired = true;
         LoadSettingsPage();
     }

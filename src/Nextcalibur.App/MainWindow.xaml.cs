@@ -341,6 +341,7 @@ public partial class MainWindow : Window
         {
             SystemModeService.EnsurePlansExist();
             TunePlansAtStart();
+            RememberProfileWrites();
             App.RunPendingOverlayRepair();
             RememberIdleTimeouts();
         }
@@ -1018,6 +1019,18 @@ public partial class MainWindow : Window
     {
         if (!_support.AllowsWrites) return;
 
+        // A plan that is neither a mode's nor Windows' Balanced - where Windows
+        // comes up after an update - was chosen by somebody: it stays, and
+        // the automatic parts stand down until a mode is chosen.
+        var active = PlanTuning.ActivePlan();
+        var modePlans = SystemModes.InOrder.Select(SystemModeService.PlanFor).OfType<(Guid Plan, bool Ours)>().Select(p => p.Plan).ToHashSet();
+        if (active != Guid.Empty && active != ModeProfile.BalancedPlan && modePlans.Count > 0 && !modePlans.Contains(active))
+        {
+            _foreignPlan = true;
+            Log.Info("plans", $"Another plan is active at start ({active:D}); left as it is");
+            return;
+        }
+
         // Nothing chosen yet - a fresh install, or a settings file from before
         // there was a choice: Balanced, the everyday mode (the owner's choice,
         // 14 October 2026). Remembered, so it is a choice from now on.
@@ -1173,6 +1186,7 @@ public partial class MainWindow : Window
             Log.Info("mode", $"Chosen: {mode}");
             NoteModeChosenByHand(mode);
             ApplyMode(mode);
+            _foreignPlan = false;
             _currentMode = mode;
             _battery.UserChose(mode, _onBattery);
             _settings.LastSystemMode = mode;
@@ -1241,7 +1255,7 @@ public partial class MainWindow : Window
             try
             {
                 _battery.QuietMode = _settings.ModeOnBattery ?? BatteryModePolicy.DefaultQuietMode;
-                if (_settings.ModeOnBattery is null || !_support.AllowsWrites)
+                if (_settings.ModeOnBattery is null || !_support.AllowsWrites || OnForeignPlan)
                 {
                     RefreshModeStatus(_currentMode);
                     return;
@@ -3012,6 +3026,7 @@ public partial class MainWindow : Window
                 RetryTakenShortcuts();
                 ProgramRulesTick();
                 IdleTimeoutsTick();
+                PlanWatchTick();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

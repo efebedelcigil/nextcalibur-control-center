@@ -65,6 +65,18 @@ public sealed class AppSettings
     /// </summary>
     public string? FirstChangesRestorePoint { get; set; }
 
+    /// <summary>Power Saver's ceiling in percent, chosen by the person or a ceiling test; never above the measured upper bound. Null: the mode's own.</summary>
+    public int? SaverCeilingPercent { get; set; }
+
+    /// <summary>The boosting modes' clock limits in MHz, by mode name; 0 or absent is no limit.</summary>
+    public Dictionary<string, int> FrequencyLimitsMhz { get; set; } = new();
+
+    /// <summary>The ceilings a mode's plan is given, from these settings.</summary>
+    public Power.ModeProfile.Limits LimitsFor(Power.SystemMode mode) =>
+        mode == Power.SystemMode.Office
+            ? new(SaverCeilingPercent, null)
+            : new(null, FrequencyLimitsMhz.TryGetValue(mode.ToString(), out var mhz) ? mhz : null);
+
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 
@@ -344,6 +356,11 @@ public sealed class AppSettings
             rules.Add(new Power.ProgramRule { Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office });
         }
         settings.ProgramRules = rules;
+        settings.FrequencyLimitsMhz = (settings.FrequencyLimitsMhz ?? new())
+            .Where(kv => Enum.TryParse<Power.SystemMode>(kv.Key, out var m) && m != Power.SystemMode.Office)
+            .ToDictionary(kv => kv.Key, kv => Power.ModeProfile.ClampFrequency(kv.Value));
+        if (settings.SaverCeilingPercent is { } pct)
+            settings.SaverCeilingPercent = Power.ModeProfile.ClampPercent(Power.SystemMode.Office, pct);
         settings.GamesAnswered = (settings.GamesAnswered ?? new())
             .Select(Power.ProgramRules.Normalise).OfType<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase).Take(500).ToList();

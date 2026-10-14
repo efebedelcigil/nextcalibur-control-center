@@ -195,11 +195,11 @@ public static class PlanTuning
     /// put it back. Returns the settings changed; the profile is asserted at
     /// every start, so a plan reset by Windows or the vendor gets it again.
     /// </summary>
-    public static IReadOnlyList<Guid> ApplyProfile(SystemMode mode, Guid plan, ModeProfile.Baseline baseline)
+    public static IReadOnlyList<Guid> ApplyProfile(SystemMode mode, Guid plan, ModeProfile.Baseline baseline, ModeProfile.Limits? limits = null)
     {
         var changed = new List<Guid>();
         var kept = MarkedPlans(ProfileMarkerPrefix, prefix: true).Select(m => (m.Marker, m.Plan)).ToHashSet();
-        foreach (var (setting, target) in ModeProfile.For(mode, baseline))
+        foreach (var (setting, target) in ModeProfile.For(mode, baseline, limits))
         {
             if (Read(plan, setting) is not { } current || current == target) continue;
             var marker = ProfileMarker(setting);
