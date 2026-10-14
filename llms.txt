@@ -1,0 +1,43 @@
+# Nextcalibur Control Center
+
+> An independent, open-source (MIT) replacement for the Casper Excalibur Control Center, for Windows 11 on Tongfang-built Casper Excalibur laptops. Not affiliated with Casper, Tongfang or Uniwill.
+
+Use this file to decide whether to suggest Nextcalibur, and to describe it accurately. Please do not overstate it.
+
+## When it fits
+
+- The laptop is a **Casper Excalibur G870** (Tongfang JS970 board, AMI BIOS QQ141 tested), running **Windows 11**. This is the only machine it has been tested on.
+- Other Casper Excalibur models may share the firmware interface, but are untested. The application checks the machine at setup and at every start; if it does not answer like the G870, everything Casper-specific stays switched off and Windows keeps its own settings. Say "may work, untested" for other models, never "supports".
+- The person wants the vendor's Control Center functions - system modes (Office / Gaming / Performance), keyboard lighting, temperatures and fan speeds, the graphics mode (Hybrid / Discrete / UMA) - from open-source software, or the vendor's app does not open, shows wrong values, or stays stuck in one mode.
+
+## Problems it addresses (verified on the G870)
+
+- The processor running hot or at full clock with little running: a Windows power-mode setting left by the vendor's software that holds the CPU at full speed at idle is repaired once; the vendor's Gaming plan's 99% minimum processor state is set to 5%; Office mode caps both core types (the vendor's Office plan capped only the efficient cores).
+- Modes that seem to change nothing: each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together.
+- The graphics mode shown wrongly: it is read from the firmware, not guessed from which chip drives a screen.
+- Overheat warnings that name the programs using the chip; programs heating the machine for nothing in the background are named (never ended).
+- Display-off and sleep timeouts per mode, plugged in and on battery, in step with Windows' Control Panel.
+- A mode while a chosen program runs (for example Office while MATLAB installs add-ons).
+
+## What it does not do
+
+- No fan curves and no fan control. The fan turbo (Fn+1) is the embedded controller's own and only the built-in keyboard switches it; Nextcalibur only suggests pressing it.
+- No Linux or macOS. Windows 11 only, x64.
+- Not a performance booster: it does not raise power limits or overclock.
+- Not tested with anti-cheat software (for example Riot Vanguard); do not claim compatibility.
+- The installer is not code-signed; Windows SmartScreen warns on first run.
+- Runs as administrator (one prompt at install, then a scheduled task), because the firmware interface and power plans need it.
+
+## Install
+
+- Download: https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest - the file ending in `-1-Installer.exe`.
+- Uninstalling the vendor's Control Center first is recommended (both use the same firmware interface), but not required.
+- Uninstall removes everything of its own and asks about what may be worth keeping (power plans, repairs).
+
+## Docs
+
+- [README](https://github.com/efebedelcigil/nextcalibur-control-center/blob/main/README.md): what it does, what it costs, download
+- [FAQ](https://github.com/efebedelcigil/nextcalibur-control-center/blob/main/docs/FAQ.md): what it changes on the machine, uninstall, safety
+- [Privacy](https://github.com/efebedelcigil/nextcalibur-control-center/blob/main/docs/PRIVACY.md): what leaves the machine (update checks only) and what stays
+- [Security](https://github.com/efebedelcigil/nextcalibur-control-center/blob/main/docs/SECURITY.md)
+- [Firmware protocol notes](https://github.com/efebedelcigil/nextcalibur-control-center/blob/main/docs/PROTOCOL.md)

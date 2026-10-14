@@ -11,6 +11,49 @@ interface. Windows 11, English and Turkish.
 > this is for. The project ships no vendor code, driver, binary, font or
 > artwork.
 
+## Is it for your laptop?
+
+Tested on one machine: a **Casper Excalibur G870** (Tongfang JS970 board)
+on Windows 11. Other Excalibur models may share the same firmware
+interface, but nobody has tried them. The application checks the machine
+at setup and at every start; on anything that does not answer like the
+G870, everything Casper-specific stays off and Windows keeps its own
+settings - it does nothing it is not sure of.
+
+It is worth a look if:
+
+| You see | What Nextcalibur does about it |
+|---|---|
+| The processor hot or at full clock with little running; fans loud at idle | repairs a Windows power-mode setting the vendor's software leaves (it holds the CPU at full speed at idle); sets the vendor Gaming plan's 99% minimum processor state to 5%; caps both core types in Office (the vendor's Office plan capped only the efficient cores) |
+| Switching Office / Gaming / Performance seems to change nothing | each mode sets the Windows power plan, the Windows power mode and the firmware's thermal profile together |
+| The vendor's Control Center does not open, shows wrong fan speeds or graphics mode, or stays in one mode | an independent replacement reading the same firmware interface; the graphics mode is read from the firmware |
+| You want to know what is heating the machine | overheat warnings name the programs on the chip; programs keeping a core busy for nothing are named |
+| A program (an installer, MATLAB) or a game in the wrong mode | a mode for a program while it runs; after a game played in Office, a question whether it should switch next time |
+
+What it does **not** do: fan curves or fan control (the fan turbo, Fn+1, is
+the controller's own and only the built-in keyboard switches it), raising
+power limits or overclocking, Linux. It has not been tried with anti-cheat
+software such as Riot Vanguard.
+
+### Türkçe
+
+Casper Excalibur Control Center'ın yerine kullanılabilen, bağımsız ve açık
+kaynaklı bir program: sistem modları (Office / Gaming / Performance),
+klavye ışığı, sıcaklık ve fan hızları, ekran kartı modu (Hybrid / Discrete
+/ UMA). Casper ile bir bağı yoktur. Yalnızca **Casper Excalibur G870**'te
+(Windows 11) denendi; başka modellerde makineyi tanımazsa Casper'a özgü
+hiçbir şeye dokunmaz.
+
+İşe yarayabileceği durumlar: boştayken işlemcinin ısınması ya da tam
+frekansta kalması (Casper yazılımının bıraktığı bir Windows güç ayarını ve
+Gaming planının %99 taban ayarını düzeltir, Office'te iki çekirdek türünü de
+sınırlar); modlar arasında geçince bir şey değişmemesi; Control Center'ın
+açılmaması, fan hızını ya da ekran kartı modunu yanlış göstermesi; makineyi
+neyin ısıttığını görmek. Fan eğrisi ve fan kontrolü yoktur (Fn+1 fan
+turbosunu yalnızca dahili klavye açar), güç limitini yükseltmez, Linux'ta
+çalışmaz. İndirmek için aşağıdaki *Download* bölümündeki `-1-Installer.exe`
+dosyası.
+
 ## Download
 
 **[Latest release](https://github.com/efebedelcigil/nextcalibur-control-center/releases/latest)**
@@ -18,7 +61,7 @@ interface. Windows 11, English and Turkish.
 | File | What it is |
 |---|---|
 | `Nextcalibur-<version>-1-Installer.exe` | The installer: a wizard, English or Turkish, that installs under Program Files and does the rest. **This is the one to download.** |
-| `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - asks for administrator rights at every start (see *Why it runs as administrator*), and needs the [.NET 8 desktop runtime](https://dotnet.microsoft.com/download/dotnet/8.0) already installed, which the wizard would have put there for you. |
+| `Nextcalibur-<version>-2-Portable.zip` | Runs without installing, from any folder - asks for administrator rights at every start (see *Why it runs as administrator*), and needs the [.NET 10 desktop runtime](https://dotnet.microsoft.com/download/dotnet/10.0) already installed, which the wizard would have put there for you. |
 | the rest | Read by the application's own updater; not for you. |
 
 About 12 MB. It needs the .NET 10 desktop runtime, and installs it from
