@@ -52114,7 +52114,7 @@
       "node_kind": "heading",
       "norm_label": "fixed",
       "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L53"
+      "source_location": "L73"
     },
     {
       "id": "docs_releases_0_7_0_new",
@@ -52150,7 +52150,7 @@
       "node_kind": "heading",
       "norm_label": "tested on",
       "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L63"
+      "source_location": "L89"
     },
     {
       "id": "docs_releases_0_7_0_updated",
@@ -52162,7 +52162,7 @@
       "node_kind": "heading",
       "norm_label": "updated",
       "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L59"
+      "source_location": "L85"
     },
     {
       "id": "docs_security_attacks_that_were_tried",
@@ -67109,7 +67109,7 @@
       "node_kind": "heading",
       "norm_label": "building",
       "source_file": "README.md",
-      "source_location": "L224"
+      "source_location": "L226"
     },
     {
       "id": "readme_documents",
@@ -67121,7 +67121,7 @@
       "node_kind": "heading",
       "norm_label": "documents",
       "source_file": "README.md",
-      "source_location": "L210"
+      "source_location": "L212"
     },
     {
       "id": "readme_download",
@@ -67145,7 +67145,7 @@
       "node_kind": "heading",
       "norm_label": "hardware",
       "source_file": "README.md",
-      "source_location": "L188"
+      "source_location": "L190"
     },
     {
       "id": "readme_is_it_for_your_laptop",
@@ -67169,7 +67169,7 @@
       "node_kind": "heading",
       "norm_label": "legal",
       "source_file": "README.md",
-      "source_location": "L261"
+      "source_location": "L263"
     },
     {
       "id": "readme_nextcalibur_control_center",
@@ -67193,7 +67193,7 @@
       "node_kind": "heading",
       "norm_label": "privacy",
       "source_file": "README.md",
-      "source_location": "L172"
+      "source_location": "L174"
     },
     {
       "id": "readme_rules_of_the_project",
@@ -67205,7 +67205,7 @@
       "node_kind": "heading",
       "norm_label": "rules of the project",
       "source_file": "README.md",
-      "source_location": "L244"
+      "source_location": "L246"
     },
     {
       "id": "readme_t\u00fcrk\u00e7e",
@@ -67229,7 +67229,7 @@
       "node_kind": "heading",
       "norm_label": "uninstalling",
       "source_file": "README.md",
-      "source_location": "L180"
+      "source_location": "L182"
     },
     {
       "id": "readme_what_it_costs_while_it_sits_there",
@@ -67265,7 +67265,7 @@
       "node_kind": "heading",
       "norm_label": "why it runs as administrator",
       "source_file": "README.md",
-      "source_location": "L149"
+      "source_location": "L151"
     },
     {
       "id": "src_nextcalibur_core_hardware_machinescan_cs_jsonserializeroptions",
@@ -142045,28 +142045,6 @@
     },
     {
       "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
-      "target": "docs_releases_0_7_0_fixed",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L53",
-      "weight": 1.0
-    },
-    {
-      "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
-      "target": "docs_releases_0_7_0_updated",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L59",
-      "weight": 1.0
-    },
-    {
-      "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
       "target": "docs_releases_0_7_0_new",
       "relation": "contains",
       "_origin": "ast",
@@ -142078,13 +142056,35 @@
     },
     {
       "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
+      "target": "docs_releases_0_7_0_fixed",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/releases/0.7.0.md",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
+      "target": "docs_releases_0_7_0_updated",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/releases/0.7.0.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_releases_0_7_0_nextcalibur_0_7_0",
       "target": "docs_releases_0_7_0_tested_on",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/releases/0.7.0.md",
-      "source_location": "L63",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -142353,7 +142353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L149",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -142364,7 +142364,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L172",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -142375,7 +142375,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L180",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -142386,7 +142386,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L188",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -142397,7 +142397,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L210",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -142408,7 +142408,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L224",
+      "source_location": "L226",
       "weight": 1.0
     },
     {
@@ -142419,7 +142419,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L244",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -142430,7 +142430,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L261",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -166819,7 +166819,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L144",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -166830,7 +166830,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L177",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -166841,7 +166841,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L212",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -166852,7 +166852,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L215",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -166863,7 +166863,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L216",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -166874,7 +166874,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L264",
+      "source_location": "L266",
       "weight": 1.0
     },
     {
@@ -172815,5 +172815,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "98216bcfff5317fadda53e94b0a4c528c56f9c7f"
+  "built_at_commit": "cec26cbcc0f1e507bad89a03847c09942cd60d01"
 }
