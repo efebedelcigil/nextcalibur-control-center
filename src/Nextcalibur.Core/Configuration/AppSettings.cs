@@ -83,6 +83,9 @@ public sealed class AppSettings
             ? new(SaverCeilingPercent, null)
             : new(null, FrequencyLimitsMhz.TryGetValue(mode.ToString(), out var mhz) ? mhz : null);
 
+    /// <summary>Programs the person put into Windows' Efficiency mode, by process name; set again whenever they run.</summary>
+    public List<string> EfficiencyModePrograms { get; set; } = new();
+
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 
@@ -362,6 +365,9 @@ public sealed class AppSettings
             rules.Add(new Power.ProgramRule { Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office });
         }
         settings.ProgramRules = rules;
+        settings.EfficiencyModePrograms = (settings.EfficiencyModePrograms ?? new())
+            .Select(Power.ProgramRules.Normalise).OfType<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase).Take(100).ToList();
         settings.FrequencyLimitsMhz = (settings.FrequencyLimitsMhz ?? new())
             .Where(kv => Enum.TryParse<Power.SystemMode>(kv.Key, out var m) && m != Power.SystemMode.Office)
             .ToDictionary(kv => kv.Key, kv => Power.ModeProfile.ClampFrequency(kv.Value));

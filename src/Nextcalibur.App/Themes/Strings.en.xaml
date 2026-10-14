@@ -177,6 +177,14 @@
     <sys:String x:Key="S.Def.battery.design">Battery design capacity</sys:String>
     <sys:String x:Key="S.Def.battery.full">Battery full capacity now</sys:String>
     <sys:String x:Key="S.Def.battery.health">Battery health</sys:String>
+    <sys:String x:Key="S.Settings.GroupIdleLoad">Programs busy at idle</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadTitle">Efficiency mode</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadDesc">Scan finds the background programs that keep working while nobody uses the machine. A program you tick is put into Windows' Efficiency mode (the same as Task Manager's): it heats the processor less, and nothing is closed. It is set again whenever the program starts; untick it and it is back to normal. Windows itself and drivers are not listed.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadScan">Scan</sys:String>
+    <sys:String x:Key="S.IdleLoad.NothingYet">Not scanned yet.</sys:String>
+    <sys:String x:Key="S.IdleLoad.Row">{0} - {1}% of a core now</sys:String>
+    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Title">Programs busy at idle</sys:String>
+    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Body">Finds the background programs that keep the processor working while nobody uses the machine, and puts the ones you pick into Windows' Efficiency mode. Nothing is closed.</sys:String>
     <sys:String x:Key="S.System.Office">Power Saver</sys:String>
     <sys:String x:Key="S.System.Gaming">Gaming</sys:String>
     <sys:String x:Key="S.System.Performance">Performance</sys:String>

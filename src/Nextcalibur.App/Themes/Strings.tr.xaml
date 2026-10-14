@@ -175,6 +175,14 @@
     <sys:String x:Key="S.Def.battery.design">Pil tasarım kapasitesi</sys:String>
     <sys:String x:Key="S.Def.battery.full">Pil şu anki tam kapasitesi</sys:String>
     <sys:String x:Key="S.Def.battery.health">Pil sağlığı</sys:String>
+    <sys:String x:Key="S.Settings.GroupIdleLoad">Boşta yük yapan programlar</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadTitle">Verimlilik modu</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadDesc">Tara, makine kimse kullanmazken de çalışan arka plan programlarını bulur. İşaretlediğiniz program Windows'un Verimlilik moduna alınır (Görev Yöneticisi'ndeki ile aynı): işlemciyi daha az ısıtır, hiçbir şey kapatılmaz. Program her açıldığında yeniden uygulanır; işareti kaldırınca normale döner. Windows'un kendisi ve sürücüler listelenmez.</sys:String>
+    <sys:String x:Key="S.Settings.IdleLoadScan">Tara</sys:String>
+    <sys:String x:Key="S.IdleLoad.NothingYet">Henüz taranmadı.</sys:String>
+    <sys:String x:Key="S.IdleLoad.Row">{0} - şu an çekirdeğin %{1}</sys:String>
+    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Title">Boşta yük yapan programlar</sys:String>
+    <sys:String x:Key="S.Tour.Step.IdleLoadScan.Body">Kimse kullanmazken de işlemciyi çalıştıran arka plan programlarını bulur ve seçtiklerinizi Windows'un Verimlilik moduna alır. Hiçbir program kapatılmaz.</sys:String>
     <sys:String x:Key="S.System.Office">Güç Tasarrufu</sys:String>
     <sys:String x:Key="S.System.Gaming">Oyun</sys:String>
     <sys:String x:Key="S.System.Performance">Performans</sys:String>

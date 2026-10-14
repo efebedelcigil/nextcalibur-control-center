@@ -3031,6 +3031,7 @@ public partial class MainWindow : Window
                 ProgramRulesTick();
                 IdleTimeoutsTick();
                 PlanWatchTick();
+                ApplyEfficiencyModes();
 
                 if (!_settings.WarnsAboutHeat && !CoolingWantsReadings && !onScreen) return;
 

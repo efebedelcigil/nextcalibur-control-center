@@ -128,6 +128,7 @@ public partial class MainWindow
         new TourStep("CeilingRows", TourPage.Settings, "CeilingRows", "Settings"),
         new TourStep("SettingNvPower", TourPage.Settings, "SettingNvPower", "Settings"),
         new TourStep("IdleRows", TourPage.Settings, "IdleRows", "Settings"),
+        new TourStep("IdleLoadScan", TourPage.Settings, "IdleLoadScan", "Settings"),
         new TourStep("SettingProgramRules", TourPage.Settings, "SettingProgramRules", "Settings"),
         new TourStep("SettingAskGameMode", TourPage.Settings, "SettingAskGameMode", "Settings"),
         new TourStep("SettingFnShortcuts", TourPage.Settings, "SettingFnShortcuts", "Settings"),

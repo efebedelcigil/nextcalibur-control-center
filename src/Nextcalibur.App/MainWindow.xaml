@@ -1929,6 +1929,29 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Programs busy at idle: Windows' Efficiency mode, picked by the person -->
+                                <TextBlock Text="{DynamicResource S.Settings.GroupIdleLoad}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
+                                <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
+                                    <StackPanel>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleLoadTitle}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Ink}" />
+                                                <TextBlock Text="{DynamicResource S.Settings.IdleLoadDesc}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <Button x:Name="IdleLoadScan" Grid.Column="1" Content="{DynamicResource S.Settings.IdleLoadScan}"
+                                                    MinWidth="110" Height="28" VerticalAlignment="Center" />
+                                        </Grid>
+                                        <Border Height="1" Background="{DynamicResource Line}" Margin="0,5" />
+                                        <StackPanel x:Name="IdleLoadRows" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Program rules: while this program runs, this mode -->
                                 <TextBlock Text="{DynamicResource S.Settings.GroupRules}" Style="{DynamicResource PanelHeaderTextStyle}" Margin="4,0,0,6" />
                                 <Border Style="{DynamicResource Card}" Background="{DynamicResource PanelBackground}" Margin="0,0,0,10" Padding="16,8">
