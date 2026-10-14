@@ -113,6 +113,10 @@ public partial class MainWindow : Window
     private bool _overheatNotified;
     private sealed record DeferredOverheat(bool IsCpu, int MaxTemperatureC, DateTime TimestampUtc, string? Culprits);
     private DeferredOverheat? _deferredOverheat;
+
+    /// <summary>The processor's temperature from the controller and the processor's own register together.</summary>
+    private readonly TemperatureFusion _fusion = new();
+    private DateTime? _fusedOverSince;
     private bool _mailboxFailed;
 
     /// <summary>What this machine has been judged able to use. See <see cref="HardwareSupport"/>.</summary>
@@ -3055,6 +3059,10 @@ public partial class MainWindow : Window
                 // game or not, for as long as the load lasted).
                 // While cooling is on, every reading is wanted: it is what
                 // tells the cooling it may stop.
+                // The processor's own reading every tick - no interrupt - for
+                // the two-source temperature (see TemperatureFusion).
+                _fusion.Register(_cpuPower.ReadPackageTemperatureC(), DateTime.UtcNow);
+
                 if (!onScreen && !_cooling.Engaged && NothingNearTheThresholds()) return;
 
                 // Off the user-interface thread for the same reason as Sample: see
@@ -3097,7 +3105,11 @@ public partial class MainWindow : Window
                 }
 
                 _lastThermal = s;
-                CoolingTick(s);
+                // The controller's reading is the level, the processor's the
+                // early climb: cooling acts on both together.
+                _fusion.Controller(s.CpuTemperatureC, DateTime.UtcNow);
+                var fusedCpu = (int)Math.Round(_fusion.Value ?? s.CpuTemperatureC);
+                CoolingTick(s with { CpuTemperatureC = fusedCpu });
                 _tray?.UpdateStatus(s.CpuTemperatureC, s.GpuTemperatureC, s.CpuFanRpm);
 
                 // Done after the read, so this tick's own leavings are included.
@@ -3110,7 +3122,13 @@ public partial class MainWindow : Window
                 // Each chip against its own threshold, one balloon at a time.
                 var cpuLimit = _settings.CpuWarningTemperatureC;
                 var gpuLimit = _settings.GpuWarningTemperatureC;
-                var hot = s.CpuTemperatureC >= cpuLimit ? Strings.Get("S.Heat.Cpu", s.CpuTemperatureC)
+                // The warning: the controller over the line, or the two sources
+                // together over it for half a minute - one reading is not enough.
+                if (fusedCpu >= cpuLimit) _fusedOverSince ??= DateTime.UtcNow; else _fusedOverSince = null;
+                var cpuOver = s.CpuTemperatureC >= cpuLimit
+                              || (_fusedOverSince is { } overSince && DateTime.UtcNow - overSince >= TimeSpan.FromSeconds(30));
+                var cpuShown = Math.Max(s.CpuTemperatureC, fusedCpu);
+                var hot = cpuOver ? Strings.Get("S.Heat.Cpu", cpuShown)
                         : s.GpuTemperatureC >= gpuLimit ? Strings.Get("S.Heat.Gpu", s.GpuTemperatureC)
                         : null;
                 if (_settings.WarnsAboutHeat && hot is not null)
@@ -3121,7 +3139,7 @@ public partial class MainWindow : Window
                     var away = Nextcalibur.Core.Hardware.UserPresence.NobodyIsWatching();
                     if (busy || away)
                     {
-                        bool cpuHot = s.CpuTemperatureC >= cpuLimit;
+                        bool cpuHot = cpuOver;
                         bool gpuHot = s.GpuTemperatureC >= gpuLimit;
                         bool isCpu = cpuHot && (!gpuHot || s.CpuTemperatureC >= s.GpuTemperatureC);
                         int temp = isCpu ? s.CpuTemperatureC : s.GpuTemperatureC;
@@ -3140,7 +3158,7 @@ public partial class MainWindow : Window
                         if (!_overheatNotified)
                         {
                             _overheatNotified = true;
-                            var isCpu = s.CpuTemperatureC >= cpuLimit;
+                            var isCpu = cpuOver;
                             ShowHeatWarning(hot, HeatBody(await HeatCulpritsAsync(isCpu)));
                         }
                     }
