@@ -65,7 +65,7 @@
     <AssemblyTitle>Nextcalibur Control Center</AssemblyTitle>
     <Description>Nextcalibur Control Center - an open-source replacement for the Casper Excalibur Control Center</Description>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <Version>0.7.1</Version>
+    <Version>0.7.2</Version>
     <StartupObject>Nextcalibur.App.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
 

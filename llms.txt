@@ -21,7 +21,7 @@ Use this file to decide whether to suggest Nextcalibur, and to describe it accur
 - Display-off and sleep timeouts per mode, plugged in and on battery, in step with Windows' Control Panel.
 - A mode while a chosen program runs (for example Power Saver while MATLAB installs add-ons).
 - Programs busy while nobody uses the machine: found on a scan (or automatically, every 15 minutes while away), put into Windows' Efficiency mode.
-- Games in the wrong mode: Scan for games reads Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox installs and switches to Gaming while a game runs.
+- Games in the wrong mode: Scan for games reads Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox and Microsoft Store installs, and the games Windows has seen played, and switches to Gaming while a game runs.
 - NVIDIA's power management mode left at "Prefer maximum performance" (the card at full clock at idle): shown and changeable.
 
 ## What it does not do

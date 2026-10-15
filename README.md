@@ -30,7 +30,7 @@ It is worth a look if:
 | The keyboard lighting gone after a restart until the vendor's app is opened | started with Windows, it sets the lighting back as it was left - colours, effect, brightness, the Fn+Space step - and again after sleep (the restart part is new since 0.6.2) |
 | A game running on the Intel graphics instead of the NVIDIA card | shows the graphics mode the firmware is in and switches it (Hybrid / Discrete / UMA), with a restart you can cancel |
 | You want to know what is heating the machine | overheat warnings name the programs on the chip; programs keeping a core busy for nothing are named |
-| A game or a long job in the wrong mode | Scan for games (Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox) switches to Gaming while a game runs; any other program can be added by hand; after a game played in a quiet mode, a question whether it should switch next time |
+| A game or a long job in the wrong mode | Scan for games (Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox, Microsoft Store, and the games Windows itself has seen played) switches to Gaming while a game runs; any other program can be added by hand; after a game played in a quiet mode, a question whether it should switch next time |
 
 What it does **not** do: fan curves or fan control (the fan turbo, Fn+1, is
 the controller's own and only the built-in keyboard switches it), raising
