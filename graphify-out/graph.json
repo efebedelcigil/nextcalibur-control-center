@@ -61,7 +61,7 @@
       },
       "norm_label": "luid",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2273"
+      "source_location": "L2275"
     },
     {
       "id": "src_nextcalibur_core_configuration_appsettings_nextcalibur_core_configuration_appsettings",
@@ -329,7 +329,7 @@
       },
       "norm_label": "modechoice",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1166"
+      "source_location": "L1168"
     },
     {
       "id": "src_nextcalibur_core_configuration_themeservice_nextcalibur_core_configuration_themepreference",
@@ -2308,7 +2308,7 @@
       },
       "norm_label": "tokenprivileges",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2276"
+      "source_location": "L2278"
     },
     {
       "id": "src_nextcalibur_core_security_profilefiles_nextcalibur_core_security_profilefiles",
@@ -5577,7 +5577,7 @@
       },
       "norm_label": ".applyenabledstate()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3443"
+      "source_location": "L3445"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_applytheme",
@@ -5595,7 +5595,7 @@
       },
       "norm_label": ".applytheme()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2517"
+      "source_location": "L2519"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_colourof",
@@ -5615,13 +5615,13 @@
             "callee": "FromRgb",
             "receiver_type": "Color",
             "lang": "csharp",
-            "line": "L3492"
+            "line": "L3494"
           }
         ]
       },
       "norm_label": ".colourof()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3489"
+      "source_location": "L3491"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_connecttomailbox",
@@ -5657,7 +5657,7 @@
       },
       "norm_label": ".effectfor()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3411"
+      "source_location": "L3413"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_hiddenintervalnow",
@@ -5675,7 +5675,7 @@
       },
       "norm_label": ".hiddenintervalnow()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3013"
+      "source_location": "L3015"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_listenforthebacklightkey",
@@ -5719,7 +5719,7 @@
       },
       "norm_label": ".loadlightingui()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3393"
+      "source_location": "L3395"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadoverheatthresholds",
@@ -5737,7 +5737,7 @@
       },
       "norm_label": ".loadoverheatthresholds()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1944"
+      "source_location": "L1946"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadtheme",
@@ -5755,7 +5755,7 @@
       },
       "norm_label": ".loadtheme()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2485"
+      "source_location": "L2487"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_modebuttonfor",
@@ -5773,7 +5773,7 @@
       },
       "norm_label": ".modebuttonfor()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1209"
+      "source_location": "L1211"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onbannerdismissclicked",
@@ -5791,7 +5791,7 @@
       },
       "norm_label": ".onbannerdismissclicked()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3833"
+      "source_location": "L3835"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_oncloseclick",
@@ -5827,7 +5827,7 @@
       },
       "norm_label": ".oncolourpicked()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3523"
+      "source_location": "L3525"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onledpowertoggled",
@@ -5845,7 +5845,7 @@
       },
       "norm_label": ".onledpowertoggled()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3576"
+      "source_location": "L3578"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onminimiseclick",
@@ -5881,7 +5881,7 @@
       },
       "norm_label": ".onopenlogclick()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1584"
+      "source_location": "L1586"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onreloadclick",
@@ -5899,7 +5899,7 @@
       },
       "norm_label": ".onreloadclick()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3597"
+      "source_location": "L3599"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onselectalltoggled",
@@ -5917,7 +5917,7 @@
       },
       "norm_label": ".onselectalltoggled()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3517"
+      "source_location": "L3519"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onthresholdmoved",
@@ -5937,13 +5937,13 @@
             "callee": "Round",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L1973"
+            "line": "L1975"
           }
         ]
       },
       "norm_label": ".onthresholdmoved()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1971"
+      "source_location": "L1973"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onupdatenowclick",
@@ -5961,7 +5961,7 @@
       },
       "norm_label": ".onupdatenowclick()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1582"
+      "source_location": "L1584"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_profilefor",
@@ -5979,7 +5979,7 @@
       },
       "norm_label": ".profilefor()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3429"
+      "source_location": "L3431"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_queuelighting",
@@ -5999,25 +5999,25 @@
             "callee": "FromMilliseconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L3547"
+            "line": "L3549"
           },
           {
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3552"
+            "line": "L3554"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3556"
+            "line": "L3558"
           }
         ]
       },
       "norm_label": ".queuelighting()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3542"
+      "source_location": "L3544"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_refreshlightingfromhardware",
@@ -6055,19 +6055,19 @@
             "callee": "FromRgb",
             "receiver_type": "Color",
             "lang": "csharp",
-            "line": "L3479"
+            "line": "L3481"
           },
           {
             "callee": "Freeze",
             "receiver_type": "SolidColorBrush",
             "lang": "csharp",
-            "line": "L3480"
+            "line": "L3482"
           }
         ]
       },
       "norm_label": ".refreshpreview()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3462"
+      "source_location": "L3464"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_runlighting",
@@ -6087,25 +6087,25 @@
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3611"
+            "line": "L3613"
           },
           {
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L3635"
+            "line": "L3637"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3648"
+            "line": "L3650"
           }
         ]
       },
       "norm_label": ".runlighting()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3608"
+      "source_location": "L3610"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_savesettingssoon",
@@ -6125,25 +6125,25 @@
             "callee": "FromMilliseconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L1993"
+            "line": "L1995"
           },
           {
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1994"
+            "line": "L1996"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1997"
+            "line": "L1999"
           }
         ]
       },
       "norm_label": ".savesettingssoon()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1989"
+      "source_location": "L1991"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_wiretypedthreshold",
@@ -6163,19 +6163,19 @@
             "callee": "Round",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L2004"
+            "line": "L2006"
           },
           {
             "callee": "SelectAll",
             "receiver_type": "TextBox",
             "lang": "csharp",
-            "line": "L2005"
+            "line": "L2007"
           }
         ]
       },
       "norm_label": ".wiretypedthreshold()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2000"
+      "source_location": "L2002"
     },
     {
       "id": "src_nextcalibur_core_configuration_appsettings_nextcalibur_core_configuration_appsettings_clearallrestartreasons",
@@ -7285,7 +7285,7 @@
       },
       "norm_label": ".applygpumode()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1370"
+      "source_location": "L1372"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_applysupportverdict",
@@ -7321,7 +7321,7 @@
       },
       "norm_label": ".discreteid()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2722"
+      "source_location": "L2724"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_getrestartreasontext",
@@ -7341,13 +7341,13 @@
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L3806"
+            "line": "L3808"
           }
         ]
       },
       "norm_label": ".getrestartreasontext()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3794"
+      "source_location": "L3796"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_gpubuttonfor",
@@ -7365,7 +7365,7 @@
       },
       "norm_label": ".gpubuttonfor()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2088"
+      "source_location": "L2090"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadgpumode",
@@ -7385,19 +7385,19 @@
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L1351"
+            "line": "L1353"
           },
           {
             "callee": "FromCurrentSynchronizationContext",
             "receiver_type": "TaskScheduler",
             "lang": "csharp",
-            "line": "L1367"
+            "line": "L1369"
           }
         ]
       },
       "norm_label": ".loadgpumode()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1348"
+      "source_location": "L1350"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_lockgpubuttonswhilesettling",
@@ -7417,19 +7417,19 @@
             "callee": "FromSeconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L2124"
+            "line": "L2126"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L2140"
+            "line": "L2142"
           }
         ]
       },
       "norm_label": ".lockgpubuttonswhilesettling()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2114"
+      "source_location": "L2116"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_offerrestart",
@@ -7447,7 +7447,7 @@
       },
       "norm_label": ".offerrestart()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2251"
+      "source_location": "L2253"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_ongpumodechanged",
@@ -7467,13 +7467,13 @@
             "callee": "TryParse",
             "receiver_type": "Enum",
             "lang": "csharp",
-            "line": "L2159"
+            "line": "L2161"
           }
         ]
       },
       "norm_label": ".ongpumodechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2146"
+      "source_location": "L2148"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onlanguagechanged",
@@ -7491,7 +7491,7 @@
       },
       "norm_label": ".onlanguagechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1184"
+      "source_location": "L1186"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onrepairclick",
@@ -7509,7 +7509,7 @@
       },
       "norm_label": ".onrepairclick()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3361"
+      "source_location": "L3363"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_refreshbanner",
@@ -7527,7 +7527,7 @@
       },
       "norm_label": ".refreshbanner()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3709"
+      "source_location": "L3711"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_refreshsupportdependentsettings",
@@ -7563,7 +7563,7 @@
       },
       "norm_label": ".setoverheatwarning()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1920"
+      "source_location": "L1922"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_settlingtext",
@@ -7581,7 +7581,7 @@
       },
       "norm_label": ".settlingtext()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2143"
+      "source_location": "L2145"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_showbanner",
@@ -7599,7 +7599,7 @@
       },
       "norm_label": ".showbanner()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3839"
+      "source_location": "L3841"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_watchforthecardbeingswitched",
@@ -7617,7 +7617,7 @@
       },
       "norm_label": ".watchforthecardbeingswitched()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2855"
+      "source_location": "L2857"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_watchtheessentialdrivers",
@@ -7635,7 +7635,7 @@
       },
       "norm_label": ".watchtheessentialdrivers()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3684"
+      "source_location": "L3686"
     },
     {
       "id": "src_nextcalibur_app_strings_nextcalibur_app_strings_get",
@@ -9721,7 +9721,7 @@
       },
       "norm_label": ".modename()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1163"
+      "source_location": "L1165"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_modechoice_tostring",
@@ -9739,7 +9739,7 @@
       },
       "norm_label": ".tostring()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1168"
+      "source_location": "L1170"
     },
     {
       "id": "src_nextcalibur_app_toasts_nextcalibur_app_toasts_tryshow",
@@ -12729,13 +12729,13 @@
             "callee": "Round",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L3570"
+            "line": "L3572"
           }
         ]
       },
       "norm_label": ".onbrightnesschanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3568"
+      "source_location": "L3570"
     },
     {
       "id": "src_nextcalibur_core_hardware_machinewidegate_nextcalibur_core_hardware_machinewidegate_dispose",
@@ -13005,7 +13005,7 @@
       },
       "norm_label": ".oneffectchecked()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3559"
+      "source_location": "L3561"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
@@ -13023,7 +13023,7 @@
       },
       "norm_label": ".onprofilechecked()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3585"
+      "source_location": "L3587"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onthemechanged",
@@ -13043,13 +13043,13 @@
             "callee": "TryParse",
             "receiver_type": "Enum",
             "lang": "csharp",
-            "line": "L2504"
+            "line": "L2506"
           }
         ]
       },
       "norm_label": ".onthemechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2500"
+      "source_location": "L2502"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onzonetabchanged",
@@ -13067,7 +13067,7 @@
       },
       "norm_label": ".onzonetabchanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3505"
+      "source_location": "L3507"
     },
     {
       "id": "src_nextcalibur_app_traypresence_nextcalibur_app_traypresence_quietly",
@@ -15605,19 +15605,19 @@
             "callee": "Abs",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L3670"
+            "line": "L3672"
           },
           {
             "callee": "FromMilliseconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L3671"
+            "line": "L3673"
           }
         ]
       },
       "norm_label": ".applypollinterval()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3667"
+      "source_location": "L3669"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_atbackgroundpriority",
@@ -15635,7 +15635,7 @@
       },
       "norm_label": ".atbackgroundpriority()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2991"
+      "source_location": "L2993"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_cardisawakenow",
@@ -15653,7 +15653,7 @@
       },
       "norm_label": ".cardisawakenow()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2713"
+      "source_location": "L2715"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_heatbody",
@@ -15671,7 +15671,7 @@
       },
       "norm_label": ".heatbody()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3332"
+      "source_location": "L3334"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_heatculpritsasync",
@@ -15691,13 +15691,13 @@
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L3316"
+            "line": "L3318"
           }
         ]
       },
       "norm_label": ".heatculpritsasync()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3310"
+      "source_location": "L3312"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_nothingnearthethresholds",
@@ -15715,7 +15715,7 @@
       },
       "norm_label": ".nothingnearthethresholds()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2972"
+      "source_location": "L2974"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_refreshclocks",
@@ -15735,13 +15735,13 @@
             "callee": "Round",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L2748"
+            "line": "L2750"
           }
         ]
       },
       "norm_label": ".refreshclocks()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2742"
+      "source_location": "L2744"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_showoverlaydialog",
@@ -15761,13 +15761,13 @@
             "callee": "PushFrame",
             "receiver_type": "Dispatcher",
             "lang": "csharp",
-            "line": "L1902"
+            "line": "L1904"
           }
         ]
       },
       "norm_label": ".showoverlaydialog()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1848"
+      "source_location": "L1850"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_startslowtimer",
@@ -15787,49 +15787,49 @@
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3062"
+            "line": "L3064"
           },
           {
             "callee": "FromMinutes",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L3066"
+            "line": "L3068"
           },
           {
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L3171"
+            "line": "L3173"
           },
           {
             "callee": "Round",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L3186"
+            "line": "L3188"
           },
           {
             "callee": "FromSeconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L3204"
+            "line": "L3206"
           },
           {
             "callee": "Max",
             "receiver_type": "Math",
             "lang": "csharp",
-            "line": "L3205"
+            "line": "L3207"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L3265"
+            "line": "L3267"
           }
         ]
       },
       "norm_label": ".startslowtimer()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3030"
+      "source_location": "L3032"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_tryshowdeferredoverheat",
@@ -15849,13 +15849,13 @@
             "callee": "FromHours",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L3284"
+            "line": "L3286"
           }
         ]
       },
       "norm_label": ".tryshowdeferredoverheat()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3273"
+      "source_location": "L3275"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_watchwindowsitself",
@@ -15875,13 +15875,13 @@
             "callee": "FromHours",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L2931"
+            "line": "L2933"
           }
         ]
       },
       "norm_label": ".watchwindowsitself()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2886"
+      "source_location": "L2888"
     },
     {
       "id": "src_nextcalibur_app_noticegate_nextcalibur_app_noticegate_flush",
@@ -19247,7 +19247,7 @@
       },
       "norm_label": ".loaddevicenames()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2553"
+      "source_location": "L2555"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_shortdevicename",
@@ -19265,7 +19265,7 @@
       },
       "norm_label": ".shortdevicename()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2569"
+      "source_location": "L2571"
     },
     {
       "id": "src_nextcalibur_core_hardware_systeminfo_nextcalibur_core_hardware_storageuse_describe",
@@ -21077,13 +21077,13 @@
             "callee": "InvokeAsync",
             "receiver_type": "Dispatcher",
             "lang": "csharp",
-            "line": "L1332"
+            "line": "L1334"
           }
         ]
       },
       "norm_label": ".onsessionswitch()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1322"
+      "source_location": "L1324"
     },
     {
       "id": "src_nextcalibur_core_hardware_userpresence_nextcalibur_core_hardware_userpresence_describe",
@@ -22327,7 +22327,7 @@
       },
       "norm_label": ".adjusttokenprivileges()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2285"
+      "source_location": "L2287"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_closehandle",
@@ -22345,7 +22345,7 @@
       },
       "norm_label": ".closehandle()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2288"
+      "source_location": "L2290"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_emptyworkingset",
@@ -22381,7 +22381,7 @@
       },
       "norm_label": ".exitwindowsex()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2270"
+      "source_location": "L2272"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_getcurrentprocess",
@@ -22417,7 +22417,7 @@
       },
       "norm_label": ".getwindowlong()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2388"
+      "source_location": "L2390"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_keepminimisebox",
@@ -22435,7 +22435,7 @@
       },
       "norm_label": ".keepminimisebox()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2377"
+      "source_location": "L2379"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_keeponscreen",
@@ -22479,7 +22479,7 @@
       },
       "norm_label": ".lookupprivilegevalue()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2282"
+      "source_location": "L2284"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_monitorfromwindow",
@@ -22515,7 +22515,7 @@
       },
       "norm_label": ".onbannerrestartclicked()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3827"
+      "source_location": "L3829"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onsourceinitialized",
@@ -22535,13 +22535,13 @@
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L2368"
+            "line": "L2370"
           }
         ]
       },
       "norm_label": ".onsourceinitialized()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2350"
+      "source_location": "L2352"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onstatechanged",
@@ -22577,7 +22577,7 @@
       },
       "norm_label": ".onwindowmessage()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2394"
+      "source_location": "L2396"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_openprocesstoken",
@@ -22595,7 +22595,7 @@
       },
       "norm_label": ".openprocesstoken()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2279"
+      "source_location": "L2281"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_reclaimwhileidle",
@@ -22645,7 +22645,7 @@
       },
       "norm_label": ".requestrestart()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2298"
+      "source_location": "L2300"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_setpriorityclass",
@@ -22699,7 +22699,7 @@
       },
       "norm_label": ".setwindowlong()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2391"
+      "source_location": "L2393"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_trimworkingset",
@@ -24405,7 +24405,7 @@
       },
       "norm_label": ".ensurefirmwareprofile()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1106"
+      "source_location": "L1108"
     },
     {
       "id": "src_nextcalibur_core_hardware_ecmailbox_nextcalibur_core_hardware_ecmailbox_dispose",
@@ -27097,7 +27097,7 @@
       },
       "norm_label": ".applymode()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1122"
+      "source_location": "L1124"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_carrythebacklightlevel",
@@ -27135,13 +27135,13 @@
             "callee": "SetResourceReference",
             "receiver_type": "TextBlock",
             "lang": "csharp",
-            "line": "L2789"
+            "line": "L2791"
           }
         ]
       },
       "norm_label": ".colourbytemperature()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2781"
+      "source_location": "L2783"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_keepthemodesplanalive",
@@ -27159,7 +27159,7 @@
       },
       "norm_label": ".keepthemodesplanalive()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2815"
+      "source_location": "L2817"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadpowermodes",
@@ -27177,7 +27177,7 @@
       },
       "norm_label": ".loadpowermodes()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2428"
+      "source_location": "L2430"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadsystemmode",
@@ -27231,7 +27231,7 @@
       },
       "norm_label": ".onpowermodechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2459"
+      "source_location": "L2461"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onpowersourcemayhavechanged",
@@ -27251,19 +27251,19 @@
             "callee": "BeginInvoke",
             "receiver_type": "Dispatcher",
             "lang": "csharp",
-            "line": "L1260"
+            "line": "L1262"
           },
           {
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L1271"
+            "line": "L1273"
           }
         ]
       },
       "norm_label": ".onpowersourcemayhavechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1253"
+      "source_location": "L1255"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onsystemmodechanged",
@@ -27283,13 +27283,13 @@
             "callee": "TryParse",
             "receiver_type": "Enum",
             "lang": "csharp",
-            "line": "L1221"
+            "line": "L1223"
           }
         ]
       },
       "norm_label": ".onsystemmodechanged()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1217"
+      "source_location": "L1219"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_powermodecontrols",
@@ -27307,7 +27307,7 @@
       },
       "norm_label": ".powermodecontrols()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449"
+      "source_location": "L2451"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_readingsareonscreen",
@@ -27343,7 +27343,7 @@
       },
       "norm_label": ".refreshmodestatus()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1150"
+      "source_location": "L1152"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_refreshoverlay",
@@ -27363,13 +27363,13 @@
             "callee": "Add",
             "receiver_type": "List",
             "lang": "csharp",
-            "line": "L3352"
+            "line": "L3354"
           }
         ]
       },
       "norm_label": ".refreshoverlay()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3337"
+      "source_location": "L3339"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_restoremodeatstartup",
@@ -27387,7 +27387,7 @@
       },
       "norm_label": ".restoremodeatstartup()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1045"
+      "source_location": "L1047"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_sample",
@@ -27407,19 +27407,19 @@
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L2639"
+            "line": "L2641"
           },
           {
             "callee": "Run",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L2649"
+            "line": "L2651"
           }
         ]
       },
       "norm_label": ".sample()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2632"
+      "source_location": "L2634"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_showsubtitle",
@@ -27437,7 +27437,7 @@
       },
       "norm_label": ".showsubtitle()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1171"
+      "source_location": "L1173"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_syncsamplingtoscreen",
@@ -27813,7 +27813,7 @@
       },
       "norm_label": ".cardisawake()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2079"
+      "source_location": "L2081"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_idlewatts",
@@ -27831,7 +27831,7 @@
       },
       "norm_label": ".idlewatts()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2067"
+      "source_location": "L2069"
     },
     {
       "id": "src_nextcalibur_core_hardware_gpumodeservice_nextcalibur_core_hardware_gpumodeservice_detect",
@@ -39263,7 +39263,7 @@
       },
       "norm_label": ".announcedependency()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1693"
+      "source_location": "L1695"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_checkforupdatesbyhand",
@@ -39281,7 +39281,7 @@
       },
       "norm_label": ".checkforupdatesbyhand()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1538"
+      "source_location": "L1540"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_clearinventedvalues",
@@ -39319,19 +39319,19 @@
             "callee": "FromMilliseconds",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L1576"
+            "line": "L1578"
           },
           {
             "callee": "Delay",
             "receiver_type": "Task",
             "lang": "csharp",
-            "line": "L1577"
+            "line": "L1579"
           }
         ]
       },
       "norm_label": ".endcheckingpanelasync()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1572"
+      "source_location": "L1574"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_exit",
@@ -39367,7 +39367,7 @@
       },
       "norm_label": ".hideprogress()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1828"
+      "source_location": "L1830"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_installupdateasync",
@@ -39385,7 +39385,7 @@
       },
       "norm_label": ".installupdateasync()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1644"
+      "source_location": "L1646"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_markoffered",
@@ -39403,7 +39403,7 @@
       },
       "norm_label": ".markoffered()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1441"
+      "source_location": "L1443"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_offerdependency",
@@ -39423,19 +39423,19 @@
             "callee": "Any",
             "receiver_type": "Queue",
             "lang": "csharp",
-            "line": "L1723"
+            "line": "L1725"
           },
           {
             "callee": "Enqueue",
             "receiver_type": "Queue",
             "lang": "csharp",
-            "line": "L1724"
+            "line": "L1726"
           }
         ]
       },
       "norm_label": ".offerdependency()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1719"
+      "source_location": "L1721"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_offerremovalonunsupportedmachine",
@@ -39473,19 +39473,19 @@
             "callee": "Dequeue",
             "receiver_type": "Queue",
             "lang": "csharp",
-            "line": "L1813"
+            "line": "L1815"
           },
           {
             "callee": "BeginInvoke",
             "receiver_type": "Dispatcher",
             "lang": "csharp",
-            "line": "L1814"
+            "line": "L1816"
           }
         ]
       },
       "norm_label": ".offerthenextdependency()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1810"
+      "source_location": "L1812"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_offerupdate",
@@ -39505,13 +39505,13 @@
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1618"
+            "line": "L1620"
           }
         ]
       },
       "norm_label": ".offerupdate()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1597"
+      "source_location": "L1599"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onloaded",
@@ -39581,13 +39581,13 @@
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1431"
+            "line": "L1433"
           }
         ]
       },
       "norm_label": ".onupdatefound()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1417"
+      "source_location": "L1419"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_readyforrequiredupdate",
@@ -39605,7 +39605,7 @@
       },
       "norm_label": ".readyforrequiredupdate()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1519"
+      "source_location": "L1521"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_recommendremovingvendorsoftwareonce",
@@ -39643,25 +39643,25 @@
             "callee": "FromMinutes",
             "receiver_type": "TimeSpan",
             "lang": "csharp",
-            "line": "L2597"
+            "line": "L2599"
           },
           {
             "callee": "RemoveAt",
             "receiver_type": "ObservableCollection",
             "lang": "csharp",
-            "line": "L2600"
+            "line": "L2602"
           },
           {
             "callee": "Add",
             "receiver_type": "ObservableCollection",
             "lang": "csharp",
-            "line": "L2601"
+            "line": "L2603"
           }
         ]
       },
       "norm_label": ".refreshstorage()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2585"
+      "source_location": "L2587"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_requiredupdatetick",
@@ -39681,25 +39681,25 @@
             "callee": "Stop",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1482"
+            "line": "L1484"
           },
           {
             "callee": "InvokeAsync",
             "receiver_type": "Dispatcher",
             "lang": "csharp",
-            "line": "L1490"
+            "line": "L1492"
           },
           {
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1510"
+            "line": "L1512"
           }
         ]
       },
       "norm_label": ".requiredupdatetick()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1472"
+      "source_location": "L1474"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_requireupdate",
@@ -39719,13 +39719,13 @@
             "callee": "Start",
             "receiver_type": "DispatcherTimer",
             "lang": "csharp",
-            "line": "L1468"
+            "line": "L1470"
           }
         ]
       },
       "norm_label": ".requireupdate()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1465"
+      "source_location": "L1467"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_restorelightingatstart",
@@ -39769,7 +39769,7 @@
       },
       "norm_label": ".runningversion()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1931"
+      "source_location": "L1933"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_showprogress",
@@ -39787,7 +39787,7 @@
       },
       "norm_label": ".showprogress()",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1818"
+      "source_location": "L1820"
     },
     {
       "id": "src_nextcalibur_app_unelevated_nextcalibur_app_unelevated_open",
@@ -45005,7 +45005,7 @@
       },
       "norm_label": "_gpupendingrestart",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2038"
+      "source_location": "L2040"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_hasrendered",
@@ -45022,7 +45022,7 @@
       },
       "norm_label": "hasrendered",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1836"
+      "source_location": "L1838"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_lastdialogchecked",
@@ -45039,7 +45039,7 @@
       },
       "norm_label": "lastdialogchecked",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1846"
+      "source_location": "L1848"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_selectedeffect",
@@ -45056,7 +45056,7 @@
       },
       "norm_label": "selectedeffect",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3421"
+      "source_location": "L3423"
     },
     {
       "id": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_selectedzone",
@@ -45073,7 +45073,7 @@
       },
       "norm_label": "selectedzone",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3388"
+      "source_location": "L3390"
     },
     {
       "id": "switchedon",
@@ -68232,7 +68232,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2285",
+      "source_location": "L2287",
       "weight": 1.0
     },
     {
@@ -68249,7 +68249,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2288",
+      "source_location": "L2290",
       "weight": 1.0
     },
     {
@@ -68283,7 +68283,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2270",
+      "source_location": "L2272",
       "weight": 1.0
     },
     {
@@ -68317,7 +68317,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2388",
+      "source_location": "L2390",
       "weight": 1.0
     },
     {
@@ -68334,7 +68334,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2282",
+      "source_location": "L2284",
       "weight": 1.0
     },
     {
@@ -68368,7 +68368,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2279",
+      "source_location": "L2281",
       "weight": 1.0
     },
     {
@@ -68402,7 +68402,7 @@
         "ref_qualifier": "System.Runtime.InteropServices"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2391",
+      "source_location": "L2393",
       "weight": 1.0
     },
     {
@@ -83531,7 +83531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1697",
+      "source_location": "L1699",
       "weight": 1.0
     },
     {
@@ -83543,7 +83543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1703",
+      "source_location": "L1705",
       "weight": 1.0
     },
     {
@@ -83555,7 +83555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1704",
+      "source_location": "L1706",
       "weight": 1.0
     },
     {
@@ -83567,7 +83567,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1373",
+      "source_location": "L1375",
       "weight": 1.0
     },
     {
@@ -83579,7 +83579,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1389",
+      "source_location": "L1391",
       "weight": 1.0
     },
     {
@@ -83591,7 +83591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1399",
+      "source_location": "L1401",
       "weight": 1.0
     },
     {
@@ -83603,7 +83603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1129",
+      "source_location": "L1131",
       "weight": 1.0
     },
     {
@@ -83615,7 +83615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3669",
+      "source_location": "L3671",
       "weight": 1.0
     },
     {
@@ -83675,7 +83675,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2541",
+      "source_location": "L2543",
       "weight": 1.0
     },
     {
@@ -83687,7 +83687,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2083",
+      "source_location": "L2085",
       "weight": 1.0
     },
     {
@@ -83699,7 +83699,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2084",
+      "source_location": "L2086",
       "weight": 1.0
     },
     {
@@ -83711,7 +83711,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2717",
+      "source_location": "L2719",
       "weight": 1.0
     },
     {
@@ -83723,7 +83723,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2718",
+      "source_location": "L2720",
       "weight": 1.0
     },
     {
@@ -83747,7 +83747,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1546",
+      "source_location": "L1548",
       "weight": 1.0
     },
     {
@@ -83759,7 +83759,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1546",
+      "source_location": "L1548",
       "weight": 1.0
     },
     {
@@ -83771,7 +83771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1550",
+      "source_location": "L1552",
       "weight": 1.0
     },
     {
@@ -83783,7 +83783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1551",
+      "source_location": "L1553",
       "weight": 1.0
     },
     {
@@ -83795,7 +83795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1555",
+      "source_location": "L1557",
       "weight": 1.0
     },
     {
@@ -83831,7 +83831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2726",
+      "source_location": "L2728",
       "weight": 1.0
     },
     {
@@ -83843,7 +83843,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1579",
+      "source_location": "L1581",
       "weight": 1.0
     },
     {
@@ -83855,7 +83855,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1109",
+      "source_location": "L1111",
       "weight": 1.0
     },
     {
@@ -83867,7 +83867,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1113",
+      "source_location": "L1115",
       "weight": 1.0
     },
     {
@@ -83879,7 +83879,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1113",
+      "source_location": "L1115",
       "weight": 1.0
     },
     {
@@ -83891,7 +83891,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1114",
+      "source_location": "L1116",
       "weight": 1.0
     },
     {
@@ -83903,7 +83903,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1115",
+      "source_location": "L1117",
       "weight": 1.0
     },
     {
@@ -83939,7 +83939,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3806",
+      "source_location": "L3808",
       "weight": 1.0
     },
     {
@@ -83951,7 +83951,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3333",
+      "source_location": "L3335",
       "weight": 1.0
     },
     {
@@ -83963,7 +83963,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3318",
+      "source_location": "L3320",
       "weight": 1.0
     },
     {
@@ -83975,7 +83975,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3326",
+      "source_location": "L3328",
       "weight": 1.0
     },
     {
@@ -83987,7 +83987,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2068",
+      "source_location": "L2070",
       "weight": 1.0
     },
     {
@@ -83999,7 +83999,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1650",
+      "source_location": "L1652",
       "weight": 1.0
     },
     {
@@ -84011,7 +84011,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1650",
+      "source_location": "L1652",
       "weight": 1.0
     },
     {
@@ -84023,7 +84023,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1659",
+      "source_location": "L1661",
       "weight": 1.0
     },
     {
@@ -84035,7 +84035,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1663",
+      "source_location": "L1665",
       "weight": 1.0
     },
     {
@@ -84047,7 +84047,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1664",
+      "source_location": "L1666",
       "weight": 1.0
     },
     {
@@ -84059,7 +84059,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2381",
+      "source_location": "L2383",
       "weight": 1.0
     },
     {
@@ -84071,7 +84071,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2382",
+      "source_location": "L2384",
       "weight": 1.0
     },
     {
@@ -84095,7 +84095,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2818",
+      "source_location": "L2820",
       "weight": 1.0
     },
     {
@@ -84107,7 +84107,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2836",
+      "source_location": "L2838",
       "weight": 1.0
     },
     {
@@ -84119,7 +84119,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2837",
+      "source_location": "L2839",
       "weight": 1.0
     },
     {
@@ -84131,7 +84131,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2838",
+      "source_location": "L2840",
       "weight": 1.0
     },
     {
@@ -84143,7 +84143,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2555",
+      "source_location": "L2557",
       "weight": 1.0
     },
     {
@@ -84155,7 +84155,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2556",
+      "source_location": "L2558",
       "weight": 1.0
     },
     {
@@ -84167,7 +84167,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2559",
+      "source_location": "L2561",
       "weight": 1.0
     },
     {
@@ -84179,7 +84179,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1362",
+      "source_location": "L1364",
       "weight": 1.0
     },
     {
@@ -84191,7 +84191,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1366",
+      "source_location": "L1368",
       "weight": 1.0
     },
     {
@@ -84203,7 +84203,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3400",
+      "source_location": "L3402",
       "weight": 1.0
     },
     {
@@ -84215,7 +84215,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3403",
+      "source_location": "L3405",
       "weight": 1.0
     },
     {
@@ -84227,7 +84227,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3405",
+      "source_location": "L3407",
       "weight": 1.0
     },
     {
@@ -84239,7 +84239,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3406",
+      "source_location": "L3408",
       "weight": 1.0
     },
     {
@@ -84251,7 +84251,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1954",
+      "source_location": "L1956",
       "weight": 1.0
     },
     {
@@ -84263,7 +84263,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1960",
+      "source_location": "L1962",
       "weight": 1.0
     },
     {
@@ -84275,7 +84275,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2432",
+      "source_location": "L2434",
       "weight": 1.0
     },
     {
@@ -84287,7 +84287,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2434",
+      "source_location": "L2436",
       "weight": 1.0
     },
     {
@@ -84299,7 +84299,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2438",
+      "source_location": "L2440",
       "weight": 1.0
     },
     {
@@ -84311,7 +84311,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2442",
+      "source_location": "L2444",
       "weight": 1.0
     },
     {
@@ -84323,7 +84323,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2442",
+      "source_location": "L2444",
       "weight": 1.0
     },
     {
@@ -84347,7 +84347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1032",
+      "source_location": "L1034",
       "weight": 1.0
     },
     {
@@ -84359,7 +84359,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1035",
+      "source_location": "L1037",
       "weight": 1.0
     },
     {
@@ -84371,7 +84371,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2488",
+      "source_location": "L2490",
       "weight": 1.0
     },
     {
@@ -84383,7 +84383,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2120",
+      "source_location": "L2122",
       "weight": 1.0
     },
     {
@@ -84395,7 +84395,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2138",
+      "source_location": "L2140",
       "weight": 1.0
     },
     {
@@ -84407,7 +84407,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1446",
+      "source_location": "L1448",
       "weight": 1.0
     },
     {
@@ -84419,7 +84419,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1163",
+      "source_location": "L1165",
       "weight": 1.0
     },
     {
@@ -84431,7 +84431,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2980",
+      "source_location": "L2982",
       "weight": 1.0
     },
     {
@@ -84443,7 +84443,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1732",
+      "source_location": "L1734",
       "weight": 1.0
     },
     {
@@ -84455,7 +84455,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1737",
+      "source_location": "L1739",
       "weight": 1.0
     },
     {
@@ -84467,7 +84467,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1740",
+      "source_location": "L1742",
       "weight": 1.0
     },
     {
@@ -84479,7 +84479,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1747",
+      "source_location": "L1749",
       "weight": 1.0
     },
     {
@@ -84491,7 +84491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1754",
+      "source_location": "L1756",
       "weight": 1.0
     },
     {
@@ -84503,7 +84503,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1756",
+      "source_location": "L1758",
       "weight": 1.0
     },
     {
@@ -84515,7 +84515,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1764",
+      "source_location": "L1766",
       "weight": 1.0
     },
     {
@@ -84527,7 +84527,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1778",
+      "source_location": "L1780",
       "weight": 1.0
     },
     {
@@ -84539,7 +84539,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1780",
+      "source_location": "L1782",
       "weight": 1.0
     },
     {
@@ -84551,7 +84551,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1786",
+      "source_location": "L1788",
       "weight": 1.0
     },
     {
@@ -84599,7 +84599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2253",
+      "source_location": "L2255",
       "weight": 1.0
     },
     {
@@ -84611,7 +84611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2253",
+      "source_location": "L2255",
       "weight": 1.0
     },
     {
@@ -84623,7 +84623,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2259",
+      "source_location": "L2261",
       "weight": 1.0
     },
     {
@@ -84635,7 +84635,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2260",
+      "source_location": "L2262",
       "weight": 1.0
     },
     {
@@ -84647,7 +84647,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1814",
+      "source_location": "L1816",
       "weight": 1.0
     },
     {
@@ -84659,7 +84659,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1603",
+      "source_location": "L1605",
       "weight": 1.0
     },
     {
@@ -84671,7 +84671,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1608",
+      "source_location": "L1610",
       "weight": 1.0
     },
     {
@@ -84683,7 +84683,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1612",
+      "source_location": "L1614",
       "weight": 1.0
     },
     {
@@ -84695,7 +84695,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1617",
+      "source_location": "L1619",
       "weight": 1.0
     },
     {
@@ -84707,7 +84707,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1627",
+      "source_location": "L1629",
       "weight": 1.0
     },
     {
@@ -84719,7 +84719,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1630",
+      "source_location": "L1632",
       "weight": 1.0
     },
     {
@@ -84731,7 +84731,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1635",
+      "source_location": "L1637",
       "weight": 1.0
     },
     {
@@ -84743,7 +84743,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1639",
+      "source_location": "L1641",
       "weight": 1.0
     },
     {
@@ -84755,7 +84755,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3829",
+      "source_location": "L3831",
       "weight": 1.0
     },
     {
@@ -84767,7 +84767,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3830",
+      "source_location": "L3832",
       "weight": 1.0
     },
     {
@@ -84779,7 +84779,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3830",
+      "source_location": "L3832",
       "weight": 1.0
     },
     {
@@ -84791,7 +84791,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3573",
+      "source_location": "L3575",
       "weight": 1.0
     },
     {
@@ -84839,7 +84839,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3528",
+      "source_location": "L3530",
       "weight": 1.0
     },
     {
@@ -84851,7 +84851,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3529",
+      "source_location": "L3531",
       "weight": 1.0
     },
     {
@@ -84863,7 +84863,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3564",
+      "source_location": "L3566",
       "weight": 1.0
     },
     {
@@ -84875,7 +84875,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3565",
+      "source_location": "L3567",
       "weight": 1.0
     },
     {
@@ -84887,7 +84887,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2155",
+      "source_location": "L2157",
       "weight": 1.0
     },
     {
@@ -84899,7 +84899,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2158",
+      "source_location": "L2160",
       "weight": 1.0
     },
     {
@@ -84911,7 +84911,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2163",
+      "source_location": "L2165",
       "weight": 1.0
     },
     {
@@ -84923,7 +84923,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2163",
+      "source_location": "L2165",
       "weight": 1.0
     },
     {
@@ -84935,7 +84935,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2194",
+      "source_location": "L2196",
       "weight": 1.0
     },
     {
@@ -84947,7 +84947,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2205",
+      "source_location": "L2207",
       "weight": 1.0
     },
     {
@@ -84959,7 +84959,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2211",
+      "source_location": "L2213",
       "weight": 1.0
     },
     {
@@ -84971,7 +84971,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2213",
+      "source_location": "L2215",
       "weight": 1.0
     },
     {
@@ -84983,7 +84983,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2221",
+      "source_location": "L2223",
       "weight": 1.0
     },
     {
@@ -84995,7 +84995,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1187",
+      "source_location": "L1189",
       "weight": 1.0
     },
     {
@@ -85007,7 +85007,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1189",
+      "source_location": "L1191",
       "weight": 1.0
     },
     {
@@ -85019,7 +85019,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1206",
+      "source_location": "L1208",
       "weight": 1.0
     },
     {
@@ -85031,7 +85031,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3578",
+      "source_location": "L3580",
       "weight": 1.0
     },
     {
@@ -85043,7 +85043,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3582",
+      "source_location": "L3584",
       "weight": 1.0
     },
     {
@@ -85571,7 +85571,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1586",
+      "source_location": "L1588",
       "weight": 1.0
     },
     {
@@ -85583,7 +85583,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2464",
+      "source_location": "L2466",
       "weight": 1.0
     },
     {
@@ -85595,7 +85595,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2469",
+      "source_location": "L2471",
       "weight": 1.0
     },
     {
@@ -85607,7 +85607,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2470",
+      "source_location": "L2472",
       "weight": 1.0
     },
     {
@@ -85619,7 +85619,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2474",
+      "source_location": "L2476",
       "weight": 1.0
     },
     {
@@ -85631,7 +85631,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2478",
+      "source_location": "L2480",
       "weight": 1.0
     },
     {
@@ -85643,7 +85643,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2478",
+      "source_location": "L2480",
       "weight": 1.0
     },
     {
@@ -85655,7 +85655,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2479",
+      "source_location": "L2481",
       "weight": 1.0
     },
     {
@@ -85667,7 +85667,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1279",
+      "source_location": "L1281",
       "weight": 1.0
     },
     {
@@ -85679,7 +85679,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1288",
+      "source_location": "L1290",
       "weight": 1.0
     },
     {
@@ -85691,7 +85691,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1299",
+      "source_location": "L1301",
       "weight": 1.0
     },
     {
@@ -85703,7 +85703,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1304",
+      "source_location": "L1306",
       "weight": 1.0
     },
     {
@@ -85715,7 +85715,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1305",
+      "source_location": "L1307",
       "weight": 1.0
     },
     {
@@ -85727,7 +85727,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1307",
+      "source_location": "L1309",
       "weight": 1.0
     },
     {
@@ -85739,36 +85739,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1308",
+      "source_location": "L1310",
       "weight": 1.0
     },
     {
       "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
       "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_runlighting",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3590",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
-      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loaddevicenames",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3591",
-      "weight": 1.0
-    },
-    {
-      "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
-      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadsystemmode",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -85780,7 +85756,7 @@
     },
     {
       "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
-      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadgpumode",
+      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loaddevicenames",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -85792,7 +85768,7 @@
     },
     {
       "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
-      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadlightingui",
+      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadsystemmode",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -85800,6 +85776,30 @@
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
       "source_location": "L3594",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
+      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadgpumode",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
+      "source_location": "L3595",
+      "weight": 1.0
+    },
+    {
+      "source": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_onprofilechecked",
+      "target": "src_nextcalibur_app_mainwindow_xaml_nextcalibur_app_mainwindow_loadlightingui",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
+      "source_location": "L3596",
       "weight": 1.0
     },
     {
@@ -85811,7 +85811,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3600",
+      "source_location": "L3602",
       "weight": 1.0
     },
     {
@@ -85823,7 +85823,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3365",
+      "source_location": "L3367",
       "weight": 1.0
     },
     {
@@ -85835,7 +85835,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3370",
+      "source_location": "L3372",
       "weight": 1.0
     },
     {
@@ -85847,7 +85847,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3378",
+      "source_location": "L3380",
       "weight": 1.0
     },
     {
@@ -85859,7 +85859,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3382",
+      "source_location": "L3384",
       "weight": 1.0
     },
     {
@@ -85871,7 +85871,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3520",
+      "source_location": "L3522",
       "weight": 1.0
     },
     {
@@ -85883,7 +85883,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1326",
+      "source_location": "L1328",
       "weight": 1.0
     },
     {
@@ -85895,7 +85895,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2362",
+      "source_location": "L2364",
       "weight": 1.0
     },
     {
@@ -85907,7 +85907,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2367",
+      "source_location": "L2369",
       "weight": 1.0
     },
     {
@@ -85967,7 +85967,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1225",
+      "source_location": "L1227",
       "weight": 1.0
     },
     {
@@ -85979,7 +85979,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1227",
+      "source_location": "L1229",
       "weight": 1.0
     },
     {
@@ -85991,7 +85991,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1233",
+      "source_location": "L1235",
       "weight": 1.0
     },
     {
@@ -86003,7 +86003,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1234",
+      "source_location": "L1236",
       "weight": 1.0
     },
     {
@@ -86015,7 +86015,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1237",
+      "source_location": "L1239",
       "weight": 1.0
     },
     {
@@ -86027,7 +86027,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1241",
+      "source_location": "L1243",
       "weight": 1.0
     },
     {
@@ -86039,7 +86039,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1241",
+      "source_location": "L1243",
       "weight": 1.0
     },
     {
@@ -86051,7 +86051,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1242",
+      "source_location": "L1244",
       "weight": 1.0
     },
     {
@@ -86063,7 +86063,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2509",
+      "source_location": "L2511",
       "weight": 1.0
     },
     {
@@ -86075,7 +86075,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1977",
+      "source_location": "L1979",
       "weight": 1.0
     },
     {
@@ -86087,7 +86087,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1420",
+      "source_location": "L1422",
       "weight": 1.0
     },
     {
@@ -86099,7 +86099,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1425",
+      "source_location": "L1427",
       "weight": 1.0
     },
     {
@@ -86111,7 +86111,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1426",
+      "source_location": "L1428",
       "weight": 1.0
     },
     {
@@ -86123,7 +86123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1430",
+      "source_location": "L1432",
       "weight": 1.0
     },
     {
@@ -86135,7 +86135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1435",
+      "source_location": "L1437",
       "weight": 1.0
     },
     {
@@ -86147,7 +86147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1436",
+      "source_location": "L1438",
       "weight": 1.0
     },
     {
@@ -86159,7 +86159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1582",
+      "source_location": "L1584",
       "weight": 1.0
     },
     {
@@ -86171,7 +86171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2408",
+      "source_location": "L2410",
       "weight": 1.0
     },
     {
@@ -86183,7 +86183,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2412",
+      "source_location": "L2414",
       "weight": 1.0
     },
     {
@@ -86195,7 +86195,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3514",
+      "source_location": "L3516",
       "weight": 1.0
     },
     {
@@ -86207,7 +86207,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3553",
+      "source_location": "L3555",
       "weight": 1.0
     },
     {
@@ -86279,7 +86279,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3721",
+      "source_location": "L3723",
       "weight": 1.0
     },
     {
@@ -86291,7 +86291,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3723",
+      "source_location": "L3725",
       "weight": 1.0
     },
     {
@@ -86303,7 +86303,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3724",
+      "source_location": "L3726",
       "weight": 1.0
     },
     {
@@ -86315,7 +86315,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3746",
+      "source_location": "L3748",
       "weight": 1.0
     },
     {
@@ -86327,7 +86327,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3758",
+      "source_location": "L3760",
       "weight": 1.0
     },
     {
@@ -86339,7 +86339,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3758",
+      "source_location": "L3760",
       "weight": 1.0
     },
     {
@@ -86351,7 +86351,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3771",
+      "source_location": "L3773",
       "weight": 1.0
     },
     {
@@ -86363,7 +86363,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2748",
+      "source_location": "L2750",
       "weight": 1.0
     },
     {
@@ -86375,7 +86375,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2761",
+      "source_location": "L2763",
       "weight": 1.0
     },
     {
@@ -86399,7 +86399,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1152",
+      "source_location": "L1154",
       "weight": 1.0
     },
     {
@@ -86411,7 +86411,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1155",
+      "source_location": "L1157",
       "weight": 1.0
     },
     {
@@ -86423,7 +86423,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1156",
+      "source_location": "L1158",
       "weight": 1.0
     },
     {
@@ -86435,7 +86435,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1159",
+      "source_location": "L1161",
       "weight": 1.0
     },
     {
@@ -86447,7 +86447,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3340",
+      "source_location": "L3342",
       "weight": 1.0
     },
     {
@@ -86459,7 +86459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3344",
+      "source_location": "L3346",
       "weight": 1.0
     },
     {
@@ -86471,7 +86471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3486",
+      "source_location": "L3488",
       "weight": 1.0
     },
     {
@@ -86483,7 +86483,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2587",
+      "source_location": "L2589",
       "weight": 1.0
     },
     {
@@ -86495,7 +86495,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2599",
+      "source_location": "L2601",
       "weight": 1.0
     },
     {
@@ -86507,7 +86507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2301",
+      "source_location": "L2303",
       "weight": 1.0
     },
     {
@@ -86519,7 +86519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2301",
+      "source_location": "L2303",
       "weight": 1.0
     },
     {
@@ -86531,7 +86531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2305",
+      "source_location": "L2307",
       "weight": 1.0
     },
     {
@@ -86543,7 +86543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2307",
+      "source_location": "L2309",
       "weight": 1.0
     },
     {
@@ -86555,7 +86555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2308",
+      "source_location": "L2310",
       "weight": 1.0
     },
     {
@@ -86567,7 +86567,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2311",
+      "source_location": "L2313",
       "weight": 1.0
     },
     {
@@ -86579,7 +86579,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2317",
+      "source_location": "L2319",
       "weight": 1.0
     },
     {
@@ -86591,7 +86591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2321",
+      "source_location": "L2323",
       "weight": 1.0
     },
     {
@@ -86603,7 +86603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2337",
+      "source_location": "L2339",
       "weight": 1.0
     },
     {
@@ -86615,7 +86615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1475",
+      "source_location": "L1477",
       "weight": 1.0
     },
     {
@@ -86627,7 +86627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1477",
+      "source_location": "L1479",
       "weight": 1.0
     },
     {
@@ -86639,7 +86639,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1483",
+      "source_location": "L1485",
       "weight": 1.0
     },
     {
@@ -86651,7 +86651,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1498",
+      "source_location": "L1500",
       "weight": 1.0
     },
     {
@@ -86663,7 +86663,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1502",
+      "source_location": "L1504",
       "weight": 1.0
     },
     {
@@ -86675,7 +86675,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1505",
+      "source_location": "L1507",
       "weight": 1.0
     },
     {
@@ -86687,7 +86687,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1509",
+      "source_location": "L1511",
       "weight": 1.0
     },
     {
@@ -86699,7 +86699,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1469",
+      "source_location": "L1471",
       "weight": 1.0
     },
     {
@@ -86735,7 +86735,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1052",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -86747,7 +86747,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1057",
+      "source_location": "L1059",
       "weight": 1.0
     },
     {
@@ -86759,7 +86759,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1082",
+      "source_location": "L1084",
       "weight": 1.0
     },
     {
@@ -86771,7 +86771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1088",
+      "source_location": "L1090",
       "weight": 1.0
     },
     {
@@ -86783,7 +86783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1089",
+      "source_location": "L1091",
       "weight": 1.0
     },
     {
@@ -86795,7 +86795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1090",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -86807,7 +86807,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3644",
+      "source_location": "L3646",
       "weight": 1.0
     },
     {
@@ -86819,7 +86819,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3644",
+      "source_location": "L3646",
       "weight": 1.0
     },
     {
@@ -86831,7 +86831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1937",
+      "source_location": "L1939",
       "weight": 1.0
     },
     {
@@ -86843,7 +86843,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2637",
+      "source_location": "L2639",
       "weight": 1.0
     },
     {
@@ -86855,7 +86855,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2657",
+      "source_location": "L2659",
       "weight": 1.0
     },
     {
@@ -86867,7 +86867,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2667",
+      "source_location": "L2669",
       "weight": 1.0
     },
     {
@@ -86879,7 +86879,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2674",
+      "source_location": "L2676",
       "weight": 1.0
     },
     {
@@ -86891,7 +86891,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2677",
+      "source_location": "L2679",
       "weight": 1.0
     },
     {
@@ -86903,7 +86903,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2679",
+      "source_location": "L2681",
       "weight": 1.0
     },
     {
@@ -86939,7 +86939,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2144",
+      "source_location": "L2146",
       "weight": 1.0
     },
     {
@@ -86951,7 +86951,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1853",
+      "source_location": "L1855",
       "weight": 1.0
     },
     {
@@ -86963,7 +86963,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1874",
+      "source_location": "L1876",
       "weight": 1.0
     },
     {
@@ -86975,7 +86975,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1173",
+      "source_location": "L1175",
       "weight": 1.0
     },
     {
@@ -86987,7 +86987,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3048",
+      "source_location": "L3050",
       "weight": 1.0
     },
     {
@@ -86999,7 +86999,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3053",
+      "source_location": "L3055",
       "weight": 1.0
     },
     {
@@ -87011,7 +87011,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3054",
+      "source_location": "L3056",
       "weight": 1.0
     },
     {
@@ -87023,7 +87023,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3055",
+      "source_location": "L3057",
       "weight": 1.0
     },
     {
@@ -87035,7 +87035,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3056",
+      "source_location": "L3058",
       "weight": 1.0
     },
     {
@@ -87047,7 +87047,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3057",
+      "source_location": "L3059",
       "weight": 1.0
     },
     {
@@ -87059,7 +87059,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3058",
+      "source_location": "L3060",
       "weight": 1.0
     },
     {
@@ -87071,7 +87071,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3069",
+      "source_location": "L3071",
       "weight": 1.0
     },
     {
@@ -87083,7 +87083,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3083",
+      "source_location": "L3085",
       "weight": 1.0
     },
     {
@@ -87095,7 +87095,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3086",
+      "source_location": "L3088",
       "weight": 1.0
     },
     {
@@ -87107,7 +87107,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3087",
+      "source_location": "L3089",
       "weight": 1.0
     },
     {
@@ -87119,7 +87119,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3088",
+      "source_location": "L3090",
       "weight": 1.0
     },
     {
@@ -87131,7 +87131,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3095",
+      "source_location": "L3097",
       "weight": 1.0
     },
     {
@@ -87143,7 +87143,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3099",
+      "source_location": "L3101",
       "weight": 1.0
     },
     {
@@ -87155,7 +87155,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3141",
+      "source_location": "L3143",
       "weight": 1.0
     },
     {
@@ -87167,7 +87167,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3171",
+      "source_location": "L3173",
       "weight": 1.0
     },
     {
@@ -87179,7 +87179,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3194",
+      "source_location": "L3196",
       "weight": 1.0
     },
     {
@@ -87191,7 +87191,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3206",
+      "source_location": "L3208",
       "weight": 1.0
     },
     {
@@ -87203,7 +87203,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3226",
+      "source_location": "L3228",
       "weight": 1.0
     },
     {
@@ -87215,7 +87215,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3227",
+      "source_location": "L3229",
       "weight": 1.0
     },
     {
@@ -87227,7 +87227,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3237",
+      "source_location": "L3239",
       "weight": 1.0
     },
     {
@@ -87239,7 +87239,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3252",
+      "source_location": "L3254",
       "weight": 1.0
     },
     {
@@ -87251,7 +87251,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3258",
+      "source_location": "L3260",
       "weight": 1.0
     },
     {
@@ -87323,7 +87323,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3294",
+      "source_location": "L3296",
       "weight": 1.0
     },
     {
@@ -87335,7 +87335,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3296",
+      "source_location": "L3298",
       "weight": 1.0
     },
     {
@@ -87347,7 +87347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2857",
+      "source_location": "L2859",
       "weight": 1.0
     },
     {
@@ -87359,7 +87359,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2859",
+      "source_location": "L2861",
       "weight": 1.0
     },
     {
@@ -87371,7 +87371,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2866",
+      "source_location": "L2868",
       "weight": 1.0
     },
     {
@@ -87383,7 +87383,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3686",
+      "source_location": "L3688",
       "weight": 1.0
     },
     {
@@ -87395,7 +87395,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3690",
+      "source_location": "L3692",
       "weight": 1.0
     },
     {
@@ -87407,7 +87407,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3704",
+      "source_location": "L3706",
       "weight": 1.0
     },
     {
@@ -87419,7 +87419,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3706",
+      "source_location": "L3708",
       "weight": 1.0
     },
     {
@@ -87491,7 +87491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2888",
+      "source_location": "L2890",
       "weight": 1.0
     },
     {
@@ -87503,7 +87503,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2897",
+      "source_location": "L2899",
       "weight": 1.0
     },
     {
@@ -87515,7 +87515,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2898",
+      "source_location": "L2900",
       "weight": 1.0
     },
     {
@@ -87527,7 +87527,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2898",
+      "source_location": "L2900",
       "weight": 1.0
     },
     {
@@ -87539,7 +87539,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2900",
+      "source_location": "L2902",
       "weight": 1.0
     },
     {
@@ -87551,7 +87551,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2917",
+      "source_location": "L2919",
       "weight": 1.0
     },
     {
@@ -87563,7 +87563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2936",
+      "source_location": "L2938",
       "weight": 1.0
     },
     {
@@ -87575,7 +87575,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2942",
+      "source_location": "L2944",
       "weight": 1.0
     },
     {
@@ -87587,7 +87587,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2004",
+      "source_location": "L2006",
       "weight": 1.0
     },
     {
@@ -87599,7 +87599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1168",
+      "source_location": "L1170",
       "weight": 1.0
     },
     {
@@ -104448,7 +104448,7 @@
         "ref_qualifier": "Nextcalibur.Core.Hardware"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2770",
+      "source_location": "L2772",
       "weight": 1.0
     },
     {
@@ -104533,7 +104533,7 @@
         "ref_qualifier": "System.Collections.ObjectModel"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2615",
+      "source_location": "L2617",
       "weight": 1.0
     },
     {
@@ -104616,7 +104616,7 @@
         "ref_token": "Action"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3540",
+      "source_location": "L3542",
       "weight": 1.0
     },
     {
@@ -105171,7 +105171,7 @@
         "ref_token": "DateTime"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2876",
+      "source_location": "L2878",
       "weight": 1.0
     },
     {
@@ -105531,7 +105531,7 @@
         "ref_token": "DateTimeOffset"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1141",
+      "source_location": "L1143",
       "weight": 1.0
     },
     {
@@ -105936,7 +105936,7 @@
         "ref_token": "DispatcherTimer"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3539",
+      "source_location": "L3541",
       "weight": 1.0
     },
     {
@@ -106266,7 +106266,7 @@
         "ref_token": "GpuMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2733",
+      "source_location": "L2735",
       "weight": 1.0
     },
     {
@@ -107256,7 +107256,7 @@
         "ref_token": "LedEffect"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3421",
+      "source_location": "L3423",
       "weight": 1.0
     },
     {
@@ -107331,7 +107331,7 @@
         "ref_token": "LedZone"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3388",
+      "source_location": "L3390",
       "weight": 1.0
     },
     {
@@ -107571,7 +107571,7 @@
         "ref_token": "Luid"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2277",
+      "source_location": "L2279",
       "weight": 1.0
     },
     {
@@ -107706,7 +107706,7 @@
         "ref_token": "NvidiaDriverState"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3674",
+      "source_location": "L3676",
       "weight": 1.0
     },
     {
@@ -107841,7 +107841,7 @@
         "ref_token": "Queue"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1717",
+      "source_location": "L1719",
       "weight": 1.0
     },
     {
@@ -108366,7 +108366,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2847",
+      "source_location": "L2849",
       "weight": 1.0
     },
     {
@@ -108396,7 +108396,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1166",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -108681,7 +108681,7 @@
         "ref_token": "TimeSpan"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2105",
+      "source_location": "L2107",
       "weight": 1.0
     },
     {
@@ -109668,7 +109668,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1836",
+      "source_location": "L1838",
       "weight": 1.0
     },
     {
@@ -109680,7 +109680,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1846",
+      "source_location": "L1848",
       "weight": 1.0
     },
     {
@@ -109692,7 +109692,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2038",
+      "source_location": "L2040",
       "weight": 1.0
     },
     {
@@ -109704,7 +109704,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3388",
+      "source_location": "L3390",
       "weight": 1.0
     },
     {
@@ -109716,7 +109716,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3421",
+      "source_location": "L3423",
       "weight": 1.0
     },
     {
@@ -113158,7 +113158,7 @@
         "ref_qualifier": "Nextcalibur.Core.Dependencies"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1717",
+      "source_location": "L1719",
       "weight": 1.0
     },
     {
@@ -113328,7 +113328,7 @@
         "ref_qualifier": "System.Reflection"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1933",
+      "source_location": "L1935",
       "weight": 1.0
     },
     {
@@ -113553,7 +113553,7 @@
         "ref_token": "Button"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -114033,7 +114033,7 @@
         "ref_token": "GpuMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2159",
+      "source_location": "L2161",
       "weight": 1.0
     },
     {
@@ -114108,7 +114108,7 @@
         "ref_token": "Guid"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1053",
+      "source_location": "L1055",
       "weight": 1.0
     },
     {
@@ -114903,7 +114903,7 @@
         "ref_token": "Option"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -114948,7 +114948,7 @@
         "ref_token": "Ours"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1053",
+      "source_location": "L1055",
       "weight": 1.0
     },
     {
@@ -115083,7 +115083,7 @@
         "ref_token": "Plan"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1053",
+      "source_location": "L1055",
       "weight": 1.0
     },
     {
@@ -115128,7 +115128,7 @@
         "ref_token": "PowerModeOption"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -115338,7 +115338,7 @@
         "ref_token": "RadioButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -115758,7 +115758,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1221",
+      "source_location": "L1223",
       "weight": 1.0
     },
     {
@@ -115863,7 +115863,7 @@
         "ref_token": "Text"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -115878,7 +115878,7 @@
         "ref_token": "TextBlock"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -115893,7 +115893,7 @@
         "ref_token": "ThemePreference"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2504",
+      "source_location": "L2506",
       "weight": 1.0
     },
     {
@@ -124080,7 +124080,7 @@
         "ref_qualifier": "Microsoft.Win32"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1253",
+      "source_location": "L1255",
       "weight": 1.0
     },
     {
@@ -124097,7 +124097,7 @@
         "ref_qualifier": "Microsoft.Win32"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1322",
+      "source_location": "L1324",
       "weight": 1.0
     },
     {
@@ -124182,7 +124182,7 @@
         "ref_qualifier": "Nextcalibur.Core.Dependencies"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1693",
+      "source_location": "L1695",
       "weight": 1.0
     },
     {
@@ -124199,7 +124199,7 @@
         "ref_qualifier": "Nextcalibur.Core.Dependencies"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1719",
+      "source_location": "L1721",
       "weight": 1.0
     },
     {
@@ -124488,7 +124488,7 @@
         "ref_qualifier": "System.Windows.Controls"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1971",
+      "source_location": "L1973",
       "weight": 1.0
     },
     {
@@ -124505,7 +124505,7 @@
         "ref_qualifier": "System.Windows.Controls"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2000",
+      "source_location": "L2002",
       "weight": 1.0
     },
     {
@@ -124612,7 +124612,7 @@
         "ref_token": "Action"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1971",
+      "source_location": "L1973",
       "weight": 1.0
     },
     {
@@ -124627,7 +124627,7 @@
         "ref_token": "Action"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3542",
+      "source_location": "L3544",
       "weight": 1.0
     },
     {
@@ -124642,7 +124642,7 @@
         "ref_token": "Action"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3608",
+      "source_location": "L3610",
       "weight": 1.0
     },
     {
@@ -125167,7 +125167,7 @@
         "ref_token": "Color"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3523",
+      "source_location": "L3525",
       "weight": 1.0
     },
     {
@@ -125977,7 +125977,7 @@
         "ref_token": "EventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1184",
+      "source_location": "L1186",
       "weight": 1.0
     },
     {
@@ -125992,7 +125992,7 @@
         "ref_token": "EventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2350",
+      "source_location": "L2352",
       "weight": 1.0
     },
     {
@@ -126352,7 +126352,7 @@
         "ref_token": "Func"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2991",
+      "source_location": "L2993",
       "weight": 1.0
     },
     {
@@ -126502,7 +126502,7 @@
         "ref_token": "GpuConfiguration"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1370",
+      "source_location": "L1372",
       "weight": 1.0
     },
     {
@@ -126517,7 +126517,7 @@
         "ref_token": "GpuConfiguration"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2079",
+      "source_location": "L2081",
       "weight": 1.0
     },
     {
@@ -126532,7 +126532,7 @@
         "ref_token": "GpuConfiguration"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2067",
+      "source_location": "L2069",
       "weight": 1.0
     },
     {
@@ -126562,7 +126562,7 @@
         "ref_token": "GpuLoad"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1370",
+      "source_location": "L1372",
       "weight": 1.0
     },
     {
@@ -126607,7 +126607,7 @@
         "ref_token": "GpuMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2088",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -128047,7 +128047,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2285",
+      "source_location": "L2287",
       "weight": 1.0
     },
     {
@@ -128062,7 +128062,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2288",
+      "source_location": "L2290",
       "weight": 1.0
     },
     {
@@ -128092,7 +128092,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2388",
+      "source_location": "L2390",
       "weight": 1.0
     },
     {
@@ -128122,7 +128122,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2394",
+      "source_location": "L2396",
       "weight": 1.0
     },
     {
@@ -128137,7 +128137,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2279",
+      "source_location": "L2281",
       "weight": 1.0
     },
     {
@@ -128167,7 +128167,7 @@
         "ref_token": "IntPtr"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2391",
+      "source_location": "L2393",
       "weight": 1.0
     },
     {
@@ -129322,7 +129322,7 @@
         "ref_token": "LedEffect"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3411",
+      "source_location": "L3413",
       "weight": 1.0
     },
     {
@@ -129397,7 +129397,7 @@
         "ref_token": "LedZone"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3489",
+      "source_location": "L3491",
       "weight": 1.0
     },
     {
@@ -129532,7 +129532,7 @@
         "ref_token": "Luid"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2282",
+      "source_location": "L2284",
       "weight": 1.0
     },
     {
@@ -129652,7 +129652,7 @@
         "ref_token": "MessageBoxButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1848",
+      "source_location": "L1850",
       "weight": 1.0
     },
     {
@@ -129682,7 +129682,7 @@
         "ref_token": "MessageBoxResult"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1848",
+      "source_location": "L1850",
       "weight": 1.0
     },
     {
@@ -130312,7 +130312,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3833",
+      "source_location": "L3835",
       "weight": 1.0
     },
     {
@@ -130327,7 +130327,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3827",
+      "source_location": "L3829",
       "weight": 1.0
     },
     {
@@ -130357,7 +130357,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3559",
+      "source_location": "L3561",
       "weight": 1.0
     },
     {
@@ -130372,7 +130372,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2146",
+      "source_location": "L2148",
       "weight": 1.0
     },
     {
@@ -130387,7 +130387,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3576",
+      "source_location": "L3578",
       "weight": 1.0
     },
     {
@@ -130462,7 +130462,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1584",
+      "source_location": "L1586",
       "weight": 1.0
     },
     {
@@ -130477,7 +130477,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2459",
+      "source_location": "L2461",
       "weight": 1.0
     },
     {
@@ -130492,7 +130492,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3585",
+      "source_location": "L3587",
       "weight": 1.0
     },
     {
@@ -130507,7 +130507,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3597",
+      "source_location": "L3599",
       "weight": 1.0
     },
     {
@@ -130522,7 +130522,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3361",
+      "source_location": "L3363",
       "weight": 1.0
     },
     {
@@ -130537,7 +130537,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3517",
+      "source_location": "L3519",
       "weight": 1.0
     },
     {
@@ -130552,7 +130552,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1217",
+      "source_location": "L1219",
       "weight": 1.0
     },
     {
@@ -130567,7 +130567,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2500",
+      "source_location": "L2502",
       "weight": 1.0
     },
     {
@@ -130582,7 +130582,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1582",
+      "source_location": "L1584",
       "weight": 1.0
     },
     {
@@ -130597,7 +130597,7 @@
         "ref_token": "RoutedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3505",
+      "source_location": "L3507",
       "weight": 1.0
     },
     {
@@ -130612,7 +130612,7 @@
         "ref_token": "RoutedPropertyChangedEventArgs"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3568",
+      "source_location": "L3570",
       "weight": 1.0
     },
     {
@@ -130897,7 +130897,7 @@
         "ref_token": "Slider"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2000",
+      "source_location": "L2002",
       "weight": 1.0
     },
     {
@@ -130987,7 +130987,7 @@
         "ref_token": "SolidColorBrush"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3839",
+      "source_location": "L3841",
       "weight": 1.0
     },
     {
@@ -131227,7 +131227,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1122",
+      "source_location": "L1124",
       "weight": 1.0
     },
     {
@@ -131242,7 +131242,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1106",
+      "source_location": "L1108",
       "weight": 1.0
     },
     {
@@ -131257,7 +131257,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1209",
+      "source_location": "L1211",
       "weight": 1.0
     },
     {
@@ -131272,7 +131272,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1163",
+      "source_location": "L1165",
       "weight": 1.0
     },
     {
@@ -131287,7 +131287,7 @@
         "ref_token": "SystemMode"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1150",
+      "source_location": "L1152",
       "weight": 1.0
     },
     {
@@ -131797,7 +131797,7 @@
         "ref_token": "TextBlock"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2781",
+      "source_location": "L2783",
       "weight": 1.0
     },
     {
@@ -132067,7 +132067,7 @@
         "ref_token": "TokenPrivileges"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2285",
+      "source_location": "L2287",
       "weight": 1.0
     },
     {
@@ -132634,7 +132634,7 @@
         "ref_token": "Color"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3489",
+      "source_location": "L3491",
       "weight": 1.0
     },
     {
@@ -133069,7 +133069,7 @@
         "ref_token": "GpuLoad"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2067",
+      "source_location": "L2069",
       "weight": 1.0
     },
     {
@@ -133294,7 +133294,7 @@
         "ref_token": "IEnumerable"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -134614,7 +134614,7 @@
         "ref_token": "RadioButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3411",
+      "source_location": "L3413",
       "weight": 1.0
     },
     {
@@ -134629,7 +134629,7 @@
         "ref_token": "RadioButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2088",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -134644,7 +134644,7 @@
         "ref_token": "RadioButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1209",
+      "source_location": "L1211",
       "weight": 1.0
     },
     {
@@ -134659,7 +134659,7 @@
         "ref_token": "RadioButton"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3429",
+      "source_location": "L3431",
       "weight": 1.0
     },
     {
@@ -135304,7 +135304,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1572",
+      "source_location": "L1574",
       "weight": 1.0
     },
     {
@@ -135319,7 +135319,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3310",
+      "source_location": "L3312",
       "weight": 1.0
     },
     {
@@ -135334,7 +135334,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1644",
+      "source_location": "L1646",
       "weight": 1.0
     },
     {
@@ -135349,7 +135349,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2855",
+      "source_location": "L2857",
       "weight": 1.0
     },
     {
@@ -135904,7 +135904,7 @@
         "ref_token": "TimeSpan"
       },
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3013",
+      "source_location": "L3015",
       "weight": 1.0
     },
     {
@@ -142878,7 +142878,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1166",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -142889,7 +142889,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2273",
+      "source_location": "L2275",
       "weight": 1.0
     },
     {
@@ -142900,7 +142900,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2276",
+      "source_location": "L2278",
       "weight": 1.0
     },
     {
@@ -153220,7 +153220,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1045",
+      "source_location": "L1047",
       "weight": 1.0
     },
     {
@@ -153231,7 +153231,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1106",
+      "source_location": "L1108",
       "weight": 1.0
     },
     {
@@ -153242,7 +153242,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1122",
+      "source_location": "L1124",
       "weight": 1.0
     },
     {
@@ -153253,7 +153253,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1150",
+      "source_location": "L1152",
       "weight": 1.0
     },
     {
@@ -153264,7 +153264,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1163",
+      "source_location": "L1165",
       "weight": 1.0
     },
     {
@@ -153275,7 +153275,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1171",
+      "source_location": "L1173",
       "weight": 1.0
     },
     {
@@ -153286,7 +153286,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1184",
+      "source_location": "L1186",
       "weight": 1.0
     },
     {
@@ -153297,7 +153297,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1209",
+      "source_location": "L1211",
       "weight": 1.0
     },
     {
@@ -153308,7 +153308,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1217",
+      "source_location": "L1219",
       "weight": 1.0
     },
     {
@@ -153319,7 +153319,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1253",
+      "source_location": "L1255",
       "weight": 1.0
     },
     {
@@ -153330,7 +153330,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1322",
+      "source_location": "L1324",
       "weight": 1.0
     },
     {
@@ -153341,7 +153341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1348",
+      "source_location": "L1350",
       "weight": 1.0
     },
     {
@@ -153352,7 +153352,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1370",
+      "source_location": "L1372",
       "weight": 1.0
     },
     {
@@ -153363,7 +153363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1417",
+      "source_location": "L1419",
       "weight": 1.0
     },
     {
@@ -153374,7 +153374,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1441",
+      "source_location": "L1443",
       "weight": 1.0
     },
     {
@@ -153385,7 +153385,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1465",
+      "source_location": "L1467",
       "weight": 1.0
     },
     {
@@ -153396,7 +153396,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1472",
+      "source_location": "L1474",
       "weight": 1.0
     },
     {
@@ -153407,7 +153407,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1519",
+      "source_location": "L1521",
       "weight": 1.0
     },
     {
@@ -153418,7 +153418,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1538",
+      "source_location": "L1540",
       "weight": 1.0
     },
     {
@@ -153429,7 +153429,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1572",
+      "source_location": "L1574",
       "weight": 1.0
     },
     {
@@ -153440,7 +153440,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1582",
+      "source_location": "L1584",
       "weight": 1.0
     },
     {
@@ -153451,7 +153451,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1584",
+      "source_location": "L1586",
       "weight": 1.0
     },
     {
@@ -153462,7 +153462,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1597",
+      "source_location": "L1599",
       "weight": 1.0
     },
     {
@@ -153473,7 +153473,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1644",
+      "source_location": "L1646",
       "weight": 1.0
     },
     {
@@ -153484,7 +153484,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1693",
+      "source_location": "L1695",
       "weight": 1.0
     },
     {
@@ -153495,7 +153495,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1719",
+      "source_location": "L1721",
       "weight": 1.0
     },
     {
@@ -153506,7 +153506,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1810",
+      "source_location": "L1812",
       "weight": 1.0
     },
     {
@@ -153517,7 +153517,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1818",
+      "source_location": "L1820",
       "weight": 1.0
     },
     {
@@ -153528,7 +153528,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1828",
+      "source_location": "L1830",
       "weight": 1.0
     },
     {
@@ -153539,7 +153539,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1848",
+      "source_location": "L1850",
       "weight": 1.0
     },
     {
@@ -153550,7 +153550,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1920",
+      "source_location": "L1922",
       "weight": 1.0
     },
     {
@@ -153561,7 +153561,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1931",
+      "source_location": "L1933",
       "weight": 1.0
     },
     {
@@ -153572,7 +153572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1944",
+      "source_location": "L1946",
       "weight": 1.0
     },
     {
@@ -153583,7 +153583,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1971",
+      "source_location": "L1973",
       "weight": 1.0
     },
     {
@@ -153594,7 +153594,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1989",
+      "source_location": "L1991",
       "weight": 1.0
     },
     {
@@ -153605,7 +153605,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2000",
+      "source_location": "L2002",
       "weight": 1.0
     },
     {
@@ -153616,7 +153616,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2067",
+      "source_location": "L2069",
       "weight": 1.0
     },
     {
@@ -153627,7 +153627,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2079",
+      "source_location": "L2081",
       "weight": 1.0
     },
     {
@@ -153638,7 +153638,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2088",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -153649,7 +153649,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2114",
+      "source_location": "L2116",
       "weight": 1.0
     },
     {
@@ -153660,7 +153660,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2143",
+      "source_location": "L2145",
       "weight": 1.0
     },
     {
@@ -153671,7 +153671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2146",
+      "source_location": "L2148",
       "weight": 1.0
     },
     {
@@ -153693,7 +153693,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2251",
+      "source_location": "L2253",
       "weight": 1.0
     },
     {
@@ -153704,7 +153704,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2270",
+      "source_location": "L2272",
       "weight": 1.0
     },
     {
@@ -153715,7 +153715,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2279",
+      "source_location": "L2281",
       "weight": 1.0
     },
     {
@@ -153726,7 +153726,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2282",
+      "source_location": "L2284",
       "weight": 1.0
     },
     {
@@ -153737,7 +153737,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2285",
+      "source_location": "L2287",
       "weight": 1.0
     },
     {
@@ -153748,7 +153748,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2288",
+      "source_location": "L2290",
       "weight": 1.0
     },
     {
@@ -153759,7 +153759,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2298",
+      "source_location": "L2300",
       "weight": 1.0
     },
     {
@@ -153770,7 +153770,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2350",
+      "source_location": "L2352",
       "weight": 1.0
     },
     {
@@ -153792,7 +153792,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2377",
+      "source_location": "L2379",
       "weight": 1.0
     },
     {
@@ -153803,7 +153803,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2388",
+      "source_location": "L2390",
       "weight": 1.0
     },
     {
@@ -153814,7 +153814,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2391",
+      "source_location": "L2393",
       "weight": 1.0
     },
     {
@@ -153825,7 +153825,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2394",
+      "source_location": "L2396",
       "weight": 1.0
     },
     {
@@ -153836,7 +153836,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2428",
+      "source_location": "L2430",
       "weight": 1.0
     },
     {
@@ -153847,7 +153847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2449",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -153858,7 +153858,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2459",
+      "source_location": "L2461",
       "weight": 1.0
     },
     {
@@ -153869,7 +153869,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2485",
+      "source_location": "L2487",
       "weight": 1.0
     },
     {
@@ -153880,7 +153880,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2500",
+      "source_location": "L2502",
       "weight": 1.0
     },
     {
@@ -153902,7 +153902,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2517",
+      "source_location": "L2519",
       "weight": 1.0
     },
     {
@@ -153913,7 +153913,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2553",
+      "source_location": "L2555",
       "weight": 1.0
     },
     {
@@ -153924,7 +153924,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2569",
+      "source_location": "L2571",
       "weight": 1.0
     },
     {
@@ -153935,7 +153935,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2585",
+      "source_location": "L2587",
       "weight": 1.0
     },
     {
@@ -153957,7 +153957,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2632",
+      "source_location": "L2634",
       "weight": 1.0
     },
     {
@@ -153968,7 +153968,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2713",
+      "source_location": "L2715",
       "weight": 1.0
     },
     {
@@ -153979,7 +153979,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2722",
+      "source_location": "L2724",
       "weight": 1.0
     },
     {
@@ -153990,7 +153990,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2742",
+      "source_location": "L2744",
       "weight": 1.0
     },
     {
@@ -154001,7 +154001,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2781",
+      "source_location": "L2783",
       "weight": 1.0
     },
     {
@@ -154012,7 +154012,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2815",
+      "source_location": "L2817",
       "weight": 1.0
     },
     {
@@ -154023,7 +154023,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2855",
+      "source_location": "L2857",
       "weight": 1.0
     },
     {
@@ -154034,7 +154034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2886",
+      "source_location": "L2888",
       "weight": 1.0
     },
     {
@@ -154045,7 +154045,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2972",
+      "source_location": "L2974",
       "weight": 1.0
     },
     {
@@ -154056,7 +154056,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2991",
+      "source_location": "L2993",
       "weight": 1.0
     },
     {
@@ -154067,7 +154067,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3013",
+      "source_location": "L3015",
       "weight": 1.0
     },
     {
@@ -154078,7 +154078,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3030",
+      "source_location": "L3032",
       "weight": 1.0
     },
     {
@@ -154089,7 +154089,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3273",
+      "source_location": "L3275",
       "weight": 1.0
     },
     {
@@ -154100,7 +154100,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3310",
+      "source_location": "L3312",
       "weight": 1.0
     },
     {
@@ -154111,7 +154111,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3332",
+      "source_location": "L3334",
       "weight": 1.0
     },
     {
@@ -154122,7 +154122,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3337",
+      "source_location": "L3339",
       "weight": 1.0
     },
     {
@@ -154133,7 +154133,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3361",
+      "source_location": "L3363",
       "weight": 1.0
     },
     {
@@ -154144,7 +154144,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3393",
+      "source_location": "L3395",
       "weight": 1.0
     },
     {
@@ -154155,7 +154155,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3411",
+      "source_location": "L3413",
       "weight": 1.0
     },
     {
@@ -154166,7 +154166,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3429",
+      "source_location": "L3431",
       "weight": 1.0
     },
     {
@@ -154177,7 +154177,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3443",
+      "source_location": "L3445",
       "weight": 1.0
     },
     {
@@ -154188,7 +154188,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3462",
+      "source_location": "L3464",
       "weight": 1.0
     },
     {
@@ -154199,7 +154199,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3489",
+      "source_location": "L3491",
       "weight": 1.0
     },
     {
@@ -154210,7 +154210,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3505",
+      "source_location": "L3507",
       "weight": 1.0
     },
     {
@@ -154221,7 +154221,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3517",
+      "source_location": "L3519",
       "weight": 1.0
     },
     {
@@ -154232,7 +154232,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3523",
+      "source_location": "L3525",
       "weight": 1.0
     },
     {
@@ -154243,7 +154243,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3542",
+      "source_location": "L3544",
       "weight": 1.0
     },
     {
@@ -154254,7 +154254,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3559",
+      "source_location": "L3561",
       "weight": 1.0
     },
     {
@@ -154265,7 +154265,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3568",
+      "source_location": "L3570",
       "weight": 1.0
     },
     {
@@ -154276,7 +154276,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3576",
+      "source_location": "L3578",
       "weight": 1.0
     },
     {
@@ -154287,7 +154287,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3585",
+      "source_location": "L3587",
       "weight": 1.0
     },
     {
@@ -154298,7 +154298,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3597",
+      "source_location": "L3599",
       "weight": 1.0
     },
     {
@@ -154309,7 +154309,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3608",
+      "source_location": "L3610",
       "weight": 1.0
     },
     {
@@ -154320,7 +154320,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3667",
+      "source_location": "L3669",
       "weight": 1.0
     },
     {
@@ -154331,7 +154331,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3684",
+      "source_location": "L3686",
       "weight": 1.0
     },
     {
@@ -154342,7 +154342,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3709",
+      "source_location": "L3711",
       "weight": 1.0
     },
     {
@@ -154353,7 +154353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3794",
+      "source_location": "L3796",
       "weight": 1.0
     },
     {
@@ -154364,7 +154364,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3827",
+      "source_location": "L3829",
       "weight": 1.0
     },
     {
@@ -154375,7 +154375,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3833",
+      "source_location": "L3835",
       "weight": 1.0
     },
     {
@@ -154386,7 +154386,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3839",
+      "source_location": "L3841",
       "weight": 1.0
     },
     {
@@ -154694,7 +154694,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1168",
+      "source_location": "L1170",
       "weight": 1.0
     },
     {
@@ -167211,7 +167211,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1704",
+      "source_location": "L1706",
       "weight": 1.0
     },
     {
@@ -167223,7 +167223,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1124",
+      "source_location": "L1126",
       "weight": 1.0
     },
     {
@@ -167235,7 +167235,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2533",
+      "source_location": "L2535",
       "weight": 1.0
     },
     {
@@ -167247,7 +167247,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1549",
+      "source_location": "L1551",
       "weight": 1.0
     },
     {
@@ -167259,7 +167259,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3321",
+      "source_location": "L3323",
       "weight": 1.0
     },
     {
@@ -167271,7 +167271,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2068",
+      "source_location": "L2070",
       "weight": 1.0
     },
     {
@@ -167283,7 +167283,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1657",
+      "source_location": "L1659",
       "weight": 1.0
     },
     {
@@ -167295,7 +167295,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1658",
+      "source_location": "L1660",
       "weight": 1.0
     },
     {
@@ -167307,7 +167307,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1660",
+      "source_location": "L1662",
       "weight": 1.0
     },
     {
@@ -167319,7 +167319,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1353",
+      "source_location": "L1355",
       "weight": 1.0
     },
     {
@@ -167331,7 +167331,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2433",
+      "source_location": "L2435",
       "weight": 1.0
     },
     {
@@ -167355,7 +167355,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1445",
+      "source_location": "L1447",
       "weight": 1.0
     },
     {
@@ -167367,7 +167367,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2974",
+      "source_location": "L2976",
       "weight": 1.0
     },
     {
@@ -167379,7 +167379,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2980",
+      "source_location": "L2982",
       "weight": 1.0
     },
     {
@@ -167391,7 +167391,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1733",
+      "source_location": "L1735",
       "weight": 1.0
     },
     {
@@ -167403,7 +167403,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1739",
+      "source_location": "L1741",
       "weight": 1.0
     },
     {
@@ -167415,7 +167415,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1761",
+      "source_location": "L1763",
       "weight": 1.0
     },
     {
@@ -167427,7 +167427,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1762",
+      "source_location": "L1764",
       "weight": 1.0
     },
     {
@@ -167439,7 +167439,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1768",
+      "source_location": "L1770",
       "weight": 1.0
     },
     {
@@ -167451,7 +167451,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1769",
+      "source_location": "L1771",
       "weight": 1.0
     },
     {
@@ -167463,7 +167463,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1626",
+      "source_location": "L1628",
       "weight": 1.0
     },
     {
@@ -167475,7 +167475,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3573",
+      "source_location": "L3575",
       "weight": 1.0
     },
     {
@@ -167547,7 +167547,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3528",
+      "source_location": "L3530",
       "weight": 1.0
     },
     {
@@ -167559,7 +167559,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3565",
+      "source_location": "L3567",
       "weight": 1.0
     },
     {
@@ -167571,7 +167571,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2189",
+      "source_location": "L2191",
       "weight": 1.0
     },
     {
@@ -167583,7 +167583,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2193",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
@@ -167595,7 +167595,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3582",
+      "source_location": "L3584",
       "weight": 1.0
     },
     {
@@ -167631,7 +167631,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1258",
+      "source_location": "L1260",
       "weight": 1.0
     },
     {
@@ -167643,7 +167643,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1260",
+      "source_location": "L1262",
       "weight": 1.0
     },
     {
@@ -167655,7 +167655,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1303",
+      "source_location": "L1305",
       "weight": 1.0
     },
     {
@@ -167667,7 +167667,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1303",
+      "source_location": "L1305",
       "weight": 1.0
     },
     {
@@ -167679,7 +167679,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3590",
+      "source_location": "L3592",
       "weight": 1.0
     },
     {
@@ -167691,7 +167691,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3367",
+      "source_location": "L3369",
       "weight": 1.0
     },
     {
@@ -167703,7 +167703,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1230",
+      "source_location": "L1232",
       "weight": 1.0
     },
     {
@@ -167715,7 +167715,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1232",
+      "source_location": "L1234",
       "weight": 1.0
     },
     {
@@ -167727,7 +167727,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2508",
+      "source_location": "L2510",
       "weight": 1.0
     },
     {
@@ -167739,7 +167739,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2411",
+      "source_location": "L2413",
       "weight": 1.0
     },
     {
@@ -167763,7 +167763,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2747",
+      "source_location": "L2749",
       "weight": 1.0
     },
     {
@@ -167775,7 +167775,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2752",
+      "source_location": "L2754",
       "weight": 1.0
     },
     {
@@ -167787,7 +167787,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2752",
+      "source_location": "L2754",
       "weight": 1.0
     },
     {
@@ -167799,7 +167799,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2762",
+      "source_location": "L2764",
       "weight": 1.0
     },
     {
@@ -167811,7 +167811,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2762",
+      "source_location": "L2764",
       "weight": 1.0
     },
     {
@@ -167823,7 +167823,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3339",
+      "source_location": "L3341",
       "weight": 1.0
     },
     {
@@ -167835,7 +167835,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1497",
+      "source_location": "L1499",
       "weight": 1.0
     },
     {
@@ -167847,7 +167847,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1068",
+      "source_location": "L1070",
       "weight": 1.0
     },
     {
@@ -167859,7 +167859,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1074",
+      "source_location": "L1076",
       "weight": 1.0
     },
     {
@@ -167871,7 +167871,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1994",
+      "source_location": "L1996",
       "weight": 1.0
     },
     {
@@ -167883,7 +167883,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1925",
+      "source_location": "L1927",
       "weight": 1.0
     },
     {
@@ -167895,7 +167895,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3057",
+      "source_location": "L3059",
       "weight": 1.0
     },
     {
@@ -167907,7 +167907,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3139",
+      "source_location": "L3141",
       "weight": 1.0
     },
     {
@@ -167919,7 +167919,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3139",
+      "source_location": "L3141",
       "weight": 1.0
     },
     {
@@ -167931,7 +167931,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3185",
+      "source_location": "L3187",
       "weight": 1.0
     },
     {
@@ -167943,7 +167943,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2865",
+      "source_location": "L2867",
       "weight": 1.0
     },
     {
@@ -167955,7 +167955,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3697",
+      "source_location": "L3699",
       "weight": 1.0
     },
     {
@@ -167967,7 +167967,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2891",
+      "source_location": "L2893",
       "weight": 1.0
     },
     {
@@ -167979,7 +167979,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2924",
+      "source_location": "L2926",
       "weight": 1.0
     },
     {
@@ -170331,7 +170331,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1124",
+      "source_location": "L1126",
       "weight": 1.0
     },
     {
@@ -170391,7 +170391,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1731",
+      "source_location": "L1733",
       "weight": 1.0
     },
     {
@@ -170403,7 +170403,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1755",
+      "source_location": "L1757",
       "weight": 1.0
     },
     {
@@ -170487,7 +170487,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2178",
+      "source_location": "L2180",
       "weight": 1.0
     },
     {
@@ -170499,7 +170499,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2195",
+      "source_location": "L2197",
       "weight": 1.0
     },
     {
@@ -170511,7 +170511,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1193",
+      "source_location": "L1195",
       "weight": 1.0
     },
     {
@@ -170523,7 +170523,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1196",
+      "source_location": "L1198",
       "weight": 1.0
     },
     {
@@ -170535,7 +170535,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1197",
+      "source_location": "L1199",
       "weight": 1.0
     },
     {
@@ -170547,7 +170547,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1198",
+      "source_location": "L1200",
       "weight": 1.0
     },
     {
@@ -170559,7 +170559,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1199",
+      "source_location": "L1201",
       "weight": 1.0
     },
     {
@@ -170571,7 +170571,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1200",
+      "source_location": "L1202",
       "weight": 1.0
     },
     {
@@ -170583,7 +170583,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1202",
+      "source_location": "L1204",
       "weight": 1.0
     },
     {
@@ -170595,7 +170595,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1203",
+      "source_location": "L1205",
       "weight": 1.0
     },
     {
@@ -170607,7 +170607,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1204",
+      "source_location": "L1206",
       "weight": 1.0
     },
     {
@@ -170619,7 +170619,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1205",
+      "source_location": "L1207",
       "weight": 1.0
     },
     {
@@ -170751,7 +170751,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1312",
+      "source_location": "L1314",
       "weight": 1.0
     },
     {
@@ -170763,7 +170763,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3365",
+      "source_location": "L3367",
       "weight": 1.0
     },
     {
@@ -170775,7 +170775,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3368",
+      "source_location": "L3370",
       "weight": 1.0
     },
     {
@@ -170787,7 +170787,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1226",
+      "source_location": "L1228",
       "weight": 1.0
     },
     {
@@ -170799,7 +170799,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3713",
+      "source_location": "L3715",
       "weight": 1.0
     },
     {
@@ -170811,7 +170811,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2601",
+      "source_location": "L2603",
       "weight": 1.0
     },
     {
@@ -170883,7 +170883,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L1927",
+      "source_location": "L1929",
       "weight": 1.0
     },
     {
@@ -170895,7 +170895,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3073",
+      "source_location": "L3075",
       "weight": 1.0
     },
     {
@@ -170907,7 +170907,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3094",
+      "source_location": "L3096",
       "weight": 1.0
     },
     {
@@ -170919,7 +170919,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3101",
+      "source_location": "L3103",
       "weight": 1.0
     },
     {
@@ -170931,7 +170931,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3102",
+      "source_location": "L3104",
       "weight": 1.0
     },
     {
@@ -170943,7 +170943,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3103",
+      "source_location": "L3105",
       "weight": 1.0
     },
     {
@@ -170955,7 +170955,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3104",
+      "source_location": "L3106",
       "weight": 1.0
     },
     {
@@ -170967,7 +170967,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3105",
+      "source_location": "L3107",
       "weight": 1.0
     },
     {
@@ -170979,7 +170979,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3106",
+      "source_location": "L3108",
       "weight": 1.0
     },
     {
@@ -170991,7 +170991,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3107",
+      "source_location": "L3109",
       "weight": 1.0
     },
     {
@@ -171003,7 +171003,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3108",
+      "source_location": "L3110",
       "weight": 1.0
     },
     {
@@ -171015,7 +171015,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3187",
+      "source_location": "L3189",
       "weight": 1.0
     },
     {
@@ -171027,7 +171027,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3237",
+      "source_location": "L3239",
       "weight": 1.0
     },
     {
@@ -171039,7 +171039,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L3296",
+      "source_location": "L3298",
       "weight": 1.0
     },
     {
@@ -171051,7 +171051,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Nextcalibur.App/MainWindow.xaml.cs",
-      "source_location": "L2019",
+      "source_location": "L2021",
       "weight": 1.0
     },
     {
@@ -172916,5 +172916,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "caa7769c3f0c3b43d058704500b1ed45380eed40"
+  "built_at_commit": "bc6c6e8f90475171a5ea91547da0165dba152eaf"
 }
