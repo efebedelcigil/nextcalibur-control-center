@@ -86,3 +86,26 @@ public class GameLibraryTests
     public void Tiny_stubs_are_ignored() =>
         Assert.Empty(GameLibrary.PickPrograms([(@"C:\G\stub.exe", 10_000)], "X", "X"));
 }
+
+public class GameCrossCheckTests
+{
+    [Theory]
+    [InlineData(@"C:\Program Files\Epic Games\FallGuys\FallGuys_client_game.exe", @"C:/Program Files/Epic Games/FallGuys", true)]
+    [InlineData(@"C:\Program Files\Epic Games\FallGuysOther\x.exe", @"C:\Program Files\Epic Games\FallGuys", false)]
+    [InlineData(@"C:\Games\A", @"C:\Games\A\", true)]
+    public void A_program_belongs_to_the_game_whose_folder_holds_it(string path, string folder, bool inside) =>
+        Assert.Equal(inside, Nextcalibur.Core.Power.GameLibrary.IsInside(path, folder));
+
+    [Fact]
+    public void Installed_apps_match_by_folder_or_by_name()
+    {
+        var game = new Nextcalibur.Core.Power.FoundGame("Teamfight Tactics", "Riot", ["TFTClient-Win64-Shipping"], @"C:\Riot Games\Teamfight Tactics\Live");
+        Assert.True(Nextcalibur.Core.Power.GameLibrary.IsListed(game, "Teamfight Tactics", null));
+        Assert.True(Nextcalibur.Core.Power.GameLibrary.IsListed(game, "Riot TFT", @"C:\Riot Games\Teamfight Tactics"));
+        Assert.False(Nextcalibur.Core.Power.GameLibrary.IsListed(game, "Some App", @"C:\Program Files\Some App"));
+    }
+
+    [Fact]
+    public void A_name_with_an_apostrophe_is_a_program_name() =>
+        Assert.Equal("Liar's Bar", Nextcalibur.Core.Power.ProgramRules.Normalise("Liar's Bar.exe"));
+}

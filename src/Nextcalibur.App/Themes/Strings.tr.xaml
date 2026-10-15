@@ -886,7 +886,7 @@
 
     <!-- Scan for games, usage -->
     <sys:String x:Key="S.Settings.GameScanTitle">Oyunları tara</sys:String>
-    <sys:String x:Key="S.Settings.GameScanDesc">Steam, Epic, GOG, Ubisoft, EA, Riot ve Xbox ile kurulan oyunları bulur ve Oyun moduyla ekler. Anahtar açıkken yenileri günde bir kez aranır.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox ve Microsoft Store oyunlarını, ayrıca Windows'un oyun olarak tanıdığı programları bulur ve Oyun moduyla ekler. Anahtar açıkken yenileri günde bir kez aranır.</sys:String>
     <sys:String x:Key="S.Settings.GameScanButton">Tara</sys:String>
     <sys:String x:Key="S.Settings.GameScanAutoTip">Yeni kurulan oyunları günde bir kez ara</sys:String>
     <sys:String x:Key="S.Games.Result">{0} oyun bulundu, {1} tanesi listeye eklendi.</sys:String>
@@ -912,4 +912,7 @@
     <sys:String x:Key="S.Games.RulesOnBody">Bulunan oyunlar için program kuralları açıldı. İstemezsen Ayarlar &gt; Program kuralları'ndan kapatabilirsin.</sys:String>
     <sys:String x:Key="S.Common.OpenFolder">Dosya konumunu aç</sys:String>
     <sys:String x:Key="S.IdleLoad.NoneFound">Şu an boşta yük yapan program yok (tarama: {0}).</sys:String>
+    <sys:String x:Key="S.Games.FoundIn">Bulunduğu yer: {0}</sys:String>
+    <sys:String x:Key="S.Games.Listed">Windows'un Yüklü uygulamalar listesinde var</sys:String>
+    <sys:String x:Key="S.Games.NotListed">Windows'un Yüklü uygulamalar listesinde yok (Epic gibi başlatıcılar oyunlarını oraya eklemez)</sys:String>
 </ResourceDictionary>

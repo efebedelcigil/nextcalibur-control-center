@@ -433,7 +433,7 @@ public partial class MainWindow
         var text = new TextBlock
         {
             Text = active ? Strings.Get("S.Rules.RowActive", shown) : shown,
-            TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = string.Join(", ", rules.Select(r => r.Process)),
+            TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = RuleTip(rules),
             FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
             Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
         };
@@ -484,6 +484,23 @@ public partial class MainWindow
             row.Children.Add(open);
         }
         return row;
+    }
+
+    /// <summary>
+    /// What is known of a rule: its programs, where the scan found it, and
+    /// whether Windows' Installed apps lists it - crossed, never a reason to
+    /// drop a game: Epic's games are never in that list.
+    /// </summary>
+    private static string RuleTip(List<ProgramRule> rules)
+    {
+        var lines = new List<string> { string.Join(", ", rules.Select(r => r.Process)) };
+        if (rules.Select(r => r.Source).FirstOrDefault(s => s is not null) is { } source)
+            lines.Add(Strings.Get("S.Games.FoundIn", source));
+        if (rules.Select(r => r.InInstalledApps).FirstOrDefault(l => l is not null) is { } listed)
+            lines.Add(Strings.Get(listed ? "S.Games.Listed" : "S.Games.NotListed"));
+        if (rules.Select(r => r.Folder).FirstOrDefault(f => f is not null) is { } folder)
+            lines.Add(folder);
+        return string.Join("\n", lines);
     }
 
     /// <summary>The file a program runs from, if it is running now; null otherwise.</summary>

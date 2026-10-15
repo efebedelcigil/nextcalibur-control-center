@@ -80,7 +80,7 @@ public partial class MainWindow
     {
         if (!_settings.GameScanAuto || _gameScanRunning || !_support.AllowsWrites || NoticeGate.ShouldWait) return;
         // Due daily - or at once while found games still lack the folder their button opens.
-        var foldersMissing = _settings.ProgramRules.Any(r => r.FromScan && r.Folder is null);
+        var foldersMissing = _settings.ProgramRules.Any(r => r.FromScan && (r.Folder is null || r.Source is null));
         if (!foldersMissing && _settings.GamesScannedUtc is { } last && DateTime.UtcNow - last < GameScanEvery) return;
         // Not in the first minutes after Nextcalibur starts: the machine has enough to do then.
         if (DateTime.UtcNow < _gameScanNotBefore) return;
@@ -129,9 +129,16 @@ public partial class MainWindow
             _settings.GamesScannedUtc = DateTime.UtcNow;
 
             var comparer = StringComparer.OrdinalIgnoreCase;
-            // Rules found before folders were kept get theirs now.
-            foreach (var rule in _settings.ProgramRules.Where(r => r.FromScan && r.Folder is null))
-                if (found.FirstOrDefault(g => g.Processes.Contains(rule.Process, comparer)) is { } owner) rule.Folder = owner.Folder;
+            // Rules found before get what is known of them now: the folder, where
+            // they came from, whether Windows' Installed apps lists them.
+            foreach (var rule in _settings.ProgramRules.Where(r => r.FromScan))
+                if (found.FirstOrDefault(g => g.Processes.Contains(rule.Process, comparer)
+                                              || string.Equals(g.Name, rule.Label, StringComparison.CurrentCultureIgnoreCase)) is { } owner)
+                {
+                    rule.Folder ??= owner.Folder;
+                    rule.Source = owner.Source;
+                    rule.InInstalledApps = owner.InInstalledApps;
+                }
             var added = new List<FoundGame>();
             foreach (var game in found)
             {
@@ -140,7 +147,11 @@ public partial class MainWindow
                     .ToList();
                 if (fresh.Count == 0) continue;
                 foreach (var process in fresh)
-                    _settings.ProgramRules.Add(new ProgramRule { Process = process, Mode = SystemMode.Gaming, Label = game.Name, FromScan = true, Folder = game.Folder });
+                    _settings.ProgramRules.Add(new ProgramRule
+                    {
+                        Process = process, Mode = SystemMode.Gaming, Label = game.Name, FromScan = true,
+                        Folder = game.Folder, Source = game.Source, InInstalledApps = game.InInstalledApps,
+                    });
                 added.Add(game);
             }
 

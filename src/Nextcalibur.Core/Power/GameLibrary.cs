@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Nextcalibur.Core.Configuration;
@@ -6,7 +6,12 @@ using Nextcalibur.Core.Configuration;
 namespace Nextcalibur.Core.Power;
 
 /// <summary>A game found installed: its name, which launcher it came from, and the program names it runs as.</summary>
-public sealed record FoundGame(string Name, string Source, IReadOnlyList<string> Processes, string Folder);
+/// <param name="Name">The game's name as its launcher has it.</param>
+/// <param name="Source">The launcher, or Microsoft Store, or Windows (Game Bar's own list).</param>
+/// <param name="Processes">The program names it runs as, the one Windows saw played first.</param>
+/// <param name="Folder">Where it is installed.</param>
+/// <param name="InInstalledApps">Whether Windows' Installed apps lists it - Steam's and Riot's games are there, Epic's never are.</param>
+public sealed record FoundGame(string Name, string Source, IReadOnlyList<string> Processes, string Folder, bool InInstalledApps = false);
 
 /// <summary>
 /// "Scan for games", the way NVIDIA's app does it (the owner's ask of 14
@@ -39,7 +44,7 @@ public static partial class GameLibrary
         foreach (var (source, reader) in new (string, Func<IEnumerable<(string Name, string Folder, string? Exe)>>)[]
                  {
                      ("Steam", Steam), ("Epic", Epic), ("GOG", Gog), ("Ubisoft", Ubisoft),
-                     ("EA", Ea), ("Riot", Riot), ("Xbox", Xbox),
+                     ("EA", Ea), ("Riot", Riot), ("Xbox", Xbox), ("Microsoft Store", StoreGames),
                  })
         {
             try
@@ -61,10 +66,133 @@ public static partial class GameLibrary
                 Log.Warn("games", $"{source}: {ex.Message}");
             }
         }
+        // Windows' own record of what is a game (Game Bar's): the program it
+        // saw played is the game's - Fall Guys runs as FallGuys_client_game,
+        // which the folder alone did not tell. Inside a game already found it
+        // joins that game, first; elsewhere - a game from its own installer -
+        // it is a game of its own. A program no longer on disk is not.
+        try
+        {
+            foreach (var exe in WindowsGameList())
+            {
+                var name = ProgramRules.Normalise(Path.GetFileNameWithoutExtension(exe));
+                if (name is null || NotTheGame().IsMatch(name)) continue;
+                var folder = Path.GetDirectoryName(exe)!;
+                var owner = found.FindIndex(g => IsInside(exe, g.Folder));
+                if (owner >= 0)
+                {
+                    var g = found[owner];
+                    found[owner] = g with { Processes = new[] { name }.Concat(g.Processes).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList() };
+                }
+                else
+                {
+                    var title = ProductName(exe) ?? new DirectoryInfo(folder).Name;
+                    found.Add(new FoundGame(title, "Windows", [name], folder));
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException or ArgumentException)
+        {
+            Log.Warn("games", "Windows' game list: " + ex.Message);
+        }
+
+        // Crossed with Windows' Installed apps: shown beside each game, never a reason to drop one.
+        var listed = InstalledApps();
         return found
             .GroupBy(g => g.Processes[0], StringComparer.OrdinalIgnoreCase).Select(g => g.First())
+            .Select(g => g with { InInstalledApps = listed.Any(a => IsListed(g, a.Name, a.Folder)) })
             .OrderBy(g => g.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
     }
+
+    /// <summary>Whether a file or folder is inside another folder.</summary>
+    public static bool IsInside(string path, string folder)
+    {
+        var f = NormaliseFolder(folder) + "\\";
+        return NormaliseFolder(path).StartsWith(f, StringComparison.OrdinalIgnoreCase) || string.Equals(NormaliseFolder(path), NormaliseFolder(folder), StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Whether an Installed apps entry is this game: the same folder, or the same name.</summary>
+    public static bool IsListed(FoundGame game, string displayName, string? installFolder) =>
+        (installFolder is { Length: > 3 } f && (IsInside(game.Folder, f) || IsInside(f, game.Folder)))
+        || string.Equals(displayName.Trim(), game.Name.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private static List<(string Name, string? Folder)> InstalledApps()
+    {
+        var apps = new List<(string, string?)>();
+        foreach (var (hive, path) in new[]
+                 {
+                     (Registry.LocalMachine, @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+                     (Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+                     (Registry.CurrentUser, @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+                 })
+        {
+            try
+            {
+                using var root = hive.OpenSubKey(path);
+                if (root is null) continue;
+                foreach (var id in root.GetSubKeyNames())
+                {
+                    using var key = root.OpenSubKey(id);
+                    if (key?.GetValue("DisplayName") is not string name || name.Length == 0) continue;
+                    apps.Add((name, key.GetValue("InstallLocation") as string));
+                }
+            }
+            catch (Exception ex) when (ex is System.Security.SecurityException or UnauthorizedAccessException or IOException) { }
+        }
+        return apps;
+    }
+
+    /// <summary>The programs Windows' Game Bar has seen as games, still on disk.</summary>
+    private static IEnumerable<string> WindowsGameList()
+    {
+        using var children = Registry.CurrentUser.OpenSubKey(@"System\GameConfigStore\Children");
+        if (children is null) yield break;
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var id in children.GetSubKeyNames())
+        {
+            using var child = children.OpenSubKey(id);
+            if (child?.GetValue("MatchedExeFullPath") is not string exe || !exe.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!File.Exists(exe) || !seen.Add(exe)) continue;
+            // Windows' own folder holds no games Game Bar should have kept.
+            if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase)) continue;
+            yield return exe;
+        }
+    }
+
+    private static string? ProductName(string exe)
+    {
+        try
+        {
+            var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(exe);
+            return info.ProductName is { Length: > 1 } p ? p.Trim() : info.FileDescription is { Length: > 1 } d ? d.Trim() : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    /// <summary>Microsoft Store and Game Pass games: packages carrying a game configuration (MicrosoftGame.config).</summary>
+    private static IEnumerable<(string, string, string?)> StoreGames()
+    {
+        using var packages = Registry.CurrentUser.OpenSubKey(@"Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\Repository\Packages");
+        if (packages is null) yield break;
+        foreach (var id in packages.GetSubKeyNames())
+        {
+            using var package = packages.OpenSubKey(id);
+            if (package?.GetValue("PackageRootFolder") is not string folder || !Directory.Exists(folder)) continue;
+            var config = Path.Combine(folder, "MicrosoftGame.config");
+            if (!File.Exists(config)) continue;
+            var text = File.ReadAllText(config);
+            var exe = StoreExecutable().Match(text) is { Success: true } m ? Path.Combine(folder, m.Groups[1].Value) : null;
+            var name = StoreTitle().Match(text) is { Success: true } t ? t.Groups[1].Value : (package.GetValue("DisplayName") as string ?? id);
+            if (name.StartsWith("ms-resource:", StringComparison.OrdinalIgnoreCase)) name = id.Split('_')[0];
+            yield return (name, folder, exe);
+        }
+    }
+
+    [GeneratedRegex("<Executable\\s+Name=\"([^\"]+\\.exe)\"", RegexOptions.IgnoreCase)]
+    private static partial Regex StoreExecutable();
+
+    [GeneratedRegex("<ShellVisuals[^>]*DefaultDisplayName=\"([^\"]+)\"", RegexOptions.IgnoreCase)]
+    private static partial Regex StoreTitle();
 
     // ------------------------------------------------------------------ launchers
 

@@ -18,6 +18,12 @@ public sealed class ProgramRule
 
     /// <summary>Where the game is installed, for the "open file location" button; null when not known.</summary>
     public string? Folder { get; set; }
+
+    /// <summary>Where the scan found it: Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox, Microsoft Store, Windows.</summary>
+    public string? Source { get; set; }
+
+    /// <summary>Whether Windows' Installed apps lists it (null: not known yet).</summary>
+    public bool? InInstalledApps { get; set; }
 }
 
 /// <summary>
@@ -36,7 +42,7 @@ public sealed class ProgramRule
 /// </summary>
 public static partial class ProgramRules
 {
-    [GeneratedRegex(@"^[A-Za-z0-9 ._\-()+]{1,64}$")]
+    [GeneratedRegex(@"^[A-Za-z0-9 ._\-()+'&]{1,64}$")]
     private static partial Regex ProcessNamePattern();
 
     /// <summary>

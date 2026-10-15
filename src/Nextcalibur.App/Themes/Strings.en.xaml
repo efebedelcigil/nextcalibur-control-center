@@ -888,7 +888,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
 
     <!-- Scan for games, usage -->
     <sys:String x:Key="S.Settings.GameScanTitle">Scan for games</sys:String>
-    <sys:String x:Key="S.Settings.GameScanDesc">Finds games installed through Steam, Epic, GOG, Ubisoft, EA, Riot and Xbox and adds them with Gaming. The switch looks for new ones once a day.</sys:String>
+    <sys:String x:Key="S.Settings.GameScanDesc">Finds games from Steam, Epic, GOG, Ubisoft, EA, Riot, Xbox and the Microsoft Store, and programs Windows knows as games, and adds them with Gaming. The switch looks for new ones once a day.</sys:String>
     <sys:String x:Key="S.Settings.GameScanButton">Scan</sys:String>
     <sys:String x:Key="S.Settings.GameScanAutoTip">Look for newly installed games once a day</sys:String>
     <sys:String x:Key="S.Games.Result">{0} games found, {1} added to the list.</sys:String>
@@ -914,4 +914,7 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Games.RulesOnBody">Program rules were switched on for the games found. Turn them off in Settings &gt; Program rules if you prefer.</sys:String>
     <sys:String x:Key="S.Common.OpenFolder">Open file location</sys:String>
     <sys:String x:Key="S.IdleLoad.NoneFound">Nothing busy at idle right now (scanned at {0}).</sys:String>
+    <sys:String x:Key="S.Games.FoundIn">Found through {0}</sys:String>
+    <sys:String x:Key="S.Games.Listed">Listed in Windows' Installed apps</sys:String>
+    <sys:String x:Key="S.Games.NotListed">Not in Windows' Installed apps (launchers such as Epic do not list their games there)</sys:String>
 </ResourceDictionary>
