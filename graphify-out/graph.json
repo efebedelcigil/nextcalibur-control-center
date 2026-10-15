@@ -16577,13 +16577,13 @@
             "callee": "DownloadUpdatesAsync",
             "receiver_type": "UpdateManager",
             "lang": "csharp",
-            "line": "L307"
+            "line": "L318"
           }
         ]
       },
       "norm_label": ".downloadasync()",
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L301"
+      "source_location": "L312"
     },
     {
       "id": "src_nextcalibur_core_configuration_appsettings_nextcalibur_core_configuration_appsettings_save",
@@ -38185,13 +38185,13 @@
             "callee": "ApplyUpdatesAndRestart",
             "receiver_type": "UpdateManager",
             "lang": "csharp",
-            "line": "L317"
+            "line": "L328"
           }
         ]
       },
       "norm_label": ".applyandrestart()",
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L313"
+      "source_location": "L324"
     },
     {
       "id": "src_nextcalibur_app_updateservice_nextcalibur_app_updateservice_checkasync",
@@ -38211,19 +38211,19 @@
             "callee": "CheckForUpdatesAsync",
             "receiver_type": "UpdateManager",
             "lang": "csharp",
-            "line": "L257"
+            "line": "L262"
           },
           {
             "callee": "Invoke",
             "receiver_type": "UpdateFound?",
             "lang": "csharp",
-            "line": "L280"
+            "line": "L291"
           },
           {
             "callee": "Invoke",
             "receiver_type": "CheckedByHand?",
             "lang": "csharp",
-            "line": "L287"
+            "line": "L298"
           }
         ]
       },
@@ -38343,7 +38343,7 @@
       },
       "norm_label": ".dispose()",
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L320"
+      "source_location": "L331"
     },
     {
       "id": "src_nextcalibur_app_updateservice_nextcalibur_app_updateservice_start",
@@ -88725,7 +88725,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L280",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -128355,7 +128355,7 @@
         "ref_token": "IProgress"
       },
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L301",
+      "source_location": "L312",
       "weight": 1.0
     },
     {
@@ -136197,7 +136197,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L301",
+      "source_location": "L312",
       "weight": 1.0
     },
     {
@@ -156223,7 +156223,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L301",
+      "source_location": "L312",
       "weight": 1.0
     },
     {
@@ -156234,7 +156234,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L313",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -156245,7 +156245,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Nextcalibur.App/UpdateService.cs",
-      "source_location": "L320",
+      "source_location": "L331",
       "weight": 1.0
     },
     {
@@ -174030,5 +174030,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e89ddf69d45c963c6d5e942f0d489266354163ca"
+  "built_at_commit": "cac7bfe36c8e209e15941caa6729e3beacb538e9"
 }
