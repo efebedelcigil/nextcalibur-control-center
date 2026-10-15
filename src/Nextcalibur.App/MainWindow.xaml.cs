@@ -502,8 +502,27 @@ public partial class MainWindow : Window
     /// anywhere - it is Windows, not firmware - and is locked anyway, because
     /// a rule with no exceptions is easier to trust.
     /// </summary>
+    /// <summary>Every part of the Settings page that depends on the verdict, built again from it.</summary>
+    private void RefreshSupportDependentSettings()
+    {
+        LoadSettingsPage();
+        RefreshCeilingRows();
+        RefreshProgramRuleRows();
+        RefreshShortcutRows();
+        if (FindName("SettingAskGameMode") is System.Windows.Controls.Primitives.ToggleButton askGames)
+            askGames.IsEnabled = _support.AllowsWrites;
+        _ = LoadNvPowerAsync();
+    }
+
     private void ApplySupportVerdict()
     {
+        // The Settings page is built before the verdict is known (a fresh
+        // verdict reads as "no writes"), and whatever it built from that was
+        // left disabled for the whole run - the ceilings could not be chosen
+        // (the owner's report, 15 October 2026). Built again now, then locked
+        // below where the machine calls for it.
+        RefreshSupportDependentSettings();
+
         switch (_support.Level)
         {
             case SupportLevel.Supported:
@@ -515,7 +534,7 @@ public partial class MainWindow : Window
                     button.IsEnabled = false;
                 // The system modes are the vendor's - its plans and its
                 // firmware profile - and so is everything built on them.
-                foreach (var button in new[] { ModeOffice, ModeGaming, ModePerformance })
+                foreach (var button in new[] { ModeOffice, ModeBalanced, ModeGaming, ModePerformance })
                     button.IsEnabled = false;
                 LockCasperOnlySettings();
                 ShowBanner(
