@@ -32,18 +32,25 @@ public partial class MainWindow
         result.Visibility = Visibility.Visible;
     }
 
+    /// <summary>
+    /// A square button showing one Segoe Fluent Icons glyph. The theme's button
+    /// pads its text 12 px each side, which left a 28 px button 2 px for the
+    /// glyph - a "|" and a ":" were all that showed - so this one pads nothing.
+    /// </summary>
+    internal static System.Windows.Controls.Button IconButton(string glyph) => new()
+    {
+        Content = glyph,
+        FontFamily = new System.Windows.Media.FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets"),
+        FontSize = 13, Width = 28, Height = 28, Padding = new Thickness(0),
+        VerticalAlignment = VerticalAlignment.Center,
+    };
+
     /// <summary>The small "open file location" button beside a game or a program; null when there is no place to show.</summary>
     private System.Windows.Controls.Button? FolderButton(string? path)
     {
         if (string.IsNullOrEmpty(path) || !(System.IO.File.Exists(path) || System.IO.Directory.Exists(path))) return null;
-        var button = new System.Windows.Controls.Button
-        {
-            Content = "\uE838",   // Segoe's open-folder glyph
-            FontFamily = new System.Windows.Media.FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets"),
-            FontSize = 13, Width = 28, Height = 28, Margin = new Thickness(0, 0, 6, 0),
-
-            VerticalAlignment = VerticalAlignment.Center,
-        };
+        var button = IconButton("\uE838");   // open folder
+        button.Margin = new Thickness(0, 0, 6, 0);
         Localized.Tip(button, () => Strings.Get("S.Common.OpenFolder") + "\n" + path);
         Localized.Bind(button, System.Windows.Automation.AutomationProperties.NameProperty, () => Strings.Get("S.Common.OpenFolder"));
         var target = path;

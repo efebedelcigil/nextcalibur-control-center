@@ -465,7 +465,7 @@ public partial class MainWindow
         Grid.SetColumn(mode, 3);
         row.Children.Add(mode);
 
-        var remove = Localized.Tip(new Button { Content = "✕", Width = 28, Height = 28 }, () => Strings.Get("S.Rules.Remove"));
+        var remove = Localized.Tip(IconButton("\uE74D"), () => Strings.Get("S.Rules.Remove"));
         remove.Click += (_, _) =>
         {
             foreach (var r in rules)
