@@ -44,7 +44,8 @@ public partial class MainWindow
         _idleScreenSaver = FindName("IdleScreenSaver") as ComboBox;
         if (_idleRows is null || _idleScreenSaver is null) return;
 
-        _idleScreenSaver.SelectionChanged += (_, _) => ScreenSaverChosen();
+        Localized.Items(_idleScreenSaver);
+        _idleScreenSaver.SelectionChanged += (_, _) => { if (!Localized.Refreshing) ScreenSaverChosen(); };
 
         _usbSaving = FindName("SettingUsbSaving") as ToggleButton;
         _wifiSaving = FindName("SettingWifiSaving") as ToggleButton;
@@ -152,11 +153,11 @@ public partial class MainWindow
         try
         {
             _idleRows.Children.Clear();
-            _idleRows.Children.Add(IdleRow(null, Strings.Get("S.Idle.Mode"), null));
+            _idleRows.Children.Add(IdleRow(null, () => Strings.Get("S.Idle.Mode"), null));
             foreach (var (mode, plan) in _idlePlans)
             {
-                var label = mode is { } m ? ModeName(m) : Strings.Get("S.Idle.ActivePlan");
-                _idleRows.Children.Add(IdleRow(plan, label, _idleKnown.TryGetValue(plan, out var t) ? t : null));
+                var rowMode = mode;
+                _idleRows.Children.Add(IdleRow(plan, () => rowMode is { } m ? ModeName(m) : Strings.Get("S.Idle.ActivePlan"), _idleKnown.TryGetValue(plan, out var t) ? t : null));
             }
 
             _screenSaverKnown = ScreenSaver.Current();
@@ -171,13 +172,13 @@ public partial class MainWindow
     }
 
     /// <summary>One row of the table: a mode and its four timeouts, or - with no plan - the column headings.</summary>
-    private Grid IdleRow(Guid? plan, string label, Timeouts? timeouts)
+    private Grid IdleRow(Guid? plan, Func<string> label, Timeouts? timeouts)
     {
         var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 90 });
         foreach (var _ in IdleColumns) row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(112) });
 
-        var name = new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+        var name = Localized.Text(new TextBlock { VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap }, label);
         if (plan is null) name.Style = (Style)FindResource("StatusTextStyle");
         else
         {
@@ -194,11 +195,11 @@ public partial class MainWindow
             if (plan is not { } p)
             {
                 var key = (setting == IdleSetting.DisplayOff ? "S.Idle.Display" : "S.Idle.Sleep") + (pluggedIn ? "Ac" : "Dc");
-                cell = new TextBlock { Text = Strings.Get(key), Style = (Style)FindResource("StatusTextStyle"), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Bottom };
+                cell = Localized.Text(new TextBlock { Style = (Style)FindResource("StatusTextStyle"), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Bottom }, () => Strings.Get(key));
             }
             else
             {
-                var box = new ComboBox { Height = 28, IsEnabled = timeouts is not null };
+                var box = Localized.Items(new ComboBox { Height = 28, IsEnabled = timeouts is not null });
                 if (timeouts is { } t) FillIdleChoices(box, pluggedIn ? t[setting].Ac : t[setting].Dc, "S.Idle.Never");
                 box.SelectionChanged += (_, _) => IdleChosen(p, setting, pluggedIn, box);
                 cell = box;
@@ -215,7 +216,8 @@ public partial class MainWindow
         box.Items.Clear();
         foreach (var seconds in IdleTimeouts.Choices(current))
         {
-            var item = new ComboBoxItem { Content = IdleLabel(seconds, zeroKey), Tag = seconds };
+            var each = seconds;
+            var item = Localized.Content(new ComboBoxItem { Tag = seconds }, () => IdleLabel(each, zeroKey));
             box.Items.Add(item);
             if (seconds == current) box.SelectedItem = item;
         }
@@ -231,7 +233,7 @@ public partial class MainWindow
 
     private void IdleChosen(Guid plan, IdleSetting setting, bool pluggedIn, ComboBox box)
     {
-        if (_idleUiLoading || box.SelectedItem is not ComboBoxItem { Tag: int seconds }) return;
+        if (_idleUiLoading || Localized.Refreshing || box.SelectedItem is not ComboBoxItem { Tag: int seconds }) return;
         if (!_idleKnown.TryGetValue(plan, out var known)) return;
 
         var value = IdleTimeouts.Carry(known[setting], pluggedIn, seconds);
@@ -277,10 +279,10 @@ public partial class MainWindow
         var on = DevicePowerSaving.State(values.Select(v => v.Value));
         toggle.IsChecked = on == true;
         toggle.IsEnabled = values.Count > 0;
-        state.Text = on is null && values.Count > 0
+        Localized.Text(state, () => on is null && values.Count > 0
             ? Strings.Get("S.Settings.SavingMixed", string.Join(", ", values.Select(v =>
                 $"{(v.Mode is { } m ? ModeName(m) : Strings.Get("S.Idle.ActivePlan"))}: {Strings.Get(DevicePowerSaving.Saving(v.Value) ? "S.Settings.SavingOn" : "S.Settings.SavingOff")}")))
-            : string.Empty;
+            : string.Empty);
     }
 
     /// <summary>The person's switch: the same value into every mode's plan, plugged in and on battery.</summary>

@@ -2008,6 +2008,10 @@
                                                            Foreground="{DynamicResource Ink}" />
                                                 <TextBlock Text="{DynamicResource S.Settings.RulesDesc}" TextWrapping="Wrap"
                                                            Style="{DynamicResource StatusTextStyle}" Margin="0,2,0,0" />
+                                                <!-- Said while the rules are off and games are on the list: they will not switch -->
+                                                <TextBlock x:Name="RulesOffNote" Text="{DynamicResource S.Rules.OffNote}" TextWrapping="Wrap"
+                                                           Style="{DynamicResource StatusTextStyle}" Foreground="{DynamicResource Warn}"
+                                                           Margin="0,4,0,0" Visibility="Collapsed" />
                                             </StackPanel>
                                             <ToggleButton x:Name="SettingProgramRules" Grid.Column="1"
                                                           Style="{DynamicResource Pill}" VerticalAlignment="Center" />

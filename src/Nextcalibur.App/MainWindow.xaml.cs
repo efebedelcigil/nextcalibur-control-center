@@ -1194,18 +1194,10 @@ public partial class MainWindow : Window
             : Strings.Get("S.Corner.UpToDate");
         OpenLogButton.Content = Strings.Get("S.Corner.OpenLog");
         _tray?.RebuildMenu();
-        LoadSettingsPage();
-        // The rows the code built - mode names, units, choices - built again:
-        // only the markup follows the dictionary by itself.
-        RefreshCeilingRows();
-        RefreshIdleRows();
-        RefreshIdleLoadRows();
-        RefreshProgramRuleRows();
-        RefreshShortcutRows();
-        _rulesMode?.Items.Refresh();
-        ShowGameScanResult();
-        _ = LoadNvPowerAsync();
-        if (NavPower.IsChecked == true) _ = LoadDefinitionsAsync();
+        // Only words (the owner's rule, 15 October 2026): what the code put on
+        // screen is said again in place - no row rebuilt, no setting reloaded,
+        // nothing read from the machine, no handler run. See Localized.
+        Localized.Refresh();
         if (_tourActive) PlaceTourStep();   // the card's words, in the new language
         Log.Info("language", $"Switched to {Strings.Current}");
     }

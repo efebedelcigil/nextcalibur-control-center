@@ -43,21 +43,23 @@ public partial class MainWindow
                 row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(170) });
                 row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                row.Children.Add(new TextBlock
+                var rowMode = mode;
+                row.Children.Add(Localized.Text(new TextBlock
                 {
-                    Text = ModeName(mode), FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
                     Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
-                });
+                }, () => ModeName(rowMode)));
 
-                var box = new ComboBox { Height = 28, IsEnabled = _support.AllowsWrites };
+                var box = Localized.Items(new ComboBox { Height = 28, IsEnabled = _support.AllowsWrites });
                 var limits = _settings.LimitsFor(mode);
                 if (mode == SystemMode.Office)
                 {
                     var current = ModeProfile.ClampPercent(mode, limits.PercentCeiling);
                     foreach (var p in PercentChoices)
                     {
-                        var label = p == ModeProfile.UpperPercent(mode) ? Strings.Get("S.Ceiling.PercentTop", p) : Strings.Get("S.Ceiling.Percent", p);
-                        var item = new ComboBoxItem { Content = label, Tag = p };
+                        var percent = p;
+                        var item = Localized.Content(new ComboBoxItem { Tag = p },
+                            () => percent == ModeProfile.UpperPercent(rowMode) ? Strings.Get("S.Ceiling.PercentTop", percent) : Strings.Get("S.Ceiling.Percent", percent));
                         box.Items.Add(item);
                         if (p == current) box.SelectedItem = item;
                     }
@@ -67,14 +69,15 @@ public partial class MainWindow
                     var current = ModeProfile.ClampFrequency(limits.FrequencyMhz);
                     foreach (var f in FrequencyChoices)
                     {
-                        var label = f == 0 ? Strings.Get("S.Ceiling.NoLimit") : Strings.Get("S.Ceiling.Ghz", (f / 1000.0).ToString("0.0"));
-                        var item = new ComboBoxItem { Content = label, Tag = f };
+                        var mhz = f;
+                        var item = Localized.Content(new ComboBoxItem { Tag = f },
+                            () => mhz == 0 ? Strings.Get("S.Ceiling.NoLimit") : Strings.Get("S.Ceiling.Ghz", (mhz / 1000.0).ToString("0.0")));
                         box.Items.Add(item);
                         if (f == current) box.SelectedItem = item;
                     }
                     if (box.SelectedItem is null && current > 0)
                     {
-                        var item = new ComboBoxItem { Content = Strings.Get("S.Ceiling.Ghz", (current / 1000.0).ToString("0.0")), Tag = current };
+                        var item = Localized.Content(new ComboBoxItem { Tag = current }, () => Strings.Get("S.Ceiling.Ghz", (current / 1000.0).ToString("0.0")));
                         box.Items.Insert(1, item);
                         box.SelectedItem = item;
                     }
@@ -82,18 +85,17 @@ public partial class MainWindow
                 var chosenMode = mode;
                 box.SelectionChanged += (_, _) =>
                 {
-                    if (_ceilingsLoading || box.SelectedItem is not ComboBoxItem { Tag: int value }) return;
+                    if (_ceilingsLoading || Localized.Refreshing || box.SelectedItem is not ComboBoxItem { Tag: int value }) return;
                     SetCeiling(chosenMode, value);
                 };
                 Grid.SetColumn(box, 1);
                 row.Children.Add(box);
 
-                var test = new System.Windows.Controls.Button
+                var test = Localized.Tip(Localized.Content(new System.Windows.Controls.Button
                 {
-                    Content = Strings.Get("S.CeilingTest.Button"), MinWidth = 90, Height = 28, Margin = new Thickness(8, 0, 0, 0),
+                    MinWidth = 90, Height = 28, Margin = new Thickness(8, 0, 0, 0),
                     IsEnabled = _support.AllowsWrites && CpuPowerReader.DriverInstalled,
-                    ToolTip = Strings.Get("S.CeilingTest.ButtonTip"),
-                };
+                }, () => Strings.Get("S.CeilingTest.Button")), () => Strings.Get("S.CeilingTest.ButtonTip"));
                 test.Click += (_, _) => OpenCeilingTest(chosenMode);
                 Grid.SetColumn(test, 2);
                 row.Children.Add(test);
@@ -144,7 +146,7 @@ public partial class MainWindow
         if (_nvPower is null) return;
         _nvPower.SelectionChanged += async (_, _) =>
         {
-            if (_nvPowerLoading || _nvPower.SelectedItem is not ComboBoxItem { Tag: uint value } || value == _nvPowerShown) return;
+            if (_nvPowerLoading || Localized.Refreshing || _nvPower.SelectedItem is not ComboBoxItem { Tag: uint value } || value == _nvPowerShown) return;
             await SetNvPowerAsync(value);
         };
         _ = LoadNvPowerAsync();
@@ -160,13 +162,15 @@ public partial class MainWindow
             _nvPower.Items.Clear();
             foreach (var (value, key) in new[] { (NvidiaPowerMode.OptimalPower, "S.NvPower.Normal"), (NvidiaPowerMode.Adaptive, "S.NvPower.Adaptive"), (NvidiaPowerMode.PreferMaximum, "S.NvPower.Maximum") })
             {
-                var item = new ComboBoxItem { Content = Strings.Get(key), Tag = value };
+                var itemKey = key;
+                var item = Localized.Content(new ComboBoxItem { Tag = value }, () => Strings.Get(itemKey));
                 _nvPower.Items.Add(item);
                 if (now?.Value == value) _nvPower.SelectedItem = item;
             }
             _nvPowerShown = now?.Value;
             _nvPower.IsEnabled = now is not null && _support.AllowsReads;
-            if (now is null) _nvPower.ToolTip = Strings.Get("S.NvPower.Unavailable");
+            Localized.Items(_nvPower);
+            if (now is null) Localized.Tip(_nvPower, () => Strings.Get("S.NvPower.Unavailable"));
         }
         finally
         {

@@ -90,8 +90,9 @@ public partial class MainWindow
         if (names.Count == 0)
         {
             // Scanned and nothing busy is an answer, not "not scanned yet".
-            var text = _idleLoadScannedAt is { } at ? Strings.Get("S.IdleLoad.NoneFound", at.ToString("HH:mm")) : Strings.Get("S.IdleLoad.NothingYet");
-            _idleLoadRows.Children.Add(new TextBlock { Text = text, Style = (Style)FindResource("StatusTextStyle") });
+            var scannedAt = _idleLoadScannedAt;
+            _idleLoadRows.Children.Add(Localized.Text(new TextBlock { Style = (Style)FindResource("StatusTextStyle") },
+                () => scannedAt is { } at ? Strings.Get("S.IdleLoad.NoneFound", at.ToString("HH:mm")) : Strings.Get("S.IdleLoad.NothingYet")));
             return;
         }
         foreach (var name in names)
@@ -99,13 +100,15 @@ public partial class MainWindow
             var found = _idleLoadFound.FirstOrDefault(i => string.Equals(ProgramRules.Normalise(i.Name), name, StringComparison.OrdinalIgnoreCase));
             var on = _settings.EfficiencyModePrograms.Contains(name, StringComparer.OrdinalIgnoreCase);
             var auto = _settings.EfficiencyModeAutoAdded.Contains(name, StringComparer.OrdinalIgnoreCase);
-            var text = found is null ? name : Strings.Get("S.IdleLoad.Row", name, found.CpuPercent.ToString("0.0"));
-            if (auto) text = Strings.Get("S.IdleLoad.RowAuto", text);
-            var box = new CheckBox
+            var rowName = name;
+            var box = Localized.Content(new CheckBox
             {
                 IsChecked = on, Margin = new Thickness(0, 3, 0, 3), Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
-                Content = text,
-            };
+            }, () =>
+            {
+                var text = found is null ? rowName : Strings.Get("S.IdleLoad.Row", rowName, found.CpuPercent.ToString("0.0"));
+                return auto ? Strings.Get("S.IdleLoad.RowAuto", text) : text;
+            });
             var program = name;
             box.Click += (_, _) => SetEfficiency(program, box.IsChecked == true, byHand: true);
             var row = new DockPanel { LastChildFill = true };

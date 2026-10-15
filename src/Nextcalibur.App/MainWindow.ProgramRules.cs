@@ -254,6 +254,7 @@ public partial class MainWindow
         if (_rulesMaster is null || _rulesRows is null || _rulesName is null || _rulesMode is null) return;
 
         foreach (var mode in SystemModes.InOrder) _rulesMode.Items.Add(new ModeChoice(mode));
+        Localized.Items(_rulesMode);
         _rulesMode.SelectedIndex = 0;
 
         if (FindName("SettingAskGameMode") is ToggleButton askGames)
@@ -278,6 +279,10 @@ public partial class MainWindow
         _settings.ProgramRulesEnabled = on;
         _settings.ProgramRulesOffByHand = !on;
         _settings.Save();
+        // Said in the log: a switch that silently went off once left every game
+        // in its mode, and nothing showed when (15 October 2026).
+        Log.Info("rules", $"Program rules switched {(on ? "on" : "off")} in Settings", ("rules", _settings.ProgramRules.Count));
+        Audit("program-rules", on ? "switched-on" : "switched-off", ("rules", _settings.ProgramRules.Count));
         if (!on) EndRuleNow();
         StartProgramRules();
         RefreshProgramRuleRows();
@@ -366,6 +371,8 @@ public partial class MainWindow
             var casper = _support.AllowsWrites;
             _rulesMaster.IsChecked = _settings.ProgramRulesEnabled;
             _rulesMaster.IsEnabled = casper;
+            if (FindName("RulesOffNote") is UIElement note)
+                note.Visibility = casper && !_settings.ProgramRulesEnabled && _settings.ProgramRules.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             _rulesRows.IsEnabled = casper && _settings.ProgramRulesEnabled;
             if (FindName("ProgramRuleAddRow") is UIElement addRow) addRow.IsEnabled = casper && _settings.ProgramRulesEnabled;
 
@@ -432,20 +439,21 @@ public partial class MainWindow
         var active = rules.Any(r => ReferenceEquals(_activeRule, r));
         var text = new TextBlock
         {
-            Text = active ? Strings.Get("S.Rules.RowActive", shown) : shown,
-            TextTrimming = TextTrimming.CharacterEllipsis, ToolTip = RuleTip(rules),
+            TextTrimming = TextTrimming.CharacterEllipsis,
             FontSize = 12, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
             Foreground = (System.Windows.Media.Brush)FindResource("Ink"),
         };
+        Localized.Text(text, () => active ? Strings.Get("S.Rules.RowActive", shown) : shown);
+        Localized.Tip(text, () => RuleTip(rules));
         Grid.SetColumn(text, 2);
         row.Children.Add(text);
 
-        var mode = new ComboBox { MinWidth = 120, Margin = new Thickness(8, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
+        var mode = Localized.Items(new ComboBox { MinWidth = 120, Margin = new Thickness(8, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center });
         foreach (var m in SystemModes.InOrder) mode.Items.Add(new ModeChoice(m));
         mode.SelectedIndex = SystemModes.Rank(rules[0].Mode);
         mode.SelectionChanged += (_, _) =>
         {
-            if (_rulesUiLoading || mode.SelectedItem is not ModeChoice { Mode: var chosen }) return;
+            if (_rulesUiLoading || Localized.Refreshing || mode.SelectedItem is not ModeChoice { Mode: var chosen }) return;
             foreach (var r in rules)
             {
                 r.Mode = chosen;
@@ -457,7 +465,7 @@ public partial class MainWindow
         Grid.SetColumn(mode, 3);
         row.Children.Add(mode);
 
-        var remove = new Button { Content = "âœ•", Width = 28, Height = 28, ToolTip = Strings.Get("S.Rules.Remove") };
+        var remove = Localized.Tip(new Button { Content = "✕", Width = 28, Height = 28 }, () => Strings.Get("S.Rules.Remove"));
         remove.Click += (_, _) =>
         {
             foreach (var r in rules)
@@ -530,7 +538,7 @@ public partial class MainWindow
         var line = (System.Windows.Media.Brush)FindResource("Line");
         var branch = new System.Windows.Shapes.Path
         {
-            // A vertical line, and a short one across to the name: â”” for the last, â”œ otherwise.
+            // A vertical line, and a short one across to the name: └ for the last, ├ otherwise.
             Data = System.Windows.Media.Geometry.Parse(last ? "M5,0 L5,10 L14,10" : "M5,0 L5,22 M5,10 L14,10"),
             Stroke = line, StrokeThickness = 1.2, VerticalAlignment = VerticalAlignment.Top, SnapsToDevicePixels = true,
         };
@@ -549,11 +557,11 @@ public partial class MainWindow
         Grid.SetColumn(box, 1);
         row.Children.Add(box);
 
-        var name = new TextBlock
+        var active = ReferenceEquals(_activeRule, rule);
+        var name = Localized.Text(new TextBlock
         {
-            Text = ReferenceEquals(_activeRule, rule) ? Strings.Get("S.Rules.RowActive", rule.Process) : rule.Process,
             Style = (Style)FindResource("StatusTextStyle"), VerticalAlignment = VerticalAlignment.Center,
-        };
+        }, () => active ? Strings.Get("S.Rules.RowActive", rule.Process) : rule.Process);
         Grid.SetColumn(name, 2);
         row.Children.Add(name);
         return row;

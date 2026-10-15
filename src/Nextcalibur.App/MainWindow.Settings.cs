@@ -342,7 +342,7 @@ public partial class MainWindow
         if (_settingBatteryMode is null) return;
         _settingBatteryMode.SelectionChanged += (_, _) =>
         {
-            if (_batteryModeLoading || _settingBatteryMode.SelectedItem is not System.Windows.Controls.ComboBoxItem { Tag: var tag }) return;
+            if (_batteryModeLoading || Localized.Refreshing || _settingBatteryMode.SelectedItem is not System.Windows.Controls.ComboBoxItem { Tag: var tag }) return;
             SetBatteryMode(tag as SystemMode?);
         };
     }
@@ -354,18 +354,16 @@ public partial class MainWindow
         try
         {
             _settingBatteryMode.Items.Clear();
-            foreach (var (mode, label) in new (SystemMode?, string)[]
-                     {
-                         (SystemMode.Office, ModeName(SystemMode.Office)),
-                         (SystemMode.Balanced, ModeName(SystemMode.Balanced)),
-                         (null, Strings.Get("S.Settings.BatteryModeOff")),
-                     })
+            foreach (var mode in new SystemMode?[] { SystemMode.Office, SystemMode.Balanced, null })
             {
-                var item = new System.Windows.Controls.ComboBoxItem { Content = label, Tag = mode };
+                var each = mode;
+                var item = Localized.Content(new System.Windows.Controls.ComboBoxItem { Tag = mode },
+                    () => each is { } m ? ModeName(m) : Strings.Get("S.Settings.BatteryModeOff"));
                 _settingBatteryMode.Items.Add(item);
                 if (mode == _settings.ModeOnBattery) _settingBatteryMode.SelectedItem = item;
             }
             _settingBatteryMode.IsEnabled = _support.AllowsWrites;
+            Localized.Items(_settingBatteryMode);
         }
         finally
         {

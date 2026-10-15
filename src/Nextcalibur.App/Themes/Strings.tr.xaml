@@ -915,4 +915,5 @@
     <sys:String x:Key="S.Games.FoundIn">Bulunduğu yer: {0}</sys:String>
     <sys:String x:Key="S.Games.Listed">Windows'un Yüklü uygulamalar listesinde var</sys:String>
     <sys:String x:Key="S.Games.NotListed">Windows'un Yüklü uygulamalar listesinde yok (Epic gibi başlatıcılar oyunlarını oraya eklemez)</sys:String>
+    <sys:String x:Key="S.Rules.OffNote">Program kuralları kapalı: aşağıdaki programlar ve oyunlar modu değiştirmez. Buradan açabilirsin.</sys:String>
 </ResourceDictionary>

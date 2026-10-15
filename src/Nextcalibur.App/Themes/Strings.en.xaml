@@ -917,4 +917,5 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Games.FoundIn">Found through {0}</sys:String>
     <sys:String x:Key="S.Games.Listed">Listed in Windows' Installed apps</sys:String>
     <sys:String x:Key="S.Games.NotListed">Not in Windows' Installed apps (launchers such as Epic do not list their games there)</sys:String>
+    <sys:String x:Key="S.Rules.OffNote">Program rules are off: the programs and games below do not switch the mode. Switch them on here.</sys:String>
 </ResourceDictionary>

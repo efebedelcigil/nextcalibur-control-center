@@ -26,9 +26,9 @@ public partial class MainWindow
     private void ShowGameScanResult()
     {
         if (_lastGameScan is not { } last || FindName("GameScanResult") is not TextBlock result) return;
-        result.Text = last.Found == 0
+        Localized.Text(result, () => last.Found == 0
             ? Strings.Get("S.Games.NoneFound")
-            : Strings.Get("S.Games.Result", last.Found, last.Added) + (last.SwitchedOn ? " " + Strings.Get("S.Games.RulesOn") : "");
+            : Strings.Get("S.Games.Result", last.Found, last.Added) + (last.SwitchedOn ? " " + Strings.Get("S.Games.RulesOn") : ""));
         result.Visibility = Visibility.Visible;
     }
 
@@ -41,10 +41,11 @@ public partial class MainWindow
             Content = "\uE838",   // Segoe's open-folder glyph
             FontFamily = new System.Windows.Media.FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets"),
             FontSize = 13, Width = 28, Height = 28, Margin = new Thickness(0, 0, 6, 0),
-            ToolTip = Strings.Get("S.Common.OpenFolder") + "\n" + path,
+
             VerticalAlignment = VerticalAlignment.Center,
         };
-        System.Windows.Automation.AutomationProperties.SetName(button, Strings.Get("S.Common.OpenFolder"));
+        Localized.Tip(button, () => Strings.Get("S.Common.OpenFolder") + "\n" + path);
+        Localized.Bind(button, System.Windows.Automation.AutomationProperties.NameProperty, () => Strings.Get("S.Common.OpenFolder"));
         var target = path;
         button.Click += (_, _) =>
         {

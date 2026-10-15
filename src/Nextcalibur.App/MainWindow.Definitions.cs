@@ -46,9 +46,9 @@ public partial class MainWindow
             if (MachineScan.Firmware is { ProcessorMaxMhz: { } top })
                 rows.Children.Add(DefinitionRow(new PowerDefinition("cpu.top", top / 1000.0, null, SetBy.Intel, null, "GHz")));
             if (rows.Children.Count == 0)
-                rows.Children.Add(new TextBlock { Text = Strings.Get("S.Def.None"), Style = (Style)FindResource("StatusTextStyle") });
+                rows.Children.Add(Localized.Text(new TextBlock { Style = (Style)FindResource("StatusTextStyle") }, () => Strings.Get("S.Def.None")));
             if (!gpuAwake)
-                rows.Children.Add(new TextBlock { Text = Strings.Get("S.Def.GpuAsleep"), Style = (Style)FindResource("StatusTextStyle"), Margin = new Thickness(0, 4, 0, 0) });
+                rows.Children.Add(Localized.Text(new TextBlock { Style = (Style)FindResource("StatusTextStyle"), Margin = new Thickness(0, 4, 0, 0) }, () => Strings.Get("S.Def.GpuAsleep")));
         }
         finally
         {
@@ -63,16 +63,19 @@ public partial class MainWindow
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(90) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-        row.Children.Add(new TextBlock { Text = Strings.Get($"S.Def.{d.Key}"), FontSize = 12, Foreground = (System.Windows.Media.Brush)FindResource("Ink"), TextWrapping = TextWrapping.Wrap });
+        row.Children.Add(Localized.Text(new TextBlock { FontSize = 12, Foreground = (System.Windows.Media.Brush)FindResource("Ink"), TextWrapping = TextWrapping.Wrap }, () => Strings.Get($"S.Def.{d.Key}")));
 
         var value = new TextBlock { Text = Format(d.Value, d.Unit), FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = (System.Windows.Media.Brush)FindResource("Ink") };
         Grid.SetColumn(value, 1);
         row.Children.Add(value);
 
-        var note = Strings.Get("S.Def.SetBy", Who(d.SetBy));
-        if (d.Defined is { } defined && d.DefinedBy is { } by && Math.Abs(defined - d.Value) >= 0.5)
-            note += " · " + Strings.Get("S.Def.Defined", Who(by), Format(defined, d.Unit));
-        var source = new TextBlock { Text = note, Style = (Style)FindResource("StatusTextStyle"), TextWrapping = TextWrapping.Wrap };
+        var source = Localized.Text(new TextBlock { Style = (Style)FindResource("StatusTextStyle"), TextWrapping = TextWrapping.Wrap }, () =>
+        {
+            var note = Strings.Get("S.Def.SetBy", Who(d.SetBy));
+            if (d.Defined is { } defined && d.DefinedBy is { } by && Math.Abs(defined - d.Value) >= 0.5)
+                note += " · " + Strings.Get("S.Def.Defined", Who(by), Format(defined, d.Unit));
+            return note;
+        });
         Grid.SetColumn(source, 2);
         row.Children.Add(source);
         return row;

@@ -346,17 +346,17 @@ public partial class MainWindow
                 row.Children.Add(box);
 
                 var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-                text.Children.Add(new TextBlock { Text = Strings.Get($"S.Fn.{s.Action}"), FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = (System.Windows.Media.Brush)FindResource("Ink") });
-                text.Children.Add(new TextBlock { Text = StatusFor(s, available), TextWrapping = TextWrapping.Wrap, Style = (Style)FindResource("StatusTextStyle"), Margin = new Thickness(0, 2, 0, 0) });
+                text.Children.Add(Localized.Text(new TextBlock { FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = (System.Windows.Media.Brush)FindResource("Ink") }, () => Strings.Get($"S.Fn.{shortcut.Action}")));
+                text.Children.Add(Localized.Text(new TextBlock { TextWrapping = TextWrapping.Wrap, Style = (Style)FindResource("StatusTextStyle"), Margin = new Thickness(0, 2, 0, 0) }, () => StatusFor(shortcut, available)));
                 Grid.SetColumn(text, 1);
                 row.Children.Add(text);
 
-                var keys = new Button
+                var recording = _recording == s;
+                var keys = Localized.Tip(Localized.Content(new Button
                 {
-                    Content = _recording == s ? Strings.Get("S.Fn.PressKeys") : FnShortcuts.Describe(s.Modifiers, s.Key) + "  \u270E",
-                    ToolTip = Strings.Get("S.Settings.FnChangeHint"),
                     MinWidth = 130, Height = 28, VerticalAlignment = VerticalAlignment.Center, IsEnabled = available,
-                };
+                }, () => recording ? Strings.Get("S.Fn.PressKeys") : FnShortcuts.Describe(shortcut.Modifiers, shortcut.Key) + "  \u270E"),
+                    () => Strings.Get("S.Settings.FnChangeHint"));
                 keys.Click += (_, _) => StartRecording(shortcut);
                 Grid.SetColumn(keys, 2);
                 row.Children.Add(keys);
