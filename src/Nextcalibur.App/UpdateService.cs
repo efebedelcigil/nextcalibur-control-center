@@ -248,9 +248,14 @@ public sealed class UpdateService : IDisposable
             //
             // Fail open: an answer that cannot be had or read means the full
             // check runs, exactly as it did before this.
+            // The installed version as Velopack has it, with its pre-release
+            // part: the assembly's version drops "-beta2", so a pre-release of
+            // 0.7.1 took itself for 0.7.1 and was never offered 0.7.1 (15
+            // October 2026). A pre-release always goes on to the full check.
+            var installed = _manager.CurrentVersion;
             var mine = typeof(UpdateService).Assembly.GetName().Version;
             var published = await Nextcalibur.Core.Dependencies.DependencyManager.LatestReleaseAsync(Owner, Repo);
-            if (mine is not null && published is not null
+            if (installed?.IsPrerelease != true && mine is not null && published is not null
                 && published <= new Version(mine.Major, mine.Minor, mine.Build))
                 return false;
 
@@ -261,12 +266,18 @@ public sealed class UpdateService : IDisposable
             // says it a second time in our own code, because the cost of
             // being wrong is an installed copy walked back onto a version
             // whose holes are known and published.
-            var current = typeof(UpdateService).Assembly.GetName().Version;
-            if (current is not null && available.TargetFullRelease?.Version is { } offered
-                && new Version(offered.Major, offered.Minor, offered.Patch) <= new Version(current.Major, current.Minor, current.Build))
+            // Compared as Velopack versions, pre-release part included (0.7.1 is
+            // newer than 0.7.1-beta2); the assembly's only where Velopack has none.
+            if (available.TargetFullRelease?.Version is { } offered)
             {
-                Nextcalibur.Core.Configuration.Log.Warn("update", $"The release page offered {offered}, which is not newer than {current.ToString(3)}; ignored");
-                return false;
+                var notNewer = installed is not null
+                    ? offered.CompareTo(installed) <= 0
+                    : mine is not null && new Version(offered.Major, offered.Minor, offered.Patch) <= new Version(mine.Major, mine.Minor, mine.Build);
+                if (notNewer)
+                {
+                    Nextcalibur.Core.Configuration.Log.Warn("update", $"The release page offered {offered}, which is not newer than {installed?.ToString() ?? mine?.ToString(3)}; ignored");
+                    return false;
+                }
             }
 
             var announce = Available is null;
