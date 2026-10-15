@@ -350,6 +350,7 @@ public partial class MainWindow : Window
             App.RunPendingOverlayRepair();
             RememberIdleTimeouts();
             CheckKeptAtStart();
+            SwitchRulesOnForListedGamesAtStart();
         }
         StartFnShortcuts();
 

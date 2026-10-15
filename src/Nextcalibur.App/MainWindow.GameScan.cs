@@ -63,6 +63,33 @@ public partial class MainWindow
         _ = ScanForGamesAsync(byHand: false);
     }
 
+    /// <summary>
+    /// The program rules on, for the games on the list: not when the person
+    /// switched them off by hand, and only where modes may be changed. Said
+    /// when it happens. True when they were switched on now.
+    /// </summary>
+    private bool SwitchRulesOnForGames(string why)
+    {
+        if (_settings.ProgramRulesEnabled || _settings.ProgramRulesOffByHand || !_support.AllowsWrites) return false;
+        _settings.ProgramRulesEnabled = true;
+        _settings.Save();
+        Log.Info("games", "Program rules switched on for the games found", ("why", why));
+        Audit("program-rules", "switched-on-for-games", ("why", why));
+        _tray?.ShowMessage(Strings.Get("S.Games.RulesOnTitle"), Strings.Get("S.Games.RulesOnBody"));
+        StartProgramRules();
+        RefreshProgramRuleRows();
+        return true;
+    }
+
+    /// <summary>
+    /// Once at start: games already on the list - added by an earlier daily
+    /// scan, which then left the rules off - get the rules switched on too.
+    /// </summary>
+    private void SwitchRulesOnForListedGamesAtStart()
+    {
+        if (_settings.ProgramRules.Any(r => r.FromScan)) SwitchRulesOnForGames("games already on the list");
+    }
+
     private async Task ScanForGamesAsync(bool byHand)
     {
         if (_gameScanRunning) return;
@@ -90,13 +117,10 @@ public partial class MainWindow
                 added.Add(game);
             }
 
-            // Pressed by hand, the rules are wanted: they are switched on.
-            var switchedOn = false;
-            if (byHand && added.Count > 0 && !_settings.ProgramRulesEnabled && _support.AllowsWrites)
-            {
-                _settings.ProgramRulesEnabled = true;
-                switchedOn = true;
-            }
+            // Games found are games to switch for: the rules are switched on -
+            // by the button or by the daily scan - unless the person turned them
+            // off by hand (the owner's choice, 15 October 2026).
+            var switchedOn = added.Count > 0 && SwitchRulesOnForGames(byHand ? "game scan by hand" : "daily game scan");
             _settings.Save();
 
             Log.Info("games", $"Game scan ({(byHand ? "by hand" : "daily")}): {found.Count} found, {added.Count} added" +

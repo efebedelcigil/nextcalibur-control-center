@@ -276,6 +276,7 @@ public partial class MainWindow
     {
         if (_rulesUiLoading) return;
         _settings.ProgramRulesEnabled = on;
+        _settings.ProgramRulesOffByHand = !on;
         _settings.Save();
         if (!on) EndRuleNow();
         StartProgramRules();

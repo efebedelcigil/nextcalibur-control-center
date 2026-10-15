@@ -126,6 +126,13 @@ public sealed class AppSettings
     /// <summary>"While this program runs, this mode" - off until switched on; see <see cref="Power.ProgramRules"/>.</summary>
     public bool ProgramRulesEnabled { get; set; }
 
+    /// <summary>
+    /// Set when the person switches the program rules off by hand: the game
+    /// scan then never switches them back on (the owner's choice of 15
+    /// October 2026 - found games switch them on, unless turned off).
+    /// </summary>
+    public bool ProgramRulesOffByHand { get; set; }
+
     /// <summary>The rules, in the order they were added.</summary>
     public List<Power.ProgramRule> ProgramRules { get; set; } = new();
 
