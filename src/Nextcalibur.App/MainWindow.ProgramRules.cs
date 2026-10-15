@@ -407,6 +407,7 @@ public partial class MainWindow
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
         // The arrow's column is kept for every row, so the names line up.
         var arrow = expander ?? new Border { Width = 18 };
@@ -472,9 +473,33 @@ public partial class MainWindow
             StartProgramRules();
             RefreshProgramRuleRows();
         };
-        Grid.SetColumn(remove, 4);
+        Grid.SetColumn(remove, 5);
         row.Children.Add(remove);
+
+        // Where the game is (or, added by hand, where the program runs from now).
+        var folder = rules.Select(r => r.Folder).FirstOrDefault(f => f is not null) ?? RunningPath(rules[0].Process);
+        if (FolderButton(folder) is { } open)
+        {
+            Grid.SetColumn(open, 4);
+            row.Children.Add(open);
+        }
         return row;
+    }
+
+    /// <summary>The file a program runs from, if it is running now; null otherwise.</summary>
+    private static string? RunningPath(string process)
+    {
+        try
+        {
+            foreach (var p in System.Diagnostics.Process.GetProcessesByName(process))
+                using (p)
+                {
+                    try { if (p.MainModule?.FileName is { } file) return file; }
+                    catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { }
+                }
+        }
+        catch (InvalidOperationException) { }
+        return null;
     }
 
     /// <summary>One of a game's programs, under it, drawn as a branch of a tree.</summary>

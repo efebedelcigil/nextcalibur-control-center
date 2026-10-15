@@ -6,7 +6,7 @@ using Nextcalibur.Core.Configuration;
 namespace Nextcalibur.Core.Power;
 
 /// <summary>A game found installed: its name, which launcher it came from, and the program names it runs as.</summary>
-public sealed record FoundGame(string Name, string Source, IReadOnlyList<string> Processes);
+public sealed record FoundGame(string Name, string Source, IReadOnlyList<string> Processes, string Folder);
 
 /// <summary>
 /// "Scan for games", the way NVIDIA's app does it (the owner's ask of 14
@@ -53,7 +53,7 @@ public static partial class GameLibrary
                     var names = processes.Select(ProgramRules.Normalise).OfType<string>()
                         .Where(p => !NotTheGame().IsMatch(p))
                         .Distinct(StringComparer.OrdinalIgnoreCase).Take(2).ToList();
-                    if (names.Count > 0) found.Add(new FoundGame(name.Trim(), source, names));
+                    if (names.Count > 0) found.Add(new FoundGame(name.Trim(), source, names, folder));
                 }
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or System.Security.SecurityException or ArgumentException)
@@ -100,6 +100,10 @@ public static partial class GameLibrary
     {
         var manifests = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Epic\EpicGamesLauncher\Data\Manifests");
         if (!Directory.Exists(manifests)) yield break;
+        // Epic's own list of what is installed: a manifest left behind by an
+        // uninstall is not a game on the machine. Without the list, the
+        // manifests and their folders are all there is to go by.
+        var installed = EpicInstalledFolders();
         foreach (var item in Directory.EnumerateFiles(manifests, "*.item"))
         {
             using var doc = JsonDocument.Parse(File.ReadAllText(item));
@@ -110,9 +114,31 @@ public static partial class GameLibrary
             var folder = root.TryGetProperty("InstallLocation", out var l) ? l.GetString() : null;
             var exe = root.TryGetProperty("LaunchExecutable", out var e) ? e.GetString() : null;
             if (name is null || folder is null || !Directory.Exists(folder)) continue;
+            if (installed is not null && !installed.Contains(NormaliseFolder(folder))) continue;
             yield return (name, folder, exe is null ? null : Path.Combine(folder, exe));
         }
     }
+
+    private static HashSet<string>? EpicInstalledFolders()
+    {
+        var list = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Epic\UnrealEngineLauncher\LauncherInstalled.dat");
+        if (!File.Exists(list)) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(File.ReadAllText(list));
+            if (!doc.RootElement.TryGetProperty("InstallationList", out var items) || items.ValueKind != JsonValueKind.Array) return null;
+            return items.EnumerateArray()
+                .Select(i => i.TryGetProperty("InstallLocation", out var l) ? l.GetString() : null)
+                .OfType<string>().Select(NormaliseFolder).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>A folder as both of Epic's files can be compared by: backslashes, no trailing one.</summary>
+    public static string NormaliseFolder(string folder) => folder.Replace('/', '\\').TrimEnd('\\');
 
     private static IEnumerable<(string, string, string?)> Gog()
     {

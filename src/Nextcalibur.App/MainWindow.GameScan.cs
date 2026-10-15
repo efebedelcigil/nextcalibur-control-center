@@ -32,6 +32,28 @@ public partial class MainWindow
         result.Visibility = Visibility.Visible;
     }
 
+    /// <summary>The small "open file location" button beside a game or a program; null when there is no place to show.</summary>
+    private System.Windows.Controls.Button? FolderButton(string? path)
+    {
+        if (string.IsNullOrEmpty(path) || !(System.IO.File.Exists(path) || System.IO.Directory.Exists(path))) return null;
+        var button = new System.Windows.Controls.Button
+        {
+            Content = "\uE838",   // Segoe's open-folder glyph
+            FontFamily = new System.Windows.Media.FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets"),
+            FontSize = 13, Width = 28, Height = 28, Margin = new Thickness(0, 0, 6, 0),
+            ToolTip = Strings.Get("S.Common.OpenFolder") + "\n" + path,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        System.Windows.Automation.AutomationProperties.SetName(button, Strings.Get("S.Common.OpenFolder"));
+        var target = path;
+        button.Click += (_, _) =>
+        {
+            Unelevated.ShowInFolder(target);
+            Log.Info("shell", "File location shown", ("path", target));
+        };
+        return button;
+    }
+
     private void WireGameScan()
     {
         if (FindName("GameScanButton") is System.Windows.Controls.Button scan)
@@ -57,7 +79,9 @@ public partial class MainWindow
     private void GameScanTick()
     {
         if (!_settings.GameScanAuto || _gameScanRunning || !_support.AllowsWrites || NoticeGate.ShouldWait) return;
-        if (_settings.GamesScannedUtc is { } last && DateTime.UtcNow - last < GameScanEvery) return;
+        // Due daily - or at once while found games still lack the folder their button opens.
+        var foldersMissing = _settings.ProgramRules.Any(r => r.FromScan && r.Folder is null);
+        if (!foldersMissing && _settings.GamesScannedUtc is { } last && DateTime.UtcNow - last < GameScanEvery) return;
         // Not in the first minutes after Nextcalibur starts: the machine has enough to do then.
         if (DateTime.UtcNow < _gameScanNotBefore) return;
         _ = ScanForGamesAsync(byHand: false);
@@ -105,6 +129,9 @@ public partial class MainWindow
             _settings.GamesScannedUtc = DateTime.UtcNow;
 
             var comparer = StringComparer.OrdinalIgnoreCase;
+            // Rules found before folders were kept get theirs now.
+            foreach (var rule in _settings.ProgramRules.Where(r => r.FromScan && r.Folder is null))
+                if (found.FirstOrDefault(g => g.Processes.Contains(rule.Process, comparer)) is { } owner) rule.Folder = owner.Folder;
             var added = new List<FoundGame>();
             foreach (var game in found)
             {
@@ -113,7 +140,7 @@ public partial class MainWindow
                     .ToList();
                 if (fresh.Count == 0) continue;
                 foreach (var process in fresh)
-                    _settings.ProgramRules.Add(new ProgramRule { Process = process, Mode = SystemMode.Gaming, Label = game.Name, FromScan = true });
+                    _settings.ProgramRules.Add(new ProgramRule { Process = process, Mode = SystemMode.Gaming, Label = game.Name, FromScan = true, Folder = game.Folder });
                 added.Add(game);
             }
 
@@ -132,11 +159,8 @@ public partial class MainWindow
                 _lastGameScan = (found.Count, added.Count, switchedOn);
                 ShowGameScanResult();
             }
-            if (added.Count > 0)
-            {
-                StartProgramRules();
-                RefreshProgramRuleRows();
-            }
+            if (added.Count > 0) StartProgramRules();
+            RefreshProgramRuleRows();
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {

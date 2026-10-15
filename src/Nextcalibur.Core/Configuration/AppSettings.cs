@@ -410,6 +410,7 @@ public sealed class AppSettings
             {
                 Process = name, Enabled = rule.Enabled, Mode = Enum.IsDefined(rule.Mode) ? rule.Mode : Power.SystemMode.Office,
                 Label = rule.Label is { Length: > 0 and <= 120 } label ? label : null, FromScan = rule.FromScan,
+                Folder = rule.Folder is { Length: > 2 and <= 260 } folder && Path.IsPathFullyQualified(folder) ? folder : null,
             });
         }
         settings.ProgramRules = rules;

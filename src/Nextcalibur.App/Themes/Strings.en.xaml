@@ -912,4 +912,6 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Kept.PutBackQuestion">Put your own times back?</sys:String>
     <sys:String x:Key="S.Games.RulesOnTitle">Games switch to Gaming now</sys:String>
     <sys:String x:Key="S.Games.RulesOnBody">Program rules were switched on for the games found. Turn them off in Settings &gt; Program rules if you prefer.</sys:String>
+    <sys:String x:Key="S.Common.OpenFolder">Open file location</sys:String>
+    <sys:String x:Key="S.IdleLoad.NoneFound">Nothing busy at idle right now (scanned at {0}).</sys:String>
 </ResourceDictionary>

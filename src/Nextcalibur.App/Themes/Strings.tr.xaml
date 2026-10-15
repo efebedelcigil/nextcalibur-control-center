@@ -910,4 +910,6 @@
     <sys:String x:Key="S.Kept.PutBackQuestion">Kendi süreleriniz geri konsun mu?</sys:String>
     <sys:String x:Key="S.Games.RulesOnTitle">Oyunlar artık Oyun moduna geçiriyor</sys:String>
     <sys:String x:Key="S.Games.RulesOnBody">Bulunan oyunlar için program kuralları açıldı. İstemezsen Ayarlar &gt; Program kuralları'ndan kapatabilirsin.</sys:String>
+    <sys:String x:Key="S.Common.OpenFolder">Dosya konumunu aç</sys:String>
+    <sys:String x:Key="S.IdleLoad.NoneFound">Şu an boşta yük yapan program yok (tarama: {0}).</sys:String>
 </ResourceDictionary>

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Nextcalibur.Core.Configuration;
 
@@ -24,6 +24,21 @@ internal static class Unelevated
 
         Log.Warn("shell", "No desktop token to borrow; opening elevated: " + target);
         using var process = Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+    }
+
+    /// <summary>
+    /// File Explorer at a file - selected in its folder - or at a folder,
+    /// as the person, not as administrator. Only paths that exist.
+    /// </summary>
+    public static void ShowInFolder(string path)
+    {
+        var explorer = Nextcalibur.Core.Security.SystemTools.Explorer;
+        string? commandLine = System.IO.File.Exists(path) ? $"\"{explorer}\" /select,\"{path}\""
+            : System.IO.Directory.Exists(path) ? $"\"{explorer}\" \"{path}\"" : null;
+        if (commandLine is null) { Log.Warn("shell", "Not there to show: " + path); return; }
+        if (TryStartAsDesktop(commandLine)) return;
+        Log.Warn("shell", "No desktop token to borrow; showing elevated: " + path);
+        using var process = Process.Start(new ProcessStartInfo(explorer, System.IO.File.Exists(path) ? $"/select,\"{path}\"" : $"\"{path}\"") { UseShellExecute = false });
     }
 
     private static bool TryStartAsDesktop(string commandLine)

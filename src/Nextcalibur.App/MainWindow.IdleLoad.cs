@@ -30,6 +30,7 @@ public partial class MainWindow
     private StackPanel? _idleLoadRows;
     private ToggleButton? _idleLoadAuto;
     private IReadOnlyList<RunningItem> _idleLoadFound = [];
+    private DateTime? _idleLoadScannedAt;
     private IReadOnlyList<RunningItem> _autoScanPrevious = [];
     private DateTime _autoScanPreviousAt = DateTime.MinValue;
     private DateTime _autoScannedAt = DateTime.MinValue;
@@ -50,6 +51,7 @@ public partial class MainWindow
                     _idleLoadFound = found.ToClose
                         .Where(i => i.Kind is RunningKind.Background or RunningKind.App && i.CpuPercent >= 0.3)
                         .OrderByDescending(i => i.CpuPercent).ToList();
+                    _idleLoadScannedAt = DateTime.Now;
                     Log.Info("idle-load", "Scan: " + string.Join("; ", _idleLoadFound.Select(i => $"{i.Name} {i.CpuPercent:0.0}%")));
                     RefreshIdleLoadRows();
                 }
@@ -87,7 +89,9 @@ public partial class MainWindow
             .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         if (names.Count == 0)
         {
-            _idleLoadRows.Children.Add(new TextBlock { Text = Strings.Get("S.IdleLoad.NothingYet"), Style = (Style)FindResource("StatusTextStyle") });
+            // Scanned and nothing busy is an answer, not "not scanned yet".
+            var text = _idleLoadScannedAt is { } at ? Strings.Get("S.IdleLoad.NoneFound", at.ToString("HH:mm")) : Strings.Get("S.IdleLoad.NothingYet");
+            _idleLoadRows.Children.Add(new TextBlock { Text = text, Style = (Style)FindResource("StatusTextStyle") });
             return;
         }
         foreach (var name in names)
@@ -104,7 +108,14 @@ public partial class MainWindow
             };
             var program = name;
             box.Click += (_, _) => SetEfficiency(program, box.IsChecked == true, byHand: true);
-            _idleLoadRows.Children.Add(box);
+            var row = new DockPanel { LastChildFill = true };
+            if (FolderButton(found?.Path) is { } open)
+            {
+                DockPanel.SetDock(open, Dock.Right);
+                row.Children.Add(open);
+            }
+            row.Children.Add(box);
+            _idleLoadRows.Children.Add(row);
         }
     }
 

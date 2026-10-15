@@ -15,6 +15,9 @@ public sealed class ProgramRule
 
     /// <summary>Added by the game scan (<see cref="GameLibrary"/>) rather than by hand.</summary>
     public bool FromScan { get; set; }
+
+    /// <summary>Where the game is installed, for the "open file location" button; null when not known.</summary>
+    public string? Folder { get; set; }
 }
 
 /// <summary>

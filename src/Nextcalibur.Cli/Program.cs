@@ -500,7 +500,7 @@ internal static class Program
     private static int Games()
     {
         var games = Nextcalibur.Core.Power.GameLibrary.Scan();
-        foreach (var g in games) Console.WriteLine($"{g.Source,-8} {g.Name}  ->  {string.Join(", ", g.Processes)}");
+        foreach (var g in games) Console.WriteLine($"{g.Source,-8} {g.Name}  ->  {string.Join(", ", g.Processes)}  [{g.Folder}]");
         Console.WriteLine($"{games.Count} game(s)");
         return 0;
     }
