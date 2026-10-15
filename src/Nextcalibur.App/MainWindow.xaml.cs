@@ -1025,8 +1025,10 @@ public partial class MainWindow : Window
         if (current is { } mode)
             ModeButtonFor(mode).IsChecked = true;
         else
-            foreach (var button in new[] { ModeOffice, ModeGaming, ModePerformance })
-                button.IsChecked = false;
+            // Every mode's tab - Balanced too, which this list once missed and so
+            // stayed selected on a plan that is none of the modes'.
+            foreach (var m in SystemModes.InOrder)
+                ModeButtonFor(m).IsChecked = false;
         _currentMode = current;
         _modeUiReady = true;
         RefreshModeStatus(current);

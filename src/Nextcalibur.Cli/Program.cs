@@ -115,7 +115,7 @@ internal static class Program
         string Name(Guid g) => g == PlanTuning.MinState ? "min" : g == PlanTuning.MaxState ? "max" : g == PlanTuning.MaxState1 ? "max1"
             : g == ModeProfile.BoostMode ? "boost" : g == ModeProfile.EnergyPreference ? "epp" : g == ModeProfile.EnergyPreference1 ? "epp1"
             : g == ModeProfile.Scheduling ? "sched" : g == ModeProfile.ShortScheduling ? "short" : "cool";
-        foreach (var mode in new[] { SystemMode.Office, SystemMode.Gaming, SystemMode.Performance })
+        foreach (var mode in SystemModes.InOrder)
             Console.WriteLine($"{mode,-12} " + string.Join("  ", ModeProfile.For(mode, baseline).Select(kv => $"{Name(kv.Key)} {kv.Value.Ac}/{kv.Value.Dc}")));
         return 0;
     }
