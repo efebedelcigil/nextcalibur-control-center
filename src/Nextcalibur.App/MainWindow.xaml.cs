@@ -349,6 +349,7 @@ public partial class MainWindow : Window
             RememberProfileWrites();
             App.RunPendingOverlayRepair();
             RememberIdleTimeouts();
+            CheckKeptAtStart();
         }
         StartFnShortcuts();
 

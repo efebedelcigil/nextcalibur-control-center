@@ -96,6 +96,21 @@ public sealed class AppSettings
     /// <summary>Of <see cref="EfficiencyModePrograms"/>, the ones the automatic scan added (shown as such).</summary>
     public List<string> EfficiencyModeAutoAdded { get; set; } = new();
 
+    /// <summary>
+    /// The screen-off and sleep times the person keeps, per mode plan (plan id
+    /// -> display AC, display DC, sleep AC, sleep DC, in seconds): what they
+    /// chose here, or changed in Windows while Nextcalibur ran. Found different
+    /// at a start - changed while it was not running, a Windows update most
+    /// often - they are offered back (the owner's ask of 15 October 2026).
+    /// </summary>
+    public Dictionary<string, int[]> IdleKept { get; set; } = new();
+
+    /// <summary>Set after the first start that wrote the ceilings: from then on, a ceiling found changed at a start is said.</summary>
+    public bool CeilingsKeptBefore { get; set; }
+
+    /// <summary>The difference last told about at a start, so it is told once.</summary>
+    public string? IdleChangeTold { get; set; }
+
     /// <summary>Games found by the scan whose rule the person removed: never added again.</summary>
     public List<string> GamesExcluded { get; set; } = new();
 
@@ -397,6 +412,9 @@ public sealed class AppSettings
         settings.EfficiencyModeAutoAdded = (settings.EfficiencyModeAutoAdded ?? new())
             .Where(p => settings.EfficiencyModePrograms.Contains(p, StringComparer.OrdinalIgnoreCase))
             .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        settings.IdleKept = (settings.IdleKept ?? new())
+            .Where(kv => Guid.TryParse(kv.Key, out _) && kv.Value is { Length: 4 } && kv.Value.All(v => v is >= 0 and <= 86400 * 7))
+            .Take(16).ToDictionary(kv => kv.Key, kv => kv.Value);
         settings.GamesExcluded = (settings.GamesExcluded ?? new())
             .Select(Power.ProgramRules.Normalise).OfType<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase).Take(500).ToList();

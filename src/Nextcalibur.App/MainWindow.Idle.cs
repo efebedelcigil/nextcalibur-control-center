@@ -78,6 +78,8 @@ public partial class MainWindow
         }
         Audit("idle-timeouts", "recommended", ("settings", written));
         RememberIdleTimeouts();
+        foreach (var (_, plan) in _idlePlans)
+            if (_idleKnown.TryGetValue(plan, out var now)) KeepIdle(plan, now);
     }
 
     /// <summary>Reads every plan's timeouts afresh and redraws the table.</summary>
@@ -123,7 +125,12 @@ public partial class MainWindow
             if (IdleTimeouts.Read(plan) is not { } now) continue;
             if (!_idleKnown.TryGetValue(plan, out var known) || known != now)
             {
-                if (_idleKnown.ContainsKey(plan)) Log.Info("idle", $"Timeouts of {plan:D} changed in Windows");
+                if (_idleKnown.ContainsKey(plan))
+                {
+                    // Changed in Windows while Nextcalibur runs: the person's, and kept as theirs.
+                    Log.Info("idle", $"Timeouts of {plan:D} changed in Windows");
+                    KeepIdle(plan, now);
+                }
                 _idleKnown[plan] = now;
                 changed = true;
             }
@@ -232,6 +239,7 @@ public partial class MainWindow
         if (IdleTimeouts.Write(plan, setting, value))
         {
             _idleKnown[plan] = known.With(setting, value);
+            KeepIdle(plan, _idleKnown[plan]);
             var mode = _idlePlans.FirstOrDefault(x => x.Plan == plan).Mode;
             Log.Info("idle", $"{setting} {(pluggedIn ? "plugged in" : "on battery")} set to {seconds} s for {mode?.ToString() ?? "the active plan"}");
         }

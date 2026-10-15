@@ -901,4 +901,11 @@
     <sys:String x:Key="S.Idle.RecommendedTip">Her mod için mantıklı ekran ve uyku sürelerini ayarlar</sys:String>
     <sys:String x:Key="S.Idle.RecommendedTitle">Önerilen süreler ayarlansın mı?</sys:String>
     <sys:String x:Key="S.Idle.RecommendedBody" xml:space="preserve">Her moda şu ekran kapatma ve uyku süreleri yazılır (prizde / pilde):&#10;&#10;Güç Tasarrufu: ekran 5 / 3 dk, uyku 15 / 10 dk&#10;Dengeli (Ofis): ekran 10 / 5 dk, uyku 30 / 15 dk&#10;Oyun ve Performans: ekran 15 / 5 dk, uyku 60 / 15 dk&#10;&#10;Oyun ya da video ekranı kendisi açık tutar. Sonradan her birini değiştirebilirsiniz.</sys:String>
+
+    <!-- What the person set, kept across Windows -->
+    <sys:String x:Key="S.Kept.Title">Windows güç ayarlarını değiştirdi</sys:String>
+    <sys:String x:Key="S.Kept.Ceilings">Nextcalibur kapalıyken işlemci tavanları değişmiş, geri kondu: {0}.</sys:String>
+    <sys:String x:Key="S.Kept.Idle">Nextcalibur kapalıyken ekran ve uyku süreleri değişmiş (büyük olasılıkla bir Windows güncellemesi): {0}.</sys:String>
+    <sys:String x:Key="S.Kept.PutBack">Sürelerimi geri koy</sys:String>
+    <sys:String x:Key="S.Kept.PutBackQuestion">Kendi süreleriniz geri konsun mu?</sys:String>
 </ResourceDictionary>

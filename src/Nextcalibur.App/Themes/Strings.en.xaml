@@ -903,4 +903,11 @@ Answer "No" and this program is not asked about again. The rule can be changed o
     <sys:String x:Key="S.Idle.RecommendedTip">Sets sensible screen and sleep times for every mode</sys:String>
     <sys:String x:Key="S.Idle.RecommendedTitle">Set the recommended times?</sys:String>
     <sys:String x:Key="S.Idle.RecommendedBody" xml:space="preserve">Every mode gets these screen-off and sleep times (plugged in / on battery):&#10;&#10;Power Saver: screen 5 / 3 min, sleep 15 / 10 min&#10;Balanced: screen 10 / 5 min, sleep 30 / 15 min&#10;Gaming and Performance: screen 15 / 5 min, sleep 60 / 15 min&#10;&#10;A game or a video keeps the screen on by itself. You can change any of them afterwards.</sys:String>
+
+    <!-- What the person set, kept across Windows -->
+    <sys:String x:Key="S.Kept.Title">Windows changed power settings</sys:String>
+    <sys:String x:Key="S.Kept.Ceilings">Processor ceilings changed while Nextcalibur was closed and were put back: {0}.</sys:String>
+    <sys:String x:Key="S.Kept.Idle">Screen-off and sleep times changed while Nextcalibur was closed (a Windows update, most likely): {0}.</sys:String>
+    <sys:String x:Key="S.Kept.PutBack">Put my times back</sys:String>
+    <sys:String x:Key="S.Kept.PutBackQuestion">Put your own times back?</sys:String>
 </ResourceDictionary>

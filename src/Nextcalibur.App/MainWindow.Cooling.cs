@@ -53,6 +53,7 @@ public partial class MainWindow
                     Audit("plan-display-timeout", "done-automatically", ("mode", mode.ToString()), ("to", PlanTuning.DisplayOffSeconds));
                 }
                 var changed = PlanTuning.ApplyProfile(mode, plan.Plan, baseline, _settings.LimitsFor(mode));
+                NoteCeilingsPutBack(mode, changed);
                 if (changed.Count == 0) continue;
                 Log.Info("power", $"{mode} plan given the mode profile: {changed.Count} setting(s)");
                 Audit("plan-profile", "done-automatically", ("mode", mode.ToString()),
