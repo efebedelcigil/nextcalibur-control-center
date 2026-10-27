@@ -64837,12 +64837,12 @@
     },
     {
       "id": "nuget_system_management",
-      "label": "System.Management (10.0.13)",
+      "label": "System.Management (10.0.14)",
       "_origin": "ast",
       "community": 66,
       "community_name": "Nextcalibur.Core.csproj",
       "file_type": "code",
-      "norm_label": "system.management (10.0.13)",
+      "norm_label": "system.management (10.0.14)",
       "source_file": "src/Nextcalibur.Core/Nextcalibur.Core.csproj",
       "source_location": null
     },
@@ -176861,5 +176861,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "50ed2e42bc970305f6e3fed9952c141f85311f45"
+  "built_at_commit": "519518bc76b168689d66d5db3e463b860edd61c9"
 }

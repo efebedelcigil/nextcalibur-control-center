@@ -1,7 +1,7 @@
 # Graph Report - nextcalibur-control-center  (2026-10-27)
 
 ## Corpus Check
-- 221 files · ~269,077 words
+- 221 files · ~269,090 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 3, .wsb 2, .iss 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `50ed2e42`
+- Built from commit: `519518bc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -507,7 +507,7 @@ Nodes (10): CreatedAt, RestorePointInfo, Sequence, DateTime, DllImport, RestoreP
 
 ### Community 66 - "Nextcalibur.Core.csproj"
 Cohesion: 0.11
-Nodes (14): net10.0-windows10.0.19041.0, Microsoft.NET.Test.Sdk (18.11.0), System.Diagnostics.EventLog (10.0.14), System.Management (10.0.13), Velopack (1.2.0), xunit (2.9.3), xunit.runner.visualstudio (4.0.1), Microsoft.NET.Sdk (+6 more)
+Nodes (14): net10.0-windows10.0.19041.0, Microsoft.NET.Test.Sdk (18.11.0), System.Diagnostics.EventLog (10.0.14), System.Management (10.0.14), Velopack (1.2.0), xunit (2.9.3), xunit.runner.visualstudio (4.0.1), Microsoft.NET.Sdk (+6 more)
 
 ### Community 67 - "BacklightKeyWatcher"
 Cohesion: 0.12
