@@ -40,6 +40,20 @@ public class CrashGuardTests : IDisposable
     }
 
     [Fact]
+    public void A_session_end_is_clean_even_when_the_process_dies_after_it()
+    {
+        CrashGuard.Begin("1", T0);
+        CrashGuard.End();               // at WM_ENDSESSION
+        CrashGuard.Heartbeat(T0.AddSeconds(5));   // a tick still running writes nothing back
+        CrashGuard.End();               // the exit, when it is reached at all
+        Assert.False(File.Exists(Marker));
+
+        CrashGuard.UseMarker(Marker);
+        CrashGuard.Begin("1", T0.AddMinutes(1));
+        Assert.Null(CrashGuard.UncleanPrevious);
+    }
+
+    [Fact]
     public void One_crash_is_reported_but_the_start_is_normal()
     {
         CrashGuard.Begin("1", T0);

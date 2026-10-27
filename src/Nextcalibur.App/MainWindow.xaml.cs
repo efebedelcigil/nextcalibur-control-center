@@ -2415,6 +2415,13 @@ public partial class MainWindow : Window
                     try { _gpu.WriteFirmwareMode(_mailbox, target); Log.Info("gpu", $"Firmware mode written: {target}"); }
                     catch (Exception ex) { Log.Error("gpu", "Firmware mode write failed at session end", ex); }
                 }
+                // Windows may end the process any moment after this message is
+                // answered - at the shutdown of 23 October 2026 it did, before
+                // the closing reached the clean exit, and the next start said
+                // "did not end cleanly". A shutdown is a clean end: the
+                // settings are saved and the marker goes now.
+                Release("settings", _settings.Save);
+                CrashGuard.End();
             }
             else
             {

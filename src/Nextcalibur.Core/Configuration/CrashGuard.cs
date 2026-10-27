@@ -113,13 +113,16 @@ public static class CrashGuard
     /// <summary>A clean exit: the marker goes.</summary>
     public static void End()
     {
+        bool wasRunning;
         lock (Gate)
         {
+            // Once: a session end calls it, then the exit after it.
+            wasRunning = _current is not null;
             _current = null;
             try { if (File.Exists(_marker)) File.Delete(_marker); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         }
-        Log.Info("crash-guard", "Clean exit");
+        if (wasRunning) Log.Info("crash-guard", "Clean exit");
     }
 
     private static Session? Read()
