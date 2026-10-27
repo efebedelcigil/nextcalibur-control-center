@@ -130,8 +130,9 @@ public partial class MainWindow
         foreach (var watcher in new[] { _ruleStarts, _ruleStops })
         {
             if (watcher is null) continue;
-            try { watcher.Stop(); } catch (ManagementException) { }
-            watcher.Dispose();
+            // Any exception: at a session end the WMI connection may be gone already (see BacklightKeyWatcher).
+            try { watcher.Stop(); } catch (Exception) { }
+            try { watcher.Dispose(); } catch (Exception) { }
         }
         _ruleStarts = _ruleStops = null;
     }

@@ -852,21 +852,29 @@ public partial class MainWindow : Window
             Strings.Changed -= OnLanguageChanged;
             WindowsFaults.IsFaultEnabled = _ => true;
             Dialogs.Owner = null;
-            _tray?.Dispose();
-            _backlightKey?.Dispose();
-            if (_cooling.Engaged) StopCooling("exit");
-            StopFnShortcuts();
-            StopProgramRuleWatch();
-            _mailbox?.Dispose();
-            _cpuClock.Dispose();
-            _gpuClock.Dispose();
-            _cpuPower.Dispose();
-            _settings.Save();
+            // Each on its own: one that throws - a WMI watcher at a session end
+            // did, 27 October 2026 - must not leave the cooling engaged or the
+            // settings unsaved behind it.
+            Release("tray", () => _tray?.Dispose());
+            Release("backlight key", () => _backlightKey?.Dispose());
+            Release("cooling", () => { if (_cooling.Engaged) StopCooling("exit"); });
+            Release("Fn shortcuts", StopFnShortcuts);
+            Release("program rules", StopProgramRuleWatch);
+            Release("mailbox", () => _mailbox?.Dispose());
+            Release("clocks", () => { _cpuClock.Dispose(); _gpuClock.Dispose(); _cpuPower.Dispose(); });
+            Release("settings", _settings.Save);
 
             // Last, and after everything else is released: this hands a staged
             // release to an installer that waits for this process to go away.
             _updates.Dispose();
         }
+    }
+
+    /// <summary>One step of closing: a failure is logged and the next step still runs.</summary>
+    private static void Release(string what, Action step)
+    {
+        try { step(); }
+        catch (Exception ex) { Log.Warn("exit", $"Releasing the {what} failed; going on: {ex.GetType().Name}: {ex.Message}"); }
     }
 
     /// <summary>Set when Windows is ending the session, so closing asks nothing.</summary>

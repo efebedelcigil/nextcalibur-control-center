@@ -68,7 +68,11 @@ public sealed class BacklightKeyWatcher : IDisposable
     public void Dispose()
     {
         _watcher.EventArrived -= OnEvent;
-        try { _watcher.Stop(); } catch (ManagementException) { }
-        _watcher.Dispose();
+        // Not only ManagementException: while Windows ends the session - an
+        // installer closing programs, .NET's own on 27 October 2026 - the WMI
+        // connection is already gone and Stop throws InvalidCastException
+        // (QueryInterface for IWbemServices fails). Nothing to stop then.
+        try { _watcher.Stop(); } catch (Exception) { }
+        try { _watcher.Dispose(); } catch (Exception) { }
     }
 }
