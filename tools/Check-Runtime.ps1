@@ -88,7 +88,7 @@ if ($Path) {
     elseif ($carried -lt $latest) {
         throw ("The build carries .NET $carried but $latest is out ($($entry.'latest-release-date')). " +
                "Nothing on a machine patches a runtime carried inside an application. Install the newest " +
-               "$Channel SDK on the build machine (setup-dotnet with check-latest: true) and build again.")
+               "$Channel SDK on the build machine (setup-dotnet with a floating 10.0.x) and build again.")
     }
     else {
         Write-Host "The runtime it carries ($carried) is current."

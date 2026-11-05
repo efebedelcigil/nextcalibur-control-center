@@ -37,6 +37,7 @@ public class SignatureForgeryTests
         try
         {
             Assert.True(Authenticode.SignatureIsValid(file), "the untouched copy should verify");
+            using var before = new X509Certificate2(X509Certificate.CreateFromSignedFile(file));
 
             // Somewhere in the middle, well away from the signature block at
             // the end - the code an attacker would be replacing.
@@ -49,11 +50,12 @@ public class SignatureForgeryTests
             }
 
             // What the old check looked at is unchanged: the certificate is
-            // there, it is Microsoft's, and its chain builds.
+            // there, it is Microsoft's, and it is the very same one. Compared,
+            // not chained: building its chain here asks the network and the
+            // machine's store, and failed on one runner image (19 October 2026).
             using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(file));
             Assert.Contains("Microsoft", certificate.Subject);
-            using var chain = new X509Chain();
-            Assert.True(chain.Build(certificate), "the certificate itself is genuine - that was never the question");
+            Assert.Equal(before.Thumbprint, certificate.Thumbprint);
 
             // What the file actually is has changed, and that is the question.
             Assert.False(Authenticode.SignatureIsValid(file), "an edited file must not verify");
