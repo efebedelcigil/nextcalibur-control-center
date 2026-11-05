@@ -28585,55 +28585,55 @@
             "callee": "ReadAllBytes",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L76"
+            "line": "L78"
           },
           {
             "callee": "Combine",
             "receiver_type": "Path",
             "lang": "csharp",
-            "line": "L77"
+            "line": "L79"
           },
           {
             "callee": "GetTempPath",
             "receiver_type": "Path",
             "lang": "csharp",
-            "line": "L77"
+            "line": "L79"
           },
           {
             "callee": "NewGuid",
             "receiver_type": "Guid",
             "lang": "csharp",
-            "line": "L77"
+            "line": "L79"
           },
           {
             "callee": "Copy",
             "receiver_type": "Array",
             "lang": "csharp",
-            "line": "L82"
+            "line": "L84"
           },
           {
             "callee": "WriteAllBytes",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L84"
+            "line": "L86"
           },
           {
             "callee": "False",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L86"
+            "line": "L88"
           },
           {
             "callee": "Delete",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L91"
+            "line": "L93"
           }
         ]
       },
       "norm_label": ".a_borrowed_signature_block_is_refused()",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L73"
+      "source_location": "L75"
     },
     {
       "id": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_a_signed_file_that_has_been_edited_is_refused",
@@ -28659,31 +28659,31 @@
             "callee": "CreateFromSignedFile",
             "receiver_type": "X509Certificate",
             "lang": "csharp",
-            "line": "L53"
+            "line": "L40"
           },
           {
             "callee": "Contains",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L54"
+            "line": "L57"
           },
           {
-            "callee": "Build",
-            "receiver_type": "X509Chain",
+            "callee": "Equal",
+            "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L56"
+            "line": "L58"
           },
           {
             "callee": "False",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L59"
+            "line": "L61"
           },
           {
             "callee": "Delete",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L64"
+            "line": "L66"
           }
         ]
       },
@@ -28709,43 +28709,43 @@
             "callee": "Combine",
             "receiver_type": "Path",
             "lang": "csharp",
-            "line": "L145"
+            "line": "L147"
           },
           {
             "callee": "GetTempPath",
             "receiver_type": "Path",
             "lang": "csharp",
-            "line": "L145"
+            "line": "L147"
           },
           {
             "callee": "NewGuid",
             "receiver_type": "Guid",
             "lang": "csharp",
-            "line": "L145"
+            "line": "L147"
           },
           {
             "callee": "WriteAllBytes",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L146"
+            "line": "L148"
           },
           {
             "callee": "False",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L149"
+            "line": "L151"
           },
           {
             "callee": "Delete",
             "receiver_type": "File",
             "lang": "csharp",
-            "line": "L154"
+            "line": "L156"
           }
         ]
       },
       "norm_label": ".an_unsigned_or_missing_file_is_refused()",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L142"
+      "source_location": "L144"
     },
     {
       "id": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_copytotemp",
@@ -28809,13 +28809,13 @@
             "callee": "CreateSelfSigned",
             "receiver_type": "CertificateRequest",
             "lang": "csharp",
-            "line": "L138"
+            "line": "L140"
           }
         ]
       },
       "norm_label": ".selfsigned()",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L133"
+      "source_location": "L135"
     },
     {
       "id": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_runtime_accepts_the_subject_microsoft_really_uses",
@@ -28835,19 +28835,19 @@
             "callee": "True",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L125"
+            "line": "L127"
           },
           {
             "callee": "False",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L129"
+            "line": "L131"
           }
         ]
       },
       "norm_label": ".the_runtime_accepts_the_subject_microsoft_really_uses()",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L119"
+      "source_location": "L121"
     },
     {
       "id": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_signers_name_is_a_whole_component",
@@ -28867,13 +28867,13 @@
             "callee": "Equal",
             "receiver_type": "Assert",
             "lang": "csharp",
-            "line": "L109"
+            "line": "L111"
           }
         ]
       },
       "norm_label": ".the_signers_name_is_a_whole_component()",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L100"
+      "source_location": "L102"
     },
     {
       "id": "tests_nextcalibur_core_tests_authenticodetests_nextcalibur_core_tests_authenticodetests_a_file_nobody_signed_is_refused",
@@ -72103,7 +72103,7 @@
         "ref_token": "Fact"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L73",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -72133,7 +72133,7 @@
         "ref_token": "Fact"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L142",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -72148,7 +72148,7 @@
         "ref_token": "Fact"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L119",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -76963,7 +76963,7 @@
         "ref_token": "InlineData"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L100",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -77848,7 +77848,7 @@
         "ref_token": "Theory"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L100",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -101638,7 +101638,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L86",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -101650,7 +101650,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L87",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -101686,7 +101686,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L60",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -101698,7 +101698,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L149",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -101710,24 +101710,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L150",
+      "source_location": "L152",
       "weight": 1.0
     },
     {
       "source": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_runtime_accepts_the_subject_microsoft_really_uses",
       "target": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_selfsigned",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L123",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_runtime_accepts_the_subject_microsoft_really_uses",
-      "target": "src_nextcalibur_core_security_authenticode_nextcalibur_core_security_authenticode_hassubjectcomponent",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -101738,6 +101726,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_runtime_accepts_the_subject_microsoft_really_uses",
+      "target": "src_nextcalibur_core_security_authenticode_nextcalibur_core_security_authenticode_hassubjectcomponent",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
       "source": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_the_signers_name_is_a_whole_component",
       "target": "tests_nextcalibur_core_tests_attacks_signatureforgerytests_nextcalibur_core_tests_attacks_signatureforgerytests_selfsigned",
       "relation": "calls",
@@ -101746,7 +101746,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L108",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -101758,7 +101758,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L109",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -139494,7 +139494,7 @@
         "ref_token": "X509Certificate2"
       },
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L133",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -166551,7 +166551,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L100",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -166562,7 +166562,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L119",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -166573,7 +166573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L133",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -166584,7 +166584,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L142",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -166617,7 +166617,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L73",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -175500,7 +175500,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "tests/Nextcalibur.Core.Tests/Attacks/SignatureForgeryTests.cs",
-      "source_location": "L126",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -176861,5 +176861,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "519518bc76b168689d66d5db3e463b860edd61c9"
+  "built_at_commit": "879a7235a4eea67337385885a8a9805a5020896e"
 }
